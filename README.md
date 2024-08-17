@@ -13,9 +13,13 @@ Neuromod is designed to offer a comfortable and user-friendly experience, provid
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 <br>
+<br>
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
+If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. 
+<br>
+<br>
+Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
 Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
 As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
@@ -23,10 +27,13 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
 
 ## **How to use**
 
-There are two ways to use this toolbox: Either you download all the files as they are, unpack them and double click in the windows file explorer on the app file (or right click in matlab current folder window and click on run).
-However, this requires a valid Matlab license. Or you download the standalone version of this app, which you can execute without a valid Matlab license by just installing the Matlab runtime.
-The code was tested with Matlab versions down to 2020. For versions before that there is no guarantee that all modules will work. It requires the following Matlab addons: Signal Processing Toolbox
-To extract Spike2 .smrx files and use Kilosort you need to install the respective libraries /toolboxes yourself. However, once you done that the integration in this toolbox is seamless.
+There are two ways to use this toolbox: 
+- Either you download all the files as they are, unpack them and double click in the windows file explorer on the app file (or right click in matlab current folder window and click on run).
+However, this requires a valid Matlab license.
+- Or you download the standalone version of this app, which you can execute without a valid Matlab license by just installing the Matlab runtime.
+- The code was written in Matlab Version 2023 and 2024. There is no guarantue for other Verions. It requires the following Matlab addons: Signal Processing Toolbox
+- To extract Spike2 .smrx files and use Kilosort you need to install the respective libraries /toolboxes yourself. However, once you done that the integration in this toolbox is seamless.
+They can be found here: 
 
 
 ## **Rules and Philosophie of the Toolbox**
