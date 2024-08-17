@@ -1,0 +1,313 @@
+function [Data] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,STDThreshold,Filter,Tolerance, ArtefactDepth)
+%________________________________________________________________________________________
+
+%% Function to extract Data.Spikes from preprocessed (high pass filtered) data using thresholding
+%% NOTE: Only negative spikes are etracted, data amplitude therefore has to be smaller than threshold and biggest amplitude is the smallest value
+% Input:
+% 1. Data: Data structure containing high pass filtered preprocessed data as a Channel x Time matrix in Data.Preprocessed field.
+% High pass filter required!
+% 2. Detectionmethod: Thresholding Method. Options: "Quiroga Method" OR "Threshold: Mean - Std" OR "Threshold: Median - Std"; 
+% 3. Type: Method to compute mean and std with. Options: "All Channel" OR "Individual Ch."
+% 4. STDThreshold: Number of std's signal has to deviate from mean to count
+% as spike. Standard: 4; Can vary depending on type selected
+% 5. Filter: true or false, specify whether vertical artefacts should be
+% filtered (same spike times +/- tolerance time over more channel then
+% specified as ArtefactDepth are rejected) --> i.e. same spike time over 10
+% Channel are deleted
+% Tolerance: Tolerance of vertical spike artefacts in samples as double. For example 3 means: spike time +/- 3 samples to the left and right over specified depth are counted as artefacts 
+% ArtefactDepth: Depth over which same spike times have to occur to count
+% as a artefact, in um and as double
+
+% Output: Data structure with added field 'Spikes' (Data.Spikes), called
+% using app.Data.Spikes in GUI
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+%% Check exisiting spike data. Already existing Data is deleted!
+if isfield(Data,'Spikes')
+    msgbox("Warning: Spike data already part of the dataset. Exisitng data will be removed.");
+    Data.Spikes = [];
+    if isfield(Data,'EventRelatedSpikes')
+        fieldsToDelete = {'EventRelatedSpikes'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+    end
+    if isfield(Data.Info,'SpikeDetectionThreshold')
+        fieldsToDelete = {'SpikeDetectionThreshold'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+    Data.Info.SpikeType = "Non";
+end          
+   
+%% Spike Structure has to be same as for Kilosort. Parameters not applicable to this spike analyiss are the following: (they stay empty)
+Data.Spikes.SpikeCluster = [];
+Data.Spikes.SpikeTemplates = [];
+Data.Spikes.templates_ind = [];
+Data.Spikes.templates = [];
+Data.Spikes.spike_detection_templates = [];
+Data.Spikes.pc_features = [];
+Data.Spikes.pc_feature_ind = [];
+Data.Spikes.kept_spikes = [];
+%% Field that can and/or have to be populated:
+Data.Spikes.SpikeTimes = [];
+Data.Spikes.SpikeAmps = [];
+Data.Spikes.SpikeChannel = [];
+Data.Spikes.ChannelMap = [];
+Data.Spikes.ChannelPosition = [];
+Data.Spikes.SpikePositions = [];
+
+% Initiate waitbar 
+h = waitbar(0, 'Extracting Spike Indicies...', 'Name','Extracting Spike Indicies...');
+cN  = size(Data.Preprocessed,1);
+
+%% Check which method and parameters selceted
+if strcmp(Detectionmethod,"Threshold: Mean - Std")
+    %% Correlated Noise: Mean of signal
+    if strcmp(Type,"All Channel")
+        CN = mean(Data.Preprocessed,'all');
+    end
+    
+    for nchannel = 1:size(Data.Preprocessed,1) % Channel
+       indices = [];
+       % Update the progress bar
+       fraction = nchannel/cN;
+       msg = sprintf('Extracting Spike Indicies... (%d%% done)', round(100*fraction));
+       waitbar(fraction, h, msg);
+    
+        % Mean and std based on input 
+        if strcmp(Type,"All Channel")
+            CNSTD = std(Data.Preprocessed(nchannel,:));
+            Threshold = CN+STDThreshold.*CNSTD;
+            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
+
+        elseif strcmp(Type,"Individual Ch.")
+            CN = mean(Data.Preprocessed(nchannel,:));
+            CNSTD = std(Data.Preprocessed(nchannel,:));
+            Threshold = CN+STDThreshold.*CNSTD;
+            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
+        end
+        
+        %% Spikes can have multiple consecutive samples below the threshold. Only one can be kept. Here, the smallest amplitude indicies is kept
+        % Initialize the cell array to store sequences
+        Tempsequences = {};
+        currentSequence = [];
+
+        if ~isempty(indices)
+            % Loop through the indices to group consecutive sequences
+            for novertreshold = 1:length(indices)
+                if isempty(currentSequence)
+                    currentSequence = indices(novertreshold);
+                else
+                    if indices(novertreshold) == indices(novertreshold-1) + 1
+                        currentSequence = [currentSequence, indices(novertreshold)];
+                    else
+                        Tempsequences{end+1} = currentSequence;
+                        currentSequence = indices(novertreshold);
+                    end
+                end
+            end
+    
+            % Add the last sequence to the cell array
+            if ~isempty(currentSequence)
+                Tempsequences{end+1} = currentSequence;
+            end
+            %% Find smalles amplitude indicie of each sequence and just save this
+            Sequences = cell(1,length(Tempsequences));
+            for nSequences = 1:length(Tempsequences)
+                [a,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,Tempsequences{nSequences}));
+                Sequences{nSequences} = Tempsequences{nSequences}(BiggestSequenceAmplitudes);
+                BiggestSequenceAmplitudes = [];
+            end
+            
+            % Populate necessary spike data fields
+            SpikeTimes = cell2mat(Sequences);
+            Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes,SpikeTimes];
+            Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
+            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+        end
+        
+    end
+
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
+    
+elseif strcmp(Detectionmethod,"Threshold: Median - Std")
+    %% Correlated Noise: Mean of signal
+
+    if strcmp(Type,"All Channel")
+        CN = median(Data.Preprocessed,'all');
+    end
+
+    for nchannel = 1:size(Data.Preprocessed,1) % Channel
+        indices = [];
+        % Update the progress bar
+       fraction = nchannel/cN;
+       msg = sprintf('Extracting Spike Indicies... (%d%% done)', round(100*fraction));
+       waitbar(fraction, h, msg);
+    
+        % Mean
+        if strcmp(Type,"All Channel")
+            CNSTD = std(Data.Preprocessed(nchannel,:));
+            Threshold = CN+STDThreshold.*CNSTD;
+            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
+
+        elseif strcmp(Type,"Individual Ch.")
+            CN = median(Data.Preprocessed(nchannel,:));
+            CNSTD = std(Data.Preprocessed(nchannel,:));
+            Threshold = CN+STDThreshold.*CNSTD;
+            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
+        end
+       
+        %% Spikes can have multiple consecutive samples below the threshold. Only one can be kept. Here, the smallest amplitude indicies is kept
+        % Initialize the cell array to store sequences
+        Tempsequences = {};
+        currentSequence = [];
+
+        if ~isempty(indices)
+            % Loop through the indices to group consecutive sequences
+            for novertreshold = 1:length(indices)
+                if isempty(currentSequence)
+                    currentSequence = indices(novertreshold);
+                else
+                    if indices(novertreshold) == indices(novertreshold-1) + 1
+                        currentSequence = [currentSequence, indices(novertreshold)];
+                    else
+                        Tempsequences{end+1} = currentSequence;
+                        currentSequence = indices(novertreshold);
+                    end
+                end
+            end
+    
+            % Add the last sequence to the cell array
+            if ~isempty(currentSequence)
+                Tempsequences{end+1} = currentSequence;
+            end
+    
+            Sequences = cell(1,length(Tempsequences));
+            for nSequences = 1:length(Tempsequences)
+                [a,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,Tempsequences{nSequences}));
+                Sequences{nSequences} = Tempsequences{nSequences}(BiggestSequenceAmplitudes);
+                BiggestSequenceAmplitudes = [];
+            end
+    
+            SpikeTimes = cell2mat(Sequences);
+            Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes,SpikeTimes];
+            Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
+            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+        end 
+    end
+
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
+
+elseif strcmp(Detectionmethod,"Quiroga Method")
+
+    if strcmp(Type,"All Channel")
+        medianAbsSignal = median(abs(Data.Preprocessed),'all');
+    end
+
+    for nchannel = 1:size(Data.Preprocessed,1) % Channel
+       indices = [];
+       % Update the progress bar
+       fraction = nchannel/cN;
+       msg = sprintf('Extracting Spike Indicies... (%d%% done)', round(100*fraction));
+       waitbar(fraction, h, msg);
+
+        if strcmp(Type,"All Channel")
+            % Compute the threshold using the Quian Quiroga method
+            Threshold = (medianAbsSignal / 0.6745) * STDThreshold;
+            indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
+    
+        elseif strcmp(Type,"Individual Ch.")
+            medianAbsSignal = median(abs(Data.Preprocessed(nchannel,:)));
+            % Compute the threshold using the Quian Quiroga method
+            Threshold = (medianAbsSignal / 0.6745) * STDThreshold;
+            indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
+        end
+
+        %% Spikes can have multiple consecutive samples below the threshold. Only one can be kept. Here, the smallest amplitude indicies is kept
+        % Now only take the max of each consecutive sequence of indicies
+        % found
+        % Initialize the cell array to store sequences
+        Tempsequences = {};
+        currentSequence = [];
+        
+        if ~isempty(indices)
+            % Loop through the indices to group consecutive sequences
+            for novertreshold = 1:length(indices)
+                if isempty(currentSequence)
+                    currentSequence = indices(novertreshold);
+                else
+                    if indices(novertreshold) == indices(novertreshold-1) + 1
+                        currentSequence = [currentSequence, indices(novertreshold)];
+                    else
+                        Tempsequences{end+1} = currentSequence;
+                        currentSequence = indices(novertreshold);
+                    end
+                end
+            end
+    
+            % Add the last sequence to the cell array
+            if ~isempty(currentSequence)
+                Tempsequences{end+1} = currentSequence;
+            end
+    
+            Sequences = cell(1,length(Tempsequences));
+            for nSequences = 1:length(Tempsequences)
+                [a,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,Tempsequences{nSequences}));
+                Sequences{nSequences} = Tempsequences{nSequences}(BiggestSequenceAmplitudes);
+                BiggestSequenceAmplitudes = [];
+            end
+          
+            SpikeTimes = cell2mat(Sequences);
+            Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes,SpikeTimes];
+            Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
+            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+        end
+    end
+
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
+
+end
+
+%% If no Spikes found, fields are empty. Delete field
+if isempty(Data.Spikes.SpikeTimes)
+    fieldsToDelete = {'Spikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+    msgbox("Warning: No Spikes found.");
+    Data.Info.SpikeType = 'Non';
+    close(h);
+    return;
+end
+
+close(h);
+
+%% Wrap up: Prepare all necessary fields of Spike structure.
+Data.Spikes.ChannelPosition(1:size(Data.Preprocessed,1),1) = 0;
+Data.Spikes.ChannelPosition(1:size(Data.Preprocessed,1),2) = Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:Data.Info.ChannelSpacing*size(Data.Preprocessed,1);
+Data.Spikes.SpikeTimes = Data.Spikes.SpikeTimes';
+Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps';
+Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
+Data.Spikes.ChannelMap = 1:size(Data.Preprocessed,1);
+Data.Spikes.ChannelMap = Data.Spikes.ChannelMap';
+TempSpikePositions = Data.Spikes.SpikePositions';
+Data.Spikes.SpikePositions = [];
+Data.Spikes.SpikePositions(1:length(TempSpikePositions),1) = 0;
+Data.Spikes.SpikePositions(1:length(TempSpikePositions),2) = TempSpikePositions;
+
+%% Filter Spike Data if selected
+if Filter == true
+    [Data] = Spike_Module_FilterSpikes(Data, Tolerance, ArtefactDepth, Data.Info.ChannelSpacing);
+end
+
+%% Wrap up by extracting the amplitude and waveform of each spike for later plotting
+Data.Info.SpikeDetectionThreshold = Threshold;
+Data.Info.SpikeType = 'Internal';
+
+%% NOTE: Spike Amplitude extraction is super fast and coincides with extraction of waveforms, which is also NOT performed here. 
+%% Therefore, those parameters get extracted each time a spike analyiss is called
+
+

@@ -1,0 +1,333 @@
+function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,SelectedFolder,RecordingType,PreviousChannelDeletetion,Time,ChannelSpacing)
+%________________________________________________________________________________________
+
+%% Function to Organize all basic mainapp values, properties, app parts and variables. 
+% This function is called all over the toolbox to reorganizes datasets.
+% This is used, to initiate variables when the GUI is started, when data is
+% extracted (delete old data and autoset some values to match the new dataset), data is loaded (delete old data and autoset some values to match the new dataset)
+% or preprocessed 
+
+% NOTE: this only works with the main window app object as first input
+% NOTE: Type "VariableDefinition" as input defines all necessary Data.Info
+% fiels
+% Inputs:
+% 1. app: app object of GUI main window
+% 2. Type: string, specifies why/at which point this function is called. % Options: "Initial" when GUI is started or reset, "Loading" when a new
+% dataset is loaded (previosuly saved with GUI), "Extracting" when dataset
+% was extracted from raw data, "Preprocessing" after preprocessing steps
+% were applied or "VariableDefinition" during the data extractionf from raw
+% data to centralize the fundamental infos of the Data.Info field 
+% 3. HeaderInfo: Infos about recording extracted from raw datasets. Gets
+% fused with Data.Info when Type = "VariableDefinition"
+% 4. SampleRate in Hz as double when Type = "VariableDefinition"
+% 5. SelectedFolder: Folder from whioch data was exracted or loade, as char
+% when Type = "VariableDefinition"
+% 6. RecordingType: string specifying the recording system when Type =
+%"Extracting", Options: "IntanDat", "IntanRHD", "Spike2", "Open Ephys"
+% 7. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
+% 8. ChannelSpacing: in um as double
+
+
+% Output:
+% app object with initialized values
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+% cd into GUI Folder to make loading easier
+cd(app.executableFolder);
+
+if strcmp(Type,"Initial")
+
+    % Replace and empty all plots
+    app.UIAxes.NextPlot = "replace"; 
+    plot(app.UIAxes,0,0);
+    app.UIAxes_2.NextPlot = "replace"; 
+    plot(app.UIAxes_2,0,0);
+    
+    % Reset App Properties
+    app.ChannelSelectionEditField.Value = "";
+    app.ChannelSelection = [];
+    app.DefaultTimeRangeDataPlot = [];
+    app.TimeLimit = [];
+    app.CurrentTimePoints = [];
+    app.CheckSuccesful_Extraction = [];
+    app.CheckPlayMovie = [];
+    app.FlagPlotDownsampledData = 0;
+    app.FlagPlotRawData = 1;
+    app.PlotEvents = "no";
+    app.Plotspikes = "no";
+    app.PlotLineSpacing = []; % Info from slider how much channel should be apart
+    app.Channelrange = []; % Info from GUI which channel are selected
+    app.tempcolorMapset = []; % Holding result Eval function integrating GUI selection. This is used for the plot functions!
+    app.tempcolorMap = "parula";
+    app.CurrentEventChannel = [];
+    app.PSTHApp = [];
+    app.CSDApp = [];
+    app.SpectralEstApp = [];
+    app.PowerSpecResults = [];
+
+    %% Reset Standard GUI Values
+
+    app.TextArea.Value = "";
+       
+    % Disable 0.1 and 1s checkboxes to control time window and activate 0.5s
+    % checkbox
+    app.sCheckBox.Value = 0;
+    app.sCheckBox_2.Value = 1;
+    app.sCheckBox_3.Value = 0;
+    app.sCheckBox_4.Value = 0;
+    
+    % Predefine Variable holding app.Data
+    app.Data = [];
+       
+    % Predefine Time Ranges
+    %app.DefaultTimeRangeDataPlot = 1000; % Default time range shown in app.Data plot in amount of samples (64x1000 points plot)
+    app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
+    TimeRangeText = strcat(num2str(app.TimeLimit(1)),"s");
+    app.TimeRangeViewBox.Value = TimeRangeText;
+    app.CurrentTimePoints = 1; % Standard TIme in seconds
+    
+    app.PlotComponents = "Raw"; % What is shown in the plot
+   
+    % Enable/Disable buttons
+    app.RUNButton_4.Enable = "on";
+    app.RUNButton_5.Enable = "off";
+    app.RUNButton_3.Enable = "off";
+    app.RUNButton_2.Enable = "off";
+    app.RUNButton.Enable = "off";
+
+    app.EventChannelDropDown.Enable = "off";
+    app.EventChannelDropDown.Items = {};
+    
+    app.FlagPlotRawData = 1;
+    
+    % Plot Cheboxes
+    app.RawDataPlotCheckBox.Value = 0;
+    app.PreprocDataPlotCheckBox.Value = 0;
+    app.EventDataCheckBox.Value = 0;
+    app.SpikeDataCheckBox_2.Value = 0;
+    
+    app.RawDataPlotCheckBox.Enable = "off";
+    app.PreprocDataPlotCheckBox.Enable = "off";
+    app.EventDataCheckBox.Enable = "off";
+    app.SpikeDataCheckBox_2.Enable = "off";
+
+elseif strcmp(Type,"Loading")
+
+    % Enable/Disable buttons
+    app.RUNButton_5.Enable = "on";
+    app.RUNButton_2.Enable = "on";
+    app.RUNButton_3.Enable = "on";
+    app.RUNButton.Enable = "on";
+
+    % Setting defalut app values after loading
+    % Update Time window shown in the top right corner
+    
+    if isfield(app.Data,'Raw')
+        app.RawDataPlotCheckBox.Enable = "on";
+        app.RawDataPlotCheckBox.Value = 1;
+        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
+    elseif ~isfield(app.Data,'Raw') && isfield(app.Data,'Preprocessed')
+        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Preprocessed,1)));
+        app.RawDataPlotCheckBox.Enable = "off";
+        app.RawDataPlotCheckBox.Value = 0;
+    end
+
+    if isfield(app.Data,'Preprocessed') && isfield(app.Data.Info,'FilterMethod') 
+        if strcmp(app.Data.Info.FilterMethod,"Low-Pass")
+            app.PreprocDataPlotCheckBox.Enable = "on";
+            app.PreprocDataPlotCheckBox.Value = 0;
+            app.RUNButton_3.Enable = "on";
+        end
+
+        if strcmp(app.Data.Info.FilterMethod,"High-Pass")
+            app.PreprocDataPlotCheckBox.Enable = "on";
+            app.PreprocDataPlotCheckBox.Value = 0;
+        end
+    elseif isfield(app.Data,'Preprocessed') && ~isfield(app.Data.Info,'FilterMethod') 
+        app.PreprocDataPlotCheckBox.Enable = "on";
+        app.PreprocDataPlotCheckBox.Value = 0;
+    end    
+
+    if isfield(app.Data, 'Events')
+        app.EventDataCheckBox.Enable = "on";
+        texttoshow = {};
+        app.EventChannelDropDown.Enable = "on";
+        app.EventChannelDropDown.Items = app.Data.Info.EventChannelNames;
+        app.CurrentEventChannel = 1; 
+    else
+        app.EventChannelDropDown.Enable = "off";
+        app.EventChannelDropDown.Items = {};
+    end
+    if isfield(app.Data, 'Spikes') 
+        app.SpikeDataCheckBox_2.Enable = "on";
+        app.RUNButton_3.Enable = "on";
+    end
+    
+    if isfield(app.Data,'Raw')
+        channelnr = size(app.Data.Raw,1);
+        app.RawDataPlotCheckBox.Value = 1;
+    elseif ~isfield(app.Data,'Raw') && isfield(app.Data,'Preprocessed')
+        channelnr = size(app.Data.Preprocessed,1);
+        app.PreprocDataPlotCheckBox.Value = 1;
+    end
+
+    stdrawdata = double(std(app.Data.Raw,[],'all'));
+    app.Slider.Limits = [stdrawdata-stdrawdata/2,stdrawdata+stdrawdata*10];
+    app.Slider.Value = stdrawdata*2;
+
+    app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
+    
+    app.PowerSpecResults = [];
+
+    % Get Channel Selection when new app.Data loadaed
+    ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));
+    app.ChannelSelectionEditField.Value = ChannelString;
+
+    % Pick Colormap based on what the user selected (default = parula)
+    app.tempcolorMapset = eval(strcat(app.tempcolorMap,"(channelnr)")); 
+    Utility_Show_Info_Loaded_Data(app);
+
+elseif strcmp(Type,"Extracting")
+
+    %% Predefine checkboxes of what to plot
+    % Activate the main window buttons that can be used after
+    % loading the app.Data
+
+    app.RUNButton_4.Enable = "on";
+    app.RUNButton_5.Enable = "on";
+    app.RUNButton_3.Enable = "on";
+    app.RUNButton_2.Enable = "on";
+    app.RUNButton.Enable = "on";
+
+    app.CheckSuccesful_Extraction = 0;
+    app.PreprocDataPlotCheckBox.Value = 0;
+    app.EventDataCheckBox.Value = 0;
+    app.SpikeDataCheckBox_2.Value = 0;
+    
+    app.RawDataPlotCheckBox.Enable = "on";
+    app.RawDataPlotCheckBox.Value = 1;
+    
+    app.PowerSpecResults = [];
+    
+    app.EventDataCheckBox.Enable = "off";
+    app.SpikeDataCheckBox_2.Enable = "off";
+    app.PreprocDataPlotCheckBox.Enable = "off";
+
+    % Pick Colormap based on what the user selected (default = parula)
+    app.tempcolorMapset = eval(strcat(app.tempcolorMap,"(size(app.Data.Raw,1))")); % Example colormap: You can use any other colormap
+
+    Utility_Show_Info_Loaded_Data(app);
+
+elseif strcmp(Type,"VariableDefinition")
+
+    cd(app.executableFolder);
+
+    %% Define all important Variables based on extracted dat files
+    if ~isa(Data, 'single')
+        app.Data.Raw = single(Data);
+    else
+        app.Data.Raw = Data;
+    end
+
+    app.Data.Time = Time;
+    clear Data;
+
+    if strcmp(RecordingType,"IntanDat") || strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"Spike2") || strcmp(RecordingType,"Open Ephys")
+        app.Data.Info = HeaderInfo;
+    else
+        fieldsToDelete = {'Header'};
+        % Delete fields
+        app.Data.Info = rmfield(HeaderInfo.orig(1).hdr, fieldsToDelete);
+    end
+
+    app.Data.Info.num_data_points = size(app.Data.Raw,2);
+    app.Data.Info.NrChannel = size(app.Data.Raw,1);
+    app.Data.Info.Data_Path = SelectedFolder;
+    app.Data.Info.NativeSamplingRate = SampleRate;
+    app.Data.Info.RecordingType = RecordingType;
+    app.Data.Info.ChannelSpacing = ChannelSpacing;
+    app.Data.Info.SpikeType = "Non";
+    % Get Channel Selection when new app.Data loadaed
+    ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));
+    app.ChannelSelectionEditField.Value = ChannelString;
+
+    % If extraction was succesfull and dat variable is
+    % filled, indicate that it was succesful. This is
+    % implemented bc. right after this module finished the extraction, the
+    % window is closed and app.Data is plotted. But it should
+    % only be plotted when the user succesfully extracted app.Data
+    if ~isempty(app.Data)
+        app.CheckSuccesful_Extraction = 1;
+    end
+
+    stdrawdata = double(std(app.Data.Raw,[],'all'));
+    app.Slider.Limits = [stdrawdata-stdrawdata/2,stdrawdata+stdrawdata*10];
+    app.Slider.Value = stdrawdata*2;
+
+    app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
+
+elseif strcmp(Type,"Preprocessing")
+
+    % Save Downsampled SamplingRate when Downsampling was applied
+    % if isfield(app.Data.Info, 'DownsampleFactor') && app.PreprocDataPlotCheckBox.Value == 1
+    %     app.Data.Info.DownsampledSamplingRate = round(app.Data.Info.NativeSamplingRate/app.Info.DownsampleFactor);
+    % end
+
+    if isfield(app.PowerSpecResults,'Preprocessed')
+        fieldsToDelete = {'Preprocessed'};
+        % Delete fields
+        app.PowerSpecResults = rmfield(app.PowerSpecResults, fieldsToDelete);
+    end
+
+    if isfield(app.Data,'Preprocessed')
+        if~isempty(app.Data.Preprocessed)
+            app.PreprocDataPlotCheckBox.Enable = "on";
+        else
+            app.PreprocDataPlotCheckBox.Enable = "off";
+            app.PreprocDataPlotCheckBox.Value = 0;
+        end
+    else
+        app.PreprocDataPlotCheckBox.Enable = "off";
+        app.PreprocDataPlotCheckBox.Value = 0;
+    end
+
+    if ~isfield(app.Data,'Events')
+        app.EventDataCheckBox.Enable = "off";
+        app.EventDataCheckBox.Value = 0;
+        Placeholder{1} = ' '; 
+        app.EventChannelDropDown.Items = Placeholder;
+        app.EventChannelDropDown.Enable = "off";
+        app.PlotEvents = "Non";
+    else
+        app.EventDataCheckBox.Value = 0;
+        app.EventChannelDropDown.Enable = "on";
+        app.PlotEvents = "Non";
+    end
+
+    if ~isfield(app.Data,'Spikes')
+        app.SpikeDataCheckBox_2.Value = 0;
+        app.SpikeDataCheckBox_2.Enable = "off";
+        app.Plotspikes = "Non";
+    else
+        app.SpikeDataCheckBox_2.Value = 0;
+        app.SpikeDataCheckBox_2.Enable = "on";
+        app.Plotspikes = "Non";
+    end
+
+    if app.RawDataPlotCheckBox.Value == 1
+        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
+    elseif app.PreprocDataPlotCheckBox.Value == 1
+        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Preprocessed,1)));
+    end
+
+    app.UIAxes.NextPlot = "replace"; 
+    plot(app.UIAxes,0,0);
+    app.UIAxes_2.NextPlot = "replace"; 
+    plot(app.UIAxes_2,0,0);
+    app.RUNButton_3.Enable = "on";
+end

@@ -1,0 +1,1 @@
+File formats other than from Intan are handled by fieldtrip. In the data extraction window the ft_read_header and ft_read_data functions are called with the folder and file the user selected.

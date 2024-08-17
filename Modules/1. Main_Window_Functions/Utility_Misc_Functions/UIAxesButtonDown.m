@@ -1,0 +1,34 @@
+function [app] = UIAxesButtonDown(app, event)
+%________________________________________________________________________________________
+%% Callback Function that handles a click on the data plot and displays a corresponding channel
+% This function captures the event when the user clicks on a plot. The
+% event contains x and y coordinateds of the click in the event structure.
+% It then searches for the closest available y value in the data matrix
+% plotted to the y coordinate of the data plot the user clicked on.
+
+% Input Arguments:
+% 1. app: app object of main window
+% 2. event: Event handle of clicking. This is set up and initialized in the
+% Utility_Initialize_Clicks_Plots
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+% Get the clicked point coordinates
+clickPoint = event.IntersectionPoint;
+% Remove previous text handle from plot
+delete(app.ChannelTextHandle);
+% Identify the closest line to the clicked point
+closestLine = Utility_findClosestLineDatPlot(app,app.UIAxes, clickPoint);
+% Generate names to be displayed
+VectorNames = Utility_CreateChannelNames(app);
+% account for ChannelRange selected in the Main GUi
+CommaIndex = strfind(app.ChannelSelectionEditField.Value,",");
+Channelrange(1) = str2double(app.ChannelSelectionEditField.Value(1:CommaIndex-1));
+Channelrange(2) = str2double(app.ChannelSelectionEditField.Value(CommaIndex+1:end));
+
+if ~isempty(closestLine)
+    app.ChannelTextHandle = text(app.UIAxes, clickPoint(1), clickPoint(2), VectorNames(closestLine+(Channelrange(1)-1)), 'FontSize', 16, 'Color', 'k');
+end
