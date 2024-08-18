@@ -27,7 +27,8 @@ thresholding methods.
 <br>
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
-Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
+Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies <br>
+selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
 As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
 
 
