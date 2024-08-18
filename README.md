@@ -12,6 +12,7 @@ The toolbox currently supports recordings from linear probes across all Intan sy
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 <br>
 <br>
+<br>
 Available types of analysis include current source density analysis, static power spectrum analysis, 
 time-frequency power analysis, and event-related potentials for low-frequency signal components.
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, 
