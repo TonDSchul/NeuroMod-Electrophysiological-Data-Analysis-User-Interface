@@ -53,3 +53,8 @@ They can be found here:
 > ## **Disclaimer**
 This toolbox was created and is maintained by a single person as part of a PhD Project and Hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
 Feel free to contact me for tips and requests or pull a request/open an issue on Github. I try to get around all of them and provide guidance and help. 
+
+> ## **How to cite**
+
+> ## **License**
+This project is licensed under the terms of the MIT license.
