@@ -55,6 +55,6 @@ This toolbox was created and is maintained by a single person as part of a PhD P
 Feel free to contact me for tips and requests or pull a request/open an issue on Github. I try to get around all of them and provide guidance and help. 
 
 > ## **How to cite**
-
+de Schultz T., Lippert M, Ohl Frank, 2024, Neuromod - Fully Interactive Ephys Data Analysis and Visualization for Matlab
 > ## **License**
 This project is licensed under the terms of the MIT license.
