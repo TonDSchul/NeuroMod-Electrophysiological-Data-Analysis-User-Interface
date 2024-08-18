@@ -6,8 +6,6 @@ Neuromod is an interactive toolbox for analyzing and visualizing electrophysiolo
 It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all without reinventing the wheel. 
 Neuromod is designed to offer a comfortable and user-friendly experience, providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
 
-<br>
-
 ## **Data Formats and Capabilities**
  <img src="Modules/MISC/Images/Example_Image1.jpg" align="right" width="550" height="350"/>
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
