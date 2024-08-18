@@ -9,16 +9,21 @@ Neuromod is designed to offer a comfortable and user-friendly experience, provid
 <br>
 
 ## **Data Formats and Capabilities**
- <img src="Modules/MISC/Images/bandicam 2024-08-17 21-02-44-393.jpg" align="right" width="550" height="350"/>
+ <img src="Modules/MISC/Images/Example_Image1.jpg" align="right" width="550" height="350"/>
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 <br>
 <br>
-Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
-Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. 
-<br>
-<br>
+Available types of analysis include current source density analysis, static power spectrum analysis, 
+time-frequency power analysis, and event-related potentials for low-frequency signal components.
+Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, 
+and load Kilosort result files for interactive spike data visualization within the GUI.
+If Kilosort can’t be used, the toolbox <br>
+also offers spike detection using different <br>
+thresholding methods. 
+
+ <img src="Modules/MISC/Images/Example_Image2.jpg" align="right" width="550" height="350"/>
+
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
 Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
