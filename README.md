@@ -16,12 +16,12 @@ Available types of analysis include current source density analysis, static powe
 time-frequency power analysis, and event-related potentials for low-frequency signal components.
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, 
 and load Kilosort result files for interactive spike data visualization within the GUI.
-If Kilosort can’t be used, the toolbox <br>
-also offers spike detection using different <br>
-thresholding methods. 
-
  <img src="Modules/MISC/Images/Example_Image2.jpg" align="right" width="550" height="350"/>
-
+If Kilosort can’t be used, the toolbox 
+also offers spike detection using different 
+thresholding methods. 
+<br>
+<br>
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
 Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
