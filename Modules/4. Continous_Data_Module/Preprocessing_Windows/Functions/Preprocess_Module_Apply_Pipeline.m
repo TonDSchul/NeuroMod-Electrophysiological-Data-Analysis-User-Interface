@@ -157,41 +157,57 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
         end
 
     elseif strcmp(PreprocessingSteps(PPSteps),"Median Filter")
-
+        h = waitbar(0, 'Median Filtering...', 'Name','Preprocessing...');
         %% Get Filter options
         [~,~,filterorder,~,~,~,~] = Preprocess_Module_Set_Filter_Parameter(PPSteps,PreprocessingSteps,PreProInfo);
-
+        msg = sprintf('Median Filtering... (%d%% done)', round(100*(1/2)));
+        waitbar(1/2, h, msg);
         if PPSteps == 1 % If first step in pipeline: apply to raw data
             [Data.Preprocessed] = ft_preproc_medianfilter(Data.Raw, filterorder);
         else % If not first step in pipeline: apply to already preprocessed data
             [Data.Preprocessed] = ft_preproc_medianfilter(Data.Preprocessed, filterorder);
         end
-
+        msg = sprintf('Median Filtering... (%d%% done)', round(100*(2/2)));
+        waitbar(2/2, h, msg);
+        close(h);
     elseif strcmp(PreprocessingSteps(PPSteps),"Downsampling")
-
+        h = waitbar(0, 'Downsampling...', 'Name','Preprocessing...');
         %% Get Filter options
         [~,~,~,~,~,~,DownsampleFactor] = Preprocess_Module_Set_Filter_Parameter(PPSteps,PreprocessingSteps,PreProInfo);
-        
+        msg = sprintf('Downsampling... (%d%% done)', round(100*(1/4)));
+        waitbar(1/4, h, msg);
         %DownsampleFactor = round(Data.Info.NativeSamplingRate/DownsampleRate);
-
+        
         if PPSteps == 1 % If first step in pipeline: apply to raw data
             % Downsampling only works with matrixes cloumn
             % wise. Therefore it is transposed to Channel as
             % columns and then transposed back after
             % downsampling
+            msg = sprintf('Downsampling... (%d%% done)', round(100*(2/4)));
+            waitbar(2/4, h, msg);
             Data.Preprocessed = downsample(Data.Raw', DownsampleFactor);
+            msg = sprintf('Downsampling... (%d%% done)', round(100*(3/4)));
+            waitbar(3/4, h, msg);
             Data.Preprocessed = Data.Preprocessed';
             DownsampledSampleRate = PreProInfo.DownsampledSampleRate;
             % Create new time vector for downsampled data
             Data.TimeDownsampled = double(0:(1/DownsampledSampleRate):(size(Data.Preprocessed,2)-1)/DownsampledSampleRate);
+            msg = sprintf('Downsampling... (%d%% done)', round(100*(4/4)));
+            waitbar(4/4, h, msg);
         else % If not first step in pipeline: apply to already preprocessed data
             Data.Preprocessed = downsample(Data.Preprocessed', DownsampleFactor);
+            msg = sprintf('Downsampling... (%d%% done)', round(100*(2/4)));
+            waitbar(2/4, h, msg);
             Data.Preprocessed = Data.Preprocessed';
             DownsampledSampleRate = PreProInfo.DownsampledSampleRate;
+            msg = sprintf('Downsampling... (%d%% done)', round(100*(3/4)));
+            waitbar(3/4, h, msg);
             % Create new time vector for downsampled data
             Data.TimeDownsampled = double(0:(1/DownsampledSampleRate):(size(Data.Preprocessed,2)-1)/DownsampledSampleRate);
+            msg = sprintf('Downsampling... (%d%% done)', round(100*(4/4)));
+            waitbar(4/4, h, msg);
         end
-
+       
     elseif strcmp(PreprocessingSteps(PPSteps),"Normalize")
 
         if PPSteps == 1 % If first step in pipeline: apply to raw data

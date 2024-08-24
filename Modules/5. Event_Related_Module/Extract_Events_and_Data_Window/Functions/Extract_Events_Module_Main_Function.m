@@ -58,151 +58,151 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = 
 %________________________________________________________________________________________
 
 TextArea2Object.Value = "";
-RHDAllChannelData = [];
-ExtractedRHDEventsFlag = [];
 EventChannelDropDown = [];
 
 if isfield(Data,'Events')
-    f = msgbox("Warning: Events where already extracted. Previous data will be overwritten!");
+    msgbox("Warning: Events where already extracted. Previous data will be overwritten!");
     fieldToRemove = 'Events';
     Data = rmfield(Data, fieldToRemove);
+    if isfield(Data,'EventChannelType')
+        fieldsToDelete = {'EventChannelType'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+    if isfield(Data,'EventChannelNames')
+        fieldsToDelete = {'EventChannelNames'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
 end
 
 %% If Intan Recording System selected
 if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
-    %% DI Input Channel
-    if strcmp(FileTypeDropDown,"Digital Inputs")
-        % Issue warnings if necessary
-        if strcmp(RecordingType,"IntanDat")
-            if isempty(EventInfo.DIChannel) 
-                f = msgbox("Error: No Event Channel found.");
+    %% Check if any of the event channel types are available
+    % Issue warnings if necessary
+    %if strcmp(RecordingType,"IntanDat")
+        if strcmp(FileTypeDropDown,"Digital Inputs")
+            if isfield(EventInfo,'DIChannel')
+                if isempty(EventInfo.DIChannel) | EventInfo.DIChannel == 0
+                    msgbox("Error: No Event Channel found.");
+                    disp("Error: No Event Channel found.");
+                    TextArea2Object.Value = ("Error: No Event Channel found.");
+                    return;
+                end
+            else
+                msgbox("Error: No Event Channel found.");
+                disp("Error: No Event Channel found.");
                 TextArea2Object.Value = ("Error: No Event Channel found.");
                 return;
             end
-        elseif strcmp(RecordingType,"IntanRHD")
-            if EventInfo.DIChannel == 0
-                f = msgbox("Error: No Event Channel found.");
+        elseif strcmp(FileTypeDropDown,"Analog Input")
+            if isfield(EventInfo,'ADCChannel')
+                if isempty(EventInfo.ADCChannel) | EventInfo.ADCChannel == 0
+                    msgbox("Error: No Event Channel found.");
+                    disp("Error: No Event Channel found.");
+                    TextArea2Object.Value = ("Error: No Event Channel found.");
+                    return;
+                end
+            else
+                msgbox("Error: No Event Channel found.");
+                disp("Error: No Event Channel found.");
+                TextArea2Object.Value = ("Error: No Event Channel found.");
+                return;
+            end
+        elseif strcmp(FileTypeDropDown,"AUX Inputs")
+            if isfield(EventInfo,'AUXChannel')
+                if isempty(EventInfo.AUXChannel) | EventInfo.AUXChannel == 0
+                    msgbox("Error: No Event Channel found.");
+                    disp("Error: No Event Channel found.");
+                    TextArea2Object.Value = ("Error: No Event Channel found.");
+                    return;
+                end
+            else
+                msgbox("Error: No Event Channel found.");
+                disp("Error: No Event Channel found.");
+                TextArea2Object.Value = ("Error: No Event Channel found.");
+                return;
+            end
+        elseif strcmp(FileTypeDropDown,"DIN Inputs")
+            if isfield(EventInfo,'DINChannel')
+                if isempty(EventInfo.DINChannel) | EventInfo.DINChannel == 0
+                    msgbox("Error: No Event Channel found.");
+                    disp("Error: No Event Channel found.");
+                    TextArea2Object.Value = ("Error: No Event Channel found.");
+                    return;
+                end
+            else
+                msgbox("Error: No Event Channel found.");
+                disp("Error: No Event Channel found.");
                 TextArea2Object.Value = ("Error: No Event Channel found.");
                 return;
             end
         end
-        % Extract Costum Channel Naames and extract data if rhd
-        % files selected
-        if strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 0
-            TextArea2Object.Value = "Extracting Event Input Channel from RHD file";
-            [RhdFilePaths] = LoadIntanRHDFiles(Path);
-            LastDashIndex = find(RhdFilePaths == '\');
-            RHDPath = RhdFilePaths(1:LastDashIndex(end));
-            RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-            ExtractedRHDEventsFlag = 1;
-            [~,~,~,RHDAllChannelData.board_dig_in_data,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea2Object);
-            TextArea2Object.Value = "Event Channel Extraction finished";
-        elseif strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 1
-            [RhdFilePaths] = LoadIntanRHDFiles(Path);
-            LastDashIndex = find(RhdFilePaths == '\');
-            RHDPath = RhdFilePaths(1:LastDashIndex(end));
-            RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-            ExtractedRHDEventsFlag = 1;
-            [~,~,~,RHDAllChannelData.board_dig_in_data,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Info",TextArea2Object);
+    %end
+    %% Extract Costum Channel Names and extract data if rhd file format
+    % If not already extracted: Extract all event infos including data
+    % itself
+    if strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 1 %% ExtractedRHDEventsFlag == 1 means that Intan_RHD2000_Data_Extraction gets called with "Info" input argument
+        [RhdFilePaths] = LoadIntanRHDFiles(Path);
+        LastDashIndex = find(RhdFilePaths == '\');
+        RHDPath = RhdFilePaths(1:LastDashIndex(end));
+        RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
+        ExtractedRHDEventsFlag = 1;
+        [~,~,~,~,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Info",TextArea2Object);
+        if strcmp(FileTypeDropDown,"Digital Inputs")
+            EventInfoField = EventInfo.DIChannel;
+        elseif strcmp(FileTypeDropDown,"Analog Input")
+            EventInfoField = EventInfo.ADCChannel;
+        elseif strcmp(FileTypeDropDown,"AUX Inputs")
+            EventInfoField = EventInfo.AUXChannel;
+        elseif strcmp(FileTypeDropDown,"DIN Inputs")
+            EventInfoField = EventInfo.DINChannel;
         end
-        % Extract Costum Channel Names if .dat
-        % files selected (extract rhd info file for that)
-        if strcmp(RecordingType,"IntanDat")
-            [~,~,~,~,InfoRhd,~] = LoadIntanDatFiles(Data.Info.Data_Path);
-            % Load Rhd Info file
+
+    elseif strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 0
+        TextArea2Object.Value = "Extracting Event Input Channel from RHD file";
+        [RhdFilePaths] = LoadIntanRHDFiles(Path);
+        LastDashIndex = find(RhdFilePaths == '\');
+        RHDPath = RhdFilePaths(1:LastDashIndex(end));
+        RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
+        if strcmp(FileTypeDropDown,"Digital Inputs")
+            EventInfoField = EventInfo.DIChannel;
+        elseif strcmp(FileTypeDropDown,"Analog Input")
+            EventInfoField = EventInfo.ADCChannel;
+        elseif strcmp(FileTypeDropDown,"AUX Inputs")
+            EventInfoField = EventInfo.AUXChannel;
+        elseif strcmp(FileTypeDropDown,"DIN Inputs")
+            EventInfoField = EventInfo.DINChannel;
+        end
+        [~,RHDAllChannelData.board_adc_data,~,RHDAllChannelData.board_dig_in_data,~,~,~,RHDAllChannelData.aux_input_data,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea2Object);
+        ExtractedRHDEventsFlag = 1;
+        TextArea2Object.Value = "Event Channel Extraction finished";
+        % If already extracted: just get info about nr and kind of channel avalablie
+    end
+    %% Extract Costum Channel Names and extract data if .dat file format
+    if strcmp(RecordingType,"IntanDat")
+        [~,~,~,~,InfoRhd,~] = CheckIntanDatFiles(Data.Info.Data_Path);
+        % Load Rhd Info file
+        if strcmp(FileTypeDropDown,"Digital Inputs")
+            EventInfoField = EventInfo.DIChannel;
             [~,~,~,RHDAllChannelData.board_dig_in_data,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
+        elseif strcmp(FileTypeDropDown,"Analog Input")
+            EventInfoField = EventInfo.ADCChannel;
+            [~,~,~,RHDAllChannelData.board_adc_data,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
+        elseif strcmp(FileTypeDropDown,"AUX Inputs")
+            EventInfoField = EventInfo.AUXChannel;
+            [~,~,~,RHDAllChannelData.aux_input_data,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
+        elseif strcmp(FileTypeDropDown,"DIN Inputs")
+            EventInfoField = EventInfo.DINChannel;
+            [~,~,~,RHDAllChannelData.din_input_data,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
         end
-        % Start Event Extraction
-        [Data] = Extract_Events_Module_Extract_Events_Intan(Data,FileTypeDropDown,EventInfo.DIChannel,Path,str2double(Threshold),InputChannelSelection,RHDAllChannelData);
-    
-    elseif strcmp(FileTypeDropDown,"Analog Input")
-        if strcmp(RecordingType,"IntanDat")
-            if isempty(EventInfo.ADCChannel) 
-                f = msgbox("Error: No Event Channel found.");
-                TextArea2Object.Value = ("Error: No Event Channel found.");
-                return;
-            end
-        elseif strcmp(RecordingType,"IntanRHD")
-            if EventInfo.ADCChannel == 0
-                f = msgbox("Error: No Event Channel found.");
-                TextArea2Object.Value = ("Error: No Event Channel found.");
-                return;
-            end
-        end
-        if strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 0
-            TextArea2Object.Value = "Extracting Event Input Channel from RHD file";
-            [RhdFilePaths] = LoadIntanRHDFiles(Path);
-            LastDashIndex = find(RhdFilePaths == '\');
-            RHDPath = RhdFilePaths(1:LastDashIndex(end));
-            RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-            ExtractedRHDEventsFlag = 1;
-            [~,RHDAllChannelData.board_adc_data,~,~,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea2Object);
-            TextArea2Object.Value = "Event Channel Extraction finished";
-        elseif strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 1
-            [RhdFilePaths] = LoadIntanRHDFiles(Path);
-            LastDashIndex = find(RhdFilePaths == '\');
-            RHDPath = RhdFilePaths(1:LastDashIndex(end));
-            RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-            ExtractedRHDEventsFlag = 1;
-            [~,RHDAllChannelData.board_adc_data,~,~,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Info",TextArea2Object);
-        end
-
-        % Extract Costum Channel Names if .dat
-        % files selected (extract rhd info file for that)
-        if strcmp(RecordingType,"IntanDat")
-            [~,~,~,~,InfoRhd,~] = LoadIntanDatFiles(Data.Info.Data_Path);
-            % Load Rhd Info file
-            [~,RHDAllChannelData.board_adc_data,~,~,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
-        end
-
-        [Data] = Extract_Events_Module_Extract_Events_Intan(Data,FileTypeDropDown,EventInfo.ADCChannel,Path,str2double(Threshold),InputChannelSelection,RHDAllChannelData);
-    
-    elseif strcmp(FileTypeDropDown,"AUX Inputs")
-        if strcmp(RecordingType,"IntanDat")
-            if isempty(EventInfo.AUXChannel) 
-                f = msgbox("Error: No Event Channel found.");
-                TextArea2Object.Value = ("Error: No Event Channel found.");
-                return;
-            end
-        elseif strcmp(RecordingType,"IntanRHD")
-            if EventInfo.AUXChannel == 0
-                f = msgbox("Error: No Event Channel found.");
-                TextArea2Object.Value = ("Error: No Event Channel found.");
-                return;
-            end
-        end
-
-        if strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 0
-            TextArea2Object.Value = "Extracting Event Input Channel from RHD file";
-            [RhdFilePaths] = LoadIntanRHDFiles(Path);
-            LastDashIndex = find(RhdFilePaths == '\');
-            RHDPath = RhdFilePaths(1:LastDashIndex(end));
-            RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-            ExtractedRHDEventsFlag = 1;
-            [~,~,~,~,~,~,~,RHDAllChannelData.aux_input_data,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea2Object);
-            TextArea2Object.Value = "Event Channel Extraction finished";
-        elseif strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 1
-            [RhdFilePaths] = LoadIntanRHDFiles(Path);
-            LastDashIndex = find(RhdFilePaths == '\');
-            RHDPath = RhdFilePaths(1:LastDashIndex(end));
-            RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-            ExtractedRHDEventsFlag = 1;
-            [~,~,~,~,~,~,~,RHDAllChannelData.aux_input_data,~,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Info",TextArea2Object);
-        end
-
-        % Extract Costum Channel Names if .dat
-        % files selected (extract rhd info file for that)
-        if strcmp(RecordingType,"IntanDat")
-            [~,~,~,~,InfoRhd,~] = LoadIntanDatFiles(Data.Info.Data_Path);
-            % Load Rhd Info file
-            [~,~,~,~,~,~,~,RHDAllChannelData.aux_input_data,~,ChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
-        end
-
-        [Data] = Extract_Events_Module_Extract_Events_Intan(Data,FileTypeDropDown,EventInfo.AUXChannel,Path,str2double(Threshold),InputChannelSelection,RHDAllChannelData);
-    
     end
 
-%% Analyze Open Eohys Data
+    %% Start Event Extraction with parameters found above
+    [Data] = Extract_Events_Module_Extract_Events_Intan(Data,FileTypeDropDown,EventInfoField,Path,str2double(Threshold),InputChannelSelection,RHDAllChannelData);
+
+%% Analyze Open Ephys Data
 elseif strcmp(RecordingType,"Open Ephys")
 
     addpath(genpath("."));
@@ -221,13 +221,55 @@ elseif strcmp(RecordingType,"Open Ephys")
     Nodenr = find(AvailableNode==FileTypeDropDown);
 
     NoddeID = [];
+    StateSelection = Threshold;
+    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection);
 
-    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection);
+elseif strcmp(RecordingType,"Neuralynx")
 
+    % check if .nce files found in recording folder
+    FilesIndex = {};
+    [stringarray] = Utility_Extract_Contents_of_Folder(Path);
+    FilesIndex = endsWith(stringarray, ".nev");
+    FileEndingsExist = sum(FilesIndex);
+    
+    Filename = strcat(Path,'\',stringarray{FilesIndex==1});
+    
+    % extract events
+    [event] = Extract_Events_Module_Extract_Events_Neuralynx(Filename,Path);
+    
+    % Just Select samples of the eventtypoe selected
+    eventcell = {event.type};
+    selectedfielytypeindicies = zeros(1,length({event.type}))+1;
+    for i = 1:length({event.type})
+        if strcmp(eventcell{i},FileTypeDropDown)
+            selectedfielytypeindicies(i) = 1;
+        else
+            selectedfielytypeindicies(i) = 0;
+        end
+    end
+
+    Eventsamples = double(cell2mat({event.sample}));
+    Eventsamples(selectedfielytypeindicies==0) = [];
+
+    if ~isempty(Eventsamples) 
+        for i = 1:length(Eventsamples)
+            Data.Events{1}(i) = double(Eventsamples(i));
+        end
+        % Event 1 always sample 1
+        if Data.Events{1}(1) == 1
+            Data.Events{1}(1) = [];
+            msgbox("Warning: First sample is always 1 and gets deleted.");
+        end
+        Zerosamples = Data.Events{1} == 0;
+
+        if sum(Zerosamples) > 0
+            Data.Events{1}(Zerosamples==1) = [];
+            msgbox("Warning: Indice of zero detected and deleted.")
+        end
+    else
+        Data.Events = [];
+    end
 end
-
-
-%% Handle Event Data structure
 
 if isfield(Data,'Events') 
     if ~isempty(Data.Events)
@@ -236,14 +278,11 @@ if isfield(Data,'Events')
             if ~isempty(Data.Events{i})
                 % account for time being cut (cut start and cut end)
                 if isfield(Data.Info,'CutStart')
-        
                     index = round(Data.Info.CutStart * Data.Info.NativeSamplingRate);
     
                     EventsToDelete = Data.Events{i} <= index;
                     Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
-                    Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that 
-                %                                                               evens are scaled o new ime range
-                    
+                    Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
                 end
         
                 if isfield(Data.Info,'CutEnd')
@@ -254,19 +293,24 @@ if isfield(Data,'Events')
                 Data.Info.EventChannelNames = {};
                 Data.Info.EventChannelType = [];
                 
+                % Add Event Channel Names
                 if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
                     for nevents = 1:length(Data.Events)
                         if strcmp(FileTypeDropDown,"AUX Inputs")
-                            Data.Info.EventChannelNames{nevents} = ChannelNames.Aux{nevents};
+                            Data.Info.EventChannelNames{nevents} = ChannelNames.Aux{InputChannelSelection(nevents)};
                             Data.Info.EventChannelType = "AUX Inputs";
                             EventChannelDropDown = Data.Info.EventChannelNames;
                         elseif strcmp(FileTypeDropDown,"Analog Input")
-                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Analog{nevents} ;
+                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Analog{InputChannelSelection(nevents)} ;
                             Data.Info.EventChannelType = "Analog Input";
                             EventChannelDropDown = Data.Info.EventChannelNames;
                         elseif strcmp(FileTypeDropDown,"Digital Inputs")
-                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Digital{nevents} ;
+                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Digital{InputChannelSelection(nevents)} ;
                             Data.Info.EventChannelType = "Digital Inputs";
+                            EventChannelDropDown = Data.Info.EventChannelNames;
+                        elseif strcmp(FileTypeDropDown,"DIN Inputs")
+                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Digital{InputChannelSelection(nevents)} ;
+                            Data.Info.EventChannelType = "DIN Inputs";
                             EventChannelDropDown = Data.Info.EventChannelNames;
                         end
                     end
@@ -277,6 +321,11 @@ if isfield(Data,'Events')
                         Data.Info.EventChannelType = strcat(AvailableNode(Nodenr)," TTL");
                         EventChannelDropDown{nevents} = Data.Info.EventChannelNames{nevents};
                     end
+                elseif strcmp(RecordingType,"Neuralynx")
+                    EventChannelDropDown = {};
+                    Data.Info.EventChannelNames{1} = FileTypeDropDown;
+                    Data.Info.EventChannelType = ".nev";
+                    EventChannelDropDown{1} = Data.Info.EventChannelNames{1};
                 end
                 
                 if i == 1
@@ -293,13 +342,36 @@ if isfield(Data,'Events')
     
         if ~isempty(Eventstodelete) 
             msgbox(strcat("Warning: Events ",num2str(Eventstodelete)," contain no event indicies and are deleted"));
-            Data.Events(Eventstodelete) = [];
-            Data.Info.EventChannelNames(Eventstodelete) = [];
-            EventChannelDropDown = Data.Info.EventChannelNames;
+            
+            if length(Eventstodelete)==length(Data.Events) % If all events empty
+                msgbox("No Events found!");
+                fieldsToDelete = {'Events'};
+                % Delete fields
+                Data = rmfield(Data, fieldsToDelete);
+                if isfield(Data.Info,'EventChannelNames')
+                    fieldsToDelete = {'EventChannelNames'};
+                    % Delete fields
+                    Data.Info = rmfield(Data.Info, fieldsToDelete);
+                end
+                if isfield(Data.Info,'EventChannelType')
+                    fieldsToDelete = {'EventChannelType'};
+                    % Delete fields
+                    Data.Info = rmfield(Data.Info, fieldsToDelete);
+                end
+                TextArea2Object.Value = "No Events found!";
+                EventChannelDropDown = [];
+                pause(0.2);
+                return;
+            else
+                Data.Events(Eventstodelete) = [];
+                Data.Info.EventChannelNames(Eventstodelete) = [];
+                EventChannelDropDown = Data.Info.EventChannelNames;
+            end
+            
         end
 
     else % If events empty
-        f = msgbox("No Events found!");
+        msgbox("No Events found!");
         fieldsToDelete = {'Events'};
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
@@ -308,18 +380,32 @@ if isfield(Data,'Events')
             % Delete fields
             Data.Info = rmfield(Data.Info, fieldsToDelete);
         end
+        if isfield(Data.Info,'EventChannelType')
+            fieldsToDelete = {'EventChannelType'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
         TextArea2Object.Value = "No Events found!";
         EventChannelDropDown = [];
         pause(0.2);
         return;
     end
-
 else
     msgbox("No Events found!");
     if isfield(Data.Info,'EventChannelNames')
         fieldsToDelete = {'EventChannelNames'};
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+    if isfield(Data.Info,'EventChannelType')
+        fieldsToDelete = {'EventChannelType'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+    if isfield(Data,'Events')
+        fieldsToDelete = {'Events'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
     end
     TextArea2Object.Value = "No Events found!";
     EventChannelDropDown = [];

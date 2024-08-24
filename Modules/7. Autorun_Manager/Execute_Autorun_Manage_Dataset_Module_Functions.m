@@ -1,4 +1,31 @@
-function [Data,LoadDataPath] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder,Data,nRecordings,Channelorder,executableFolder,LoadDataPath)
+function [Data] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder,Data,nRecordings,Channelorder,executableFolder)
+
+%________________________________________________________________________________________
+%% This is the main function to execute dataset management module autorun analysis 
+
+% This function is called in the Execute_Autorun_Config_Template function
+% when specified in the FunctionOrder
+
+% Inputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected
+% 2. FunctionOrder: 1 x n string array containing the names of the
+% analysis steps to execute
+% 3. Data: main data structure 
+% 4. nRecordings: double, max number of folder iterated through
+% 5. Channelorder: 1 x nchannel double, containing true channel nr as
+% integers, empty if non
+% 6. executableFolder: char, folder this instance of the Toolbox is saved in and
+% executed from 
+%7. AutorunConfig.selected_folder: char, Path to currently analyzed folder
+
+% Outputs:
+% 1. Data: main data structure 
+% 2. AutorunConfig.selected_folder: char, extracted here
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 %______________________________________________________________________________________________________
 %% 1. Manage Dataset Module Functions
@@ -31,7 +58,7 @@ end
 
 if strcmp(FunctionOrder,'Extract_Raw_Recording')
     
-    [Data,LoadDataPath,SelectedFolder] = Execute_Autorun_Set_Up_Folder(AutorunConfig,Data,nRecordings,LoadDataPath);
+    [Data,SelectedFolder] = Execute_Autorun_Set_Up_Folder(AutorunConfig,Data,nRecordings);
 
     if ~isempty(SelectedFolder)
         PlaceholderTextare.Value = 1;
@@ -74,7 +101,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         Data.Info.RecordingType = RecordingType;
         Data.Info.ChannelSpacing = AutorunConfig.ExtractRawRecording.ChannelSpacing;
         Data.Info.SpikeType = "Non";
-        LoadDataPath = Data.Info.Data_Path;
+        AutorunConfig.selected_folder = Data.Info.Data_Path;
         % If extraction was succesfull and dat variable is
         % filled, indicate that it was succesful. This is
         % implemented bc. right after this module finished the extraction, the
@@ -82,7 +109,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         % only be plotted when the user succesfully extracted data
         if isempty(Data)
             stringtoshow = "Error. No data could be extracted";
-            f = msgbox(stringtoshow);
+            msgbox(stringtoshow);
             return;
         end
 
@@ -95,7 +122,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         % If the user hasnt selected a folder yet, display that and
         % return
         stringtoshow = "Error. No folder selected";
-        f = msgbox(stringtoshow);
+        msgbox(stringtoshow);
         return;
     end
         
@@ -169,29 +196,29 @@ if strcmp(FunctionOrder,'Load_Data')
             Data.CurrentPreproNr = 0;
         else
             disp("Error: Directory to load from not found or data to load not existent. Skipping folder.")
-            LoadDataPath = [];
+            AutorunConfig.selected_folder = [];
             Data = [];
             return;
         end
 
         if strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Intan")
-            LoadDataPath = fullfile(path,file);
+            AutorunConfig.selected_folder = fullfile(path,file);
         elseif strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Open Ephys")
             if isstring(path)
                 path = convertStringsToChars(path);
             end
             dashindex = find(path=='\');
             if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
-                LoadDataPath = path(1:dashindex(end-1)-1);
+                AutorunConfig.selected_folder = path(1:dashindex(end-1)-1);
             else
-                LoadDataPath = path(1:dashindex(end-2)-1);
+                AutorunConfig.selected_folder = path(1:dashindex(end-2)-1);
             end
            
         end
 
     else
         disp("Error: Directory to load from not found or data to load not existent. Skipping folder.")
-        LoadDataPath = [];
+        AutorunConfig.selected_folder = [];
         Data = [];
         return;
     
@@ -205,7 +232,7 @@ end
 if strcmp(FunctionOrder,'Save_Data')
     Execute = 1;
     if ~isfield(Data,'Raw') && ~isfield(Data,'Preprocessed')
-        f = msgbox("Warning! No Data was extracted.");
+        msgbox("Warning! No Data was extracted.");
         Execute = 0;
     end
 

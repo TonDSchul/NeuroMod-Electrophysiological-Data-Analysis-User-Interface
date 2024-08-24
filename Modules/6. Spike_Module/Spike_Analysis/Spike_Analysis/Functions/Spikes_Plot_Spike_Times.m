@@ -1,5 +1,43 @@
 function Spikes_Plot_Spike_Times(Type,rgb_matrix,Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmps,ChannelPositions,Figure,numCluster,Clustertoshow,PlotEvents,EventIndicies,ChannelSelection,ChannelSpacing)
 
+%________________________________________________________________________________________
+%% Function to plot spike times with amplitude color coding
+% This function uses a functions from the spike repository from Nick
+% Steinmetz on Github: https://github.com/cortex-lab/spikes
+%Function used: plotDriftmap -- function was modified to fit the purpose of this Toolbox
+
+% This function is called on startup of the event spike windows and continous spike windows to plot the
+% spike map or when the user selects spike map as visualization
+
+% Inputs:
+% 1. Type: Type of spike window calling this function: Either "Continous" OR "Eventrelated"
+% 2. rgb_matrix: nunits x 3 double with rgb values to give unit plots
+% colors
+% 3. Time: 1 x ntime double with time in seconds
+% 4. SpikeTimes: nspikes x 1 double with just spike time (in seconds) within the
+% channelrange (negativ for spikes before event)
+% 5. SpikePositions: nspikes x 1 double with spikeposition in um within the
+% channelrange (for internal spikes: nchannel*Channelspacing)
+% 6. SpikeCluster: nspikes x 1 double with unit/cluster indicie for spike
+% as integer - for internal: just 1 since no clustering is done
+% 7. SpikeAmps: nspikes x 1 double with just spike amplitudes within the
+% channelrange
+% 8. ChannelPositions: nchannelx2 double. :,1 is x coordinate (all 0 for
+% linear probe), :,2 is y coordinate (cahnneldepth in um)
+% 9. Figure: Figure axes handle to plot in
+% 10. numCluster: double, number of cluster/units
+% 11. Clustertoshow: char, 'All' OR 'Non' or number as char like '1' for
+% unit 1
+% 12. PlotEvents: 1 to plot eventlines, 0 if not
+% 13. EventIndicies: 1xnevents double with indicies of events to plot (in samples)
+% 14. ChannelSelection: 1x2 double with channelselction, i.e. [1,10] for
+% channel 1 to 10
+% 15. ChannelSpacing: double in um, from Data.Info.ChannelSpacing
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if ~strcmp(Type,"Eventrelated")
     negativeIndicies = find(SpikeTimes <= 0);
     
@@ -12,7 +50,7 @@ NumChannel = length(ChannelSelection(1):ChannelSelection(2));
 
 %% Plot Spikes
 xlim(Figure,[Time(1),Time(end)]);
-ylim(Figure,[ChannelSpacing/2,(NumChannel*ChannelSpacing)+(ChannelSpacing/2)]);
+ylim(Figure,[0-ChannelSpacing/2,((NumChannel-1)*ChannelSpacing)+ChannelSpacing/2]);
 ylabel(Figure,'Depth (um)')
 
 title(Figure,strcat("Spike Positions Across Time and Depth Channel ", num2str(ChannelSelection)));
@@ -153,7 +191,6 @@ else %% If specific spike SpikeCluster selected
             line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow)+1,:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow)+1,:),'MarkerSize',3, 'Parent', Figure, 'Tag', 'ClusterSpikes');
         end
     end
-
 end
 
 if strcmp(Type,"Eventrelated")

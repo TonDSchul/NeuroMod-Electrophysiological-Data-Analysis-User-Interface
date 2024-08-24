@@ -1,10 +1,80 @@
 function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,UnitsEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,UnitsEditField,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow)
 
+%________________________________________________________________________________________
+%% Function to prepare plots for internal and kilosort continous spike analysis
+
+% This function is called in the
+% Continous_Kilosort_Spike_Window and Continous_Internal_Spike_Window app
+% windows when something new has to be plotted. It prepares everything for
+% the function that selects plotting functions based on input
+% This means it checks the correct format of inputs, corrects it with
+% standard values if necessary and pools them in a structure accessed later
+% for analysis and plotting
+
+% Inputs:
+% 1. Data: main window app structure with Data.Info and Data.Spikes fields
+% 2. ChannelEditField: text field of app containing userinput as char in
+% the field ChannelEditField.Value, like '1,10' for channel 1 to 10
+% 3. WaveformEditField: text field of app containing userinput as char in
+% the field WaveformEditField.Value, like '1,10' for waveforms 1 to 10
+% 4. UnitsEditField: text field of app containing userinput as char in
+% the field UnitsEditField.Value, like '1' for unit 1
+% 5. DifferentInput -  not used now. Can be used to determine specific type
+% of input at a certain time point
+% 6. SpikeType: Type of spikes of dataset, either 'Kilosort' OR 'Internal'
+% (from Data.Info.SpikeTpe)
+% 7. SpikeAnalysisType: text field of app containing userinput as char in
+% the field UnitsEditField.Value, specifies which analysis was selected by user,
+% Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR "Waveforms from Raw Data" OR
+% "Average Waveforms Across Channel" OR "Waveforms Templates" OR "Template from Max Amplitude Channel" OR "Cumulative Spike Amplitude Density
+% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
+% 8. SpikeRateNumBinsEditField: text field of app containing userinput as char in
+% the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins
+% 9. TimeWindowSpiketriggredLFPEditField: text field of app containing userinput as char in
+% the field TimeWindowSpiketriggredLFPEditField.Value, like '-0.005,0.2' 
+% 10. ExecuteInGUI: Equals 1 if this function is called within the GUI, NOT
+% the Autorun
+% 11. Eventstoshow: char indicating the event to show in the plot; Either 'Non' or char with event channel name, like 'DIN-04'
+
+%Outputs:
+% 1. SpikeTimes: nspikes x 1 double in seconds and within the
+% channelrange
+% 2.SpikePositions: nspikes x 1 double with spike poisiton spike indicies within the
+% channelrange (in um)
+% 3.SpikeAmps: nspikes x 1 double with just spike amplitudes indicies within the
+% channelrange
+% 4. CluterPositions: nspikes x 1 double with just spike cluster ID's indicies within the
+% channelrange
+% 5. ChannelPosition: nchannel x 2 double matrix; :,1 = x ccordinates which are
+% all 0 since this i s a single shank probe, :,2 = y coordinates/ channel
+% depths in um
+% 6. PlotInfo: structure holding gathered info about user input, contains
+% field: PlotInfo.Units, PlotInfo.ChannelSelection;, PlotInfo.Waveforms, PlotInfo.NrWaveformsToExtract;, PlotInfo.SpikeRateNumBins
+% 7. ChannelEditField: text field of app containing userinput as char in
+% the field ChannelEditField.Value, like '1,10' for channel 1 to 10 --
+% corrected if format was wrong
+% 8. WaveformEditField: text field of app containing userinput as char in
+% the field WaveformEditField.Value, like '1,10' for waveforms 1 to 10 --
+% corrected if format was wrong
+% 9. UnitsEditField: text field of app containing userinput as char in
+% the field UnitsEditField.Value, like '1' for unit 1 --
+% corrected if format was wrong
+% 10. SpikeRateNumBinsEditField: text field of app containing userinput as char in
+% the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins --
+% corrected if format was wrong
+% 11. TimeWindowSpiketriggredLFPEditField: text field of app containing userinput as char in
+% the field TimeWindowSpiketriggredLFPEditField.Value, like '-0.005,0.2' --
+% corrected if format was wrong
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 %% Check GUI Information
 if strcmp(SpikeType,"Kilosort")
-    [ChannelEditField,WaveformEditField,UnitsEditField,Error,SpikeRateNumBinsEditField] = Continous_Kilosort_Spikes_Manage_Unit_Wavelet_ChannelInput(Data,DifferentInput,ChannelEditField,WaveformEditField,UnitsEditField,SpikeAnalysisType.Value,SpikeRateNumBinsEditField);
+    [ChannelEditField,WaveformEditField,UnitsEditField,Error,SpikeRateNumBinsEditField] = Continous_Kilosort_Spikes_Check_Inputs(Data,ChannelEditField,WaveformEditField,UnitsEditField,SpikeAnalysisType.Value,SpikeRateNumBinsEditField);
     
-    % If some error in check functions: one of thoise variables with be a
+    % If some error in check functions: one of those variables with be a
     % string saying "Error"
     if Error
         if strcmp(SpikeAnalysisType.Value,"Waveforms from Raw Data")

@@ -1,4 +1,4 @@
-function [EventRelatedData,Error] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject)
+function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject)
 
 %________________________________________________________________________________________
 %% Function to apply and plot event/trial rejection
@@ -45,39 +45,7 @@ if strcmp(Type,'OnlyReject') || strcmp(Type,'RejectandPlot')
     Error = 0;
 
     if isempty(Input) == 0 % If Trialselection field filled (empty = All Trials)
-    
-        CommaTest = find(Input == ',');
-        
-        if isempty(CommaTest) || ~isempty(find(Input == '.')) || length(CommaTest) ~= 1 || any(isletter(Input)) % If no Comma or Point
-            f = msgbox("Format Error for Trial Selection. Example Format: 1,10 or 1,1.");
-            Error = 1;
-            return;
-        end
-        
-        if Error == 0
-            Inputvalue(1,1) = str2double(Input(1:CommaTest(1)-1));
-            Inputvalue(1,2) = str2double(Input(CommaTest+1:end));
-           
-            if isnan(Inputvalue(1)) || isnan(Inputvalue(2))
-                f = msgbox("Format Error for Trial Selection. Example Format: 1,10 or 1,1. ");
-                Error = 1;
-                return;
-            end
-    
-            if Error == 0
-                if Inputvalue(1) > Inputvalue(2)
-                    f = msgbox("Format Error for Trial Selection. Example Format: 1,10 or 1,1.");
-                    Error = 1;
-                    return;
-                end
-                
-                if Inputvalue(1) <= 0 || Inputvalue(2) <= 0
-                    f = msgbox("Format Error for Trial Selection. Example Format: 1,10 or 1,1.");
-                    Error = 1;
-                    return;
-                end
-            end
-        end
+        [TrialsToReject] = Utility_SimpleCheckInputs(TrialsToReject,"Two",'',1,0);
     end
 
     Trialselectionfield = TrialsToReject; 
@@ -89,7 +57,7 @@ if strcmp(Type,'OnlyReject') || strcmp(Type,'RejectandPlot')
         RejectedTrialsofInterest(1,1) = str2double(value(1:indicesep(1)-1));
         RejectedTrialsofInterest(1,2) = str2double(value(indicesep+1:end));
     else
-        f = msgbox("Error: Please Input Trials to reject first in the format: 1,10 or 1,1");
+        msgbox("Error: Please Input Trials to reject first in the format: 1,10 or 1,1");
         return;
     end
 
@@ -113,6 +81,15 @@ if strcmp(Type,'OnlyReject') || strcmp(Type,'RejectandPlot')
 end
 
 if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
+
+    Input = TrialsToReject;
+    Error = 0;
+    
+    if isempty(Input) == 0 % If Trialselection field filled (empty = All Trials)
+        [TrialsToReject] = Utility_SimpleCheckInputs(TrialsToReject,"Two",'',1,0);
+    end
+
+    Trialselectionfield = TrialsToReject; 
 
     ERP = mean(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1);
 

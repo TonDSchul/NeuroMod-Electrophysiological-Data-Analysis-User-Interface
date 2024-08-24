@@ -14,17 +14,18 @@ function [Waveforms,BiggestSpikeIndicies] = Continous_Internal_Spikes_Get_Bigges
 % Inputs: 
 % 1. Data = needs to contain raw or preprocessed data to extract wveforms
 % from
-% 2. Amplitudes = N x 1 double or single with amplitudes of each spike
+% 2. SpikeTimes nspikes x 1 double with spike times in samples of each spike
+% 3. Amplitudes = N x 1 double or single with amplitudes of each spike
 % (analyzed in internal spike detection) to get biggest amplitude
-% 3. SpikePositions = N x 1 double or single with spike poisiton (integer specifying channel) of each spike
+% 4. SpikePositions = N x 1 double or single with spike poisiton (integer specifying channel) of each spike
 % (analyzed in internal spike detection) 
-% 4. ChannelSelection = 2 x 1 double or single; from , to like [1,10] for
+% 5. ChannelSelection = 2 x 1 double or single; from , to like [1,10] for
 % channel 1 to 10 
-% 5. NRWaveformsToExtract: -- not used here
-% 6. Downsample:  -- not used here
-% 7. Plot: char, specifies if waveforms should be plotted
-% 8. Figure: figure axes handle to plot waveforms on
-% 9. WaveformsToPlot: 1x2 double specifying how man waveforms should be
+% 6. NRWaveformsToExtract: -- not used here
+% 7. Downsample:  -- not used here
+% 8. Plot: char, specifies if waveforms should be plotted
+% 9. Figure: figure axes handle to plot waveforms on
+% 10. WaveformsToPlot: 1x2 double specifying how man waveforms should be
 % analysed, i.e. [1,10] for 10 waveforms
 
 % Outputs:

@@ -152,7 +152,7 @@ if strcmp(type,"Downsample")
                 Info.DownsampledSampleRate = str2double(DownsampleFactor);
                 Info.DownsampleFactor = round(SampleRate/Info.DownsampledSampleRate);
 
-                I%nfo.DownsampledSampleRate = round(SampleRate/Info.DownsampleFactor);
+                %Info.DownsampledSampleRate = round(SampleRate/Info.DownsampleFactor);
                 % function ends here, next lines only get executed when
                 % downsampling was not already part of the pipeline
                 AlreadyFound = 1;

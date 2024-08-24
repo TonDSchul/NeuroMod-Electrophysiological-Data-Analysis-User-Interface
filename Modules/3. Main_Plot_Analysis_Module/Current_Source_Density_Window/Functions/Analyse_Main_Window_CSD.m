@@ -1,4 +1,4 @@
-function [currentClim] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,ChannelSelection,CSDClim,Figure,DatatoPlot,TimeRangetoPlot,Plottype,LockCLim)
+function [currentClim] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,ChannelSelection,CSDClim,Figure,DatatoPlot,TimeRangetoPlot,Plottype,LockCLim,TwoORThreeD)
 
 %________________________________________________________________________________________
 
@@ -45,21 +45,77 @@ ds = (0:nChan)*ChannelSpacing; %depth in micrometers given 50 µm spacing
 %% Plot 
 
 xlim(Figure,[TimeRangetoPlot(1),TimeRangetoPlot(end)]);
-ylim(Figure,[ds(1),ds(end)]);
+ylim(Figure,[ds(1),ds(end-1)]);
 titlestring = strcat("Current source density analysis of main window time range channel ",ChannelSelection);
 title(Figure,titlestring);
+xlabel(Figure,'Time [s]')
+ylabel(Figure,'Depth [µm]') 
 
-if ~isempty(Figure.Children) && Plottype ~= "Initial"
-    set(Figure.Children,'XData', TimeRangetoPlot , 'YData', ds ,'CData', csd');
-else
-    imagesc(Figure,TimeRangetoPlot,ds,csd') %plot CSD
-    xlabel(Figure,'Time [s]')
-    ylabel(Figure,'Depth [µm]') 
-    cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-    cbar_handle.Label.String = "Signal [mV/mm^2]";
-    cbar_handle.Label.Rotation = 270;
+if strcmp(TwoORThreeD,"TwoD")
+    PowerDepth_handles = findobj(Figure, 'Tag', 'PowerDepth');
+    if length(PowerDepth_handles)>1
+        delete(PowerDepth_handles(2:end))
+        PowerDepth_handles = findobj(Figure, 'Tag', 'PowerDepth');
+    end
+    % 2D Plot
+    min_z = 0;
+    if isempty(PowerDepth_handles)
+        surface(Figure,TimeRangetoPlot, ds(1:size(csd,2)), min_z * ones(size(csd')), ...
+        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth');
+        cbar_handle=colorbar('peer',Figure,'location','EastOutside');
+        cbar_handle.Label.String = "Signal [mV/mm^2]";
+        cbar_handle.Label.Rotation = 270;
+    else
+        set(PowerDepth_handles(1),'XData', TimeRangetoPlot, 'YData', ds(1:size(csd,2)), 'ZData', min_z * ones(size(csd')), ...
+        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth');
+    end
+
+elseif strcmp(TwoORThreeD,"ThreeD")
+
+    PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+    PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');
+
+    if length(PowerDepth2D_handles)>1
+        delete(PowerDepth2D_handles(2:end));
+        PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+    elseif length(PowerDepth3D_handles)>1
+        delete(PowerDepth3D_handles(2:end));
+        PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');
+    end
+
+    if length(PowerDepth3D_handles)+length(PowerDepth2D_handles)==1
+        delete(PowerDepth3D_handles(:));
+        delete(PowerDepth2D_handles(:));
+        PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+        PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');
+    end
+
+    if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
+        cbar_handle=colorbar('peer',Figure,'location','EastOutside');
+        cbar_handle.Label.String = "Signal [mV/mm^2]";
+        cbar_handle.Label.Rotation = 270;
+        % 3D Plot
+        surf(Figure,TimeRangetoPlot,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')
+        % 2D Plot
+        min_z = min(csd,[],'all');
+        surface(Figure,TimeRangetoPlot, ds(1:size(csd,2)), min_z * ones(size(csd')), ...
+        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth2D');
+    else
+        % 3D Plot
+        set(PowerDepth3D_handles(1),'XData', TimeRangetoPlot,'YData', ds(1:size(csd,2)),'CData',csd','ZData',csd','EdgeColor', 'none','Tag','PowerDepth3D')
+        % 2D Plot
+        min_z = min(csd,[],'all');
+        set(PowerDepth2D_handles(1),'XData',TimeRangetoPlot,'YData', ds(1:size(csd,2)), 'ZData', min_z * ones(size(csd')), ...
+        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth2D');
+    end
+
+    view(Figure,45,45);
+    box(Figure, 'off');
+    grid(Figure, 'off');
+
 end
 
+%% Clim 
 if LockCLim== 1
     currentClim(1) = min(csd,[],'all');
     currentClim(2) = max(csd,[],'all');

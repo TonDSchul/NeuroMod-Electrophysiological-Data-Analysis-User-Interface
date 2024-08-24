@@ -1,0 +1,263 @@
+function Extract_Events_Module_Set_Up_Window(app,Data,EventInfo,Path,FilePaths,FileEndingsExist,texttoshow,TimeOfExecution,Info)
+
+ExistChangedEventChannelType = 0;
+% Only on Startup/Folder Change
+if strcmp(TimeOfExecution,"ChangedEventChannelType") 
+    EventChannelName = app.FileTypeDropDown.Value;
+    if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
+        if strcmp(EventChannelName,"Digital Inputs")
+            if isfield(app.EventInfo,'DIChannel')
+                NumChannel = length(app.EventInfo.DIChannel);
+                ExistChangedEventChannelType = 1;
+            end
+        elseif strcmp(EventChannelName,"Analog Input")
+            if isfield(app.EventInfo,'ADCChannel')
+                NumChannel = length(app.EventInfo.ADCChannel);
+                ExistChangedEventChannelType = 1;
+            end
+        elseif strcmp(EventChannelName,"AUX Inputs")
+            if isfield(app.EventInfo,'AUXChannel')
+                NumChannel = length(app.EventInfo.AUXChannel);
+                ExistChangedEventChannelType = 1;
+            end
+        elseif strcmp(EventChannelName,"DIN Inputs")
+            if isfield(app.EventInfo,'DINChannel')
+                NumChannel = length(app.EventInfo.DINChannel);
+                ExistChangedEventChannelType = 1;
+            end
+        end
+        app.TextArea_2.Value = texttoshow;
+        
+    elseif strcmp(Data.Info.RecordingType,"Open Ephys")
+        % This holds the index of nodes containing events
+        %% Search for open ephys data
+        FolderIndicieWithEphysData = [];
+        for foldercontents = 1:length(FilePaths)
+            if contains(FilePaths(foldercontents),'Record Node')
+                if isfolder(strcat(Path,'\',FilePaths(foldercontents)))
+                    FolderIndicieWithEphysData = [FolderIndicieWithEphysData,foldercontents];
+                end
+            end
+        end
+
+        EventIndicie = [];
+        Nodefolder = FilePaths(FolderIndicieWithEphysData);
+        for i = 1:length(Nodefolder)
+            if strcmp(Nodefolder(i),EventChannelName)
+                EventIndicie = i;
+            end
+        end
+
+        if isempty(EventIndicie)
+            ExistChangedEventChannelType = 0;
+        end
+
+        for i = 1:length(Info.AvailabelNodes)
+            if find(EventIndicie==Info.AvailabelNodes{i})
+                ExistChangedEventChannelType = 1;
+                NumChannel = length(unique(EventInfo{i}.line));
+                break;
+            else
+                ExistChangedEventChannelType = 0;
+            end
+        end
+    end
+
+    % If selected channel not available
+    if ExistChangedEventChannelType == 0 % Only on Startup/Folder Change
+        msgbox(strcat("No Event Channel of Type ",app.FileTypeDropDown.Value," found!"));
+        app.NrInputChinfolderEditField.Value = "";
+        app.InputChannelSelectionEditField.Value = "";
+        pause(0.2);
+        if strcmp(Data.Info.RecordingType,"Open Ephys")
+            app.TextArea_2.Value = strcat("No Event Channel of Type ",app.FileTypeDropDown.Value," found!");
+        end
+        return;
+    else
+        app.NrInputChinfolderEditField.Value = num2str(NumChannel);
+        ChannelSelctionToShow = [];
+        for i = 1:NumChannel
+            if i ~= 1
+                ChannelSelctionToShow = strcat(ChannelSelctionToShow,',',num2str(i));
+            else
+                ChannelSelctionToShow = num2str(i);
+            end
+        end
+        app.InputChannelSelectionEditField.Value = ChannelSelctionToShow;
+        if strcmp(Data.Info.RecordingType,"Open Ephys")
+            for o = 1:length(EventInfo)
+                if isstruct(EventInfo{o})
+                    FirstStrucindice = o;
+                    break;
+                end
+            end
+
+            tableText = evalc('disp(EventInfo{1})');  % Convert table to string
+            
+            % delte unwanted parts of the char
+            cutpartsindicies = find(tableText =='>');
+            tableText(1:cutpartsindicies(end)) = [];
+            tableText = ['line;  SampleNumber;  TimeStamp;  NodeID;  state',tableText];
+            % Display the text in the Text Area
+            app.TextArea_2.Value = tableText;
+        end
+        return;
+    end
+end
+
+%% Set up text areas
+if strcmp(TimeOfExecution,"Initial")  
+    if isempty(EventInfo) || FileEndingsExist == 0
+        app.TextArea_2.Value = "Warning: No event data found in folder the dataset was extracted from. Please select a different folder.";
+        app.TextArea.Value = strcat("No Event Channel found in Path: ",Path);
+        app.NrInputChinfolderEditField.Value = "";
+        app.InputChannelSelectionEditField.Value = "";
+        Placeholder = {};
+        app.FileTypeDropDown.Items = Placeholder;
+        app.FileTypeDropDown.Items{1} = '';
+        pause(0.2);
+        return;
+    else
+        % Fill Text Area showing path that was searched
+        app.TextArea.Value = strcat("Finished looking for event channel from: ",Path);
+        if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
+            % Fill Text Area showing channels found
+            app.TextArea_2.Value = texttoshow;
+        elseif strcmp(Data.Info.RecordingType,"Open Ephys")
+            for o = 1:length(EventInfo)
+                if isstruct(EventInfo{o})
+                    FirstStrucindice = o;
+                    break;
+                end
+            end
+
+            tableText = evalc('disp(EventInfo{1})');  % Convert table to string
+            
+            % delte unwanted parts of the char
+            cutpartsindicies = find(tableText =='>');
+            tableText(1:cutpartsindicies(end)) = [];
+            tableText = ['line;  SampleNumber;  TimeStamp;  NodeID;  state',tableText];
+            % Display the text in the Text Area
+            app.TextArea_2.Value = tableText;
+        end
+    end
+end
+
+%% Set up edit fields and dropdown menus
+% Analyse how many input event channel exist
+if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")  
+    
+    % get strings of channel 
+    for i = 1:length(app.EventInfo)
+        if isfield(app.EventInfo,'DIChannel')
+            EventChannelName = 'Digital Inputs';
+            NumChannel = length(app.EventInfo.DIChannel);
+        elseif isfield(app.EventInfo,'ADCChannel')
+            EventChannelName = 'Analog Input';
+            NumChannel = length(app.EventInfo.ADCChannel);
+        elseif isfield(app.EventInfo,'AUXChannel')
+            EventChannelName = 'AUX Inputs';
+            NumChannel = length(app.EventInfo.AUXChannel);
+        elseif isfield(app.EventInfo,'DINChannel')
+            EventChannelName = 'DIN Inputs';
+            NumChannel = length(app.EventInfo.DINChannel);
+        end
+    end
+
+    ChannelSelctionToShow = [];
+    for i = 1:NumChannel
+        if i ~= 1
+            ChannelSelctionToShow = strcat(ChannelSelctionToShow,',',num2str(i));
+        else
+            ChannelSelctionToShow = num2str(i);
+        end
+    end
+elseif strcmp(Data.Info.RecordingType,"Open Ephys")
+    if ~isempty(EventInfo)
+        NumChannel = length(unique(EventInfo{1}.line));
+        % Initialize an empty string
+        ChannelSelctionToShow = '';
+
+        % Loop through numbers from 1 to 10
+        for i = 1:length(unique(EventInfo{1}.line))
+            % Append each number to the string
+            ChannelSelctionToShow = [ChannelSelctionToShow, num2str(i)];
+            
+            % If it's not the last number, add a comma
+            if i < length(unique(EventInfo{1}.line))
+                ChannelSelctionToShow = [ChannelSelctionToShow, ', '];
+            end
+        end  
+
+        % This holds the index of nodes containing events
+        %% Search for open ephys data
+        FolderIndicieWithEphysData = [];
+        for foldercontents = 1:length(FilePaths)
+            if contains(FilePaths(foldercontents),'Record Node')
+                if isfolder(strcat(Path,'\',FilePaths(foldercontents)))
+                    FolderIndicieWithEphysData = [FolderIndicieWithEphysData,foldercontents];
+                end
+            end
+        end
+
+        Nodefolder = FilePaths(FolderIndicieWithEphysData);
+        
+        placeholder = {};
+        app.FileTypeDropDown.Items = placeholder;
+        for i = 1:Info.NodeNrs
+            app.FileTypeDropDown.Items{i} = convertStringsToChars(Nodefolder(i));
+        end
+
+        EventChannelName = app.FileTypeDropDown.Items{Info.AvailabelNodes{1}};            
+    end
+
+elseif strcmp(Data.Info.RecordingType,"Neuralynx")
+
+    if FileEndingsExist==1
+
+        % check if .nce files found in recording folder
+        FilesIndex = {};
+        [stringarray] = Utility_Extract_Contents_of_Folder(Path);
+        FilesIndex = endsWith(stringarray, ".nev");
+        FileEndingsExist = sum(FilesIndex);
+        
+        Filename = strcat(Path,'\',stringarray{FilesIndex==1});
+        
+        [event] = Extract_Events_Module_Extract_Events_Neuralynx(Filename,Path);
+
+        [fieldData] = Extract_Events_Module_Display_Neuralynx_EventInfo(event);
+
+        app.TextArea_2.Value = fieldData;
+
+        NumChannel = length(unique({event.type}));
+        eventypes = unique({event.type});
+
+        for i = 1:NumChannel
+            app.FileTypeDropDown.Items{i} = eventypes{i};
+        end
+
+        % Initialize an empty string
+        ChannelSelctionToShow = '';
+
+        % Loop through numbers from 1 to 10
+        for i = 1:NumChannel
+            % Append each number to the string
+            ChannelSelctionToShow = [ChannelSelctionToShow, num2str(i)];
+            
+            % If it's not the last number, add a comma
+            if i < NumChannel
+                ChannelSelctionToShow = [ChannelSelctionToShow, ', '];
+            end
+        end  
+        
+        EventChannelName = convertStringsToChars(eventypes{1});
+
+    end
+
+end
+
+app.InputChannelSelectionEditField.Value = ChannelSelctionToShow;
+app.FileTypeDropDown.Value = EventChannelName;
+app.NrInputChinfolderEditField.Value = num2str(NumChannel);
+
+

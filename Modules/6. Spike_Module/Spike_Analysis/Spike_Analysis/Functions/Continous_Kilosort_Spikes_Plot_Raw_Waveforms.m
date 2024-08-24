@@ -1,5 +1,25 @@
 function Continous_Kilosort_Spikes_Plot_Raw_Waveforms(Figure,Data,ChannelSelection,units,Waveforms)
 
+%________________________________________________________________________________________
+%% Function to plot waveforms that where extracted for Kilosort spikes
+% Note: For each spike the specified nr of waveforms over all selected channel are plotted
+
+% This function is called in the
+% Continous_Kilosort_Spikes_Manage_Analysis_Plots function
+
+% Inputs:
+% 1. Figure: Figure axes handle top plot in 
+% 2. Data: main window data structure with Data.Spikes and Data.Info field; Data.Spikes with field Data.Spikes.Waveforms.waveForms
+% 3. ChannelSelection: 1x2 double with channel to plot the waveforms for,
+% i.e. [1,10] for channel 1 to 10
+% 4. units: unitselection as double, for title (waveform already extracted for just that unit)
+% 5. Waveforms: 1x2 double with wavefor selection of user, i.e. [1,10] for
+% 10 waveforms
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 numclus = unique(Data.Spikes.SpikeCluster);
 
 DatatoPlot = squeeze(Data.Spikes.Waveforms.waveForms);

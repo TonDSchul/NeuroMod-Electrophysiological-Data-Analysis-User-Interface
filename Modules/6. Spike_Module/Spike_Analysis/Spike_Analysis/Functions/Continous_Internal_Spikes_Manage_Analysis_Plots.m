@@ -1,7 +1,12 @@
-function Continous_Internal_Spikes_Manage_Analysis_Plots(TypeofAnalysis,Data,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,PlotInfo,TextArea,ChannelPosition,Figure,Figure2,Figure3,RGBMatrix)
+function [Data] = Continous_Internal_Spikes_Manage_Analysis_Plots(TypeofAnalysis,Data,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,PlotInfo,TextArea,ChannelPosition,Figure,Figure2,Figure3,RGBMatrix,TwoORThreeD)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
+% This function uses a functions from the spike repository from Nick
+% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% Function used: computeWFampsOverDepth
+%                plotWFampCDFs
+%                spikeTrigLFP
 
 % This function is executed every time some continous internal spikes analysis has to be done and plotted
 
@@ -12,7 +17,7 @@ function Continous_Internal_Spikes_Manage_Analysis_Plots(TypeofAnalysis,Data,Spi
 % Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
 % 2. Data: main window data structure with time vector (Data.Time) and Info
 % field
-% 3. SpikeTimes nspikes x 1 double with indcies of each spike
+% 3. SpikeTimes nspikes x 1 double with spike times in seconsd of each spike
 % 4. SpikePositions = N x 1 double or single with spike poisiton (integer specifying channel) of each spike
 % (analyzed in internal spike detection) 
 % 5. CluterPositions = N x 1 double or single with cliuster identity (integer specifying the unit/cluster of that spike) of each spike
@@ -101,7 +106,7 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
         Meanwaveform = NaN(1,size(MeanWave,1),size(MeanWave,2));
         Meanwaveform(1,:,:) = MeanWave;
     end
-    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,1,Meanwaveform,Data.Info.ChannelSpacing,"Internal",PlotInfo.Waveforms);
+    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,1,Meanwaveform,Data.Info.ChannelSpacing,"Internal",PlotInfo.Waveforms,TwoORThreeD);
 end
 
 %% basic quantification of spiking plot
@@ -115,7 +120,7 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     recordingDur = Data.Time(end);
     
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Internal");
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Internal",TwoORThreeD);
 end
 
 if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
@@ -128,45 +133,18 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     recordingDur = Data.Time(end);
     
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Internal");
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Internal",TwoORThreeD);
                     
 end
 
 if strcmp(TypeofAnalysis,"Spike Triggered LFP")
 
-    if ~isfield(Data,'Preprocessed')
-        msgbox("Warning! No preprocessed low pass filtered AND downsampled data found. Execution will take very long");
+    [TempData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Kilosort",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD);
+    
+    if isempty(TempData) % if not preprocessed
+        Data = [];
     else
-        if ~isfield(Data.Info,'FilterMethod')
-            msgbox("Warning! No preprocessed low pass filtered AND downsampled data found. Execution will take very long");
-        else
-            if ~strcmp(Data.Info.FilterMethod,'Low-Pass')
-                msgbox("Warning! No preprocessed low pass filtered AND downsampled data found. Execution will take very long");
-            else
-                if ~isfield(Data.Info,'DownsampleFactor')
-                    msgbox("Error! No preprocessed low pass filtered AND downsampled data found. Execution will take very long and wont show effects since no enough data points can be processed. Please downsample data for good results");
-                    return;
-                end
-            end
-        end
-    end
-
-    if isfield(Data,'Preprocessed')
-        if ~isempty(Data.Preprocessed)
-            if ~isfield(Data.Info,'DownsampleFactor')
-                winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-                mnLFP = spikeTrigLFP(Data.Time, Data.Preprocessed(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,"Internal");
-            else
-                winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.DownsampledSampleRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-                mnLFP = spikeTrigLFP(Data.TimeDownsampled, Data.Preprocessed(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.DownsampledSampleRate,TextArea,Data.Info.ChannelSpacing,"Internal");
-            end
-        else
-            winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-            mnLFP = spikeTrigLFP(Data.Time, Data.Raw(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,"Internal");
-        end
-    else
-        winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-        mnLFP = spikeTrigLFP(Data.Time, Data.Raw(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,"Internal");
+        Data = TempData; % if preprocessed
     end
 
     texttoshow = ["Number of Spikes found: ";num2str(length(SpikeTimes))];

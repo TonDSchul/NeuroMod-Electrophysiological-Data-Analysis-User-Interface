@@ -1,4 +1,4 @@
-function Extract_Events_Module_Show_ChannelPlots(Channel,Folder,app,RHDAllChannelData,Type)
+function Extract_Events_Module_Show_ChannelPlots(Data,Channel,Folder,app,RHDAllChannelData,Type,DownsampleRate)
 
 %________________________________________________________________________________________
 %% Function to plot event data of a selected event channel 
@@ -29,255 +29,172 @@ function Extract_Events_Module_Show_ChannelPlots(Channel,Folder,app,RHDAllChanne
 %________________________________________________________________________________________
 
 %% For Intan .dat files (one per channel)
-if strcmp(app.Mainapp.Data.Info.RecordingType,"IntanDat") && strcmp(Channel,"Digital Inputs")
+if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
+    if ~isempty(Channel)
+        if strcmp(Data.Info.RecordingType,"IntanDat")
+            [FilePaths,~,EventInfo,~,InfoRhd,~] = CheckIntanDatFiles(Folder);
+            % Load Rhd Info file
+            if isempty(app.EventChannelNames)
+                [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
+            end
+        elseif strcmp(Data.Info.RecordingType,"IntanRHD")
+            if strcmp(Channel,"DINChannel") || strcmp(Channel,"DIChannel")
+                RHDData = RHDAllChannelData.board_dig_in_data;
+            elseif strcmp(Channel,"ADCChannel")
+                RHDData = RHDAllChannelData.board_adc_data;
+            elseif strcmp(Channel,"AUXChannel")
+                RHDData = RHDAllChannelData.aux_input_data;
+            end
+
+            [RHDFilePaths] = LoadIntanRHDFiles(Folder);
+
+            LastDashIndex = find(RHDFilePaths == '\');
+            RHDPath = RHDFilePaths(1:LastDashIndex(end));
+            RHDFiles = RHDFilePaths(LastDashIndex(end)+1:end);
+            
+            FilePaths = RHDPath;
+            
+            if isempty(RHDAllChannelData)
+                [~,~,~,~,ChannelNameStructure,~,~,~,NumChannel] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",[]);
+            else
+                [~,~,~,~,ChannelNameStructure,~,~,~,NumChannel] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"NumChannel",[]);
+            end
+
+            if NumChannel.num_board_adc_channels == 0 && NumChannel.num_board_dig_in_channels == 0 && NumChannel.aux_input_channels == 0
+                msgbox("Warning: No event data found in folder the dataset was extracted from. Please select a different folder.");
+                return;
+            end
+
+            EventInfo = [];
+            RHDEventChannelNames = cell(1,length(ChannelNameStructure));
+            
+            for p = 1:length(ChannelNameStructure)
+                if strfind(ChannelNameStructure(p).native_channel_name,"DIGITAL")
+                    app.EventChannelNames.Digital{p} = ChannelNameStructure(p).custom_channel_name;
+                    if NumChannel.num_board_dig_in_channels > 0 && ~isfield(EventInfo,'DIChannel')
+                        EventInfo.DIChannel = 1:NumChannel.num_board_dig_in_channels;
+                    end                    
+                elseif strfind(ChannelNameStructure(p).native_channel_name,"ADC")
+                    app.EventChannelNames.Analog{p} = ChannelNameStructure(p).custom_channel_name;
+                    if NumChannel.num_board_adc_channels > 0 && ~isfield(EventInfo,'ADCChannel')
+                        EventInfo.ADCChannel = 1:NumChannel.num_board_dig_in_channels;
+                    end
+                elseif strfind(ChannelNameStructure(p).native_channel_name,"AUX")
+                    app.EventChannelNames.Aux{p} = ChannelNameStructure(p).custom_channel_name;
+                    if NumChannel.aux_input_channels > 0 && ~isfield(EventInfo,'AUXChannel')
+                        EventInfo.AUXChannel = 1:NumChannel.aux_input_channels;
+                    end  
+                end
+            end
+        end
+                
+        if strcmp(Channel,"DIChannel")
+            app.FileTypeDropDown_2.Items = app.EventChannelNames.Digital;
+            app.FileTypeDropDown.Value = "Digital Inputs";
+            ModifiedEventInfo = EventInfo.DIChannel;
+        elseif strcmp(Channel,"ADCChannel")
+            app.FileTypeDropDown_2.Items = app.EventChannelNames.Analog;
+            app.FileTypeDropDown.Value = "Analog Inputs";
+            ModifiedEventInfo = EventInfo.ADCChannel;
+        elseif strcmp(Channel,"AUXChannel")
+            app.FileTypeDropDown_2.Items = app.EventChannelNames.Aux;
+            app.FileTypeDropDown.Value = "AUX Inputs";
+            ModifiedEventInfo = EventInfo.AUXChannel;
+        elseif strcmp(Channel,"DINChannel")
+            app.FileTypeDropDown_2.Items = app.EventChannelNames.Digital;
+            app.FileTypeDropDown.Value = "DIN Inputs";
+            ModifiedEventInfo = EventInfo.DINChannel;
+        end
+
+        Extract_Events_Module_Load_and_Plot_Events_Intan(ModifiedEventInfo,FilePaths,app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown_2.Items,Data,RHDData,DownsampleRate);
     
-    if strcmp(Type,"Initial")
-
-        [~,~,~,~,InfoRhd,~] = LoadIntanDatFiles(app.Mainapp.Data.Info.Data_Path);
-        % Load Rhd Info file
-        [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
-
-        app.FileTypeDropDown_2.Items = app.EventChannelNames.Digital;
-        
-        app.FileTypeDropDown.Value = "Digital Inputs";
+    else
+        msgbox("No Input Channel found for this recording!");
     end
-    %% Load Files in folder
+end
 
-    for i = 1:length(app.EventChannelNames.Digital)
-        if strcmp(app.EventChannelNames.Digital{i},app.FileTypeDropDown_2.Value)
-            InputChannelSelection = i;
+if strcmp(Data.Info.RecordingType,"Open Ephys")
+
+    IsNodeAvailable = 0;
+    for i = 1:length(Channel.Info.AvailabelNodes)
+        if Channel.Info.AvailabelNodes{i} == Channel.SelectedLineNode
+            IsNodeAvailable = i;
+            break;
         end
     end
 
-    [DatFilePaths,~,~,~,~,~] = LoadIntanDatFiles(Folder);
-
-    FileIdentifier = fopen(DatFilePaths{app.EWapp.EventInfo.DIChannel(InputChannelSelection)},'r');
-    
-    InputChannelData = fread(FileIdentifier, 'uint16');
-
-    InputChannelData = single(InputChannelData); %analog input to Volt (not mV!)
-
-    lineHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Events');
-
-    xlabel(app.UIAxes,"Time [s]")
-    ylabel(app.UIAxes,"Digital Signal")
-    ylim(app.UIAxes,[0,1.5]);
-    title(app.UIAxes,strcat("Digital Input Channel ", num2str(InputChannelSelection)))
-    if isempty(lineHandles)
-        plot(app.UIAxes,app.Mainapp.Data.Time,InputChannelData,'LineWidth',1.5,'Color','b', 'Tag', 'Events');
-    elseif length(lineHandles) == 1
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', InputChannelData, 'Color', 'b', 'Tag', 'Events');
+    if IsNodeAvailable ~= 0
+        EventInfotoShow = app.EWapp.EventInfo{IsNodeAvailable};
     else
-        delete(lineHandles(2:end))
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', InputChannelData, 'Color', 'b', 'Tag', 'Events');
+        msgbox("Selected Node contains no events!");
+        return;
     end
-    
-    return;
-    
-end
 
-if strcmp(app.Mainapp.Data.Info.RecordingType,"IntanDat") && strcmp(Channel,"Analog Input")
-    
-    if strcmp(Type,"Initial")
-        [~,~,~,~,InfoRhd,~] = LoadIntanDatFiles(app.Mainapp.Data.Info.Data_Path);
-        % Load Rhd Info file
-        [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
+    SelectedLineIndicies = EventInfotoShow.line == Channel.LineNumbers;
 
-        app.FileTypeDropDown_2.Items = app.EventChannelNames.Analog;
-        
-        app.FileTypeDropDown.Value = "Analog Input";
-    end
-    %% Load Files in folder
-
-    for i = 1:length(app.EventChannelNames.Analog)
-        if strcmp(app.EventChannelNames.Analog{i},app.FileTypeDropDown_2.Value)
-            InputChannelSelection = i;
+    if isprop(EventInfotoShow,'sample_number')
+        sampleNumber = EventInfotoShow.sample_number;
+    elseif isprop(EventInfotoShow,'sampleNumber')
+        sampleNumber = EventInfotoShow.sampleNumber;
+    else
+        for nprops = 1:length(EventInfotoShow.Properties.VariableNames)
+            if ~isempty(strfind(EventInfotoShow.Properties.VariableNames{nprops},'sample'))
+                fieldname = EventInfotoShow.Properties.VariableNames{nprops};
+                sampleNumber = eval(strcat('EventInfotoShow.',fieldname));
+            end
         end
     end
 
-    [DatFilePaths,~,~,~,~,~] = LoadIntanDatFiles(Folder);
-
-    FileIdentifier = fopen(DatFilePaths{app.EWapp.EventInfo.ADCChannel(InputChannelSelection)},'r');
+    SampleNumber = sampleNumber(SelectedLineIndicies==1);
     
-    InputChannelData = fread(FileIdentifier, 'uint16');
+    zerosample = SampleNumber == 0;
 
-    InputChannelData = single(InputChannelData.* 0.000050354); %analog input to Volt (not mV!)
-
-    lineHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Events');
-    xlabel(app.UIAxes,"Time [s]")
-    ylabel(app.UIAxes,"Analog Signal")
-    title(app.UIAxes,strcat("Analog Input Channel ", num2str(InputChannelSelection)))
-    if isempty(lineHandles)
-        plot(app.UIAxes,app.Mainapp.Data.Time,InputChannelData,'LineWidth',1.5,'Color','b', 'Tag', 'Events');
-    elseif length(lineHandles) == 1
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', InputChannelData, 'Color', 'b', 'Tag', 'Events');
-    else
-        delete(lineHandles(2:end))
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', InputChannelData, 'Color', 'b', 'Tag', 'Events');
+    if sum(zerosample)>0
+        msgbox("Warning: Sample Nr 0 found and deleted");
+        SampleNumber(zerosample==1) = [];
     end
-    
-    return;
 
-end
+    % Include a specific duration of the event to make it clearly visible
+    % -- 2ms standard
+    Numsamplesevent = Data.Info.NativeSamplingRate*0.002;
 
-if strcmp(app.Mainapp.Data.Info.RecordingType,"IntanDat") && strcmp(Channel,"AUX Inputs")
-    
-    if strcmp(Type,"Initial")
-        [~,~,~,~,InfoRhd,~] = LoadIntanDatFiles(app.Mainapp.Data.Info.Data_Path);
-        % Load Rhd Info file
-        [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
+    EventData = zeros(1,length(Data.Time));
 
-        app.FileTypeDropDown_2.Items = app.EventChannelNames.Aux;
-    
-        app.FileTypeDropDown.Value = "AUX Inputs";
-    end
-    %% Load Files in folder
-
-    for i = 1:length(app.EventChannelNames.Aux)
-        if strcmp(app.EventChannelNames.Aux{i},app.FileTypeDropDown_2.Value)
-            InputChannelSelection = i;
+    % Just one sample would be visibly different to others. This can be
+    % hard to see so I add 1ms to the right of the trigger 
+    for i = 1:length(SampleNumber)
+        if SampleNumber(i)+Numsamplesevent<=length(EventData)
+            EventData(SampleNumber(i):SampleNumber(i)+Numsamplesevent) = 1;
+        elseif SampleNumber(i)+Numsamplesevent>length(EventData)
+            EventData(1:end) = 1;
         end
     end
 
-    [DatFilePaths,~,~,~,~,~] = LoadIntanDatFiles(Folder);
-    FileIdentifier = fopen(DatFilePaths{app.EWapp.EventInfo.AUXChannel(InputChannelSelection)},'r');
+    Extract_Events_Module_Load_and_Plot_Events_Intan(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate)
     
-    InputChannelData = fread(FileIdentifier, 'uint16');
-
-    InputChannelData = single(InputChannelData.* 0.0000374); %analog input to Volt (not mV!)
-
-    lineHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Events');
-    xlabel(app.UIAxes,"Time [s]")
-    ylabel(app.UIAxes,"Aux Signal")
-    title(app.UIAxes,strcat("Aux Input Channel ", num2str(InputChannelSelection)))
-    if isempty(lineHandles)
-        plot(app.UIAxes,app.Mainapp.Data.Time,InputChannelData,'LineWidth',1.5,'Color','b', 'Tag', 'Events');
-    elseif length(lineHandles) == 1
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', InputChannelData, 'Color', 'b', 'Tag', 'Events');
-    else
-        delete(lineHandles(2:end))
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', InputChannelData, 'Color', 'b', 'Tag', 'Events');
-    end
-
-    return;
-
 end
 
-%% For Single Intan RHD Files
 
-%% Extract Event Channel Data and Plot
-if strcmp(app.Mainapp.Data.Info.RecordingType,"IntanRHD") && strcmp(Channel,"Digital Inputs")
-    
-    if strcmp(Type,"Initial")
-         [RhdFilePaths] = LoadIntanRHDFiles(app.Mainapp.Data.Info.Data_Path);
-         LastDashIndex = find(RhdFilePaths == '\');
-         RHDPath = RhdFilePaths(1:LastDashIndex(end));
-         RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-         [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Info",[]);
+if strcmp(Data.Info.RecordingType,"Neuralynx")
 
-         app.FileTypeDropDown_2.Items = app.EventChannelNames.Digital;
-        
-         app.FileTypeDropDown.Value = "Digital Inputs";
-    end
+    EventData = zeros(1,length(Data.Time));
+    EventData(Channel.Samples{1}) = 1;
 
-    for i = 1:length(app.EventChannelNames.Digital)
-        if strcmp(app.EventChannelNames.Digital{i},app.FileTypeDropDown_2.Value)
-            InputChannelSelection = i;
+    % Include a specific duration of the event to make it clearly visible
+    % -- 2ms standard
+    Numsamplesevent = Data.Info.NativeSamplingRate*0.002;
+    % Just one sample would be visibly different to others. This can be
+    % hard to see so I add 1ms to the right of the trigger 
+    for i = 1:length(Channel.Samples{1})
+        if Channel.Samples{1}(i)+Numsamplesevent<=length(EventData)
+            EventData(Channel.Samples{1}(i):Channel.Samples{1}(i)+Numsamplesevent) = 1;
+        elseif Channel.Samples{1}(i)+Numsamplesevent>length(EventData)
+            EventData(Channel.Samples{1}(i):end) = 1;
         end
     end
 
-    lineHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Events');
-    xlabel(app.UIAxes,"Time [s]")
-    ylim(app.UIAxes,[0,1.5]);
-    ylabel(app.UIAxes,"Digital Signal")
-    title(app.UIAxes,strcat("Digital Input Channel ", num2str(InputChannelSelection)))
+    Extract_Events_Module_Load_and_Plot_Events_Intan(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate)
     
-    if isempty(lineHandles)
-        plot(app.UIAxes,app.Mainapp.Data.Time,RHDAllChannelData.board_dig_in_data(InputChannelSelection,:),'LineWidth',1.5,'Color','b', 'Tag', 'Events');
-    elseif length(lineHandles) == 1
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', RHDAllChannelData.board_dig_in_data(InputChannelSelection,:), 'Color', 'b', 'Tag', 'Events');
-    else
-        delete(lineHandles(2:end))
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', RHDAllChannelData.board_dig_in_data(InputChannelSelection,:), 'Color', 'b', 'Tag', 'Events');
-    end 
-
-    return;
-    
-end
-
-if strcmp(app.Mainapp.Data.Info.RecordingType,"IntanRHD") && strcmp(Channel,"Analog Input")
-    
-    if strcmp(Type,"Initial")
-        [RhdFilePaths] = LoadIntanRHDFiles(app.Mainapp.Data.Info.Data_Path);
-         LastDashIndex = find(RhdFilePaths == '\');
-         RHDPath = RhdFilePaths(1:LastDashIndex(end));
-         RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-         [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Info",[]);
-
-         app.FileTypeDropDown_2.Items = app.EventChannelNames.Analog;
-        
-        app.FileTypeDropDown.Value = "Analog Input";
-    end
-
-    for i = 1:length(app.EventChannelNames.Analog)
-        if strcmp(app.EventChannelNames.Analog{i},app.FileTypeDropDown_2.Value)
-            InputChannelSelection = i;
-        end
-    end
-
-    %% Load Files in folder
-
-    lineHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Events');
-    xlabel(app.UIAxes,"Time [s]")
-    ylabel(app.UIAxes,"Analog Signal")
-    title(app.UIAxes,strcat("Analog Input Channel ", num2str(InputChannelSelection)))
-    if isempty(lineHandles)
-        plot(app.UIAxes,app.Mainapp.Data.Time,RHDAllChannelData.board_adc_data(InputChannelSelection,:),'LineWidth',1.5,'Color','b', 'Tag', 'Events');
-    elseif length(lineHandles) == 1
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', RHDAllChannelData.board_adc_data(InputChannelSelection,:), 'Color', 'b', 'Tag', 'Events');
-    else
-        delete(lineHandles(2:end))
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', RHDAllChannelData.board_adc_data(InputChannelSelection,:), 'Color', 'b', 'Tag', 'Events');
-    end 
-
-    return;
 
 end
-
-if strcmp(app.Mainapp.Data.Info.RecordingType,"IntanRHD") && strcmp(Channel,"AUX Inputs")
-    
-    [RhdFilePaths] = LoadIntanRHDFiles(app.Mainapp.Data.Info.Data_Path);
-     LastDashIndex = find(RhdFilePaths == '\');
-     RHDPath = RhdFilePaths(1:LastDashIndex(end));
-     RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
-     [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Info",[]);
-
-     app.FileTypeDropDown_2.Items = app.EventChannelNames.Aux;
-
-    app.FileTypeDropDown.Value = "AUX Inputs";
-
-    for i = 1:length(app.EventChannelNames.Aux)
-        if strcmp(app.EventChannelNames.Aux{i},app.FileTypeDropDown_2.Value)
-            InputChannelSelection = i;
-        end
-    end
-
-    lineHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Events');
-    xlabel(app.UIAxes,"Time [s]")
-    ylabel(app.UIAxes,"Aux Signal")
-    title(app.UIAxes,strcat("Aux Input Channel ", num2str(InputChannelSelection)))
-    if isempty(lineHandles)
-        plot(app.UIAxes,app.Mainapp.Data.Time,RHDAllChannelData.aux_input_data(InputChannelSelection,:),'LineWidth',1.5,'Color','b', 'Tag', 'Events');
-    elseif length(lineHandles) == 1
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', RHDAllChannelData.aux_input_data(InputChannelSelection,:), 'Color', 'b', 'Tag', 'Events');
-    else
-        delete(lineHandles(2:end))
-        set(lineHandles(1), 'XData', app.Mainapp.Data.Time, 'YData', RHDAllChannelData.aux_input_data(InputChannelSelection,:), 'Color', 'b', 'Tag', 'Events');
-    end 
-    return;
-
-end
-
-% After each plot return is called. So if the code reaches to
-% here, nothin was found to be plotted
-f = msgbox("No Input Channel found for this recording!");
+                

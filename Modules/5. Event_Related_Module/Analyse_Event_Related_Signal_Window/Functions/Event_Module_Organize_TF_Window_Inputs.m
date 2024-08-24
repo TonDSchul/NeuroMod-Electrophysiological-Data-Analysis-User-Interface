@@ -69,6 +69,7 @@ DataChannelRange = length(DataChannelSelected(1):DataChannelSelected(2));
     
 if strcmp(Type,"Moorlet Wavelets")
     %% Get Info of Wavelet Cycles from GUI
+    indicesep = [];
     indicesep = find(CycleWidthfromto23EditField == ',');
     TF.Range_cycles(1,1) = str2double(CycleWidthfromto23EditField(1:indicesep(1)-1));
     TF.Range_cycles(1,2) = str2double(CycleWidthfromto23EditField(indicesep(1)+1:end)); 

@@ -1,8 +1,30 @@
-function [AutorunConfig,NumIterations,LoadedData,Channelorder] = Execute_Autorun_Select_Folder_Channel_Order(AutorunConfig,FunctionOrder)
+function [AutorunConfig,NumIterations,LoadedData] = Execute_Autorun_Select_Folder_Channel_Order(AutorunConfig,FunctionOrder)
+
+%________________________________________________________________________________________
+%% This function lets the user select a folder, check its contents and save it along with other variables 
+% This function is called when the user selects a folder in the autorun manager window
+
+% Inputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected
+% 2. FunctionOrder: 1 x n string array containing the names of the
+% analysis steps to execute
+
+% Output:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected with added field
+% AutorunConfig.selected_folder and AutorunConfig.FolderContents if
+% recording system is intan
+% 2. NumIterations: double, max number of folder and therefore iterations
+% found, when multiple folder are suppossed to be analyzed
+% 3. LoadedData: true if data is loaded, false if not (not loaded here!)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 NumIterations = [];
 LoadedData = [];
-Channelorder = [];
 
 if find(FunctionOrder == "Extract_Raw_Recording")
     LoadedData = false;

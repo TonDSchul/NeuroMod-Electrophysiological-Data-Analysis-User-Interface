@@ -4,13 +4,16 @@ function [Data,TextArea] = Continous_Kilosort_Spikes_Check_and_Extract_Waveforms
 %% Function to extract waveforms of kilosort spikes from raw or preprocessed data
 % This function is executed every time some continous kilosort spikes
 % analysis containing waveforms is executed
+% This function uses a functions from the spike repository from Nick
+% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% Function used: getWaveForms
 
 % Inputs:
 % 1. Data: main window data structure with Data.Spikes , Data.Time and
 % Data.Info
 % 2. TextArea: app window text object to show number of cluster and spikes
 % found
-% 3. SpikeTimes: nspikes x 1 double with indcies of each spike
+% 3. SpikeTimes: nspikes x 1 double in seconds
 % 4. SpikeClusters: N x 1 double or single with cliuster identity (integer specifying the unit/cluster of that spike) of each spike
 % (analyzed in internal spike detection) 
 % 5. PlotInfo: 

@@ -1,4 +1,4 @@
-function Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoints,TimeRangeViewBox,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,CurrentTimeStartIndicie,CurrentTimeEndIndicie,PreprocDataPlotCheckBox)
+function Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoints,TimeRangeViewBox,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,CurrentTimeStartIndicie,CurrentTimeEndIndicie,PreprocDataPlotCheckBox,DownsampleSPikeRate,CutoffFreque,FilterOrder)
 
 %________________________________________________________________________________________
 
@@ -85,16 +85,16 @@ numbins = round(BinRange);
 binsize = floor(numel(TimeRangetoPlot)/numbins); % in samples
 Timerangebin = binsize/Samplingrate;
 
-[SpikesPerBin] = Continous_Spikes_Calculate_Spikes_Times_In_Bin(SpikeTimes,[],numbins,binsize,Samplingrate);
+[SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,[],numbins,binsize,Samplingrate,"SpikeRateoverTime");
 
 %% Divide by Channel Number 
 SpikesPerBin = SpikesPerBin./length(Channelselection(1):Channelselection(2));
 
-%% Low Pass filter results, bc of small bin sizes
+%% Low Pass filter results, bc of small bin sizes 
 
-if Timerangebin <= 0.03
+if DownsampleSPikeRate == 1
     Samplefrequency = 1/Timerangebin;
-    filteredSpikeRate = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikesPerBin, [], Samplefrequency, 1, numbins);
+    filteredSpikeRate = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikesPerBin, CutoffFreque, Samplefrequency, FilterOrder, numbins);
 else
     filteredSpikeRate = SpikesPerBin;
 end

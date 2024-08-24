@@ -127,6 +127,9 @@ for i = 1:length(fileNames)
     end
 end
 
+% Normalize to 0 um as first channel
+Data.Spikes.SpikePositions = Data.Spikes.SpikePositions - Data.Info.ChannelSpacing;
+
 if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
     msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
     disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");

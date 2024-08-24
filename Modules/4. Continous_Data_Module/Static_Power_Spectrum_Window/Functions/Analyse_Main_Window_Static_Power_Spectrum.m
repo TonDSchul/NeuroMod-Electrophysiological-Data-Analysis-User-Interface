@@ -1,4 +1,4 @@
-function Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText)
+function Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum of a signal using pwelch method
@@ -60,15 +60,20 @@ end
 
 %Welch Method
 if ~isempty(PWelch_handles)
-    set(PWelch_handles(1), 'XData', Freq, 'YData', 10*log10(Welchpowspect),'LineWidth',2,'Tag','Pwelch');
+    set(PWelch_handles(1), 'XData', Freq, 'YData', 10*log10(Welchpowspect),'LineWidth',2,'Tag','Pwelch','Color','b');
 else
-    line(Figure,Freq,10*log10(Welchpowspect),'LineWidth',2,'Tag','Pwelch');
+    line(Figure,Freq,10*log10(Welchpowspect),'LineWidth',2,'Tag','Pwelch','Color','b');
 end
+
+commaindicie = find(FrequencyRangeHzEditField == ',');
+dispRange(1) = str2double(FrequencyRangeHzEditField(1:commaindicie(1)-1)); % Hz
+dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % Hz
 
 xlabel(Figure, 'Frequency (Hz)');
 ylabel(Figure, 'Power/Frequency (dB/Hz)');
 ylim(Figure,[min(10*log10(Welchpowspect),[],'all') max(10*log10(Welchpowspect),[],'all')])
-xlim(Figure,[min(Freq) max(Freq)]);
+
+xlim(Figure,[dispRange(1) dispRange(2)]);
 title(Figure,titlestring);
 drawnow;
 hold(Figure, 'off' );

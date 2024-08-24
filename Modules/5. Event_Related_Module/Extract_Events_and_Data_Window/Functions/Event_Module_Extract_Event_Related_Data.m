@@ -91,6 +91,7 @@ if strcmp(DatatoUse,"Raw")
             Data.EventRelatedData(1:size(Data.Raw,1),nevents,1:ntimepoints) = Data.Raw(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
         else
             disp(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+            msgbox(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
         end
 
         % Update the progress bar
@@ -107,6 +108,7 @@ elseif strcmp(DatatoUse,"Preprocessed")
             Data.EventRelatedData(1:size(Data.Preprocessed,1),nevents,1:ntimepoints) = Data.Preprocessed(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
         else
             disp(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+            msgbox(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
         end
 
         % Update the progress bar

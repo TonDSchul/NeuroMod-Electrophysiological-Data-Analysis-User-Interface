@@ -1,4 +1,4 @@
-function [CSDClim,Trialplot,Meanplot,Eventplot] = Event_Module_Compute_and_Plot_ERP_CSD(Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type)
+function [CSDClim,Trialplot,Meanplot,Eventplot] = Event_Module_Compute_and_Plot_ERP_CSD(Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot ERP and CSD for event analysis windows
@@ -223,6 +223,10 @@ if isempty(CSD)
 %% Plot CSD
 else
 
+    if strcmp(TwoORThreeD,"ThreeD")
+        cla(Figure);
+    end
+
     if size(EventRelatedData,2) == 0
         msgbox("No Events for this Channel found");
         return;
@@ -250,23 +254,95 @@ else
     CSDClim(1) = min(min(csd));
     CSDClim(2) = max(max(csd));
 
-    %if ~isempty(Figure.Children)
-    if ~isempty(findobj(Figure, 'Type', 'image'))
-        img = findobj(Figure, 'Type', 'image');
-        set(img, 'XData', EventTime, 'YData', ds, 'CData', csd');
-        % set(Figure.Children,'XData', EventTime ,'YData', ds ,'CData', csd');
-        % img = findobj(Figure, 'Type', 'image');
-    else
-        img = imagesc(Figure,EventTime,ds,csd');%plot CSD
+    if strcmp(TwoORThreeD,"ThreeD")
+        PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+        PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');
+    
+        if length(PowerDepth2D_handles)>1
+            delete(PowerDepth2D_handles(2:end));
+            PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+        elseif length(PowerDepth3D_handles)>1
+            delete(PowerDepth3D_handles(2:end));
+            PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');
+        end
+    
+        if length(PowerDepth3D_handles)+length(PowerDepth2D_handles)==1
+            delete(PowerDepth3D_handles(:));
+            delete(PowerDepth2D_handles(:));
+            PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+            PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');
+        end
+    
+        if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
+            %3D
+            surf(Figure,EventTime,ds,csd','EdgeColor', 'none', 'Tag','PowerDepth3D')
+            %2D
+            % 2D Plot
+            min_z = min(csd,[],'all');
+            surface(Figure,EventTime,ds, min_z * ones(size(csd')), ...
+            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+        else
+            %3D
+            set(PowerDepth3D_handles(1),'XData',EventTime,'YData',ds,'CData',csd','ZData',csd','EdgeColor', 'none', 'Tag', 'PowerDepth3D')
+            %2D
+            % 2D Plot
+            min_z = min(csd,[],'all');
+            set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds,'ZData', min_z * ones(size(csd')), ...
+            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+        end
+    
+        %imagesc(Figure,Time,ydata,mnLFP)
+        view(Figure,45,45);
+        box(Figure, 'off');
+        grid(Figure, 'off');
+    elseif strcmp(TwoORThreeD,"TwoD")
+        PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+        if length(PowerDepth2D_handles)>1
+            delete(PowerDepth2D_handles(2:end));
+            PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+        end
+
+        if isempty(PowerDepth2D_handles)
+            % 2D Plot
+            min_z = 0;
+            surface(Figure,EventTime,ds, min_z * ones(size(csd')), ...
+            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+        else
+            min_z = 0;
+            set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds,'ZData', min_z * ones(size(csd')), ...
+            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+        end
     end
+   
 
     %% Plot Event line
     Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
-    if isempty(Event_handles)
-        eventLine = line(Figure,[0, 0],ylim(Figure),'Color','r','LineWidth',2, 'Parent', Figure, 'Tag', 'Event');
-    else
-        set(Event_handles(1), 'XData', [0, 0], 'YData', ylim(Figure), 'Parent', Figure, 'Tag', 'Event');
-        eventLine = Event_handles(1);
+    if length(Event_handles)>1
+        delete(Event_handles(2:end));
+    end
+
+    if strcmp(TwoORThreeD,"TwoD")
+        if isempty(Event_handles)
+            eventLine = line(Figure,[0, 0],ylim(Figure),'Color','r','LineWidth',2, 'Parent', Figure, 'Tag', 'Event');
+        else
+            set(Event_handles(1), 'XData', [0, 0], 'YData', ylim(Figure), 'Parent', Figure, 'Tag', 'Event');
+            eventLine = Event_handles(1);
+        end
+    elseif strcmp(TwoORThreeD,"ThreeD")
+        % Define the Y and Z ranges
+        Y = [ds(1), ds(end)];
+        Z = [min(csd,[],'all'), max(csd,[],'all')];  
+        
+        % Create a plane through Y and Z
+        [YGrid, ZGrid] = meshgrid(Y, Z);
+        
+        XGrid = zeros(size(YGrid));
+        if isempty(Event_handles)
+            eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+        else
+            set(Event_handles(1), 'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+            eventLine = Event_handles(1);
+        end
     end
     
     % Bring the event line to the front

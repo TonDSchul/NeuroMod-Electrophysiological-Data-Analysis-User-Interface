@@ -33,7 +33,7 @@ texttoshow = "Extracting Data for Intan Recording System";
    
 if strcmp(Filetype,"Intan .dat")
     % Load dat file locations
-    [DatFilePaths,AmplifierDataIndex,~,~,InfoRhd,~] = LoadIntanDatFiles(SelectedFolder);
+    [DatFilePaths,AmplifierDataIndex,~,~,InfoRhd,~] = CheckIntanDatFiles(SelectedFolder);
     % Load Rhd Info file
     [~,~,frequency_parameters,~,~,~,~,~] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"NoExtracting",[]);
  

@@ -35,8 +35,6 @@ function Module_MainWindow_Plot_Data(Data,UIAxis,Time,Channel_Selection,PlotLine
 %% Scale all channel lines so that they are as far apart as specified in main window
 % (Channelspacing)
 
-%Data = flip(Data,1);
-
 for i = 1:size(Data,1)     
     Data(i, :) = Data(i, :) - (i - 1) * PlotLineSpacing;
 end
@@ -47,10 +45,8 @@ YMinLimitsMultipeERP = min(Data,[],"all");
 xlim(UIAxis, [Time(1),Time(end)]);
 ylim(UIAxis, [YMinLimitsMultipeERP,YMaxLimitsMultipeERP]);
 
-%set(UIAxis,'xticklabel',{[]});
 set(UIAxis,'yticklabel',{[]});
 UIAxis.YLabel = [];
-%UIAxis.XLabel = [];
 
 if Preprocessed == 0
     title(UIAxis, 'Raw Data');
@@ -68,21 +64,11 @@ if strcmp(EventPlot,"Events")
     % Therefore, closest value of the event time to the downsampled
     % vtime vecotor has to be found. (When eventtime in range of downsampled time)
 
-    EventIndicies = zeros(size(Time));
-    % Iterate over each single time point to check whther one
-    % of the event times is in time range and get the closest
-    % time point of the time vector for plotting
-    for j = 1:numel(EventData)
-        % Check if the time point falls within the range
-        if EventData(j) >= StartIndex && EventData(j) <= StopIndex
-            % Find the index of the element in continuous_time closest to the single time point
-            %[~, index] = min(abs(Time - EventData(j)));
-            EventIndicies((EventData(j)-StartIndex)-1) = 1;
-        end
-    end
+    TempEventIndicies = EventData >= StartIndex & EventData <= StopIndex;
+    EventSamples = EventData(TempEventIndicies)-(StartIndex-1);
 
-else
-    
+    EventIndicies = zeros(size(Time));
+    EventIndicies(EventSamples) = 1;
 
 end
 
@@ -94,20 +80,17 @@ if strcmp(Type,"Static")
     % created line objects instead of creating new ones every time. This
     % increases performance 
     
-    %% Plotting Channel Data 
+    %% First Check and delete unneccesary plot handles
 
     if sum(EventIndicies) == 0
         Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
-        for i = 1:length(Eventline_handles)
-            delete(Eventline_handles(i));
-        end
+        delete(Eventline_handles(1:end));  
     else
         Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
         if length(Eventline_handles) > sum(EventIndicies)
-            for i = sum(EventIndicies)+1:length(Eventline_handles)
-                delete(Eventline_handles(i));
-            end
+            delete(Eventline_handles(sum(EventIndicies)+1:end)); 
         end
+        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
     end
 
     lineHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Data');
@@ -126,25 +109,23 @@ if strcmp(Type,"Static")
     end
      
     %% Events: Check if Events should be plotted.
-    if strcmp(EventPlot,"Events")
-        lineHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Events');
-        % If one ore more events within plotted time range
-        if sum(EventIndicies)>=1 % One event within range
-            indi = find(EventIndicies==1);
-            % Just to plot lines: Specify y range of vertical event
-            % plots
-            for o = 1:length(indi)
-                y_start = repmat(YMinLimitsMultipeERP, size(Time(indi(o))));
-                y_end = repmat(YMaxLimitsMultipeERP, size(Time(indi(o))));
-                % If 64 lines: line 65 has to be plooted with line. Set
-                % will result in an error bc this handle indicie isnt
-                % existing yet
-                if isempty(lineHandles) || length(lineHandles) < sum(EventIndicies)
-                    line(UIAxis,[Time(indi(o)), Time(indi(o))], [y_start, y_end], 'Color', 'k','LineWidth',2.5, 'Tag', 'Events'); % Adjust color as needed
-                else % If already 65 line handles: set the last line
-                    set(lineHandles(o), 'XData', [Time(indi(o)), Time(indi(o))], 'YData', [y_start, y_end], 'Color', 'k','LineWidth',2.5, 'Tag', 'Events');
-                end
+    if strcmp(EventPlot,"Events") && sum(EventIndicies) > 0
+
+        xData = [Time(EventIndicies == 1); Time(EventIndicies == 1)];
+        yData = repmat([YMinLimitsMultipeERP,YMaxLimitsMultipeERP]', 1, length(Time(EventIndicies == 1)));
+
+        % If 64 lines: line 65 has to be plooted with line. Set
+        % will result in an error bc this handle indicie isnt
+        % existing yet
+        if ~isempty(Eventline_handles) 
+            for i = 1:length(Eventline_handles)
+                set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), 'Color', 'k','LineWidth',2.5, 'Tag', 'Events');
             end
+            if i < sum(EventIndicies)
+                line(UIAxis,xData(:,i+1:end), yData(:,i+1:end), 'Color', 'k','LineWidth',2.5, 'Tag', 'Events'); % Adjust color as needed
+            end
+        else
+            line(UIAxis,xData, yData, 'Color', 'k','LineWidth',2.5, 'Tag', 'Events'); % Adjust color as needed
         end
     end 
 
@@ -160,14 +141,139 @@ if strcmp(Type,"Static")
         Samplestoshowaroundspike = SampleRate*0.001; % num samples equivalent to 2ms
 
         %% Plot time window around spike in red
-        for i = 1:length(SpikeData.Position) % Channel
-            if SpikeData.Indicie(i)-Samplestoshowaroundspike > 0 && SpikeData.Indicie(i)+Samplestoshowaroundspike <= size(Data,2)
-                numspikesplotted = numspikesplotted+1;
-                if numspikesplotted <= length(SpikeHandles) && ~isempty(SpikeHandles) 
-                    set(SpikeHandles(numspikesplotted), 'XData', Time(SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike), 'YData', Data(SpikeData.Position(i),SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
+        SpikeIndiciesInRange = SpikeData.Indicie-Samplestoshowaroundspike > 0 & SpikeData.Indicie+Samplestoshowaroundspike <= size(Data,2);
+        SpikeIndicies = SpikeData.Indicie(SpikeIndiciesInRange==1);
+        SpikePositions = SpikeData.Position(SpikeIndiciesInRange==1);
+
+        for i = 1:numel(SpikePositions) % Channel
+            numspikesplotted = numspikesplotted+1;
+            if numspikesplotted <= length(SpikeHandles) && ~isempty(SpikeHandles) 
+                set(SpikeHandles(numspikesplotted), 'XData', Time(SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike), 'YData', Data(SpikePositions(i),SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
+            else
+                line(UIAxis,Time(SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike),Data(SpikePositions(i),SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
+            end
+        end  
+
+        if length(SpikeHandles)>numspikesplotted
+            delete(SpikeHandles(numspikesplotted+1:end));
+        end
+
+    %% Plot loaded Kilosort Spikes
+    elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort")
+        if ~isempty(SpikeData.Indicie)
+            
+            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,Channel_Selection,SpikeDatatype);
+
+            SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
+
+            if length(SpikeHandles) > length(SpikeData.Indicie) && ~isempty(SpikeHandles)
+                delete(SpikeHandles(length(SpikeData.Indicie)+1:end));
+            end
+            
+            SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
+            
+            %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
+            range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
+            
+            %% Scale and Plot Kilosort Spike Positions
+            for j = 1:numel(SpikeData.Indicie) 
+                %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
+                ScalingEachChannel = double(Data(:,SpikeData.Indicie(j)));
+                % Calculate the range of both vectors
+                range_ScalingEachChannel = min(ScalingEachChannel) - max(ScalingEachChannel);
+                % Compute the scaling factor
+                SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
+               
+                if ~isempty(SpikeHandles) && j <= length(SpikeHandles)
+                    set(SpikeHandles(j), 'XData', Time(SpikeData.Indicie(j)), 'YData', SpikeData.Position(j), 'Tag', 'Spikes');
                 else
-                    line(UIAxis,Time(SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike),Data(SpikeData.Position(i),SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
+                    UIAxis.NextPlot = "add";
+                    plot(UIAxis,Time(SpikeData.Indicie(j)),SpikeData.Position(j),'ko','markerfacecolor','r','MarkerSize',4, 'Tag', 'Spikes');
+                    UIAxis.NextPlot = "replace";
                 end
+            end       
+        end
+    end 
+end
+
+if strcmp(Type,"Movie")
+
+    pause(0.04);
+
+    %% Plotting Channel Data 
+    if sum(EventIndicies) == 0
+        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
+        for i = 1:length(Eventline_handles)
+            delete(Eventline_handles(i));
+        end
+    else
+        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
+        if length(Eventline_handles) > sum(EventIndicies)
+            for i = sum(EventIndicies)+1:length(Eventline_handles)
+                delete(Eventline_handles(i));
+            end
+        end
+    end
+
+    lineHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Data');
+
+    if length(lineHandles) > 1 
+        for i = 1:size(Data,1)
+            set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data');
+        end
+    else
+        % Plot for first time
+        lines = line(UIAxis,Time,Data,'LineWidth',1.5, 'Tag', 'Data');
+        % ColorMap
+        for i = 1:size(Data,1)
+            lines(i).Color = colorMap(i, :);
+        end
+    end
+     
+    %% Events: Check if Events should be plotted.
+    if strcmp(EventPlot,"Events") && sum(EventIndicies) > 0
+
+        xData = [Time(EventIndicies == 1); Time(EventIndicies == 1)];
+        yData = repmat([YMinLimitsMultipeERP,YMaxLimitsMultipeERP]', 1, length(Time(EventIndicies == 1)));
+
+        % If 64 lines: line 65 has to be plooted with line. Set
+        % will result in an error bc this handle indicie isnt
+        % existing yet
+        if ~isempty(Eventline_handles) 
+            for i = 1:length(Eventline_handles)
+                set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), 'Color', 'k','LineWidth',2.5, 'Tag', 'Events');
+            end
+            if i < sum(EventIndicies)
+                line(UIAxis,xData(:,i+1:end), yData(:,i+1:end), 'Color', 'k','LineWidth',2.5, 'Tag', 'Events'); % Adjust color as needed
+            end
+        else
+            line(UIAxis,xData, yData, 'Color', 'k','LineWidth',2.5, 'Tag', 'Events'); % Adjust color as needed
+        end
+    end 
+
+    %% Plot Toolbox internally computed Spike Data
+    %% Plot Toolbox internally computed Spike Data
+    if strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Internal")
+        
+        [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,Channel_Selection,SpikeDatatype);
+        SpikeData.Position = SpikeData.Position./ChannelSpacing;
+
+        SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
+        numspikesplotted = 0;
+ 
+        Samplestoshowaroundspike = SampleRate*0.001; % num samples equivalent to 2ms
+
+        %% Plot time window around spike in red
+        SpikeIndiciesInRange = SpikeData.Indicie-Samplestoshowaroundspike > 0 & SpikeData.Indicie+Samplestoshowaroundspike <= size(Data,2);
+        SpikeIndicies = SpikeData.Indicie(SpikeIndiciesInRange==1);
+        SpikePositions = SpikeData.Position(SpikeIndiciesInRange==1);
+
+        for i = 1:numel(SpikePositions) % Channel
+            numspikesplotted = numspikesplotted+1;
+            if numspikesplotted <= length(SpikeHandles) && ~isempty(SpikeHandles) 
+                set(SpikeHandles(numspikesplotted), 'XData', Time(SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike), 'YData', Data(SpikePositions(i),SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
+            else
+                line(UIAxis,Time(SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike),Data(SpikePositions(i),SpikeIndicies(i)-Samplestoshowaroundspike:SpikeIndicies(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
             end
         end  
 
@@ -210,170 +316,6 @@ if strcmp(Type,"Static")
                     UIAxis.NextPlot = "replace";
                 end
             end       
-           
-        end
-
-    end 
-
-end
-
-if strcmp(Type,"Movie")
-
-    pause(0.04);
-
-    %% Plotting Channel Data 
-    if sum(EventIndicies) == 0
-        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
-        for i = 1:length(Eventline_handles)
-            delete(Eventline_handles(i));
-        end
-    else
-        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
-        if length(Eventline_handles) > sum(EventIndicies)
-            for i = sum(EventIndicies)+1:length(Eventline_handles)
-                delete(Eventline_handles(i));
-            end
-        end
-    end
-
-    lineHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Data');
-
-    if length(lineHandles) > 1 
-        for i = 1:size(Data,1)
-            set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data');
-        end
-    else
-        % Plot for first time
-        lines = line(UIAxis,Time,Data,'LineWidth',1.5, 'Tag', 'Data');
-        % ColorMap
-        for i = 1:size(Data,1)
-            lines(i).Color = colorMap(i, :);
-        end
-    end
-     
-    %% Events: Check if Events should be plotted.
-    if strcmp(EventPlot,"Events")
-        lineHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Events');
-        % If one ore more events within plotted time range
-        if sum(EventIndicies)>=1 % One event within range
-            indi = find(EventIndicies==1);
-            % Just to plot lines: Specify y range of vertical event
-            % plots
-            for o = 1:length(indi)
-                y_start = repmat(YMinLimitsMultipeERP, size(Time(indi(o))));
-                y_end = repmat(YMaxLimitsMultipeERP, size(Time(indi(o))));
-                % If 64 lines: line 65 has to be plooted with line. Set
-                % will result in an error bc this handle indicie isnt
-                % existing yet
-                if isempty(lineHandles) || length(lineHandles) < sum(EventIndicies)
-                    line(UIAxis,[Time(indi(o)), Time(indi(o))], [y_start, y_end], 'Color', 'k','LineWidth',2.5, 'Tag', 'Events'); % Adjust color as needed
-                else % If already 65 line handles: set the last line
-                    set(lineHandles(o), 'XData', [Time(indi(o)), Time(indi(o))], 'YData', [y_start, y_end], 'Color', 'k','LineWidth',2.5, 'Tag', 'Events');
-                end
-            end
         end
     end 
-
-    %% Plot Toolbox internally computed Spike Data
-    %% Plot Toolbox internally computed Spike Data
-    if strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Internal")
-        
-        %% Only plot selected channel
-        ChannelRange = Channel_Selection(1):Channel_Selection(2);
-        SelectedChannelIndicies = zeros(length(SpikeData.Position),1);
-        for i = 1:length(SpikeData.Position)
-            if sum(SpikeData.Position(i) == ChannelRange) >= 1
-                SelectedChannelIndicies(i) = 1;
-            end
-        end
-        
-        SpikeData.Indicie = SpikeData.Indicie(SelectedChannelIndicies == 1);
-        SpikeData.Position = SpikeData.Position(SelectedChannelIndicies == 1);
-
-        %If Channel 10 to 20: 10 has to have indicie 1 to be plotted
-        %correctly
-        if Channel_Selection(1) > 1
-            SpikeData.Position = SpikeData.Position - (Channel_Selection(1)-1);
-        end
-
-        SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
-        numspikesplotted = 0;
-        
-        Samplestoshowaroundspike = SampleRate*0.001; % num samples equivalent to 2ms
-        
-        %% Plot time window around spike in red
-        for i = 1:length(SpikeData.Position) % Channel
-            if SpikeData.Indicie(i)-Samplestoshowaroundspike > 0 && SpikeData.Indicie(i)+Samplestoshowaroundspike <= size(Data,2)
-                numspikesplotted = numspikesplotted+1;
-                if numspikesplotted <= length(SpikeHandles) && ~isempty(SpikeHandles) 
-                    set(SpikeHandles(numspikesplotted), 'XData', Time(SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike), 'YData', Data(SpikeData.Position(i),SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
-                else
-                    line(UIAxis,Time(SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike),Data(SpikeData.Position(i),SpikeData.Indicie(i)-Samplestoshowaroundspike:SpikeData.Indicie(i)+Samplestoshowaroundspike),'LineWidth',2.5,'Color','r', 'Tag', 'Spikes');
-                end
-            end
-        end  
-
-        if length(SpikeHandles)>numspikesplotted
-            delete(SpikeHandles(numspikesplotted+1:end));
-        end
-
-    %% Plot loaded Kilosort Spikes
-    elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort")
-        
-        if ~isempty(SpikeData)
-            
-            %% This is just to assign each spike position to a channel to display spikes in the main window. 
-
-            Depth(1) = SpikeData.ChannelPosition(Channel_Selection(1),2);
-            Depth(2) = SpikeData.ChannelPosition(Channel_Selection(2),2);
-
-            Indicietodelete = [];
-            for i = 1:numel(SpikeData.Indicie)
-                if SpikeData.Position(i) < Depth(1) || SpikeData.Position(i) > Depth(2)
-                    Indicietodelete =  [Indicietodelete,i];
-                end
-            end
-            
-            if ~isempty(Indicietodelete)
-                SpikeData.Indicie(Indicietodelete) = [];
-                SpikeData.Position(Indicietodelete) = [];
-            end
-
-            SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
-
-            if length(SpikeHandles) > length(SpikeData.Indicie) && ~isempty(SpikeHandles)
-                delete(SpikeHandles(length(SpikeData.Indicie)+1:end));
-            end
-
-            SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
-
-            range_Positions = Depth(2) - Depth(1);
-            extrarange = SpikeData.ChannelPosition(end) - Depth(2);
-            
-            SpikeData.Position = SpikeData.Position - ((SpikeData.ChannelPosition(end) - range_Positions)-extrarange);
-
-            for j = 1:numel(SpikeData.Indicie) 
-
-                %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
-                ScalingEachChannel = double(Data(:,SpikeData.Indicie(j)));
-                % Calculate the range of both vectors
-                range_ScalingEachChannel = min(ScalingEachChannel) - max(ScalingEachChannel);
-                % Compute the scaling factor
-                SpikeData.Position(j) = SpikeData.Position(j) .* (range_ScalingEachChannel/range_Positions);
-                % SpikeData.Position = SpikeData.Position .* Scaling_factor_KilosortSpikePositions;
-
-                if ~isempty(SpikeHandles) && j <= length(SpikeHandles)
-                    set(SpikeHandles(j), 'XData', Time(SpikeData.Indicie(j)), 'YData', SpikeData.Position(j), 'Tag', 'Spikes');
-                else
-                    UIAxis.NextPlot = "add";
-                    plot(UIAxis,Time(SpikeData.Indicie(j)),SpikeData.Position(j),'ko','markerfacecolor','r','MarkerSize',4, 'Tag', 'Spikes');
-                    UIAxis.NextPlot = "replace";
-                end
-
-            end       
-           
-        end
-
-    end 
-
 end

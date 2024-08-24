@@ -1,5 +1,26 @@
 function [Figure] = Execute_Autorun_Set_Up_Figure(Figure,AddXticks,YReverse,XData,NumXTicksToShow,XLabel,Ylabel,Title,Fontsize)
 
+%________________________________________________________________________________________
+%% This function costumizes a function based on the inputs
+
+% Inputs:
+% 1. Figure: figure axes handle to modify
+% AddXticks: 1 to add costum x tick labels, 0 otherwise
+% YReverse: 1 to reverse y axis, 0 otherwise
+% XData: string array, All Xtick values if AddXticks=1
+% NumXTicksToShow: double number of xticks to show in plot if AddXticks=1
+% XLabel: char, costum x label
+% Ylabel: char, costum y label
+% Title: char, costum title
+% Fontsize: double, costum fontsize
+%
+% Output:
+% 1. Figure: modifed figure axes handle 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if AddXticks
     % Add xtick labels back
     % Choose a subset of x values for xticks

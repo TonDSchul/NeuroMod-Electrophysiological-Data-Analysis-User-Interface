@@ -45,16 +45,16 @@ function [ChannelSelection,TimeWindow,TrialSelection,EventTime] = Preprocessing_
 
 %% Check Events
 if isfield(Data,'PreprocessedEventRelatedData')
-    [TrialSelection.Value] = Utility_SimpleCheckInputs(TrialSelection.Value,"Two",strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,2))));
+    [TrialSelection.Value] = Utility_SimpleCheckInputs(TrialSelection.Value,"Two",strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,2))),1,0);
 else
-    [TrialSelection.Value] = Utility_SimpleCheckInputs(TrialSelection.Value,"Two",strcat('1,',num2str(size(Data.EventRelatedData,2))));
+    [TrialSelection.Value] = Utility_SimpleCheckInputs(TrialSelection.Value,"Two",strcat('1,',num2str(size(Data.EventRelatedData,2))),1,0);
 end
 
 %% Check Channel
 if isfield(Data,'PreprocessedEventRelatedData')
-    [ChannelSelection.Value] = Utility_SimpleCheckInputs(ChannelSelection.Value,"Two",strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,1))));
+    [ChannelSelection.Value] = Utility_SimpleCheckInputs(ChannelSelection.Value,"Two",strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,1))),1,0);
 else
-    [ChannelSelection.Value] = Utility_SimpleCheckInputs(ChannelSelection.Value,"Two",strcat('1,',num2str(size(Data.EventRelatedData,1))));
+    [ChannelSelection.Value] = Utility_SimpleCheckInputs(ChannelSelection.Value,"Two",strcat('1,',num2str(size(Data.EventRelatedData,1))),1,0);
 end
 
 %% Check Time Window 
@@ -65,41 +65,8 @@ if isempty(TimeWindow.Value)
     TempTimeWindin(1,1) = EventTime(floor(length(EventTime)/3));
     TempTimeWindin(1,2) = EventTime(floor(length(EventTime)/3)*2);
     TimeWindow.Value = strcat(num2str(TempTimeWindin(1)),',',num2str(TempTimeWindin(2)));
-end
-
-Input = TimeWindow.Value;
-
-if isempty(Input) == 0 % If Trialselection field filled (empty = All Trials)
-
-    CommaTest = find(Input == ',');
-    
-    if isempty(CommaTest) || length(CommaTest) ~= 1 || any(isletter(Input)) % If no Comma or Point
-        TempTimeWindin(1,1) = EventTime(floor(length(EventTime)/3));
-        TempTimeWindin(1,2) = EventTime(floor(length(EventTime)/3)*2);
-        TimeWindow.Value = strcat(num2str(TempTimeWindin(1)),',',num2str(TempTimeWindin(2)));
-        Input = TimeWindow.Value;
-        CommaTest = find(Input == ',');
-    end
-  
-    Inputvalue(1,1) = str2double(Input(1:CommaTest(1)-1));
-    Inputvalue(1,2) = str2double(Input(CommaTest+1:end));
-   
-    if isnan(Inputvalue(1)) || isnan(Inputvalue(2))
-        TempTimeWindin(1,1) = EventTime(floor(length(EventTime)/3));
-        TempTimeWindin(1,2) = EventTime(floor(length(EventTime)/3)*2);
-        TimeWindow.Value = strcat(num2str(TempTimeWindin(1)),',',num2str(TempTimeWindin(2)));
-        Input = TimeWindow.Value;
-        CommaTest = find(Input == ',');
-    end
-
-    if Inputvalue(1) > Inputvalue(2)
-        TempTimeWindin(1,1) = EventTime(floor(length(EventTime)/3));
-        TempTimeWindin(1,2) = EventTime(floor(length(EventTime)/3)*2);
-        TimeWindow.Value = strcat(num2str(TempTimeWindin(1)),',',num2str(TempTimeWindin(2)));
-        Input = TimeWindow.Value;
-        CommaTest = find(Input == ',');
-    end
-  
+else
+    [TimeWindow.Value] = Utility_SimpleCheckInputs(TimeWindow.Value,"Two",strcat('-0.005,0.005'),0,1);
 end
 
 Input = [];

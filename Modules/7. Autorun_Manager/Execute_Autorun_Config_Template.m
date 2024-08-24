@@ -1,4 +1,30 @@
 function Execute_Autorun_Config_Template(AutorunConfig,FunctionOrder,executableFolder,AutorunConfigName,Channelorder,NumIterations,LoadedData)
+%________________________________________________________________________________________
+%% This is the main functione executing all steps specified in the Config file in a loop
+
+% This function is called when the user clicks on the execute config button
+% in the autorun manager window
+
+% Inputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected
+% 2. FunctionOrder: 1 x n string array containing the names of the
+% analysis steps to execute
+% 3. executableFolder: char, folder this instance of the Toolbox is saved in and
+% executed from
+% 4: AutorunConfigName: Name of the Autorun Config (set in the respective Config file at the
+% beginning) to save Autorun structure at the end woth a proper name
+% 5. Channelorder: 1 x nchannel double containing the true channel for each
+% current channel position, empty if not selected
+% 6. NumIterations: double, max nr of recordings that are analysed. If multiple recordings are analyzed, this function
+% loops over them. If just one loaded this is set to 1 
+% 7. LoadedData: 1 if data was loaded, 0 if data was extracted
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 %______________________________________________________________________________________________________
 %% Chain of functions. Do not edit unless you know what you are doing. Everything is automatically computed based on your inputs above
 %______________________________________________________________________________________________________
@@ -6,7 +32,6 @@ function Execute_Autorun_Config_Template(AutorunConfig,FunctionOrder,executableF
 Data = [];
 Data.Raw = [];
 Data.Preprocessed = [];
-LoadDataPath = [];
 
 if find(FunctionOrder=='Load_Data')
     LoadedData = true;
@@ -26,7 +51,7 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
         %______________________________________________________________________________________________________
         
         if strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Raw_Recording') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_Data')
-            [Data,LoadDataPath] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,Channelorder,executableFolder,LoadDataPath);
+            [Data] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,Channelorder,executableFolder);
         end
 
         %% Skip this folder when no data found
@@ -35,7 +60,7 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
             continue;
         end
 
-        disp(strcat("Folder: ",LoadDataPath));
+        disp(strcat("Folder: ",Data.Info.Data_Path));
 
         %% Handle Multiple Prepros
         if strcmp(FunctionOrder(nCurrentModuleIteration),'Preprocess_Continous_Data')
@@ -45,12 +70,12 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
         %% 3. Continous Data Module
         %______________________________________________________________________________________________________
         if strcmp(FunctionOrder(nCurrentModuleIteration),'Preprocess_Continous_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Static_Power_Spectrum') || strcmp(FunctionOrder(nCurrentModuleIteration),'Continous_Spike_Analysis') 
-           [Data] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,LoadDataPath,LoadedData);
+           [Data] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData);
         end
         %% 4. Event Data Module
         %______________________________________________________________________________________________________
         if strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Events') || strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Event_Related_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Spike_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_ERP') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_CSD') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_TimeFrequencyPower')
-            [Data] = Execute_Autorun_Extract_Events_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,LoadDataPath,LoadedData);
+            [Data] = Execute_Autorun_Extract_Events_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData);
         end
         %______________________________________________________________________________________________________
         %% 5. Spike Module Functions
@@ -72,7 +97,11 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
             if strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Open Ephys")
                 FullPath = strcat(AutorunConfig.selected_folder,"\","Matlab\",AutorunConfig.ExtractRawRecording.FileType,'\');
             else
-                FullPath = strcat(AutorunConfig.selected_folder,"\Matlab\");
+                if LoadedData == 1
+                    FullPath = strcat(AutorunConfig.selected_folder,"\");
+                else
+                    FullPath = strcat(AutorunConfig.selected_folder,"\Matlab\");
+                end
             end
         end
         disp(strcat("Saving Autoconfig to: ",FullPath));

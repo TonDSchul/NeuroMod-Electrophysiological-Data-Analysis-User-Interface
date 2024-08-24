@@ -177,7 +177,7 @@ elseif strcmp(Type,"Loading")
     end
 
     stdrawdata = double(std(app.Data.Raw,[],'all'));
-    app.Slider.Limits = [stdrawdata-stdrawdata/2,stdrawdata+stdrawdata*10];
+    app.Slider.Limits = [stdrawdata-stdrawdata*2,stdrawdata+stdrawdata*10];
     app.Slider.Value = stdrawdata*2;
 
     app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
@@ -265,8 +265,8 @@ elseif strcmp(Type,"VariableDefinition")
         app.CheckSuccesful_Extraction = 1;
     end
 
-    stdrawdata = double(std(app.Data.Raw,[],'all'));
-    app.Slider.Limits = [stdrawdata-stdrawdata/2,stdrawdata+stdrawdata*10];
+    stdrawdata = double(std(app.Data.Raw,[],'all','omitnan'));
+    app.Slider.Limits = [stdrawdata-stdrawdata*2,stdrawdata+stdrawdata*10];
     app.Slider.Value = stdrawdata*2;
 
     app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
@@ -330,4 +330,5 @@ elseif strcmp(Type,"Preprocessing")
     app.UIAxes_2.NextPlot = "replace"; 
     plot(app.UIAxes_2,0,0);
     app.RUNButton_3.Enable = "on";
+
 end

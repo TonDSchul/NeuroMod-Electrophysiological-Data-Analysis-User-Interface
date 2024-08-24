@@ -31,11 +31,11 @@ function [ChannelEditField,WaveformEditField,SpikeRateNumBinsEditField] = Contin
 
 %% Spike Rate NUmbins
 
-[SpikeRateNumBinsEditField.Value] = Utility_SimpleCheckInputs(SpikeRateNumBinsEditField.Value,"One",'100');
+[SpikeRateNumBinsEditField.Value] = Utility_SimpleCheckInputs(SpikeRateNumBinsEditField.Value,"One",'100',0,0);
 
 %% Nr of Waveforms to plot
 
-[WaveformEditField.Value] = Utility_SimpleCheckInputs(WaveformEditField.Value,"Two",'1,10');
+[WaveformEditField.Value] = Utility_SimpleCheckInputs(WaveformEditField.Value,"Two",'1,10',0,0);
 
 commaindicie = find(WaveformEditField.Value == ',');
 NrWaveformstoplot(1)=str2double(WaveformEditField.Value(1:commaindicie(1)-1));
@@ -43,5 +43,5 @@ NrWaveformstoplot(2)=str2double(WaveformEditField.Value(commaindicie(1)+1:end));
 
 %% NrChannels to plot
 
-[ChannelEditField.Value] = Utility_SimpleCheckInputs(ChannelEditField.Value,"Two",strcat('1,',num2str(size(Data.Raw,1))));
+[ChannelEditField.Value] = Utility_SimpleCheckInputs(ChannelEditField.Value,"Two",strcat('1,',num2str(size(Data.Raw,1))),1,0);
 

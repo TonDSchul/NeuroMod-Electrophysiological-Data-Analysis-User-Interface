@@ -23,11 +23,10 @@ function filteredSpikeRate = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikeRa
 % Normalize the cutoff frequency with respect to Nyquist frequency
 nyquistFreq = samplingRate / 2;
 
-% Automatically set the cutoff frequency as a fraction of Nyquist frequency
-cutoffFreq = (0.45 * nyquistFreq); %adjust the fraction as needed
-
-%cutoffFreq = (cutoffFreq * scale / BinSize) + offset;
-
+if isempty(cutoffFreq)
+    % Automatically set the cutoff frequency as a fraction of Nyquist frequency
+    cutoffFreq = (0.45 * nyquistFreq); %adjust the fraction as needed
+end
 % Calculate the dynamic cutoff frequency based on BinSize
 % Inverse relationship: lower BinSize -> higher cutoffFreq
 % Ensure cutoffFreq stays within the min and max range

@@ -1,7 +1,12 @@
-function [Data] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3)
+function [Data] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
+% This function uses a functions from the spike repository from Nick
+% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% Function used: computeWFampsOverDepth
+%                plotWFampCDFs
+%                spikeTrigLFP
 
 % This function is executed every time some continous kilosort spikes analysis has to be done and plotted
 
@@ -9,7 +14,7 @@ function [Data] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,
 % 1. Data: main window data structure with time vector (Data.Time) and Info
 % field
 % 2. PlotInfo: structure containing user selected parameter for analysis.
-% fields: PlotInfo.Plotevents, PlotInfo.PlotInfo.SpikeRateNumBins,
+% fields: PlotInfo.Ploteve nts, PlotInfo.PlotInfo.SpikeRateNumBins,
 % PlotInfo.PlotInfo.ChannelSelection all as double, comes from
 % Continous_Spikes_Prepare_Plots function
 % 3. SpikePositions = N x 1 double or single with spike poisiton (integer specifying channel) of each spike
@@ -80,7 +85,7 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
 
     [Data,TextArea] = Continous_Kilosort_Spikes_Check_and_Extract_Waveforms(Data,TextArea,SpikeTimes,CluterPositions,PlotInfo);
 
-    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),Data.Spikes.Waveforms.waveFormsMean,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms);
+    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),Data.Spikes.Waveforms.waveFormsMean,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD);
 end
 
 if strcmp(TypeofAnalysis,"Waveforms from Raw Data")
@@ -98,12 +103,14 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     set(Figure, 'YDir', 'reverse');
     ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
     %% basic quantification of spiking plot
-    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:length(ChannelRange)*Data.Info.ChannelSpacing;
+    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange)-1)*Data.Info.ChannelSpacing;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
 
+    SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
+
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort");
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD);
                     
 end
 
@@ -113,12 +120,14 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     
     %% basic quantification of spiking plot
     ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
-    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:length(ChannelRange)*Data.Info.ChannelSpacing;
+    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange)-1)*Data.Info.ChannelSpacing;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
 
+    SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
+
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort");
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD);
                     
 end
 
@@ -128,42 +137,16 @@ end
 
 if strcmp(TypeofAnalysis,"Spike Triggered LFP")
 
-    if ~isfield(Data,'Preprocessed')
-        msgbox("Warning! No preprocessed low pass filtered AND downsampled data found. Execution can take very long");
+    [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Kilosort",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD);
+    
+    if isempty(TempData) % if not preprocessed
+       Data = [];
     else
-        if ~isfield(Data.Info,'FilterMethod')
-            msgbox("Warning! No preprocessed low pass filtered AND downsampled data found. Execution can take very long");
-        else
-            if ~strcmp(Data.Info.FilterMethod,'Low-Pass')
-                msgbox("Warning! No preprocessed low pass filtered AND downsampled data found. Execution can take very long");
-            else
-                if ~isfield(Data.Info,'DownsampleFactor')
-                    msgbox("Warning! Preprocessed low pass filtered is not downsampled. Execution can take very long");
-                end
-            end
-        end
-    end
-       
-    if isfield(Data,'Preprocessed')
-        if ~isempty(Data.Preprocessed)
-            if ~isfield(Data.Info,'DownsampleFactor')
-                winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-                mnLFP = spikeTrigLFP(Data.Time, Data.Preprocessed(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,"Kilosort");
-            else
-                winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.DownsampledSampleRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-                mnLFP = spikeTrigLFP(Data.TimeDownsampled, Data.Preprocessed(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,"Kilosort");
-            end
-        else
-            winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-            mnLFP = spikeTrigLFP(Data.Time, Data.Raw(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,"Kilosort");
-        end
-    else
-        winAroundSpike = PlotInfo.TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : PlotInfo.TimeWindowSpiketriggredLFP(2);
-        mnLFP = spikeTrigLFP(Data.Time, Data.Raw(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:), SpikeTimes, SpikePositions, PlotInfo.ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,"Kilosort");
+        Data = TempData; % if preprocessed
     end
 
     texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
     strcat("Number of Cluster: ",num2str(length(unique(CluterPositions))))];
-
+    
     TextArea.Value = texttoshow;
 end             

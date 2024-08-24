@@ -1,5 +1,42 @@
 function Event_Spikes_Plot_Spike_Rate(Data,Time,Type,rgb_matrix,SpikeTimes,SpikePositions,SpikeCluster,NumEvents,Clustertoshow,NumBins,SpikeRateTimeFigure,SpikeRateChannelFigure,KilosortChannelPos,SampleRate,ChannelToPlot)
 
+%________________________________________________________________________________________
+
+%% Function to compute and plot spike rate over for all channel combined and for individual channel over the whole time range
+% This function takes spikes over all channel, calculates spike rate for
+% all channel and the normalizes by channel nr. and event nr.
+
+% This function gets called in the main window when the user clicks on run
+% for event spike analysis (Internal and Kilosort)
+
+% Input:
+% 1. Data: main window data structure with Data.Info field
+% 2. Time: 1 x ntime time points in seconds
+% 3. Type: char when this function is called, "Initial" on startup and when plotting completly new OR "BinsizeChangeInitial" when just num bins change OR "NewCluster" when just the clusterselection in window changed
+% 4. rgbMatrix: nunits x 3 double with rgb values for unit colors
+% 5. SpikeTimes: nspikes x 1 double with spike indicies (in samples)
+% 6. SpikePositions: nspikes x 1 double with spike positions (in um) - for
+% internal: channelnr * ChannelSpacing
+% 7. SpikeCluster: nspikes x 1 double with spike cluster identity (integer,
+% 1-indexed)- for internal spikes: all 1 since no clustering is done
+% 8. NumEvents: double, number of events to normaloze spike rate
+% 9. Clustertoshow: char, 'Non' OR 'All' or a single number like '4' for
+% unit 4
+% 10. NumBins: double, number of bins to divide time in for spike rate per bin
+% 11. SpikeRateTimeFigure: Figure axes for figure to plot spike rate over
+% time in
+% 12. SpikeRateChannelFigure:Figure axes for figure to plot spike rate over
+% channel in
+% 13. KilosortChannelPos: not used here. 
+% 14. SampleRate: double in Hz
+% 15. ChannelToPlot: 1x2 double with channel to plot, i.e. [1,10] for
+% channel 1 to 10
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Spike Rate over Timeapp.Mainapp
 ClusterSpikeTimes = [];
 
@@ -22,7 +59,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     BinSizeSamples = floor(dN/cN);
     BinSizeTime = BinSizeSamples*(1/SampleRate);
     TempSpikeTimes = SpikeTimes+abs(Time(1));
-    [SpikesInBins] = Continous_Spikes_Calculate_Spikes_Times_In_Bin(TempSpikeTimes,SpikePositions,cN,BinSizeTime,1);
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(TempSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
     
     %% Calculate mean over all channel
     ChannelRange = ChannelToPlot(1):ChannelToPlot(2);
@@ -75,16 +112,15 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
         cN = str2double(NumBins);  % number of steps/chunks
         dN = length(ChannelToPlot(1):ChannelToPlot(2))*Data.Info.ChannelSpacing;
         TempSpikePos = SpikePositions;
+        BinSize = dN/cN;
     else
         cN = length(ChannelToPlot(1):ChannelToPlot(2));  % number of steps/chunks
         dN = length(ChannelToPlot(1):ChannelToPlot(2));
         TempSpikePos = SpikePositions/Data.Info.ChannelSpacing;
-    end
-    % Divide the data into chunks (last chunk is smaller than the rest)
-
-    BinSize = dN/cN;
+        BinSize = Data.Info.ChannelSpacing;
+    end  
     
-    [SpikesInBins] = Continous_Spikes_Calculate_Spikes_Times_In_Bin(TempSpikePos,SpikePositions,cN,BinSize,1);
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(TempSpikePos,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel");
 
     % Get Frequency
     SpikesInBins = (SpikesInBins./(abs(Time(1))+Time(end)))./NumEvents;
@@ -102,11 +138,9 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     end
 
     barh(SpikeRateChannelFigure,SpikesInBins,'black');
-    if strcmp(Data.Info.SpikeType,"Kilosort")
-        xlabel(SpikeRateChannelFigure,strcat("Spikes per ",num2str(BinSize),"µm [Hz]"))
-    else
-        xlabel(SpikeRateChannelFigure,strcat("Spikes per ",num2str(BinSize*Data.Info.ChannelSpacing),"µm [Hz]"))
-    end
+    
+    xlabel(SpikeRateChannelFigure,strcat("Spikes per ",num2str(BinSize),"µm [Hz]"))
+
     SpikeRateChannelFigure.FontSize = 10;
     set(SpikeRateChannelFigure,'yticklabel',{[]})
 
@@ -128,7 +162,7 @@ if  ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,
     BinSizeTime = BinSizeSamples*(1/SampleRate);
     
     ClusterSpikeTimes = ClusterSpikeTimes+abs(Time(1));
-    [SpikesInBins] = Continous_Spikes_Calculate_Spikes_Times_In_Bin(ClusterSpikeTimes,SpikePositions,cN,BinSizeTime,1);
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(ClusterSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
     
     %% Calculate mean over all channel
     ChannelRange = ChannelToPlot(1):ChannelToPlot(2);

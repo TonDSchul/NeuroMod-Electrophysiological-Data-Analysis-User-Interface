@@ -89,8 +89,24 @@ elseif strcmp(RecordingSystem,"Neuralynx")
     [HeaderInfo] = ft_read_header(SelectedFolder);
     SampleRate = HeaderInfo.Fs;    
 
-    [Data] = ft_read_data(SelectedFolder,'header',HeaderInfo);
-  
+    [Data] = ft_read_data(SelectedFolder,'headerinfo',HeaderInfo);
+
+    Data = single(Data);
+
+    % Convert to mV
+    Data = Data ./1000;
+
+    NaNIndicies = isnan(Data);
+    SUmNAN = sum(NaNIndicies);
+    SUmNAN = sum(SUmNAN);
+
+    [~,b] = find(isnan(Data));
+    NaNTimes = unique(b)./SampleRate;
+
+    if SUmNAN>0
+        msgbox(strcat("Warning: ",num2str(SUmNAN)," NaN found in data; TimeRange: ",num2str(NaNTimes(1)),"seconds to ",num2str(NaNTimes(end)),"seconds"));
+    end
+
     % Apply Amplification 64 to translate signal in uV and
     % translate into mV by dividing by 1000
     %Data = Data./1000; %% Durch oder mal, mal schauen

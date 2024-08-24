@@ -1,4 +1,54 @@
-function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,BaselineWindowField,ChannelSelectionField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionField,BaselineWindowField,SpikeRateNumBinsEditField,SpikeType)
+function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,BaselineWindowField,ChannelSelectionField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionField,BaselineWindowField,SpikeRateNumBinsEditField,SpikeType,SpikeTriggereAverage,SpikeTriggeredAverageField)
+%________________________________________________________________________________________
+%% Function to prepare plots for internal and kilosort event spike analysis
+
+% This function is called in the
+% Events_Internal_Spike_Window and Events_Kilosort_Spike_Window app
+% windows when something new has to be plotted. It prepares everything for
+% the function that selects plotting functions based on input
+% This means it checks the correct format of inputs, corrects it with
+% standard values if necessary and pools them in a structure accessed later
+% for analysis and plotting
+
+% Inputs:
+% 1. Data: main window app structure with Data.Info and Data.Spikes fields
+% 2. EventRangeEditField: text field of app containing event range userinput as char in
+% the field EventRangeEditField.Value, like '1,10' for events 1 to 10
+% 3. ChannelSelectionField: text field of app containing channel range userinput as char in
+% the field ChannelEditField.Value, like '1,10' for channel 1 to 10
+% 4. BaselineWindowField: text field of app containing basline window range userinput as char in
+% the field ChannelEditField.Value, like '-0.005,0' for channel -0.005s to 0s
+% 5. SpikeRateNumBinsEditField: text field of app containing basline num bins for spike rate userinput as char in
+% the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins
+% 6. SpikeType: Type of spikes of dataset, either 'Kilosort' OR 'Internal'
+% (from Data.Info.SpikeTpe)
+
+%Outputs:
+% 6. PlotInfo: structure holding gathered info about user input, contains
+% fields: PlotInfo.TimearoundEvent,PlotInfo.EventNr,PlotInfo.EventRange,PlotInfo.ChannelsToPlot,PlotInfo.Time,PlotInfo.ChannelNr,PlotInfo.SpikeRateNumBins,PlotInfo.depth_bin_size,PlotInfo.time_bin_size ,PlotInfo.depth_edges,PlotInfo.time_edges , PlotInfo.NormWindow
+% 1. SpikeTimes: nspikes x 1 double with just spike indicies within the
+% channelrange
+% 2.SpikePositions: nspikes x 1 double with spike poisiton spike indicies within the
+% channelrange (in um)
+% 3.SpikeAmplitude: nspikes x 1 double with just spike amplitudes indicies within the
+% channelrange
+% 4. SpikeCluster: nspikes x 1 double with just spike cluster ID's indicies within the
+% channelrange
+% 5. SpikeEvents: nspikes x 1 double with just event identity (integers)
+% 6. BaselineWindowField: text field of app containing basline window range userinput as char in
+% the field ChannelEditField.Value, like '-0.005,0' for channel -0.005s to 0s
+% 7. ChannelSelectionField: text field of app containing channel range userinput as char in
+% the field ChannelEditField.Value, like '1,10' for channel 1 to 10
+% 8. EventRangeEditField: text field of app containing event range userinput as char in
+% the field EventRangeEditField.Value, like '1,10' for events 1 to 10
+% 9. SpikeRateNumBinsEditField: text field of app containing basline num bins for spike rate userinput as char in
+% the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 %% Nr of bins
 
 %% Spike Rate NUmbins
@@ -18,11 +68,19 @@ end
 
 %% NrChannels to plot
 
-[ChannelSelectionField] = Utility_SimpleCheckInputs(ChannelSelectionField,"Two",strcat('1,',num2str(size(Data.EventRelatedData,1))));
+[ChannelSelectionField] = Utility_SimpleCheckInputs(ChannelSelectionField,"Two",strcat('1,',num2str(size(Data.EventRelatedData,1))),1,0);
 
 %% NrEvents to plot
 
-[EventRangeEditField] = Utility_SimpleCheckInputs(EventRangeEditField,"Two",strcat('1,',num2str(size(Data.EventRelatedData,2))));
+[EventRangeEditField] = Utility_SimpleCheckInputs(EventRangeEditField,"Two",strcat('1,',num2str(size(Data.EventRelatedData,2))),1,0);
+
+[SpikeTriggeredAverageField] = Utility_SimpleCheckInputs(SpikeTriggeredAverageField,"Two",strcat('-0.005,0.2'),0,0);
+
+%% Time Range Spike Triggered Average
+
+commaindicie = find(SpikeTriggeredAverageField == ',');
+PlotInfo.TimeWindowSpiketriggredLFP(1) = str2double(SpikeTriggeredAverageField(1:commaindicie(1)-1));
+PlotInfo.TimeWindowSpiketriggredLFP(2) = str2double(SpikeTriggeredAverageField(commaindicie(1)+1:end));
 
 %% Convert GUI inputs 
 spaceindicie = strfind(Data.Info.EventRelatedDataTimeRange,' ');
@@ -39,7 +97,6 @@ PlotInfo.ChannelsToPlot(1) = str2double(ChannelSelectionField(1:commaindicie(1)-
 PlotInfo.ChannelsToPlot(2) = str2double(ChannelSelectionField(commaindicie(1)+1:end));
 
 PlotInfo.Time = -PlotInfo.TimearoundEvent(1):1/Data.Info.NativeSamplingRate:PlotInfo.TimearoundEvent(2);
-
 
 PlotInfo.SpikeRateNumBins = str2double(SpikeRateNumBinsEditField);
 
@@ -75,8 +132,12 @@ SpikeAmplitude = TempSpikeAmplitude(EventIndicies==1);
 SpikeCluster = TempSpikeCluster(EventIndicies==1);
 SpikeEvents = TempEvents(EventIndicies==1);
 
-%% Convert Spike Times in seconds and normalize time to event start
-SpikeTimes = (SpikeTimes/Data.Info.NativeSamplingRate)-PlotInfo.TimearoundEvent(1);
+%% Convert Spike Times in seconds and normalize time to negative time event start
+if SpikeTriggereAverage == 1 % For spike triggered average we need spike sample indicies, not time points in seconds
+    SpikeTimes = (SpikeTimes/Data.Info.NativeSamplingRate);
+else
+    SpikeTimes = (SpikeTimes/Data.Info.NativeSamplingRate)-PlotInfo.TimearoundEvent(1);
+end
 
 %% Initialize Plot Info for heatmap
 % Define bin sizes

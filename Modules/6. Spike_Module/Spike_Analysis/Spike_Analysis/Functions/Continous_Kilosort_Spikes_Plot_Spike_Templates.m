@@ -1,5 +1,23 @@
 function Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,ChannelSelection,units,rgbMatrix)
  
+%________________________________________________________________________________________
+%% Function to plot template of spikes for each channel selected
+% Note: Each unit has a template for each channel.
+
+% This function is called in the
+% Continous_Kilosort_Spikes_Manage_Analysis_Plots function
+
+% Inputs:
+% 1. Figure: Figure axes handle top plot in 
+% 2. Data: main window data structure with Data.Spikes and Data.Info field; Data.Spikes with field Data.Spikes.BiggestAmplWaveform
+% 3. ChannelSelection: 1x2 double with channel to plot the waveforms for,
+% i.e. [1,10] for channel 1 to 10
+% 4. units: unitselection as double (1-indexed!)
+% 5. rgbMatrix: ntemplates x 3 double with rgb values for each template 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 Template_handles = findobj(Figure,'Type', 'line', 'Tag', 'Template');
 

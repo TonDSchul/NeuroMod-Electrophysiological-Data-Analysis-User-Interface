@@ -43,7 +43,7 @@ if strcmp(Filetype, "Digital Inputs")
     if strcmp(Data.Info.RecordingType,"IntanDat")
         InputChannelData = {};
 
-        [DatFilePaths,~,~,~,~,~] = LoadIntanDatFiles(FolderPath);
+        [DatFilePaths,~,~,~,~,~] = CheckIntanDatFiles(FolderPath);
         
         for i = 1:length(InputChannelSelection)
             
@@ -80,7 +80,7 @@ elseif strcmp(Filetype, "Analog Input")
 
         InputChannelData = {};
 
-        [DatFilePaths,~,~,~,~,~] = LoadIntanDatFiles(FolderPath);
+        [DatFilePaths,~,~,~,~,~] = CheckIntanDatFiles(FolderPath);
         
         for i = 1:length(InputChannelSelection)
             
@@ -110,7 +110,7 @@ elseif strcmp(Filetype, "AUX Inputs")
 
         InputChannelData = {};
 
-        [DatFilePaths,~,~,~,~,~] = LoadIntanDatFiles(FolderPath);
+        [DatFilePaths,~,~,~,~,~] = CheckIntanDatFiles(FolderPath);
         
         for i = 1:length(InputChannelSelection)
             
@@ -129,6 +129,42 @@ elseif strcmp(Filetype, "AUX Inputs")
         InputDatatoextract={};
         for i = 1:length(InputChannelSelection)
             InputDatatoextract{i} = RHDAllChannelData.aux_input_data(InputChannelSelection(i),:);
+        end
+
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract);
+
+    end
+
+elseif strcmp(Filetype, "DIN Inputs")
+
+    if strcmp(Data.Info.RecordingType,"IntanDat")
+        InputChannelData = {};
+
+        [DatFilePaths,~,~,~,~,~] = CheckIntanDatFiles(FolderPath);
+        
+        for i = 1:length(InputChannelSelection)
+            
+            FileIdentifier = fopen(DatFilePaths{InputChannelIndicie(InputChannelSelection(i))},'r');
+            
+            InputChannelData{i} = fread(FileIdentifier, 'uint16');
+
+            InputChannelData{i} = single(InputChannelData{i}); %analog input to Volt (not mV!)
+
+        end
+
+        if isfield(Data.Info,'CutStart')
+            if ~isempty(Data.Info.CutStart)
+                NumSamples = Data.Info.CutStart;
+            end
+        end
+
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData);
+
+    elseif strcmp(Data.Info.RecordingType,"IntanRHD")
+
+        InputDatatoextract={};
+        for i = 1:length(InputChannelSelection)
+            InputDatatoextract{i} = RHDAllChannelData.board_dig_in_data(InputChannelSelection(i),:);
         end
 
         [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract);

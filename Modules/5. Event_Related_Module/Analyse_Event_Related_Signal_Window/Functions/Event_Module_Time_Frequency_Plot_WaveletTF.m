@@ -1,4 +1,4 @@
-function [climsTF] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection)
+function [climsTF] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection,TwoORThreeD)
 
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths 
@@ -28,104 +28,92 @@ function [climsTF] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,cos
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
+if strcmp(TFType,"TF")
+    if strcmp(Type,"Total")
+        Datatouse = 10*log10(squeeze(tfcycle(1,:,:,1)));
+    elseif strcmp(Type,"NonPhaseLocked")
+        Datatouse = 10*log10(squeeze(tfcycle(2,:,:,1)));
+    elseif strcmp(Type,"PhaseLocked")
+        Datatouse = real(10*log10(squeeze(tfcycle(1,:,:,1))-squeeze(tfcycle(2,:,:,1))));
+    end
+elseif strcmp(TFType,"ITPC")
+    if strcmp(Type,"Total")
+        Datatouse = 10*log10(squeeze(tfcycle(1,:,:,2)));
+    elseif strcmp(Type,"NonPhaseLocked")
+        Datatouse = 10*log10(squeeze(tfcycle(2,:,:,2)));
+    elseif strcmp(Type,"PhaseLocked")
+        Datatouse = real(10*log10(squeeze(tfcycle(1,:,:,2))-squeeze(tfcycle(2,:,:,2))));
+    end
+end
 
 climsTF = [];
 
-if strcmp(TFType,"TF")
-    if strcmp(Type,"Total")
-            hold(Figure, 'on' )
-            Figure.NextPlot = "replace";
-            contourf(Figure,time,frexcycle,10*log10(squeeze(tfcycle(1,:,:,1))),40,'linecolor','none')
-            climsTF(1) = min(10*log10(squeeze(tfcycle(1,:,:,1))),[],'all');
-            climsTF(2) = max(10*log10(squeeze(tfcycle(1,:,:,1))),[],'all');
-            cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-            cbar_handle.Label.String = "dB Power";
-            cbar_handle.Label.Rotation = 270;
+if strcmp(TwoORThreeD,"TwoD")
+    % 2D Plot
+    PowerDepth2D_handles = findobj(Figure, 'Tag', '2DSpectrum');
+    if length(PowerDepth2D_handles)>1
+        delete(PowerDepth2D_handles(2:end));
+    end
     
-            title(Figure,strcat("Total Time Frequency Power Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
-            xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
-            xline(Figure,0,'--','LineWidth',2); 
-            ylim(Figure,[costumfrex(1) costumfrex(3)])
-            hold(Figure, 'off' )
-    elseif strcmp(Type,"NonPhaseLocked")
-            hold(Figure, 'on' )
-            contourf(Figure,time,frexcycle,10*log10(squeeze(tfcycle(2,:,:,1))),40,'linecolor','none');
-            climsTF(1) = min(10*log10(squeeze(tfcycle(2,:,:,1))),[],'all');
-            climsTF(2) = max(10*log10(squeeze(tfcycle(2,:,:,1))),[],'all');
-            cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-            cbar_handle.Label.String = "dB Power";
-            cbar_handle.Label.Rotation = 270;
-            title(Figure,strcat("Non Phase Locked Time Frequency Power Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
-            xline(Figure,0,'--','LineWidth',2); 
-            xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
-            ylim(Figure,[costumfrex(1) costumfrex(3)])
-            hold(Figure, 'off' )
-    
-    elseif strcmp(Type,"PhaseLocked")
-        %Standard TF Plot
-        hold(Figure, 'on' )
-        contourf(Figure,time,frexcycle,real(10*log10(squeeze(tfcycle(1,:,:,1))-squeeze(tfcycle(2,:,:,1)))),40,'linecolor','none');
-        climsTF(1) = min(real(10*log10(squeeze(tfcycle(1,:,:,1))-squeeze(tfcycle(2,:,:,1)))),[],'all');
-        climsTF(2) = max(real(10*log10(squeeze(tfcycle(1,:,:,1))-squeeze(tfcycle(2,:,:,1)))),[],'all');
-        cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-        cbar_handle.Label.String = "dB Power";
-        cbar_handle.Label.Rotation = 270;
-        title(Figure,strcat("Phase Locked Time Frequency Power Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
-        xline(Figure,0,'--','LineWidth',2); 
-        xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
-        ylim(Figure,[costumfrex(1) costumfrex(3)])
-        hold(Figure, 'off' )
+    if isempty(PowerDepth2D_handles)
+        min_z = 0;
+        surface(Figure,time,frexcycle, min_z * ones(size(Datatouse)), ...
+        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+    else
+        min_z = 0;
+        set(PowerDepth2D_handles(1),'XData',time,'YData',frexcycle,'ZData', min_z * ones(size(Datatouse)), ...
+        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+    end
+else
+    PowerDepth2D_handles = findobj(Figure, 'Tag', '2DSpectrum');
+    PowerDepth3D_handles = findobj(Figure, 'Tag', '3DSpectrum');
+
+    if length(PowerDepth2D_handles)>1
+        delete(PowerDepth2D_handles(2:end));
+        PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+    elseif length(PowerDepth3D_handles)>1
+        delete(PowerDepth3D_handles(2:end));
+        PowerDepth3D_handles = findobj(Figure, 'Tag', '3DSpectrum');
     end
 
-elseif strcmp(TFType,"ITPC")
-    %Total ITPC
-    if OneTrial ~= 1
-        if strcmp(Type,"Total")
-            hold(Figure, 'on' )
-            Figure.NextPlot = "replace";
-            contourf(Figure,time,frexcycle,10*log10(squeeze(tfcycle(1,:,:,2))),40,'linecolor','none');
-            climsTF(1) = min(min(10*log10(squeeze(tfcycle(1,:,:,2)))));
-            climsTF(2) = max(max(10*log10(squeeze(tfcycle(1,:,:,2)))));
-            cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-            cbar_handle.Label.String = "dB Power";
-            cbar_handle.Label.Rotation = 270;
-            title(Figure,strcat("Total Intertrial Phase Clustering Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
-            Figure.NextPlot = "add";
-            xline(Figure,0,'--','LineWidth',2); 
-            xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
-            ylim(Figure,[costumfrex(1) costumfrex(3)])
-            hold(Figure, 'off' )    
-        %Non Phase Locked ITPC
-        elseif strcmp(Type,"NonPhaseLocked")
-            hold(Figure, 'on' )
-            Figure.NextPlot = "replace";
-            contourf(Figure,time,frexcycle,10*log10(squeeze(tfcycle(2,:,:,2))),40,'linecolor','none')
-            climsTF(1) = min(min(10*log10(squeeze(tfcycle(2,:,:,2)))));
-            climsTF(2) = max(max(10*log10(squeeze(tfcycle(2,:,:,2)))));
-            cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-            cbar_handle.Label.String = "dB Power";
-            cbar_handle.Label.Rotation = 270;
-            title(Figure,strcat("Non Phase Locked Intertrial Phase Clustering Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
-            Figure.NextPlot = "add";
-            xline(Figure,0,'--','LineWidth',2); 
-            xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
-            ylim(Figure,[costumfrex(1) costumfrex(3)]) 
-            hold(Figure, 'off' )  
-        %Phase Locked Time ITPC
-        elseif strcmp(Type,"PhaseLocked")
-            hold(Figure, 'on' )
-            contourf(Figure,time,frexcycle,real(10*log10(squeeze(tfcycle(1,:,:,2))-squeeze(tfcycle(2,:,:,2)))),40,'linecolor','none')
-            climsTF(1) = min(min(real(10*log10(squeeze(tfcycle(1,:,:,2))-squeeze(tfcycle(2,:,:,2))))));
-            climsTF(2) = max(max(real(10*log10(squeeze(tfcycle(1,:,:,2))-squeeze(tfcycle(2,:,:,2))))));
-            cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-            cbar_handle.Label.String = "dB Power";
-            cbar_handle.Label.Rotation = 270;
-            title(Figure,strcat("Phase Locked Intertrial Phase Clustering Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
-            xline(Figure,0,'--','LineWidth',2); 
-            xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
-            ylim(Figure,[costumfrex(1) costumfrex(3)])
-            hold(Figure, 'off' ) 
-        end
-    
+    if length(PowerDepth3D_handles)+length(PowerDepth2D_handles)==1
+        delete(PowerDepth3D_handles(:));
+        delete(PowerDepth2D_handles(:));
+        PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
+        PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');
     end
+
+    if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
+        %3D
+        surf(Figure,time,frexcycle,Datatouse,'EdgeColor', 'none','Tag','3DSpectrum')
+        %2D
+        % 2D Plot
+        min_z = min(Datatouse,[],'all');
+        surface(Figure,time,frexcycle, min_z * ones(size(Datatouse)), ...
+        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+    else
+        %3D
+        set(PowerDepth3D_handles(1),'XData',time,'YData',frexcycle,'ZData',Datatouse,'CData',Datatouse,'EdgeColor', 'none','Tag','3DSpectrum')
+        %2D
+        % 2D Plot
+        min_z = min(Datatouse,[],'all');
+        set(PowerDepth2D_handles(1),'XData',time,'YData',frexcycle,'ZData', min_z * ones(size(Datatouse)), ...
+        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+    end
+
+    %imagesc(Figure,Time,ydata,mnLFP)
+    view(Figure,45,45);
+    box(Figure, 'off');
+    grid(Figure, 'off');
 end
+
+climsTF(1) = min(Datatouse,[],'all');
+climsTF(2) = max(Datatouse,[],'all');
+cbar_handle=colorbar('peer',Figure,'location','EastOutside');
+cbar_handle.Label.String = "dB Power";
+cbar_handle.Label.Rotation = 270;
+
+title(Figure,strcat("Total Time Frequency Power Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
+xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
+xline(Figure,0,'--','LineWidth',2); 
+ylim(Figure,[costumfrex(1) costumfrex(3)])

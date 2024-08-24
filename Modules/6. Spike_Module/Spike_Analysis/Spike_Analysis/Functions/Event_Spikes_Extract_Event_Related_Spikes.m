@@ -1,9 +1,38 @@
-function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType)
+function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType,SpikeTriggereAverage)
+
+%________________________________________________________________________________________
+
+%% Function to extract spikes within specified range around events
+% This function takes all spikes and sorts for those in the event range
+% every time, the window for event spike analysis is opened. It is saved as
+% Data.EventRelatedSpikes structure, which gets overwritten every time
+
+% This function gets called in the main window when the user clicks on run
+% for event spike analysis (Internal and Kilosort)
+
+% Input:
+% 1. Data: main window data structure containing Spike Data and Data.Info for event
+% infos (like the time range)
+% 2. SpikeType: Type of spikes available, Options: 'Kilosort' OR
+% 'Internal', from Data.Info.SpikeType
+% 3. SpikeTriggereAverage: double, Either 1 to indicate that SpikeTriggereAverage
+% is plotted. This means, that spike samples are not "normalized" to event
+% time range. This enables to extract spike data from raw/preprocessed data. 0
+% Otherwise
+
+% Output
+% 1. Data: main window data structure with added field Data.EventRelatedSpikes
+% 2. Error: double, 1 if error occured, 0 otherwise
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
 
 Error = 0;
 
 if isempty(Data.Spikes)
-    msgbox("No Kilosort Data found.");
+    msgbox("No Spike Data found.");
     Error = 1;
     return;
 end
@@ -25,15 +54,8 @@ spaceindicie = strfind(Data.Info.EventRelatedDataTimeRange," ");
 TimearoundEvent(1) = str2double(Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)-1));
 TimearoundEvent(2) = str2double(Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
 
-% if strcmp(SpikeType,"Internal")
-%     % Time around event
-%     NumSamplesBefore = TimearoundEvent(1);
-%     NumSamplesAfter = TimearoundEvent(2);
-% else
-    % Time around event
-    NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.NativeSamplingRate);
-    NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.NativeSamplingRate);
-% end
+NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.NativeSamplingRate);
+NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.NativeSamplingRate);
 
 Data.EventRelatedSpikes.SpikeTimes = [];
 Data.EventRelatedSpikes.SpikePositions = [];
@@ -41,16 +63,8 @@ Data.EventRelatedSpikes.SpikeCluster = [];
 Data.EventRelatedSpikes.SpikeEvents = [];
 Data.EventRelatedSpikes.SpikeAmps = [];
 
-% Convert Event indicies in time 
-% if strcmp(SpikeType,"Internal")
-    % Events = Data.Events{EventtoShow}./Data.Info.NativeSamplingRate;
-    % SpikeTimes = Data.Spikes.SpikeTimes./Data.Info.NativeSamplingRate;
 Events = Data.Events{EventtoShow};
 SpikeTimes = Data.Spikes.SpikeTimes;
-% else
-%     Events = Data.Events{EventtoShow};
-%     SpikeTimes = Data.Spikes.SpikeTimes;
-% end
 
 % Loop over event indicies (trials)
 for nevents = 1:size(Data.EventRelatedData,2)
@@ -60,7 +74,10 @@ for nevents = 1:size(Data.EventRelatedData,2)
 
     % EventsSpikeeTimes
     TempSpikeTimes = SpikeTimes(SpikeIndicieWithinCurrentEvent==1);
-    TempSpikeTimes = TempSpikeTimes - (Events(nevents) - NumSamplesBefore); % Scaled to event (Time 0)
+    
+    if SpikeTriggereAverage == 0
+        TempSpikeTimes = TempSpikeTimes - (Events(nevents) - NumSamplesBefore); % Scaled to event (Time 0)
+    end
     
     Data.EventRelatedSpikes.SpikeTimes = [Data.EventRelatedSpikes.SpikeTimes;TempSpikeTimes];
     Data.EventRelatedSpikes.SpikePositions = [Data.EventRelatedSpikes.SpikePositions;Data.Spikes.SpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];

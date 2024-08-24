@@ -1,4 +1,26 @@
-function [Data] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig,FunctionOrder,Data,LoadDataPath,LoadedData)
+function [Data] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig,FunctionOrder,Data,DataPath,LoadedData)
+
+%________________________________________________________________________________________
+%% This is the main function to execute continous autorun data analysis 
+
+% This function is called in the Execute_Autorun_Config_Template function
+% when specified in the FunctionOrder
+
+% Inputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected
+% 2. FunctionOrder: 1 x n string array containing the names of the
+% analysis steps to execute
+% 3. Data: main data structure 
+% 4. DataPath: char, Path to currently analyzed folder
+% 5. LoadedData: 1 if data was loaded, 0 if data was extracted
+
+% Outputs:
+% 1. Data: main data structure 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 %______________________________________________________________________________________________________
 %% 3. Continous Data Module
@@ -22,31 +44,13 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
         msgbox("Error: No pipeline components added");
         return;
     end
-    
-    PreviousChannelDeletetion = 0;
-    % If Channel were deleted in previous preprocessing flag this
-    % to reset main window parameter after + only allow for prepro
-    % view if prepro was generated
-    if isfield(Data.Info,"ChannelDeletion")
-        PreviousChannelDeletetion = 1;
-    end
-    
+        
     if isfield(PreproInfo,'ChannelDeletion')
         ChannelDeletion = PreproInfo.ChannelDeletion;
     else
         ChannelDeletion = [];
     end
     
-    Events = [];
-    Spikes = [];
-    
-    if isfield(Data,'Events')
-        Events = Data.Events;
-    end
-    
-    if isfield(Data,'Spikes')
-        Spikes = Data.Spikes.SpikeTimes;
-    end
     TextArea = [];
 
     [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
@@ -104,7 +108,7 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
     
         %% Plot Results if turned on
         if strcmp(AutorunConfig.SaveFigures,"on")
-            Execute_Autorun_Save_Figure(StaticPowerSpectrumfig, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Static Power Spectrum", LoadDataPath, AutorunConfig.StaticPowerSpectrum.PlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "StaticPowerSpectrum")
+            Execute_Autorun_Save_Figure(StaticPowerSpectrumfig, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Static Power Spectrum", DataPath, AutorunConfig.StaticPowerSpectrum.PlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "StaticPowerSpectrum")
         end
     end
 end
@@ -215,11 +219,11 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                     if TotalIterations > 1
                         %% Plot Results if turned on
                         if strcmp(AutorunConfig.SaveFigures,"on")
-                            Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Unit ",num2str(nunits)," Cont_Kilosort_"), LoadDataPath, AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinousIteration")
+                            Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Unit ",num2str(nunits)," Cont_Kilosort_"), DataPath, AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinousIteration")
                         end
                     else
                         if strcmp(AutorunConfig.SaveFigures,"on")
-                            Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Cont_Kilosort_", LoadDataPath, AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
+                            Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Cont_Kilosort_", DataPath, AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
                         end
                     end
                 end
@@ -290,7 +294,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
 
                 %% Plot Results if turned on
                 if strcmp(AutorunConfig.SaveFigures,"on")
-                    Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Cont_Internal_Spikes", LoadDataPath, AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContInternalSpikes")
+                    Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Cont_Internal_Spikes", DataPath, AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContInternalSpikes")
                 end
 
             end % loop over analysis types

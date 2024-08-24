@@ -1,4 +1,4 @@
-function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,WhatToDo,NodeNr,NoddeID,InputChannelSelection)
+function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,WhatToDo,NodeNr,NoddeID,InputChannelSelection,StateSelection)
 
 %% function to extract events from open ephys data
 % This function utilizes functions and some analysis workflows as well as
@@ -47,19 +47,22 @@ function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,Wh
 
 %________________________________________________________________________________________
 
+Info = [];
+Events = {};
+
 % Create a session (loads all data from the most recent recording)
 session = Session(Path);
 
-Info = [];
-Events = {};
-%% If Exctract event window is opened, just get indos about available events
+Info.NodeNrs = length(session.recordNodes);
+
+%% If Exctract event window is opened, just get indos about available events from all available nodes. -- Loops through all of them
 if strcmp(WhatToDo,"Get Information")
-    Info.NodeNrs = [];
     Events = cell(1,length(session.recordNodes));
+    
     for k = 1:length(session.recordNodes)
             
         node = session.recordNodes{k};
-    
+        
         for j = 1:length(node.recordings)
         
             % Get the first recording 
@@ -73,7 +76,7 @@ if strcmp(WhatToDo,"Get Information")
                 events = recording.ttlEvents(processor);
     
                 if ~isempty(events.line)
-                    Info.NodeNrs(k) = k;
+                    Info.AvailabelNodes{k} = k;
                     Events{k} = events;
                 end
             end  
@@ -86,14 +89,15 @@ if strcmp(WhatToDo,"Get Information")
             EventstoDeltete = [EventstoDeltete,i];
         end
     end
-    
-    Events(EventstoDeltete) = [];
-    Info.NodeNrs(Info.NodeNrs==0) = [];
-
+    if ~isempty(EventstoDeltete)
+        Events(EventstoDeltete) = [];
+        Info.AvailabelNodes(EventstoDeltete) = [];
+    end
 end
 
 %% Extract actual events
-
+% -- here, not all nodes get analyzed but those that are selected by the
+% user
 if strcmp(WhatToDo,"All")
     node = session.recordNodes{NodeNr};
     Events = {};
@@ -130,7 +134,7 @@ if strcmp(WhatToDo,"All")
                     end
                 elseif isprop(events,'processor_id')
                     if length(unique(events.processor_id)) > 1
-                        warning("Multiple Node IDs found. Only extracting events for the first one");
+                        warning("Multiple processor IDs found. Only extracting events for the first one");
                     end
                     NodeIdIndicies = events.processor_id == events.processor_id(1);
                     if isprop(events,'sample_number')
@@ -183,12 +187,22 @@ if strcmp(WhatToDo,"All")
     
                 for nevents = 1:length(InputChannelSelection) %% Loop over different event inputs
                     if ~isempty(eventlines)
+                        
                         EventLines = eventlines == InputChannelSelection(nevents);
                         TempSampleNumber = sampleNumber(EventLines==1);
                         TempEventState = states(EventLines==1);
-                        TempEventStateIndicies = TempEventState == 1;
-    
-                        Events{nevents} = double(TempSampleNumber(TempEventStateIndicies == 1))';
+                        TempEventStateIndicies = double(TempEventState) == str2double(StateSelection);
+                        
+                        allsamples = double(TempSampleNumber(TempEventStateIndicies == 1));
+                        
+                        zerosample = allsamples == 0;
+
+                        if sum(zerosample)>0
+                            msgbox("Warning: Sample Nr 0 found and deleted");
+                            allsamples(zerosample==1) = [];
+                        end
+
+                        Events{nevents} = allsamples';
                         
                         Info.NrEventChannel = recording.ttlEvents.Count;
                         Info.EventChannelName{nevents} = strcat("Event Input Line ",num2str(nevents));
@@ -203,4 +217,4 @@ if strcmp(WhatToDo,"All")
             end
         end  
     end % node.recordings
-end
+end % WhatToDo == "All"

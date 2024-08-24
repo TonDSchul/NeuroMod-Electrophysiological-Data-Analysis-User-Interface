@@ -32,8 +32,9 @@ end
 
 if strcmp(Format,".dat")
     
-    h = waitbar(0, 'Loading Header and General Infos...', 'Name','Loading Header and General Infos...');
     Header = load(FullPathInfo);
+
+    h = waitbar(0, 'Loading Header and General Infos...', 'Name','Loading Header and General Infos...');
     msg = sprintf('Loading Data... (%d%% done)', 50);
     waitbar(50, h, msg);
     

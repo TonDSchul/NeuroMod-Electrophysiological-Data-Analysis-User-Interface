@@ -1,5 +1,42 @@
 function Execute_Autorun_Save_Figure(Figure, ImageFormat, deletefigure, SaveName, LoadDataPath, Plottype, OENodePath, PlotAddons, RecordingsSystem, LoadedData, PlotName)
 
+%________________________________________________________________________________________
+%% This is the main function to save figures when plotted during an autorun
+
+% This function is called every time, a plotted figure is supposed to be
+% saved. This follows a standard folder scheme. 
+% For Intan: Pictures of all analysis
+% excecpt of waveform plots for individual units is save in the
+% recordingfolder/Matlab in the specified format. Unit waveform plots are
+% saved in recordingfolder/Matlab/Units.
+% For Open Ephys: Pictures of all analysis
+% excecpt of waveform plots for individual units is save in the
+% recordingfolder/Matlab/Record Node in the specified format. Unit waveform plots are
+% saved in recordingfolder/Matlab/Record Node/Units.
+
+% Inputs:
+% 1. Figure: figure axes handle to plot in
+% 2. ImageFormat: char, Otions: 'png', 'svg', 'fig'
+% 3. deletefigure: if 1: figure is deleted after saving, Otherwise 0
+% 4. SaveName: char, name of the saved picture (gets combined with Plottype input argument)
+% 5. LoadDataPath: char, path to currently analyzed folder
+% 6. Plottype: char, specifies from which module the analysis comes (kilosort and internal spikes would have same name when save if the kind is not incorporated in the name)
+% 7. OENodePath: Just open Ephys: name of the record node as the folder to
+% save in (Path/Matlab/Reord Node/Image.omg)
+% 8. PlotAddons: char, If one analysis has multiple ways of plotting that
+% are looped through, specified the name here. i.e. for time frequency power user
+% can plot ITPC and Time Frequency Power which has to be incorporate in
+% name to make the unique
+% 9. RecordingsSystem: char, just important if 'Open Ephys', not relevant
+% for other recording systems here
+% 10. LoadedData: true when data was laoded, false when it was executed
+% 11. PlotName: Name of the current plot to identify where this function is
+% executed. For Options see below
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if LoadedData == false
     % Define name of the folder and files to create
     if strcmp(RecordingsSystem,"Open Ephys")
@@ -58,8 +95,8 @@ elseif LoadedData == true
         if isstring(LoadDataPath)
             LoadDataPath = convertStringsToChars(LoadDataPath);
         end
-        Dashindex = find(LoadDataPath=='\');
-        LoadDataPath = LoadDataPath(1:Dashindex(end-1)-1);
+        % % Dashindex = find(LoadDataPath=='\');
+        % % LoadDataPath = LoadDataPath(1:Dashindex(end-1)-1);
 
         if strcmp(PlotName,"TF")
             Filename = strcat(LoadDataPath,'\Matlab\',Plottype,"_",SaveName,PlotAddons);

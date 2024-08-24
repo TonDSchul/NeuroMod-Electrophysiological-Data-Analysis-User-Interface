@@ -374,7 +374,11 @@ if ~isempty(Data)
             if Autorun == "SingleFolder"
                 filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-1)+1:dashindex(end)-1),".dat"));
             elseif Autorun == "MultipleFolder"
-                filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
+                if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
+                    filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-1)+1:dashindex(end)-1),".dat"));
+                elseif strcmp(Data.Info.RecordingType,"Open Ephys")
+                    filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
+                end
             end
         end
 

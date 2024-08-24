@@ -1,4 +1,27 @@
 function [Data] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder,Data,nRecordings)
+
+%________________________________________________________________________________________
+%% This is the main function to execute spike module autorun analysis 
+
+% This function is called in the Execute_Autorun_Config_Template function
+% when specified in the FunctionOrder
+
+% Inputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected
+% 2. FunctionOrder: 1 x n string array containing the names of the
+% analysis steps to execute
+% 3. Data: main data structure 
+% 4. nRecordings: double, max number of folder iterated through
+
+% Outputs:
+% 1. Data: main data structure 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 %______________________________________________________________________________________________________
 %% 5. Spike Module Functions
 %______________________________________________________________________________________________________

@@ -69,11 +69,16 @@ Data.Events = cell(1,length(InputChannelData));
 for numchannels = 1:length(InputChannelData)   
     % Find the indices of elements greater than the threshold
     aboveThreshold = InputChannelData{numchannels} >= Threshold;
-    
-    % Loop through the aboveThreshold array to find the start of each sequence
-    for i = 1:length(aboveThreshold)-1
-        if aboveThreshold(i) && (i == 1 || ~aboveThreshold(i-1)) && (aboveThreshold(i+1))
-            Data.Events{numchannels} = [Data.Events{numchannels}, i];
+    belowThreshold = InputChannelData{numchannels} < Threshold;
+    if sum(aboveThreshold) == length(InputChannelData{numchannels}) || sum(belowThreshold) == length(InputChannelData{numchannels}) % --> if no value smaller than threshold: ill defined, no events captured
+        msgbox(strcat("No value smaller than threshold: ill defined, no events captured for event channel",num2str(numchannels))); 
+        Data.Events{numchannels} = [];
+    else
+        % Loop through the aboveThreshold array to find the start of each sequence
+        for i = 1:length(aboveThreshold)-1
+            if aboveThreshold(i) && (i == 1 || ~aboveThreshold(i-1)) && (aboveThreshold(i+1))
+                Data.Events{numchannels} = [Data.Events{numchannels}, i];
+            end
         end
     end
 end
