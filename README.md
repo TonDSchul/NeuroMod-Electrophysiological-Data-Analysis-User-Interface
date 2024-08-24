@@ -6,22 +6,28 @@ Neuromod is an interactive toolbox for analyzing and visualizing electrophysiolo
 It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all without reinventing the wheel. 
 Neuromod is designed to offer a comfortable and user-friendly experience, providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
 
-<br>
-
 ## **Data Formats and Capabilities**
- <img src="Modules/MISC/Images/bandicam 2024-08-17 21-02-44-393.jpg" align="right" width="550" height="350"/>
-The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
+ <img src="Modules/MISC/Images/Example_Image1.jpg" align="right" width="550" height="350"/>
+The toolbox currently supports recordings from linear probes across all Intan recording systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 <br>
 <br>
-Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
-Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. 
+<br>
+Available types of analysis include current source density analysis, static power spectrum analysis, 
+time-frequency power analysis, and event-related potentials for low-frequency signal components.
+Additionally, the toolbox fully supports Kilosort 4, allowing users to save data and create channel maps for Kilosort 
+and load Kilosort result files for interactive spike data visualization and analysis.
+<br>
+<br>
+ <img src="Modules/MISC/Images/Example_Image2.jpg" align="right" width="550" height="350"/>
+If Kilosort can’t be used, the toolbox offers spike detection using different 
+thresholding methods as well. 
 <br>
 <br>
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
-Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
+Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies <br>
+selected methods to all recordings in a file, automatically saving all possible visualizations based on a single config file with a few options to specify.
 As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
 
 
@@ -47,3 +53,8 @@ They can be found here:
 > ## **Disclaimer**
 This toolbox was created and is maintained by a single person as part of a PhD Project and Hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
 Feel free to contact me for tips and requests or pull a request/open an issue on Github. I try to get around all of them and provide guidance and help. 
+
+> ## **How to cite**
+de Schultz T., Lippert M, Ohl F., 2024, Neuromod - Fully Interactive Ephys Data Analysis and Visualization for Matlab
+> ## **License**
+This project is licensed under the terms of the MIT license.
