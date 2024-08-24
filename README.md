@@ -7,7 +7,7 @@ It seamlessly integrates established methods and toolboxes, such as Kilosort and
 Neuromod is designed to offer a comfortable and user-friendly experience, providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
 
 ## **Data Formats and Capabilities**
- <img src="Modules/MISC/Images/Example_Image1.jpg" align="right" width="550" height="350"/>
+ <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="550" height="350"/>
 The toolbox currently supports recordings from linear probes across all Intan recording systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 <br>
@@ -19,11 +19,11 @@ Additionally, the toolbox fully supports Kilosort 4, allowing users to save data
 and load Kilosort result files for interactive spike data visualization and analysis.
 <br>
 <br>
- <img src="Modules/MISC/Images/Example_Image2.jpg" align="right" width="550" height="350"/>
+ <img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="550" height="350"/>
 If Kilosort can’t be used, the toolbox offers spike detection using different 
 thresholding methods as well. 
 <br>
-<br>
+<br> <img src="Modules/MISC/Images/Example_Image_3.jpg" align="right" width="550" height="350"/>
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
 Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies <br>
