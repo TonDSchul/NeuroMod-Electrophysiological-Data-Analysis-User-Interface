@@ -17,7 +17,9 @@ Available types of analysis include current source density analysis, static powe
 time-frequency power analysis, and event-related potentials for low-frequency signal components.
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data and create channel maps for Kilosort 
 and load Kilosort result files for interactive spike data visualization and analysis.
+<br>
 NOTE: Currently only Kilosort 4 versions up to 4.0.13 are supported. Install legacy version py typing in your anaconda promt: conda activate kilsorot; python -m pip install "kilosort[gui]"==4.0.13
+<br>
 If Kilosort can’t be used, the toolbox offers spike detection using different 
 thresholding methods as well. 
 This variety along with the simultaneous real time plotting of results provide several possibilities to correlate spike and LFP data along with dedicated spike triggered average analysis.
