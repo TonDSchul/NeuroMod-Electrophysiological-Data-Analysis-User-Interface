@@ -18,7 +18,7 @@ time-frequency power analysis, and event-related potentials for low-frequency si
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data and create channel maps for Kilosort 
 and load Kilosort result files for interactive spike data visualization and analysis.
 <br>
-NOTE: Currently only Kilosort 4 versions up to 4.0.8 are supported. Install legacy version py typing in your anaconda promt: conda activate kilsorot; python -m pip install "kilosort[gui]"==4.0.8
+NOTE: Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug of the read npy toolbox. Install legacy version by typing in your anaconda promt: conda activate kilosort; python -m pip install "kilosort[gui]"==4.0.8
 <br>
 If Kilosort can’t be used, the toolbox offers spike detection using different 
 thresholding methods as well. 
