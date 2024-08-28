@@ -29,8 +29,13 @@ Additionally, the toolbox fully supports Kilosort 4, allowing users to save data
 and load Kilosort result files for interactive spike data visualization and analysis.
 <br>
 <br>
-__NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug of the read npy toolbox. Install legacy version by typing in your anaconda promt: conda activate kilosort; python -m pip install "kilosort[gui]"==4.0.8
-<br>
+__NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug of the read npy toolbox. Install legacy version by typing in your anaconda promt: 
+```python
+conda activate kilosort
+```
+```python
+python -m pip install "kilosort[gui]"==4.0.8
+```
 <br>
 If Kilosort can’t be used, the toolbox offers spike detection using different 
 thresholding methods as well. 
@@ -49,7 +54,7 @@ As a result, Neuromod is not only ideal for teaching purposes or evaluating reco
 Abother feature making this user intrerface attractive for your data analysis is the ability to easily add your own data analysis to integrate it into the rest of your analyiss pipeline. 
 All you have to do is to follow this link and watch a short tuorial how to create your own app window, integrate it into the rest of the GUI, giving fully real time control over all parts of the data:
 LINK TO YOUTUBE TUTORIAL
-
+<br>
 <table>
   <tr>
     <td><img src="Modules/MISC/Images/Example_Image_3.jpg" width="450" height="350"/></td>
