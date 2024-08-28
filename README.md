@@ -10,7 +10,6 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 <br>
 
 ## **Data Formats and Capabilities**
-<<<<<<< HEAD:Proj. Ephys GUI/README.md
  <img src="Modules/MISC/Images/bandicam 2024-08-17 21-02-44-393.jpg" align="right" width="550" height="350"/>
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
@@ -37,11 +36,9 @@ __NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a 
 If Kilosort can’t be used, the toolbox offers spike detection using different 
 thresholding methods as well. 
 This variety along with the simultaneous real time plotting of results provide several possibilities to correlate spike and LFP data along with dedicated spike triggered average analysis.
->>>>>>> a63cdb25c3ffb48cee3b9b3a595a817d97375d4a:README.md
 <br>
 <br> 
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
-<<<<<<< HEAD:Proj. Ephys GUI/README.md
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
 Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
 As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
@@ -61,9 +58,6 @@ LINK TO YOUTUBE TUTORIAL
     <td><img src="Modules/MISC/Images/Example_Image_2.jpg" width="550" height="350"/></td>
   </tr>
 </table>
-
->>>>>>> a63cdb25c3ffb48cee3b9b3a595a817d97375d4a:README.md
-
 
 ## **How to use**
 
