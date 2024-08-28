@@ -67,7 +67,7 @@ LINK TO YOUTUBE TUTORIAL
 There are two ways to use this toolbox: 
 - Either you download all the files as they are, unpack them and double click in the windows file explorer on the app file (or right click in matlab current folder window and click on run).
 - Alternatively you can type the following into the matlab command window while being in the folder containing the GUI:
-```python
+```matlab
 Neuromod_Toolbox_GUI
 ```
 However, this requires a valid Matlab license.
