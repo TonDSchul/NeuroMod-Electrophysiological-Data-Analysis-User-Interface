@@ -1,0 +1,70 @@
+function Extract_Events_Module_Load_and_Plot_Events(EventInfo,FilePaths,Figure,SelectedEventChannelNames,AllChannelNames,Data,RHDAllChannelData,DownsampleRate)
+
+%% Get original channel names
+if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
+    for i = 1:length(AllChannelNames)
+        if strcmp(SelectedEventChannelNames,AllChannelNames{i})
+            InputChannelSelection = i;
+        end
+    end
+end
+% extract data for .data files
+if strcmp(Data.Info.RecordingType,"IntanDat")
+    %% Load Data
+    FileIdentifier = fopen(FilePaths{EventInfo(InputChannelSelection)},'r');
+    
+    InputChannelData = fread(FileIdentifier, 'uint16');
+    
+    InputChannelData = single(InputChannelData); %analog input to Volt (not mV!)
+
+    % for rhd was already extracted (to not load data every time this
+    % function is called) -- eaier to load at start ups
+elseif strcmp(Data.Info.RecordingType,"IntanRHD")
+
+    InputChannelData = single(RHDAllChannelData(InputChannelSelection,:));
+    clear("RHDAllChannelData");
+elseif strcmp(Data.Info.RecordingType,"Open Ephys") || strcmp(Data.Info.RecordingType,"Neuralynx")
+    InputChannelData = EventInfo;
+elseif strcmp(Data.Info.RecordingType,"Spike2")
+    InputChannelData = EventInfo{1};
+    if size(InputChannelData,1)>1
+        InputChannelData = InputChannelData';
+    end
+end
+
+%% Downsample if not empty
+if ~isempty(DownsampleRate)
+    DownsampleRate = str2double(DownsampleRate);
+    DownsampleFactor = round(Data.Info.NativeSamplingRate/DownsampleRate);
+    InputChannelData = downsample(InputChannelData,DownsampleFactor);
+    Time = downsample(Data.Time,DownsampleFactor);
+else
+    Time = Data.Time;
+end
+
+%% Plot Data
+
+EventPlotHandles = findobj(Figure, 'Type', 'line', 'Tag', 'Events');
+if length(EventPlotHandles)>1
+    delete(EventPlotHandles(2:end));
+end
+
+EventPlotHandles = findobj(Figure, 'Type', 'line', 'Tag', 'Events');
+
+xlabel(Figure,"Time [s]")
+ylabel(Figure,"Signal [V]")
+if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
+    title(Figure,strcat("Signal in V from Channel ",AllChannelNames{InputChannelSelection}));
+elseif strcmp(Data.Info.RecordingType,"Open Ephys")
+    title(Figure,strcat("Signal in V from Node ",AllChannelNames," Line ",SelectedEventChannelNames));
+elseif strcmp(Data.Info.RecordingType,"Spike2")
+    title(Figure,strcat("Signal in V from Node ",AllChannelNames," Channel ",SelectedEventChannelNames));
+end
+
+xlim(Figure,[Time(1) Time(end)]);
+
+if isempty(EventPlotHandles)
+    line(Figure,Time(1:length(InputChannelData)),InputChannelData,'LineWidth',1.5,'Color','b', 'Tag', 'Events');
+else
+    set(EventPlotHandles(1), 'XData', Time(1:length(InputChannelData)), 'YData', double(InputChannelData), 'Color', 'b', 'Tag', 'Events');
+end

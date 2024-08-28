@@ -1,0 +1,49 @@
+# Neuromod - Fully Interactive Ephys Data Analysis and Visualization for Matlab
+
+> <img src="Modules/MISC/Images/Logo.png" align="right" width="200" height="200"/>
+
+Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
+It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all without reinventing the wheel. 
+Neuromod is designed to offer a comfortable and user-friendly experience, providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
+
+<br>
+
+## **Data Formats and Capabilities**
+ <img src="Modules/MISC/Images/bandicam 2024-08-17 21-02-44-393.jpg" align="right" width="550" height="350"/>
+The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
+In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
+<br>
+<br>
+Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
+Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
+If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. 
+<br>
+<br>
+Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
+This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
+Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
+As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
+
+
+## **How to use**
+
+There are two ways to use this toolbox: 
+- Either you download all the files as they are, unpack them and double click in the windows file explorer on the app file (or right click in matlab current folder window and click on run).
+However, this requires a valid Matlab license.
+- Or you download the standalone version of this app, which you can execute without a valid Matlab license by just installing the Matlab runtime.
+- The code was written in Matlab Version 2023 and 2024. There is no guarantue for other Verions. It requires the following Matlab addons: Signal Processing Toolbox
+- To extract Spike2 .smrx files and use Kilosort you need to install the respective libraries /toolboxes yourself. However, once you done that the integration in this toolbox is seamless.
+They can be found here: 
+
+
+## **Rules and Philosophie of the Toolbox**
+- First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
+- All relevant analysis and data parts are saved in a single structure with a limited and clear amount of fields that every window shares. Changes in one window are automatically available in another window.
+- All interactive parts like buttons, checkboxes and so on that are disabled (grey and cant be clicked on) can be activated by conducting the necessary analysis step before. For example, to enable to ‘Event Data’ checkbox on the right of the main window, you first have to extract events. 
+- If the user tries to do an analysis without proper preprocessing or enters a wrong format into any field requiring user input, values are either autocorrected and/or the user gets a message why the operation is not possible. The aim is to give an explanation of what to do when an error occurs, not only throw out an error nobody understands. 
+- In every window were you select a folder to load and some information about folder or data contents are shown, the folders were autosearched for the expected contents. If no expected contents were found, the user gets a message that nothing was found and has to select himself. This means that when you see information there, everything goes well. 
+- All functions are designed in a way that they can be easily used outside of the user interface with just a few support functions, including all visualizations. This enables the Autorun functionality of the GUI, where you can apply all analysis and plots in a loop to several recordings.
+
+> ## **Disclaimer**
+This toolbox was created and is maintained by a single person as part of a PhD Project and Hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
+Feel free to contact me for tips and requests or pull a request/open an issue on Github. I try to get around all of them and provide guidance and help. 
