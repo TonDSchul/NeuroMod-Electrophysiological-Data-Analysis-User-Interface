@@ -66,6 +66,10 @@ LINK TO YOUTUBE TUTORIAL
 
 There are two ways to use this toolbox: 
 - Either you download all the files as they are, unpack them and double click in the windows file explorer on the app file (or right click in matlab current folder window and click on run).
+- Alternatively you can type the following into the matlab command window while being in the folder containing the GUI:
+```python
+Neuromod_Toolbox_GUI
+```
 However, this requires a valid Matlab license.
 - Or you download the standalone version of this app, which you can execute without a valid Matlab license by just installing the Matlab runtime.
 - The code was written in Matlab Version 2023 and 2024. There is no guarantue for other Verions. It requires the following Matlab addons: Signal Processing Toolbox
