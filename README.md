@@ -134,21 +134,21 @@ When you extract .smrx for the first time, you are asked to select the folder in
 [NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
 
 ## **Other Toolboxes used**
-The data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by fieldtrip using the ... functions. Moreover, Fieldtrip is used to apply filter to the data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
+The data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to apply filter to the data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
 
-Check out Fieldtrip: 
+Check out **Fieldtrip**: 
 
 https://github.com/fieldtrip/fieldtrip
 
 Data and event extraction of Open Ephys data formats is handled by the Open Ephys Matlab Tools. As a template, the 'load_all_formats.m' function was used and completly modified. The remaining funcions are unchanged. It is also used as the source for the read_npy.m function. 
 
-Check out the Open Ephys Matlab Tools: 
+Check out the **Open Ephys Matlab Tools**: 
 
 https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
 
 Lastly, some functions from the Spikes repository from the cortex-lab Github page were used. Almost all functions used are modified to make the spike and LFP power over depth analysis methods interactive, more efficient and flexible.
 
-Check out the Spikes repository from the cortex-lab: 
+Check out the **Spikes repository from the cortex-lab**: 
 
 https://github.com/cortex-lab/spikes
 
