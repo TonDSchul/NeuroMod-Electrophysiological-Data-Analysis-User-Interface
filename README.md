@@ -25,7 +25,7 @@ time-frequency power analysis, and event-related potentials for low-frequency si
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data and create channel maps for Kilosort 
 and load Kilosort result files for interactive spike data visualization and analysis.
 
-__NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug of the read npy toolbox. Install legacy version by typing in your anaconda promt: 
+__NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug of the read npy toolbox. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
 conda activate kilosort
 ```
@@ -33,7 +33,7 @@ conda activate kilosort
 python -m pip install "kilosort[gui]"==4.0.8
 ```
 
-For more information how to install Kilosort 4:
+For a guide how to installed Kilosort 4 and for more information visit:
 
 https://github.com/MouseLand/Kilosort
 
@@ -43,7 +43,7 @@ This variety along with the simultaneous real time plotting of results provide s
 
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
-Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify.
+Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify (see below).
 As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
 This design ensures a smooth, code-free user experience, offering helpful guidance while having full control over the analysis at the same time.
 Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies 
@@ -70,7 +70,7 @@ LINK TO YOUTUBE TUTORIAL
 Neuromod_Toolbox_GUI
 ```
 
-- Along with Matlab you need the following Matlab Toolboxes:
+- Along with Matlab you need the following Matlab Toolboxes for unrestricted functionality:
 
 ```matlab
 Communications Toolbox
@@ -90,6 +90,38 @@ Symbolic Math Toolbox
 Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
 
+Here is a rough overview for what you need what toolboxes:
+
+**1. To extract Neuralynx or Plexon data, you need:**
+```matlab
+Database Toolbox
+Fixed Point Designer
+Image Processing Toolbox
+Optimization Toolbox
+Robust Control Toolbox
+Signal Processing Toolbox
+Statistics and Machine Learning Toolbox
+Symbolic Math Toolbox
+```
+**2. For preprocessing (filtering) of data with fieldtrip:**
+```matlab
+Signal Processing Toolbox
+Statistics and Machine Learning Toolbox
+```
+**3. Spike Repository and with it a lot of spike analyses:**
+```matlab
+Communications Toolbox
+Deep Learning Toolbox
+Optimization Toolbox
+Signal Processing Toolbox
+Statistics and Machine Learning Toolbox
+```
+**4. For everythin else:**
+```matlab
+Signal Processing Toolbox
+Statistics and Machine Learning Toolbox
+```
+
 For more information how to install Matlab toolboxes:
 
 https://de.mathworks.com/help/matlab/matlab_env/get-add-ons.html
@@ -105,7 +137,13 @@ If you want to update fieldtrip or one of the other tools available on Github, t
 - First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that other updated code parts will remain compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
 - If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
-  
+
+**Autorun Functionality**
+- If you have multiple recordings and a fixed analyis pipeline with the GUI you want to apply to them, you can use the Autorun function to not have to click yourself through the GUI over and over again. This loops over every recording independent of the GUI, and is able to apply all data extraction, processing and analysis steps the GUI also provides as well as saves results automatically in the recording folder.
+- The specific processing steps and the parameter can be modified in a config file found in GUI_Path\Autorun_Configs\Config_Files(do not edit!). However, you dont need to navigate in this directory and modify things in it, since everything is controlled in the Autorun Manager Window accessed through the menu on the top left of the GUI main window (you can just start the GUI and start the Autorun Manager, no additionall steps required).
+- In the Autorun Manager you can select a config file, open it in the GUI itself or let the config file being opened in Matlab directly to modify it. There is a template config file for each recording system you can use to get started.
+- Once you are satisfied, select a folder, your probe specifications (channel spacing and optionally channel order) and start the pipeline. The pipeline will run through and gives messages about the progress in the matlab command window.
+- For more information, see the documentation:
 
 ## **Rules and Philosophie of the Toolbox**
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
