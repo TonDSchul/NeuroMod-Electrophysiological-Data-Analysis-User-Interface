@@ -59,17 +59,34 @@ LINK TO YOUTUBE TUTORIAL
 </table>
 
 ## **How to use**
-
 There are two ways to use this toolbox: 
 <br>
 <br>
 **1. Option**
 <br>
-- Download and unpack the toolbox files. Now you can eihter double click the Neuromod_Toolbox_GUI.mlapp file, which opens Matlab and subsequently the GUI. You can also 'cd' into the folder you saved the files at with the matlab command window, right click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and click on run. The last option is to type the following into the matlab command window while being in the folder containing the GUI:
+- Download and unpack the toolbox files and execute them with an installed and veryfied Matlab version. Now you can eihter double click the Neuromod_Toolbox_GUI.mlapp file, which opens Matlab and subsequently the GUI. You can also 'cd' into the folder you saved the files at with the matlab command window, right click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and click on run. The last option is to type the following into the matlab command window while being in the folder containing the GUI:
 ```matlab
 Neuromod_Toolbox_GUI
 ```
-- However, this requires a valid Matlab license.
+- Make sure you have the following Matlab toolboxes installed:
+
+```matlab
+Communications Toolbox
+Database Toolbox
+Deep Learning Toolbox
+Fixed Point Designer
+Fuzzy Logic Toolbox
+Image Processing Toolbox
+Optimization Toolbox
+Robust Control Toolbox
+Signal Processing Toolbox
+Statistics and Machine Learning Toolbox
+Symbolic Math Toolbox
+```
+For more information how to install the Toolboxes:
+
+https://de.mathworks.com/help/matlab/matlab_env/get-add-ons.html
+
 <br>
 **2. Option**
 <br>
