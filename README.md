@@ -139,6 +139,25 @@ If you want to update fieldtrip or one of the other tools available on Github, t
   
 [NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
 
+## **Other Toolboxes used**
+The data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by fieldtrip using the ... functions. Moreover, Fieldtrip is used to apply filter to the data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
+
+Check out Fieldtrip: 
+
+https://github.com/fieldtrip/fieldtrip
+
+Data and event extraction of Open Ephys data formats is handled by the Open Ephys Matlab Tools. As a template, the 'load_all_formats.m' function was used and completly modified. The remaining funcions are unchanged. It is also used as the source for the read_npy.m function. 
+
+Check out the Open Ephys Matlab Tools: 
+
+https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
+
+Lastly, some functions from the Spikes repository from the cortex-lab Github page were used. Almost all functions used are modified to make the spike and LFP power over depth analysis methods interactive, more efficient and flexible.
+
+Check out the Spikes repository from the cortex-lab: 
+
+https://github.com/cortex-lab/spikes
+
 ## **Rules and Philosophie of the Toolbox**
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
 - All relevant analysis and data parts are saved in a single structure with a limited and clear amount of fields that every window shares. Changes in one window are automatically available in another window.
