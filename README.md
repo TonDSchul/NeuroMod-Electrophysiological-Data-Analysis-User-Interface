@@ -33,6 +33,10 @@ conda activate kilosort
 python -m pip install "kilosort[gui]"==4.0.8
 ```
 
+For more information how to install Kilosort 4:
+
+https://github.com/MouseLand/Kilosort
+
 If Kilosort can’t be used, the toolbox offers spike detection using different 
 thresholding methods as well. 
 This variety along with the simultaneous real time plotting of results provide several possibilities to correlate spike and LFP data along with dedicated spike triggered average analysis.
@@ -58,17 +62,15 @@ LINK TO YOUTUBE TUTORIAL
   </tr>
 </table>
 
-## **How to use**
-There are two ways to use this toolbox: 
-<br>
-<br>
-**1. Option**
-<br>
+## **How to use the GUI** ##
+
 - Download and unpack the toolbox files and execute them with an installed and veryfied Matlab version. Now you can eihter double click the Neuromod_Toolbox_GUI.mlapp file, which opens Matlab and subsequently the GUI. You can also 'cd' into the folder you saved the files at with the matlab command window, right click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and click on run. The last option is to type the following into the matlab command window while being in the folder containing the GUI:
+
 ```matlab
 Neuromod_Toolbox_GUI
 ```
-- Make sure you have the following Matlab toolboxes installed:
+
+- Along with Matlab you need the following Matlab Toolboxes:
 
 ```matlab
 Communications Toolbox
@@ -83,18 +85,27 @@ Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
 Symbolic Math Toolbox
 ```
-For more information how to install the Toolboxes:
+
+**Note:**
+Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
+Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
+
+For more information how to install Matlab toolboxes:
 
 https://de.mathworks.com/help/matlab/matlab_env/get-add-ons.html
 
-<br>
-**2. Option**
-<br>
-- Or you download the standalone version of this app, which you can execute without a valid Matlab license by just installing the Matlab runtime.
-- The code was written in Matlab Version 2023 and 2024. There is no guarantue for other Verions. It requires the following Matlab addons: Signal Processing Toolbox
-- To extract Spike2 .smrx files and use Kilosort you need to install the respective libraries /toolboxes yourself. However, once you done that the integration in this toolbox is seamless.
-They can be found here: 
+- If you want to extract .smrx files from Spike2, you need to install the Spike2 MATLAB SON Interface from:
 
+https://ced.co.uk/upgrades/spike2matson
+
+When you extract .smrx for the first time, you are asked to select the folder in which you installed the Spike2 MATLAB SON Interface to be able to use the library. The path is saved permanently, so you only have to do this once.
+
+**General Remark:**
+If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
+- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that other updated code parts will remain compatible with the modified files.
+- Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
+- If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
+  
 
 ## **Rules and Philosophie of the Toolbox**
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
