@@ -116,7 +116,7 @@ Optimization Toolbox
 Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
 ```
-**4. For everythin else:**
+**4. For everything else:**
 ```matlab
 Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
@@ -126,7 +126,7 @@ For more information how to install Matlab toolboxes:
 
 https://de.mathworks.com/help/matlab/matlab_env/get-add-ons.html
 
-- If you want to extract .smrx files from Spike2, you need to install the Spike2 MATLAB SON Interface from:
+If you want to extract .smrx files from Spike2, you need to install the Spike2 MATLAB SON Interface from:
 
 https://ced.co.uk/upgrades/spike2matson
 
