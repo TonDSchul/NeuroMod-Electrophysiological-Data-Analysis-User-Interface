@@ -90,7 +90,7 @@ Symbolic Math Toolbox
 Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
 
-Here is a rough overview for what you need what toolboxes:
+Here is a overview for what you need what toolboxes:
 
 **1. To extract Neuralynx or Plexon data, you need:**
 ```matlab
