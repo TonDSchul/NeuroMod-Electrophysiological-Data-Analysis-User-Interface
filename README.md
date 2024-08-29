@@ -152,6 +152,8 @@ Check out the **Spikes repository from the cortex-lab**:
 
 https://github.com/cortex-lab/spikes
 
+- Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
+   
 **General Remark:**
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
 - First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
