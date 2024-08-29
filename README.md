@@ -64,7 +64,10 @@ LINK TO YOUTUBE TUTORIAL
 
 ## **How to use the GUI** ##
 
-- Download and unpack the toolbox files and execute them with an installed and veryfied Matlab version. Now you can eihter double click the Neuromod_Toolbox_GUI.mlapp file, which opens Matlab and subsequently the GUI. You can also 'cd' into the folder you saved the files at with the matlab command window, right click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and click on run. The last option is to type the following into the matlab command window while being in the folder containing the GUI:
+- Download and unpack the toolbox files, then run them using a verified and installed version of MATLAB. You have several options to launch the GUI:
+  1. Double-click the 'Neuromod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
+  2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
+  3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window while in the folder containing the GUI:
 
 ```matlab
 Neuromod_Toolbox_GUI
