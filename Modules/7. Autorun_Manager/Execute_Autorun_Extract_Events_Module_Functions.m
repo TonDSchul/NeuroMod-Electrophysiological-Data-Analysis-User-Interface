@@ -61,20 +61,25 @@ end
 % 4.1 Extract EventRelated Data
 %______________________________________________________________________________________________________
 if isfield(Data,'Events')
-    if strcmp(FunctionOrder,'Extract_Event_Related_Data')
-        if isempty(AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse)
-            AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = Data.Info.EventChannelNames{1};
-        end
-    
-        [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse,AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent,AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent,AutorunConfig.ExtractEventRelatedDataModule.DataSource);
+    if ~isempty(Data.Events)
+        if strcmp(FunctionOrder,'Extract_Event_Related_Data')
+            if isempty(AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse)
+                AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = Data.Info.EventChannelNames{1};
+            end
         
-        if isfield(Data,'EventRelatedData') 
-            if ~isempty(Data.EventRelatedData)
-                 disp("Success. Event related data can now be analysed.");
-            else
-                disp("No Event Related Data extracted");
+            [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse,AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent,AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent,AutorunConfig.ExtractEventRelatedDataModule.DataSource);
+            
+            if isfield(Data,'EventRelatedData') 
+                if ~isempty(Data.EventRelatedData)
+                     disp("Success. Event related data can now be analysed.");
+                else
+                    disp("No Event Related Data extracted");
+                end
             end
         end
+    else
+        disp("No Events found, skipping step.");
+        msgbox("No Events found, skipping step.");
     end
 else % if isfield(Data,'Events')
     disp("No Events found, skipping step.");
@@ -216,7 +221,154 @@ else % if isfield(Data,'Events')
 end
 
 %______________________________________________________________________________________________________
-% 4.1 Event Related Spike Analysis
+% 4.2 Prepro event related data
+%______________________________________________________________________________________________________
+if strcmp(FunctionOrder,'PreproEventDataModule')
+    % First Trial Rejection
+    if AutorunConfig.PreproEventDataModule.TrialRejection == true
+    
+        EventRelatedDataTimeRange = [];
+        EventTime = [];
+    
+        spaceindicie = find(Data.Info.EventRelatedDataTimeRange == ' ');
+        EventRelatedDataTimeRange(1) = str2double(Data.Info.EventRelatedDataTimeRange(1:spaceindicie));
+        EventRelatedDataTimeRange(2) = str2double(Data.Info.EventRelatedDataTimeRange(spaceindicie+1:end));
+        
+        if strcmp(Data.Info.EventRelatedDataType,'Raw')
+            EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
+        else
+            if isfield(Data.Info,"DownsampleFactor")
+                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.DownsampledSampleRate:EventRelatedDataTimeRange(2);
+            else
+                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
+            end
+        end
+    
+        if ~isempty(EventTime)
+            if isfield(Data,'PreprocessedEventRelatedData')
+                [EventRelatedData,Error,~] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data.PreprocessedEventRelatedData,EventTime,'OnlyReject',[],[],[],AutorunConfig.PreproEventDataModule.TrialsToReject);
+            else
+                [EventRelatedData,Error,~] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data.EventRelatedData,EventTime,'OnlyReject',[],[],[],AutorunConfig.PreproEventDataModule.TrialsToReject);
+            end
+
+            if Error == 0
+                Data.PreprocessedEventRelatedData = EventRelatedData;
+                CommaTest = find(AutorunConfig.PreproEventDataModule.TrialsToReject == ',');
+                Trials(1,1) = str2double(AutorunConfig.PreproEventDataModule.TrialsToReject(1:CommaTest(1)-1));
+                Trials(1,2) = str2double(AutorunConfig.PreproEventDataModule.TrialsToReject(CommaTest+1:end));
+                if isfield(Data,'PreprocessedEventRelatedData')
+                    Channel = [1,size(Data.PreprocessedEventRelatedData,1)];
+                else
+                    Channel = [1,size(Data.EventRelatedData,1)];
+                end
+                [Data] = Preprocessing_Events_Add_Preprocessing_Info(Data,'Trial Rejection',Channel,Trials,[]);
+            
+                disp("Rejection of selected trials succesfull.");
+            else
+                disp("Trial Rejection was not possible. No valid event time window.");
+            end
+        elseif isempty(EventTime) 
+           disp("Trial Rejection was not possible. No valid event time window.");
+        end
+    end
+    % Channel Rejection
+    if AutorunConfig.PreproEventDataModule.ChannelRejection == true
+        indicesep = find(AutorunConfig.PreproEventDataModule.ChannelToReject == ',');
+        RejectChannel(1,1) = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject(1:indicesep(1)-1));
+        RejectChannel(1,2) = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject(indicesep+1:end));
+    
+        EventTime = [];
+        if strcmp(Data.Info.EventRelatedDataType,'Raw')
+            EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
+        else
+            if isfield(Data.Info,"DownsampleFactor")
+                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.DownsampledSampleRate:EventRelatedDataTimeRange(2);
+            else
+                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
+            end
+        end
+
+        if isfield(Data,'PreprocessedEventRelatedData')
+            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Channel_Rejection(Data.PreprocessedEventRelatedData,EventTime,RejectChannel,[],[],"InterpolatedOnly");
+        else
+            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Channel_Rejection(Data.EventRelatedData,EventTime,RejectChannel,[],[],"InterpolatedOnly");
+        end
+    
+        Trials = [1,size(Data.PreprocessedEventRelatedData,2)];
+        
+        [Data] = Preprocessing_Events_Add_Preprocessing_Info(Data,'Channel Rejection',RejectChannel,Trials,[]);
+    
+    end
+    % Artefact Rejection
+    if AutorunConfig.PreproEventDataModule.ArtefactRejection == true
+        if isempty(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject)
+            if isfield(Data,'PreprocessedEventRelatedData')
+                AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,1)));
+            else
+                AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = strcat('1,',num2str(size(Data.EventRelatedData,1)));
+            end
+        end
+    
+        if isempty(AutorunConfig.PreproEventDataModule.EventsToReject)
+            if isfield(Data,'PreprocessedEventRelatedData')
+                AutorunConfig.PreproEventDataModule.EventsToReject = strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,2)));
+            else
+                AutorunConfig.PreproEventDataModule.EventsToReject = strcat('1,',num2str(size(Data.EventRelatedData,2)));
+            end
+        end
+
+        EventTime = [];
+        if strcmp(Data.Info.EventRelatedDataType,'Raw')
+            EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
+        else
+            if isfield(Data.Info,"DownsampleFactor")
+                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.DownsampledSampleRate:EventRelatedDataTimeRange(2);
+            else
+                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
+            end
+        end
+    
+        % Apply rejection
+        %% Get Timewindow and trial information from GUI
+        if isempty(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent)
+            TimeWindin(1,1) = app.EventTime(floor(length(app.EventTime)/3));
+            TimeWindin(1,2) = app.EventTime(floor(length(app.EventTime)/3)*2);
+        else
+            indicesep = find(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent == ',');
+            TimeWindin(1,1) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(1:indicesep(1)-1));
+            TimeWindin(1,2) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(indicesep+1:end));
+        end
+    
+        %Channel
+        indicesep = find(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject == ',');
+        Channel(1,1) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1:indicesep(1)-1));
+        Channel(1,2) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(indicesep+1:end));
+        if Channel(1,2) > size(Data.EventRelatedData,1)
+            msgbox("Last channel bigger than channel number. Autosetting to all channel");
+            Channel(1,2) = size(Data.EventRelatedData,1);
+            AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = strcat("1,",num2str(size(Data.EventRelatedData,1)));
+        end
+    
+        indicesep = find(AutorunConfig.PreproEventDataModule.EventsToReject == ',');
+        Trials(1,1) = str2double(AutorunConfig.PreproEventDataModule.EventsToReject(1:indicesep(1)-1));
+        Trials(1,2) = str2double(AutorunConfig.PreproEventDataModule.EventsToReject(indicesep+1:end));
+    
+        %ChanneltoPlot = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject);
+        
+        %% Extract Data and Plot
+    
+        if isfield(Data,'PreprocessedEventRelatedData')
+            [Data.PreprocessedEventRelatedData,~,~] = Preprocessing_Events_Reject_and_Plot_Artefacts(Data.PreprocessedEventRelatedData,Channel,Trials,EventTime,TimeWindin,[],[],[],AutorunConfig.PreproEventDataModule.ArtefactChannelToReject,[],AutorunConfig.PreproEventDataModule.Method,'Interpolating',[],'No Plot');
+        else
+            [Data.PreprocessedEventRelatedData,~,~] = Preprocessing_Events_Reject_and_Plot_Artefacts(Data.EventRelatedData,Channel,Trials,EventTime,TimeWindin,[],[],[],AutorunConfig.PreproEventDataModule.ArtefactChannelToReject,[],AutorunConfig.PreproEventDataModule.Method,'Interpolating',[],'No Plot');
+        end
+    
+        [Data] = Preprocessing_Events_Add_Preprocessing_Info(Data,'Artefact Rejection',Channel,Trials,TimeWindin);
+    
+    end
+end
+%______________________________________________________________________________________________________
+% 4.3 Event Related Spike Analysis
 %______________________________________________________________________________________________________
 
 if isfield(Data,'Events')

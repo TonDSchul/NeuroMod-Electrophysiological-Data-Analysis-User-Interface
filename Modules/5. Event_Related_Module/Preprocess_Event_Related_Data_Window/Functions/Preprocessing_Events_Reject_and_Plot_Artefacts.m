@@ -31,7 +31,7 @@ function [EventRelatedData,ERP,ERPs] = Preprocessing_Events_Reject_and_Plot_Arte
 % 11. ChannelSpacing: as double in um, in Data.Info.Channelspacing
 % 12. InterpolationMethod: string, method to apply to data in timewin;
 % Option: "Linear Interpolation" 
-% 13. Type: char, determines what is done here, Options: 'DeleteandPlot' (interpolates data for bottom plot, sets NaN for to plot) OR
+% 13. Type: char, determines what is done here, Options: 'DeleteandPlot' (interpolates data for bottom plot, sets NaN for top plot) OR
 % 'Interpolating' (just sets data in timwin to NaN for top ERP plot)
 % 14. colorMap: nchannel x 3 double matrix with rgb values for the color
 % of each channel for the plot on the right side

@@ -111,11 +111,11 @@ else
             else
                 [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.ncs');
             end
-        elseif strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Spike2")
+        elseif strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Neuralynx")
             if find(AutorunConfig.FunctionOrder == "Load_Data")
                 [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.dat');
             else
-                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.smrx');
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.ncs');
             end
         end
 

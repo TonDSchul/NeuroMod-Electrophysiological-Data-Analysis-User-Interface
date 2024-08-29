@@ -44,12 +44,6 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     
     [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Internal",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD);
     
-    if isempty(TempData) % if not preprocessed
-       Data = [];
-    else
-        Data = TempData; % if preprocessed
-    end
-    
     % Spike Rate -- extract events again with last input being 0
      [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',0);
 
@@ -61,6 +55,12 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     
     Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"BinsizeChangeInitial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr(1):PlotInfo.EventNr(2)),"Non",SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot)
 
+    if isempty(TempData) % if not preprocessed
+        Data = [];
+    else
+        Data = TempData; % if preprocessed
+    end
+    
 elseif strcmp(AnalysisTypeDropDown,"ISI (All Channel together)") || strcmp(AnalysisTypeDropDown,"ISI (Over Channel)")
     
     % some Spikeindicies are ngative to account for event time. This has to

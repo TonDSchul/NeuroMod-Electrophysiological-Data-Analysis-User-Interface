@@ -33,19 +33,13 @@ elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunCon
     SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
 elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Neuralynx")
     SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
+elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Spike2")
+    SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
 else
     SelectedFolder = AutorunConfig.selected_folder;
 end
-
-if strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Intan")
-    [containsFiles] = Execute_Autorun_Config_Check_Intan_Folder_Contents(SelectedFolder,AutorunConfig);
-
-    if containsFiles == false
-        Data = [];
-        return;
-    end
-
-elseif strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Open Ephys")
+    
+if strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Open Ephys")
     %% Search for open ephys data
     [stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
     FolderIndicieWithEphysData = [];

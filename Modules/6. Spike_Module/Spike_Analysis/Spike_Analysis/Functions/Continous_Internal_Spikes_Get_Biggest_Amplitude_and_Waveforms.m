@@ -88,7 +88,7 @@ BiggestSpikeIndicies = zeros(length(SpikeTimes),1);
 % Loop through each channel to find the biggest NRWaveformsToExtract amplitudes
 for nchannel = 1:length(ChannelRange)
     channel_indices = SpikePositions == (nchannel-1)*Data.Info.ChannelSpacing;
-    TempAmplitudes = Amplitudes;
+    TempAmplitudes = abs(Amplitudes);
     TempAmplitudes(~channel_indices) = -1000;
     if sum(channel_indices)>=NumWaveforms
         [~,Index] = maxk(TempAmplitudes,NumWaveforms);

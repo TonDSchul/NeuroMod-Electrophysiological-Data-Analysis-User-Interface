@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_Spike2_Spike_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_OPEN_EPHYS_Analysis(DisplayOrder)
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -35,7 +35,7 @@ function [AutorunConfig] = Autorun_Config_Spike2_Spike_Analysis(DisplayOrder)
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Save_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
 
 % General Information
-AutorunConfig.AutorunConfigName = "Spike2 LFP and Spike Analysis";
+AutorunConfig.AutorunConfigName = "OE LFP and Spike Analysis";
 AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
 AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
 AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
@@ -60,8 +60,8 @@ end
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
 AutorunConfig.ExtractRawRecording.ChannelSpacing = 50; % Some Standard value. Has to be manually specified in Autorun window
-AutorunConfig.ExtractRawRecording.RecordingsSystem = "Spike2"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
-AutorunConfig.ExtractRawRecording.FileType = ".smrx"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
+AutorunConfig.ExtractRawRecording.RecordingsSystem = "Open Ephys"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
+AutorunConfig.ExtractRawRecording.FileType = "Record Node 101"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -127,11 +127,12 @@ AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4.1 Extract Events and Data
 %______________________________________________________________________________________________________
-% Warning: DO NOT CHANEG ChannelOfInterest 
-% EventChannelSelection = Data channel which hold event inputs
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Spike2 Channel'; %DO NOT CHANGE!
-AutorunConfig.ExtractEventDataModule.EventChannelSelection = '9,10'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
-AutorunConfig.ExtractEventDataModule.EventSignalThreshold = ''; % Threshold of event signal at which events are extracted as char
+% Warning: ChannelOfInterest is the node in which you saved events.
+% EventChannelSelection is the line number holding events. Multiple are possible,seperated by a comma (see event extraction window info about events)
+% Threshold for open ephys is the state, either 1 or 0
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 113'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
+AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % Threshold of event signal at which events are extracted as char
 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
