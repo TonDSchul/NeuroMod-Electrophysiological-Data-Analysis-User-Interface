@@ -25,7 +25,7 @@ time-frequency power analysis, and event-related potentials for low-frequency si
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data and create channel maps for Kilosort 
 and load Kilosort result files for interactive spike data visualization and analysis.
 
-__NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug of the read npy toolbox. When you already install a newer version, install legacy version by typing in your anaconda promt: 
+__NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug in which one of the kilosort .npy output files apparently dont contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
 conda activate kilosort
 ```
@@ -134,7 +134,7 @@ When you extract .smrx for the first time, you are asked to select the folder in
 
 **General Remark:**
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
-- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that other updated code parts will remain compatible with the modified files.
+- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
 - If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
 
