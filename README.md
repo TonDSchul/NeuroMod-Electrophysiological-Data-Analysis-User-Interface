@@ -25,7 +25,7 @@ time-frequency power analysis, and event-related potentials for low-frequency si
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data and create channel maps for Kilosort 
 and load Kilosort result files for interactive spike data visualization and analysis.
 
-__NOTE:__ Currently only Kilosort 4 versions up to 4.0.8 are supported due to a bug of the read npy toolbox. When you already install a newer version, install legacy version by typing in your anaconda promt: 
+__NOTE:__ Currently only Kilosort 3 and Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
 conda activate kilosort
 ```
@@ -36,6 +36,10 @@ python -m pip install "kilosort[gui]"==4.0.8
 For a guide how to installed Kilosort 4 and for more information visit:
 
 https://github.com/MouseLand/Kilosort
+
+To download Kilsort 3 visit: 
+
+https://github.com/MouseLand/Kilosort/releases/tag/v3.0.2
 
 If Kilosort can’t be used, the toolbox offers spike detection using different 
 thresholding methods as well. 
@@ -64,33 +68,21 @@ LINK TO YOUTUBE TUTORIAL
 
 ## **How to use the GUI** ##
 
-- Download and unpack the toolbox files and execute them with an installed and veryfied Matlab version. Now you can eihter double click the Neuromod_Toolbox_GUI.mlapp file, which opens Matlab and subsequently the GUI. You can also 'cd' into the folder you saved the files at with the matlab command window, right click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and click on run. The last option is to type the following into the matlab command window while being in the folder containing the GUI:
+- Download and unpack the toolbox files, then run them using a verified and installed version of MATLAB. You have several options to launch the GUI:
+  1. Double-click the 'Neuromod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
+  2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
+  3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window after navigating (cd) to the folder containing the GUI:
 
 ```matlab
 Neuromod_Toolbox_GUI
 ```
 
 - Along with Matlab you need the following Matlab Toolboxes for unrestricted functionality:
-
-```matlab
-Communications Toolbox
-Database Toolbox
-Deep Learning Toolbox
-Fixed Point Designer
-Fuzzy Logic Toolbox
-Image Processing Toolbox
-Optimization Toolbox
-Robust Control Toolbox
-Signal Processing Toolbox
-Statistics and Machine Learning Toolbox
-Symbolic Math Toolbox
-```
-
 **Note:**
 Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
 
-Here is a rough overview for what you need what toolboxes:
+**Overview of require Matlab toolboxes:**
 
 **1. To extract Neuralynx or Plexon data, you need:**
 ```matlab
@@ -134,16 +126,18 @@ When you extract .smrx for the first time, you are asked to select the folder in
 
 **General Remark:**
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
-- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that other updated code parts will remain compatible with the modified files.
+- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
 - If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
 
 **Autorun Functionality**
-- If you have multiple recordings and a fixed analyis pipeline with the GUI you want to apply to them, you can use the Autorun function to not have to click yourself through the GUI over and over again. This loops over every recording independent of the GUI, and is able to apply all data extraction, processing and analysis steps the GUI also provides as well as saves results automatically in the recording folder.
-- The specific processing steps and the parameter can be modified in a config file found in GUI_Path\Autorun_Configs\Config_Files(do not edit!). However, you dont need to navigate in this directory and modify things in it, since everything is controlled in the Autorun Manager Window accessed through the menu on the top left of the GUI main window (you can just start the GUI and start the Autorun Manager, no additionall steps required).
-- In the Autorun Manager you can select a config file, open it in the GUI itself or let the config file being opened in Matlab directly to modify it. There is a template config file for each recording system you can use to get started.
-- Once you are satisfied with the config file, select a folder containing your recording(s), specify your probe properties (channel spacing and optionally channel order) and start the pipeline. The pipeline will run through and give messages about the progress in the matlab command window.
+- If you have multiple recordings and want to apply a fixed analysis pipeline using the GUI, you can automate the process with the Autorun function. This feature eliminates the need to manually navigate the GUI for each recording. Instead, it automatically processes each recording, applying all the data extraction, processing, and analysis steps offered by the GUI while being independent from it. All visualizations and analysis specified are then saved automatically in the respective recording folder.
+- You can modify the specific processing steps and parameters using the configuration file located in GUI_Path\Autorun_Configs\Config_Files(do not edit!). However, there’s no need to navigate to this directory or make manual changes, as everything is managed through the Autorun Manager Window. You can access this window from the menu in the top left corner of the GUI’s main window. Simply start the GUI and open the Autorun Manager—no additional steps are required.
+- In the Autorun Manager, you can select a configuration file to open directly within the GUI or in MATLAB for editing. To help you get started, a template configuration file is available for each recording system.
+- Once you are satisfied with the configuration file, select a folder containing your recording(s), specify your probe properties (channel spacing and optionally channel order) and start the pipeline. The pipeline will run through and give messages about the progress in the matlab command window.
 - For more information, see the documentation:
+  
+[NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
 
 ## **Rules and Philosophie of the Toolbox**
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
