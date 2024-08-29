@@ -67,33 +67,18 @@ LINK TO YOUTUBE TUTORIAL
 - Download and unpack the toolbox files, then run them using a verified and installed version of MATLAB. You have several options to launch the GUI:
   1. Double-click the 'Neuromod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
   2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
-  3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window while in the folder containing the GUI:
+  3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window after navigating (cd) to the folder containing the GUI:
 
 ```matlab
 Neuromod_Toolbox_GUI
 ```
 
 - Along with Matlab you need the following Matlab Toolboxes for unrestricted functionality:
-
-```matlab
-Communications Toolbox
-Database Toolbox
-Deep Learning Toolbox
-Fixed Point Designer
-Fuzzy Logic Toolbox
-Image Processing Toolbox
-Optimization Toolbox
-Robust Control Toolbox
-Signal Processing Toolbox
-Statistics and Machine Learning Toolbox
-Symbolic Math Toolbox
-```
-
 **Note:**
 Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
 
-Here is a overview for what you need what toolboxes:
+**Overview of require Matlab toolboxes:**
 
 **1. To extract Neuralynx or Plexon data, you need:**
 ```matlab
