@@ -133,6 +133,8 @@ When you extract .smrx for the first time, you are asked to select the folder in
   
 [NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
 
+- Or see the README file in each folder containing functions, summarizing all function headers.
+
 ## **Other Toolboxes used**
 The data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to apply filter to the data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
 
