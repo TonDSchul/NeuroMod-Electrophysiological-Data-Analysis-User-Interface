@@ -1,5 +1,13 @@
 # Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab <img src="Modules/MISC/Images/Logo.png" align="right" width="200" height="200"/>
+  
+Ever wanted to watch an almost psychedelic video of your recording data in front of you,
+alligned to a three dimensional plot of the current source density while ordering a second monitor the be able to compare spike analyis to it? Then you are perfectly right!
 
+Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
+It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all with prooven methods and without reinventing the wheel. 
+The aim is to offer a comfortable and user-friendly experience with support for many of the most popular recording formats, while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
+
+## **Table of Contents**
 - [Data Formats and Capabilities](#data-formats-and-capabilities)
   
 - [How to use the GUI](#how-to-use-the-gui)
@@ -15,23 +23,17 @@
 - [Rules and Philosophy of the Toolbox](#rules-and-philosophy-of-the-toolbox)
   
 - [Disclaimer, License and Contact](#disclaimer-license-and-contact)
-  
-Ever wanted to watch an almost psychedelic video of your recording data in front of you,
-alligned to a three dimensional plot of the current source density while ordering a second monitor the be able to compare spike analyis to it? Then you are perfectly right!
-
-Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
-It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all with prooven methods and without reinventing the wheel. 
-The aim is to offer a comfortable and user-friendly experience with support for many of the most popular recording formats, while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
 
 ## **Data Formats and Capabilities**
+
+<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" style="max-width:100%; height:auto;" /><br>
+
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
 Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
 If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. 
-
- <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="550" height="350"/>
 
 The toolbox currently supports recordings from linear probes across all Intan recording systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
@@ -74,11 +76,10 @@ Another feature making this user intrerface attractive for your data analysis is
 All you have to do is to follow this link and watch a short tuorial how to create your own app window, integrate it into the rest of the GUI, giving fully real time control over all parts of the data:
 LINK TO YOUTUBE TUTORIAL
 
-<br>
 <table>
   <tr>
-    <td><img src="Modules/MISC/Images/Example_Image_3.jpg" width="450" height="350"/></td>
-    <td><img src="Modules/MISC/Images/Example_Image_2.jpg" width="550" height="350"/></td>
+    <td><img src="Modules/MISC/Images/Example_Image_3.jpg" style="max-width:100%; height:auto;"/></td>
+    <td><img src="Modules/MISC/Images/Example_Image_2.jpg" style="max-width:100%; height:auto;"/></td>
   </tr>
 </table>
 
