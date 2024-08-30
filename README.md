@@ -91,7 +91,7 @@ Neuromod_Toolbox_GUI
 Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
 
-### **Overview of require Matlab toolboxes:**
+### **Overview of require Matlab toolboxes**
 
 **1. To extract Neuralynx or Plexon data, you need:**
 ```matlab
@@ -165,7 +165,7 @@ https://github.com/cortex-lab/spikes
 
 - Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
    
-### **General Remarks:**
+### **General Remarks**
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
 - First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
