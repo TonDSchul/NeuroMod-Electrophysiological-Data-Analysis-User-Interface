@@ -91,7 +91,7 @@ Neuromod_Toolbox_GUI
 Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
 
-### **Overview of require Matlab toolboxes**
+### **Overview of required Matlab toolboxes**
 
 **1. To extract Neuralynx or Plexon data, you need:**
 ```matlab
@@ -171,7 +171,7 @@ If you want to update fieldtrip or one of the other tools available on Github, t
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
 - If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
   
-## **Rules and Philosophie of the Toolbox**
+## **Rules and Philosophy of the Toolbox**
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
 - All relevant analysis and data parts are saved in a single structure with a limited and clear amount of fields that every window shares. Changes in one window are automatically available in another window.
 - All interactive parts like buttons, checkboxes and so on that are disabled (grey and cant be clicked on) can be activated by conducting the necessary analysis step before. For example, to enable to ‘Event Data’ checkbox on the right of the main window, you first have to extract events. 
