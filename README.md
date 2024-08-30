@@ -5,7 +5,7 @@
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
   - [Autorun Functionality](#autorun-functionality)
 - [Other Toolboxes Used](#other-toolboxes-used)
-- [General Remarks](#general-remarks)
+  - [General Remarks](#general-remarks)
 - [Rules and Philosophy of the Toolbox](#rules-and-philosophy-of-the-toolbox)
 - [Disclaimer, License and Contact](#disclaimer-license-and-contact)
   
@@ -91,7 +91,7 @@ Neuromod_Toolbox_GUI
 Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
 
-**Overview of require Matlab toolboxes:**
+### **Overview of require Matlab toolboxes:**
 
 **1. To extract Neuralynx or Plexon data, you need:**
 ```matlab
@@ -133,7 +133,7 @@ https://ced.co.uk/upgrades/spike2matson
 
 When you extract .smrx for the first time, you are asked to select the folder in which you installed the Spike2 MATLAB SON Interface to be able to use the library. The path is saved permanently, so you only have to do this once.
 
-**Autorun Functionality**
+### **Autorun Functionality**
 - If you have multiple recordings and want to apply a fixed analysis pipeline using the GUI, you can automate the process with the Autorun function. This feature eliminates the need to manually navigate the GUI for each recording. Instead, it automatically processes each recording, applying all the data extraction, processing, and analysis steps offered by the GUI while being independent from it. All visualizations and analysis specified are then saved automatically in the respective recording folder.
 - You can modify the specific processing steps and parameters using the configuration file located in GUI_Path\Autorun_Configs\Config_Files(do not edit!). However, there’s no need to navigate to this directory or make manual changes, as everything is managed through the Autorun Manager Window. You can access this window from the menu in the top left corner of the GUI’s main window. Simply start the GUI and open the Autorun Manager—no additional steps are required.
 - In the Autorun Manager, you can select a configuration file to open directly within the GUI or in MATLAB for editing. To help you get started, a template configuration file is available for each recording system.
@@ -165,7 +165,7 @@ https://github.com/cortex-lab/spikes
 
 - Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
    
-**General Remarks:**
+### **General Remarks:**
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
 - First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
