@@ -1,12 +1,19 @@
 # Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab <img src="Modules/MISC/Images/Logo.png" align="right" width="200" height="200"/>
 
 - [Data Formats and Capabilities](#data-formats-and-capabilities)
+  
 - [How to use the GUI](#how-to-use-the-gui)
+  
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
+    
   - [Autorun Functionality](#autorun-functionality)
+    
 - [Other Toolboxes Used](#other-toolboxes-used)
+  
   - [General Remarks](#general-remarks)
+    
 - [Rules and Philosophy of the Toolbox](#rules-and-philosophy-of-the-toolbox)
+  
 - [Disclaimer, License and Contact](#disclaimer-license-and-contact)
   
 Ever wanted to watch an almost psychedelic video of your recording data in front of you,
