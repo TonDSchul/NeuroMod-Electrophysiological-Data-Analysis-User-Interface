@@ -15,9 +15,9 @@ The aim is to offer a comfortable and user-friendly experience with support for 
   
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
     
-  - [Autorun Functionality](#autorun-functionality)
-    
   - [Overview of other Toolboxes used](#overview-of-other-toolboxes-used)
+    
+  - [Autorun Functionality](#autorun-functionality) 
   
   - [General Remarks](#general-remarks)
     
