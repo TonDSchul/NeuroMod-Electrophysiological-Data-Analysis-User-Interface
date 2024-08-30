@@ -74,7 +74,7 @@ if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
     xlim(BandPowerFigure,dispRange);
     title(BandPowerFigure,'Power over Depth')
     xlabel(BandPowerFigure,'Frequency [Hz]');
-    %set(BandPowerFigure, 'YDir', 'reverse');
+    set(BandPowerFigure, 'YDir', 'reverse');
     ylabel(BandPowerFigure,'Depth on Probe [µm]');
     cbar_handle=colorbar('peer',BandPowerFigure,'location','EastOutside');
     cbar_handle.Label.String = "Power [dB]";
@@ -89,7 +89,6 @@ end
 %     set(ax, 'XTick', []);
 %     hleg = legend(array2stringCell(marginalChans*10));
 %     set(hleg, 'Position', [0.7125    0.7607    0.1036    0.2083]);
-
 
 if strcmp(WhattoPlot,"Just Frequency Bands") || strcmp(WhattoPlot,"All")
     c = copper(length(freqBands));

@@ -176,7 +176,7 @@ elseif strcmp(Type,"Loading")
         app.PreprocDataPlotCheckBox.Value = 1;
     end
 
-    stdrawdata = double(std(app.Data.Raw,[],'all','omitnan'));
+    stdrawdata = double(std(app.Data.Raw,[],'all'));
     if stdrawdata-stdrawdata*2 < 0
         lowerlimit = 0;
     else
@@ -277,6 +277,7 @@ elseif strcmp(Type,"VariableDefinition")
     else
         lowerlimit = stdrawdata-stdrawdata*2;
     end
+
     app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*10];
     app.Slider.Value = stdrawdata*2;
 
