@@ -1,5 +1,14 @@
 # Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab <img src="Modules/MISC/Images/Logo.png" align="right" width="200" height="200"/>
 
+- [Data Formats and Capabilities](#data-formats-and-capabilities)
+- [How to use the GUI](#how-to-use-the-gui)
+  - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
+  - [Autorun Functionality](#autorun-functionality)
+- [Other Toolboxes Used](#other-toolboxes-used)
+- [General Remarks](#general-remarks)
+- [Rules and Philosophy of the Toolbox](#rules-and-philosophy-of-the-toolbox)
+- [Disclaimer, License and Contact](#disclaimer-license-and-contact)
+  
 Ever wanted to watch an almost psychedelic video of your recording data in front of you,
 alligned to a three dimensional plot of the current source density while ordering a second monitor the be able to compare spike analyis to it? Then you are perfectly right!
 
@@ -156,7 +165,7 @@ https://github.com/cortex-lab/spikes
 
 - Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
    
-**General Remark:**
+**General Remarks:**
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
 - First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
