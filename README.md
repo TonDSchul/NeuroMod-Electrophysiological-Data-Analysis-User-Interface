@@ -125,7 +125,9 @@ When you extract .smrx for the first time, you are asked to select the folder in
 
 > ### **Overview of Other Toolboxes Used**
 
-The data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to apply filter to the data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
+Some aspects of data extraction and analysis are handled by other Toolboxes, which dont have to be installed since the required functions are included in the source code (Data Path\Modules\Toolboxes).
+
+Specifically, the data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to for filtering data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
 
 Check out **Fieldtrip**: 
 
@@ -137,14 +139,21 @@ Check out the **Open Ephys Matlab Tools**:
 
 https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
 
-Lastly, some functions from the Spikes repository from the cortex-lab Github page were used. Almost all functions used are modified to make the spike and LFP power over depth analysis methods interactive, more efficient and flexible.
+Lastly, some functions from the cortex-lab Github page were used ('Spikes' repository) for spike analysis and LFP Band power analysis. Almost all functions used were modified to make to fit the purpose of this GUI.
 
-Check out the **Spikes repository from the cortex-lab**: 
+Check out the **Spikes repository from the Cortex-Lab**: 
 
 https://github.com/cortex-lab/spikes
 
 - Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
 
+> ### **General Remarks**
+
+If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
+- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
+- Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
+- If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
+  
 > ### **Autorun Functionality**
 
 - If you have multiple recordings and want to apply a fixed analysis pipeline using the GUI, you can automate the process with the Autorun function. This feature eliminates the need to manually navigate the GUI for each recording. Instead, it automatically processes each recording, applying all the data extraction, processing, and analysis steps offered by the GUI while being independent from it. All visualizations and analysis specified are then saved automatically in the respective recording folder.
@@ -156,13 +165,6 @@ https://github.com/cortex-lab/spikes
 [NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
 
 - Or see the README file in each folder containing functions, summarizing all function headers.
-  
-> ### **General Remarks**
-
-If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
-- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
-- Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
-- If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
   
 > ## **Rules and Philosophy of the Toolbox**
 > 
