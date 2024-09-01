@@ -1,8 +1,5 @@
 # Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab <img src="Modules/MISC/Images/Logo.png" align="right" width="200" height="200"/>
   
-Ever wanted to watch an almost psychedelic video of your recording data in front of you,
-alligned to a three dimensional plot of the current source density while ordering a second monitor the be able to compare spike analyis to it? Then you are perfectly right!
-
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
 It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all with prooven methods and without reinventing the wheel. 
 The aim is to offer a comfortable and user-friendly experience with support for many of the most popular recording formats, while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
@@ -33,7 +30,7 @@ The toolbox currently supports recordings from linear probes across all Intan sy
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
-Additionally, the toolbox fully supports Kilosort 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
+Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
 If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. 
 
 __NOTE:__ Currently only Kilosort 3 and Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
@@ -52,18 +49,13 @@ To download Kilsort 3 visit:
 
 https://github.com/MouseLand/Kilosort/releases/tag/v3.0.2
 
-If Kilosort can’t be used, the toolbox offers spike detection using different 
-thresholding methods as well. 
-This variety along with the simultaneous real time plotting of results provide several possibilities to correlate spike and LFP data along with dedicated spike triggered average analysis.
-
 Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
-This design ensures a smooth, code-free user experience, offering helpful guidance and full control over the analysis.
-Besides the analysis of a single recording with the user interface, this toolbox includes an autorun functionality that applies selected methods to all recordings in a file, automatically saving all possible visualizations based on a single Config file with a few options to specify (see below).
+This design ensures a smooth, code-free user experience, offering helpful guidance while still having full control over the analysis.
+Besides the analysis of a single recording with the user interface, an autorun functionality can be used, desgined to apply selected methods to all recordings in a folder, automatically saving all possible analysis visualizations based on a single Config file with a few options to specify (see below).
 As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
-This design ensures a smooth, code-free user experience, offering helpful guidance while having full control over the analysis at the same time.
 
-Another feature making this user intrerface attractive for your data analysis is the ability to easily add your own data analysis to integrate it into the rest of your analyiss pipeline. 
-All you have to do is to follow this link and watch a short tuorial how to create your own app window, integrate it into the rest of the GUI, giving fully real time control over all parts of the data:
+Another feature of this user intrerface is the ability to easily add your own data analysis to integrate it into the rest of your analyiss pipeline. 
+All you have to do is to follow this link and watch a short tuorial how to create your own app window and integrate it into the rest of the GUI, giving fully real time control over all data components:
 LINK TO YOUTUBE TUTORIAL
 
 <table>
