@@ -123,7 +123,7 @@ https://ced.co.uk/upgrades/spike2matson
 
 When you extract .smrx for the first time, you are asked to select the folder in which you installed the Spike2 MATLAB SON Interface to be able to use the library. The path is saved permanently, so you only have to do this once.
 
-> ### **Overview of other Toolboxes used**
+> ### **Overview of Other Toolboxes Used**
 
 The data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to apply filter to the data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
 
