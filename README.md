@@ -12,7 +12,7 @@ The aim is to offer a comfortable and user-friendly experience with support for 
   
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
     
-  - [Overview of other Toolboxes used](#overview-of-other-toolboxes-used)
+  - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
     
   - [Autorun Functionality](#autorun-functionality) 
   
