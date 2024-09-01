@@ -13,10 +13,10 @@ The aim is to offer a comfortable and user-friendly experience with support for 
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
+ 
+  - [General Remarks](#general-remarks)
     
   - [Autorun Functionality](#autorun-functionality) 
-  
-  - [General Remarks](#general-remarks)
     
 - [Rules and Philosophy of the Toolbox](#rules-and-philosophy-of-the-toolbox)
   
