@@ -45,11 +45,23 @@ if isfield(Data,'Spikes')
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
     end
+    if isfield(Data.Info,'SpikeSorting')
+        fieldsToDelete = {'SpikeSorting'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'SpikeDetectionNrStd')
+        fieldsToDelete = {'SpikeDetectionNrStd'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
     if isfield(Data.Info,'SpikeDetectionThreshold')
         fieldsToDelete = {'SpikeDetectionThreshold'};
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end    
+    end
     Data.Info.SpikeType = "Non";
 end     
 
@@ -76,8 +88,29 @@ else
     folderPath = SelectedFolder;
 end
 
+%% First detect KS version -- only 3 has rez.mat file and params.py
+[stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
+KSversion = [];
+
+foundrez = find(stringArray == "rez.mat");
+foundparams = find(stringArray == "params.py");
+
+if isempty(foundrez) || isempty(foundparams)
+    KSversion = 4;
+else
+    KSversion = 3;
+end
+
+if isempty(KSversion)
+    msgbox("Error: Could not determine Kilosort Version.")
+    return;
+end
+
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, ~, Data.Spikes.SpikeChannel,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath);
+[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
+
+Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
+Data.Spikes.SpikePositions(:,2) = SpikePositions;
 
 %% Apply ScalingFactor if available (Kilosort works with int format and saves results as such 
 %% Scalingfactor is saved automatically by the GUI when the user saves data for kilosort.)
@@ -111,7 +144,7 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i}(1:end-4),'channel_positions')
         Data.Spikes.ChannelPosition = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'spike_positions')
-        Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
+       %Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'templates_ind')
         Data.Spikes.templates_ind = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'templates')
@@ -128,13 +161,19 @@ for i = 1:length(fileNames)
 end
 
 % Normalize to 0 um as first channel
-Data.Spikes.SpikePositions = Data.Spikes.SpikePositions - Data.Info.ChannelSpacing;
+Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
 
-if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
-    msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
-    disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
+if KSversion == 4
+    if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
+        msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
+        disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
+    end
+elseif KSversion == 3
+    if size(Data.Spikes.ChannelMap,2) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,2) < size(Data.Raw,1)
+        msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
+        disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
+    end
 end
-
 %% If no KilosortData found: Spike Filed is emptyx but has to be deleted
 if isempty(Data.Spikes)
     fieldsToDelete = {'Spikes'};
@@ -161,8 +200,15 @@ if isfield(Data,'EventRelatedSpikes')
     Data = rmfield(Data, fieldsToDelete);
 end
 
+if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
+    msgbox("Warning: Max spike time longer than time vector. Please try another kilosort output file or compute again with int16!" )
+end
+
 %% Specify SpikeType
 Data.Info.SpikeType = 'Kilosort';
 
-msgbox("Kilosort 4 data successfully loaded.");
-
+if KSversion == 3
+    msgbox("Kilosort 3 data successfully loaded.");
+elseif KSversion == 4
+    msgbox("Kilosort 4 data successfully loaded.");
+end

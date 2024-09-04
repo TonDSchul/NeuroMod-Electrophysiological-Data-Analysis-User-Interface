@@ -35,11 +35,25 @@ if isfield(Data,'Spikes')
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
     end
+
+    if isfield(Data.Info,'SpikeSorting')
+        fieldsToDelete = {'SpikeSorting'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'SpikeDetectionNrStd')
+        fieldsToDelete = {'SpikeDetectionNrStd'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
     if isfield(Data.Info,'SpikeDetectionThreshold')
         fieldsToDelete = {'SpikeDetectionThreshold'};
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
+
     Data.Info.SpikeType = "Non";
 end          
    
@@ -304,11 +318,33 @@ if Filter == true
     [Data,ToKeep] = Spike_Module_FilterSpikes(Data, Tolerance, ArtefactDepth, Data.Info.ChannelSpacing);
 end
 
+%% Extract Waveforms
+% Extract Waveforms
+[Data.Spikes.Waveforms,SpikesWithWaveform] = Continous_Internal_Spikes_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeAmps,Data.Spikes.SpikePositions(:,2),Data.Spikes.SpikeCluster,[1,size(Data.Raw,1)],[],1,0,[],[]);
+% Remove NaN from Waveforms
+% Some SPikes can be removed when they are too close to the edge of the
+% recording to have a complete waveform
+if sum(SpikesWithWaveform)>0
+    NumSpikeRemoved = length(find(SpikesWithWaveform==0));
+    if NumSpikeRemoved>0
+        msgbox(strcat("Warning: ",num2str(NumSpikeRemoved)," Spikes removed bc they are too close to the time limits"))
+    end
+    Data.Spikes.SpikeTimes = Data.Spikes.SpikeTimes(SpikesWithWaveform==1);
+    Data.Spikes.SpikePositions(SpikesWithWaveform==0,:) = [];
+    Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
+    Data.Spikes.Waveforms(SpikesWithWaveform==0,:) = [];
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1);
+    if isfield(Data.Spikes,'SpikeCluster')
+        if ~isempty(Data.Spikes.SpikeCluster)
+            Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
+        end
+    end
+end
+
 %% Wrap up by extracting the amplitude and waveform of each spike for later plotting
 Data.Info.SpikeDetectionThreshold = Threshold;
+Data.Info.SpikeDetectionNrStd = STDThreshold;
 Data.Info.SpikeType = 'Internal';
 
-%% NOTE: Spike Amplitude extraction is super fast and coincides with extraction of waveforms, which is also NOT performed here. 
-%% Therefore, those parameters get extracted each time a spike analyiss is called
 
 

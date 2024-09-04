@@ -77,6 +77,8 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
     TempCutStop = [];
     TempChannelDeletion = [];
     TempSpike2EventChannelToTake = [];
+    TempSpikeSorting = [];
+    TempSpikeDetectionNrStd = [];
 
     if isfield(Data.Info,'CutStart')
         TempCutStart = Data.Info.CutStart;
@@ -98,10 +100,6 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
         TempKilosortScalingFactor = Data.Info.KilosortScalingFactor;
     end
 
-    if isfield(Data.Info,'SpikeDetectionThreshold')
-        TempSpikeDetectionThreshold = Data.Info.SpikeDetectionThreshold;
-    end
-
     if isfield(Data,'EventRelatedData')
         TempEventChannel = Data.Info.EventRelatedDataChannel;
         TempEventDataType = Data.Info.EventRelatedDataType;
@@ -112,6 +110,18 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
         TempPreproInfo = Data.Info.EventRelatedPreprocessing;
     end
 
+    if isfield(Data.Info,'SpikeSorting')
+        TempSpikeSorting = Data.Info.SpikeSorting;
+    end
+
+    if isfield(Data.Info,'SpikeDetectionNrStd')
+        TempSpikeDetectionNrStd = Data.Info.SpikeDetectionNrStd;
+    end
+
+    if isfield(Data.Info,'SpikeDetectionThreshold')
+        TempSpikeDetectionThreshold = Data.Info.SpikeDetectionThreshold;
+    end
+    
     if isfield(Data.Info,'EventChannelNames')
         TempEventChannelNames = Data.Info.EventChannelNames;
         TempEventChannelType = Data.Info.EventChannelType;
@@ -159,6 +169,14 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
 
     if ~isempty(TempSpike2EventChannelToTake)
         Data.Info.Spike2EventChannelToTake = TempSpike2EventChannelToTake;
+    end
+
+    if ~isempty(TempSpikeSorting)
+        Data.Info.SpikeSorting = TempSpikeSorting;
+    end
+    
+    if ~isempty(TempSpikeDetectionNrStd)
+        Data.Info.SpikeDetectionNrStd = TempSpikeDetectionNrStd;
     end
 
     Data.Info.SpikeType = TempSpikeType;

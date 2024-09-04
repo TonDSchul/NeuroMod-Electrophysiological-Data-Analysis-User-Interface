@@ -74,9 +74,8 @@ if strcmp(TypeofAnalysis,"Channel Waveforms")
     else
         DownsampleFactor = 1;
     end
-    %SpikeTimes = round(SpikeTimes*Data.Info.NativeSamplingRate);
-    [~,~] = Continous_Internal_Spikes_Get_Biggest_Amplitude_and_Waveforms(Data,SpikeTimes,SpikeAmps,SpikePositions,PlotInfo.ChannelSelection,PlotInfo.NrWaveformsToExtract,DownsampleFactor,1,Figure,PlotInfo.Waveforms);
 
+  
 end
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
@@ -87,25 +86,53 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
         DownsampleFactor = 1;
     end
     
-    [Waveforms,~] = Continous_Internal_Spikes_Get_Biggest_Amplitude_and_Waveforms(Data,SpikeTimes,SpikeAmps,SpikePositions,PlotInfo.ChannelSelection,PlotInfo.NrWaveformsToExtract,DownsampleFactor,0,Figure,PlotInfo.Waveforms);
+    % if unitselected und cluster da
+    %     Clustertoshow = Data.Spikes.SpikeCluster == SelectedCluster;
+    %     WaveForms = 
+    % else
+
+    % end
 
     %% calculate mean waveform
-    if size(Waveforms,2) == 1
-        if size(Waveforms,1) == 1
-            Meanwaveform = squeeze(Waveforms)';
+    WaveformRange = PlotInfo.Waveforms(1):PlotInfo.Waveforms(2);
+    
+    Plotdata = squeeze(Data.Spikes.Waveforms(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),WaveformRange,:));
+
+    if ndims(Plotdata)==2
+        if size(Plotdata,1) ~= 1
+            if length(WaveformRange)>1
+                MeanWave = squeeze(mean(Plotdata,1,'omitnan'));
+            else
+                MeanWave = Plotdata';
+            end
         else
-            Meanwaveform = squeeze(Waveforms);
+            MeanWave = Plotdata;
         end
-    else
-        MeanWave = squeeze(mean(Waveforms,2,'omitnan'));
-        Meanwaveform = NaN(1,size(MeanWave,1),size(MeanWave,2));
-        Meanwaveform(1,:,:) = MeanWave;
+    elseif ndims(Plotdata)==3
+        if PlotInfo.ChannelSelection(1)~=PlotInfo.ChannelSelection(2)
+            if size(Plotdata,2)>1
+                MeanWave = squeeze(mean(Plotdata,2,'omitnan'));
+            else
+                MeanWave = squeeze(Plotdata)';
+            end
+        else
+            if size(Plotdata,2)>1
+                MeanWave = squeeze(mean(Plotdata,1,'omitnan'));
+            else
+                MeanWave = squeeze(Plotdata)';
+            end
+        end
     end
+
+    Meanwaveform = NaN(1,size(MeanWave,1),size(MeanWave,2));
+    Meanwaveform(1,:,:) = MeanWave;
+
     Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,1,Meanwaveform,Data.Info.ChannelSpacing,"Internal",PlotInfo.Waveforms,TwoORThreeD);
 end
 
 %% basic quantification of spiking plot
 if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
+
     set(Figure, 'YDir', 'reverse');
     
     ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);

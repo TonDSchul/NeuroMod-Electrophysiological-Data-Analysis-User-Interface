@@ -1,13 +1,19 @@
 % Inputs/outputs: mostly self explanatory 
 % localizedSpikesOnly (false by default) - if true, only spikes with no discrepancy between depth and site are returned. 
-function [spikeTimes, spikeAmps, spikeDepths, spikeSites, BiggestAmplWaveform] = ksDriftmap(ksDir, localizedSpikesOnly)
+function [spikeTimes, spikeAmps, spikeDepths, spikeSites, BiggestAmplWaveform] = ksDriftmap(ksDir, KSVersion, localizedSpikesOnly)
 
-if nargin < 2
+if nargin < 3
   localizedSpikesOnly = false;
 end
 
 clear params
-params.loadPCs = true;
+
+if KSVersion == 4
+    params.loadPCs = true;
+else
+    params.loadPCs = false;
+end
+
 sp = loadKSdir(ksDir, params);
 
 if localizedSpikesOnly % go over all templates and check which are not localized (in space)
@@ -32,9 +38,11 @@ end
 
 ycoords = sp.ycoords;
 pcFeat = sp.pcFeat;
-pcFeat = squeeze(pcFeat(:,1,:)); % take first PC only
-pcFeat(pcFeat<0) = 0; % some entries are negative, but we don't really want to push the CoM away from there.
-pcFeatInd = sp.pcFeatInd;
+if KSVersion == 4
+    pcFeat = squeeze(pcFeat(:,1,:)); % take first PC only
+    pcFeat(pcFeat<0) = 0; % some entries are negative, but we don't really want to push the CoM away from there.
+    pcFeatInd = sp.pcFeatInd;
+end
 spikeTemps = sp.spikeTemplates;
 
 temps = sp.temps;
@@ -43,16 +51,21 @@ tempScalingAmps = sp.tempScalingAmps;
 spikeTimes = sp.st;
 
 %% compute center of mass of these features
+if KSVersion == 4
+    % which channels for each spike?
+    spikeFeatInd = pcFeatInd(spikeTemps+1,:);
+    
+    % ycoords of those channels?
+    spikeFeatYcoords = ycoords(spikeFeatInd+1); % 2D matrix of size #spikes x 12
+    
+    % center of mass is sum(coords.*features)/sum(features)
+    spikeDepths = sum(spikeFeatYcoords.*pcFeat.^2,2)./sum(pcFeat.^2,2);
 
-% which channels for each spike?
-spikeFeatInd = pcFeatInd(spikeTemps+1,:);
-
-% ycoords of those channels?
-spikeFeatYcoords = ycoords(spikeFeatInd+1); % 2D matrix of size #spikes x 12
-
-% center of mass is sum(coords.*features)/sum(features)
-spikeDepths = sum(spikeFeatYcoords.*pcFeat.^2,2)./sum(pcFeat.^2,2);
-
+else
+    Loadname = strcat(ksDir,'\rez.mat');
+    load(Loadname,'rez');
+    spikeDepths= rez.xy(:,1);
+end
 
 %% for plotting, we need the amplitude of each spike, both so we can draw a
 % threshold and exclude the low-amp noisy ones, and so we can color the

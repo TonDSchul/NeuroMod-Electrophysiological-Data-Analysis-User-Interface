@@ -105,9 +105,18 @@ if strcmp(TypeofAnalysis,"Waveforms Templates")
 end
 
 if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
+    
+    if ~isempty(PlotInfo.Units)
+        % Select Units
+        ClusterToPlot = CluterPositions==PlotInfo.Units;
+        SpikeAmps = SpikeAmps(ClusterToPlot==1);
+        SpikePositions = SpikePositions(ClusterToPlot==1);
+    end
 
     set(Figure, 'YDir', 'reverse');
+
     ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
+
     %% basic quantification of spiking plot
     depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange)-1)*Data.Info.ChannelSpacing;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
@@ -122,6 +131,13 @@ end
 
 if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
 
+    if ~isempty(PlotInfo.Units)
+        % Select Units
+        ClusterToPlot = CluterPositions==PlotInfo.Units;
+        SpikeAmps = SpikeAmps(ClusterToPlot==1);
+        SpikePositions = SpikePositions(ClusterToPlot==1);
+    end
+    
     set(Figure, 'YDir', 'reverse');
     
     %% basic quantification of spiking plot

@@ -1,4 +1,4 @@
-function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,UnitsEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,UnitsEditField,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow)
+function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,ClustertoshowDropDown,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,ClustertoshowDropDown,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow)
 
 %________________________________________________________________________________________
 %% Function to prepare plots for internal and kilosort continous spike analysis
@@ -17,7 +17,7 @@ function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,ChannelPosition,Pl
 % the field ChannelEditField.Value, like '1,10' for channel 1 to 10
 % 3. WaveformEditField: text field of app containing userinput as char in
 % the field WaveformEditField.Value, like '1,10' for waveforms 1 to 10
-% 4. UnitsEditField: text field of app containing userinput as char in
+% 4. ClustertoshowDropDown: text field of app containing userinput as char in
 % the field UnitsEditField.Value, like '1' for unit 1
 % 5. DifferentInput -  not used now. Can be used to determine specific type
 % of input at a certain time point
@@ -72,7 +72,7 @@ function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,ChannelPosition,Pl
 
 %% Check GUI Information
 if strcmp(SpikeType,"Kilosort")
-    [ChannelEditField,WaveformEditField,UnitsEditField,Error,SpikeRateNumBinsEditField] = Continous_Kilosort_Spikes_Check_Inputs(Data,ChannelEditField,WaveformEditField,UnitsEditField,SpikeAnalysisType.Value,SpikeRateNumBinsEditField);
+    [ChannelEditField,WaveformEditField,Error,SpikeRateNumBinsEditField] = Continous_Kilosort_Spikes_Check_Inputs(Data,ChannelEditField,WaveformEditField,SpikeAnalysisType.Value,SpikeRateNumBinsEditField);
     
     % If some error in check functions: one of those variables with be a
     % string saying "Error"
@@ -80,9 +80,6 @@ if strcmp(SpikeType,"Kilosort")
         if strcmp(SpikeAnalysisType.Value,"Waveforms from Raw Data")
             WaveformEditField.Enable = "on";
             ChannelEditField.Enable = "on";
-            if strcmp(SpikeType,"Kilosort")
-                UnitsEditField.Enable = "on";
-            end
         end
 
         SpikeTimes = "Error";
@@ -107,7 +104,15 @@ PlotInfo.NrWaveformsToExtract = [];
 PlotInfo.SpikeRateNumBins = [];
 
 if strcmp(SpikeType,"Kilosort")
-    PlotInfo.Units(1) = str2double(UnitsEditField.Value);
+    if strcmp(ClustertoshowDropDown.Value,"All") || strcmp(ClustertoshowDropDown.Value,"Non")
+        if ~strcmp(SpikeAnalysisType.Value,'Spike Map') && ~strcmp(SpikeAnalysisType.Value,'Spike Amplitude Density Along Depth') && ~strcmp(SpikeAnalysisType.Value,'Cumulative Spike Amplitude Density Along Depth') && ~strcmp(SpikeAnalysisType.Value,'Spike Triggered LFP')
+            msgbox("Error: Please Select a Cluster! Auto-djusted to the first cluster");
+            ClustertoshowDropDown.Value = '0';
+            PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value)+1;
+        end
+    else
+        PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value)+1;
+    end   
 end
 
 commaindicie = find(ChannelEditField.Value == ',');
@@ -153,62 +158,41 @@ if ExecuteInGUI == 1
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         ChannelEditField.Enable = "on";
         WaveformEditField.Enable = "off";
-        if strcmp(SpikeType,"Kilosort")
-            UnitsEditField.Enable = "off";
-        end
     end
 
     if strcmp(SpikeAnalysisType.Value,"Spike Triggered LFP")
         TimeWindowSpiketriggredLFPEditField.Enable = "on";
         WaveformEditField.Enable = "off";
-        if strcmp(SpikeType,"Kilosort")
-            UnitsEditField.Enable = "off";
-        end
     end
     
     if strcmp(SpikeAnalysisType.Value,"Average Waveforms Across Channel")
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         WaveformEditField.Enable = "on";
         ChannelEditField.Enable = "on";
-        if strcmp(SpikeType,"Kilosort")
-            UnitsEditField.Enable = "on";
-        end
     end
     
     if strcmp(SpikeAnalysisType.Value,"Waveforms from Raw Data") || strcmp(SpikeAnalysisType.Value,"Channel Waveforms")
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         WaveformEditField.Enable = "on";
         ChannelEditField.Enable = "on";
-        if strcmp(SpikeType,"Kilosort")
-            UnitsEditField.Enable = "on";
-        end
     end
     
     if strcmp(SpikeAnalysisType.Value,"Waveforms Templates")
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         WaveformEditField.Enable = "off";
         ChannelEditField.Enable = "on";
-        if strcmp(SpikeType,"Kilosort")
-            UnitsEditField.Enable = "on";
-        end
     end
     
     if strcmp(SpikeAnalysisType.Value,"Template from Max Amplitude Channel")
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         WaveformEditField.Enable = "off";
         ChannelEditField.Enable = "off";
-        if strcmp(SpikeType,"Kilosort")
-            UnitsEditField.Enable = "on";
-        end
     end
     
     if strcmp(SpikeAnalysisType.Value,"Cumulative Spike Amplitude Density Along Depth") || strcmp(SpikeAnalysisType.Value,"Spike Amplitude Density Along Depth")
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         WaveformEditField.Enable = "off";
         ChannelEditField.Enable = "on";
-        if strcmp(SpikeType,"Kilosort")
-            UnitsEditField.Enable = "off";
-        end
     end
 end
 

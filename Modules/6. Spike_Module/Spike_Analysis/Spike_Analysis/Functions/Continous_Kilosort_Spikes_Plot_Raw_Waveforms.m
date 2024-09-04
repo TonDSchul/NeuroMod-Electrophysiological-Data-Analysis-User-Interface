@@ -50,9 +50,9 @@ for i = 1:Maxnrlines
         line(Figure,Time,DatatoPlot(i,:), 'LineWidth', 2 ,'Tag', 'SpikeWaveform')
     elseif ~isempty(SpikeWaveform_handles) 
         if i <= length(SpikeWaveform_handles)
-            set(SpikeWaveform_handles(i), 'XData', Time, 'YData', DatatoPlot(i,:), 'LineWidth', 2 ,'Tag', 'SpikeWaveform');
+            set(SpikeWaveform_handles(i), 'XData', Time, 'YData', DatatoPlot(i,:), 'LineWidth', 0.5 ,'Tag', 'SpikeWaveform');
         else
-           line(Figure,Time,DatatoPlot(i,:), 'LineWidth', 2 ,'Tag', 'SpikeWaveform')
+           line(Figure,Time,DatatoPlot(i,:), 'LineWidth', 0.5 ,'Tag', 'SpikeWaveform')
         end
     end
 end

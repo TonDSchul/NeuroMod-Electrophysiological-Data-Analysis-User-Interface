@@ -1,4 +1,4 @@
-function [ChannelEditField,WaveformEditField,UnitsEditField,Error,SpikeRateBinsEditField] = Continous_Kilosort_Spikes_Check_Inputs(Data,ChannelEditField,WaveformEditField,UnitsEditField,SpikeAnalysisType,SpikeRateBinsEditField)
+function [ChannelEditField,WaveformEditField,Error,SpikeRateBinsEditField] = Continous_Kilosort_Spikes_Check_Inputs(Data,ChannelEditField,WaveformEditField,SpikeAnalysisType,SpikeRateBinsEditField)
 
 %________________________________________________________________________________________
 %% Function to check, GUI inputs when Kilosort spikes analyzed. 
@@ -16,7 +16,6 @@ function [ChannelEditField,WaveformEditField,UnitsEditField,Error,SpikeRateBinsE
 % field
 % 2. ChannelEditField: object holding app text with the field Value containing a char of the user input. Correct format: ChannelEditField.Value = '1,10' for channel 1 to 10. 
 % 3. WaveformEditField: object holding app text with the field Value containing a char of the user input. Correct format: WaveformEditField.Value = '1,10' for waveforms 1 to 10. 
-% 4. UnitsEditField: object holding app text with the field Value containing a char of the user input. Correct format: UnitsEditField.Value = '1,10' for units 1 to 10. 
 % 5. SpikeAnalysisType: Name as char of analysis done, Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR "Waveforms from Raw Data" OR
 % "Average Waveforms Across Channel" OR "Waveforms Templates" OR "Template from Max Amplitude Channel" OR "Cumulative Spike Amplitude Density
 % Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
@@ -27,8 +26,7 @@ function [ChannelEditField,WaveformEditField,UnitsEditField,Error,SpikeRateBinsE
 % containing a char of corrected or unchanged input 
 % 3. WaveformEditField: object holding app text with the field Value
 % containing a char of corrected or unchanged input 
-% 4. UnitsEditField: object holding app text with the field Value
-% containing a char of corrected or unchanged input 
+
 % 5. Error: Indicates if an error happened consisting of too many channel,
 % units and waveforms selcted which would result in a 3d matrix. Then the
 % code stops and the user gets a message
@@ -42,8 +40,6 @@ function [ChannelEditField,WaveformEditField,UnitsEditField,Error,SpikeRateBinsE
 Error = 0;
 
 %% Check Unit, waveform, channel and SpikeRat Input 
-
-[UnitsEditField.Value] = Utility_SimpleCheckInputs(UnitsEditField.Value,"One",'1',0,0);
 
 [ChannelEditField.Value] = Utility_SimpleCheckInputs(ChannelEditField.Value,"Two",strcat('1,',num2str(size(Data.Raw,1))),1,0);
 

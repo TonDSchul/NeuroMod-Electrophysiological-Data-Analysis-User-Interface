@@ -26,10 +26,13 @@ function [arrayShape, dataType, fortranOrder, littleEndian, totalHeaderLength, n
         
         magicString = fread(fid, [1 6], 'uint8=>uint8');
         
-        if ~all(magicString == [147,78,85,77,80,89])
+        if ~all(magicString == [147,78,85,77,80,89]) && ~all(magicString == [137,80,78,71,13,10])
             error('readNPY:NotNUMPYFile', 'Error: This file does not appear to be NUMPY format based on the header.');
         end
-        
+        if all(magicString == [137,80,78,71,13,10])
+            disp("a")
+        end
+
         majorVersion = fread(fid, [1 1], 'uint8=>uint8');
         minorVersion = fread(fid, [1 1], 'uint8=>uint8');
         
@@ -45,6 +48,7 @@ function [arrayShape, dataType, fortranOrder, littleEndian, totalHeaderLength, n
         % assumptions about its format...
         
         r = regexp(arrayFormat, '''descr''\s*:\s*''(.*?)''', 'tokens');
+
         dtNPY = r{1}{1};    
         
         littleEndian = ~strcmp(dtNPY(1), '>');

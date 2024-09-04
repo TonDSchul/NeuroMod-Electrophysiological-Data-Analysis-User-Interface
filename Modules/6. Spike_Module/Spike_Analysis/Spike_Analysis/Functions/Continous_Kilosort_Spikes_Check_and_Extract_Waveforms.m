@@ -60,14 +60,11 @@ else % When Data is already there check if parameters (channel nr and waveform n
     ExtractAgain = 0;
     Channelextracted = size(Data.Spikes.Waveforms.waveForms,3);
     Waveformsextracted = size(Data.Spikes.Waveforms.waveForms,2);
-    % Unitsextracted = size(Data.Spikes.Waveforms.waveForms,1);
 
     if Channelextracted ~= numel(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2))
         ExtractAgain = 1;
     elseif Waveformsextracted ~= numel(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2))
         ExtractAgain = 1;
-    % elseif Unitsextracted ~= numel(PlotInfo.Units(1):PlotInfo.Units(2))
-    %     ExtractAgain = 1;
     end
 
     if ExtractAgain == 1

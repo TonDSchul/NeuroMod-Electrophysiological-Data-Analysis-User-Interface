@@ -49,29 +49,31 @@ toKeep = true(size(sortedSpikeTimes));
 ProgressSteps = round(length(sortedSpikeTimes)/100);
 CurrentProgress = ProgressSteps;
 for i = 1:length(sortedSpikeTimes)
-    %if toKeep(i) == true %%%% Is going faster but does not yield the same
-    %results
-        if i == CurrentProgress
-            % Update the progress bar
-           fraction = CurrentProgress/length(sortedSpikeTimes);
-           msg = sprintf('Filtering Spike Indicies... (%d%% done)', round(100*fraction));
-           waitbar(fraction, h, msg);
-           CurrentProgress = round(CurrentProgress+ProgressSteps);
-        end
-        % Create a logical array for spike times within +/- tolerance sample
-        SameIndicies = abs(sortedSpikeTimes - sortedSpikeTimes(i)) <= Tolerance;
+    if i == CurrentProgress
+        % Update the progress bar
+       fraction = CurrentProgress/length(sortedSpikeTimes);
+       msg = sprintf('Filtering Spike Indicies... (%d%% done)', round(100*fraction));
+       waitbar(fraction, h, msg);
+       CurrentProgress = round(CurrentProgress+ProgressSteps);
+    end
+    % Create a logical array for spike times within +/- tolerance sample
+    SameIndicies = abs(sortedSpikeTimes - sortedSpikeTimes(i)) <= Tolerance;
 
-        if sum(SameIndicies) > 1
-            uniqueChannels = unique(sortedSpikePositions(SameIndicies));
-            if length(uniqueChannels) > ArtefactDepth
-                toKeep(SameIndicies) = false;
-            end
+    if sum(SameIndicies) > 1
+        uniqueChannels = unique(sortedSpikePositions(SameIndicies));
+        if length(uniqueChannels) > ArtefactDepth
+            toKeep(SameIndicies) = false;
         end
+    end
 end
 
 % For later output save indices deleted
-TempToKeep.Samples = sortedSpikeTimes(~toKeep);
-TempToKeep.Channel = sortedSpikePositions(~toKeep);
+TempToKeep.SpikeTimes = sortedSpikeTimes(~toKeep);
+TempToKeep.SpikePosition = sortedSpikePositions(~toKeep);
+TempToKeep.SpikeAmps = Data.Spikes.SpikeAmps(~toKeep);
+TempToKeep.SpikeIndiciestoKeep = toKeep;
+
+
 % Remove the marked spike times and corresponding positions
 Data.Spikes.SpikeTimes = sortedSpikeTimes(toKeep);
 

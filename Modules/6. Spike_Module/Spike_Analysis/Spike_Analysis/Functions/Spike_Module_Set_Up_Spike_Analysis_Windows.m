@@ -78,7 +78,12 @@ else
         texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(SpikeCluster))))];
     else
-        texttoshow = strcat("Number of Spikes: ",num2str(length(SpikeTimes)));
+        if isfield(app.Mainapp.Data.Info,'SpikeSorting')
+            texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
+            strcat("Number of Cluster: ",num2str(length(unique(SpikeCluster))))];
+        else
+            texttoshow = strcat("Number of Spikes: ",num2str(length(SpikeTimes)));
+        end
     end
 end
 
@@ -101,8 +106,10 @@ if strcmp(EventWindow,"Non")
     end  
 end
 
-
 if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"Non")
+    % Exatract number of spike clusters Kilosort found
+    app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
+elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && strcmp(EventWindow,"Non") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
 elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"EventWindow")
@@ -114,11 +121,15 @@ if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
     % Define unique color for each cluster
     app.rgbMatrix = lines(app.numCluster);
 else
-    app.rgbMatrix = lines(1);
+    if isfield(app.Mainapp.Data.Info,'SpikeSorting')
+        app.rgbMatrix = lines(app.numCluster);
+    else
+        app.rgbMatrix = lines(1);
+    end
 end
 
 %% Manage Cluster Selection
-if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
     texttoshow = {};
     
     texttoshow{1} = 'Non';
@@ -131,8 +142,6 @@ if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
     app.ClustertoshowDropDown.Items = texttoshow;
 end
 
-
-
 if strcmp(EventWindow,"Non")
     %% Manage TimeWindow Spiketriggred LFP Selection
     app.TimeWindowSpiketriggredLFPEditField.Enable = "off";
@@ -142,10 +151,7 @@ if strcmp(EventWindow,"Non")
     app.ChannelSelectionforPlottingEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.Raw,1)));
 
     %% Set up GUI components
-    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
-        app.UnitstoPlotEditField.Value = strcat('1');
-    end
-    
+
     app.WaveformSelectionforPlottingEditField.Value = strcat('1,1');
 end
 
