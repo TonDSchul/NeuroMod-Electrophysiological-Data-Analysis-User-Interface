@@ -318,9 +318,14 @@ if Filter == true
     [Data,ToKeep] = Spike_Module_FilterSpikes(Data, Tolerance, ArtefactDepth, Data.Info.ChannelSpacing);
 end
 
-%% Extract Waveforms
+%% Wrap up by extracting the amplitude and waveform of each spike for later plotting
+Data.Info.SpikeDetectionThreshold = Threshold;
+Data.Info.SpikeDetectionNrStd = STDThreshold;
+Data.Info.SpikeType = 'Internal';
+
+%% Lastly extract Waveforms
 % Extract Waveforms
-[Data.Spikes.Waveforms,SpikesWithWaveform] = Continous_Internal_Spikes_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeAmps,Data.Spikes.SpikePositions(:,2),Data.Spikes.SpikeCluster,[1,size(Data.Raw,1)],[],1,0,[],[]);
+[Data.Spikes.Waveforms,SpikesWithWaveform,~] = Continous_Internal_Spikes_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeAmps,Data.Spikes.SpikePositions(:,2),Data.Spikes.SpikeCluster,[1,size(Data.Raw,1)],[],1,0,[],[]);
 % Remove NaN from Waveforms
 % Some SPikes can be removed when they are too close to the edge of the
 % recording to have a complete waveform
@@ -341,10 +346,7 @@ if sum(SpikesWithWaveform)>0
     end
 end
 
-%% Wrap up by extracting the amplitude and waveform of each spike for later plotting
-Data.Info.SpikeDetectionThreshold = Threshold;
-Data.Info.SpikeDetectionNrStd = STDThreshold;
-Data.Info.SpikeType = 'Internal';
+
 
 
 

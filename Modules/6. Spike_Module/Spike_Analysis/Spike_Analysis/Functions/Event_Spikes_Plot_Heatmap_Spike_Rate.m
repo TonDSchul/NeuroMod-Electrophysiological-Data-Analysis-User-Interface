@@ -208,13 +208,13 @@ Cluster_handles = findobj(Figure,'Type', 'line');
 if ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non")
     Clustertoshow = str2double(Clustertoshow);
     %% Plot Cluster
-    IndiciesCurrentCluster = ClusterIdentity == Clustertoshow; %% zero indexing, in app shown and seleceted as cluster+1
+    IndiciesCurrentCluster = ClusterIdentity == Clustertoshow; %% 
 
     if sum(IndiciesCurrentCluster)>0
         spikeTimes = SpikeTimes(IndiciesCurrentCluster==1);
         spikePositions = SpikePositions(IndiciesCurrentCluster==1);
     
-        Clusterline = line(Figure,spikeTimes,spikePositions,'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgbMatrix(Clustertoshow+1,:),'MarkerEdgeColor',rgbMatrix(Clustertoshow+1,:),'MarkerSize',5, 'Tag', 'SpikeRateCluster');
+        Clusterline = line(Figure,spikeTimes,spikePositions,'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgbMatrix(Clustertoshow,:),'MarkerEdgeColor',rgbMatrix(Clustertoshow,:),'MarkerSize',5, 'Tag', 'SpikeRateCluster');
     
         % Bring the event line to the front
         uistack(Clusterline, 'top');

@@ -58,7 +58,6 @@ title(Figure,strcat("Spike Positions Across Time and Depth Channel ", num2str(Ch
 Figure.FontSize = 10;
 
 Spikeline_handles = findobj(Figure,'Type', 'line', 'Tag', 'Spikes');
-Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
 
 % Delete handles of event plots if too many accumulated or if no events
 % selceted
@@ -68,12 +67,7 @@ if numel(Spikeline_handles)>numCluster
     delete(Spikeline_handles(numCluster+1:end));
 end
 
-if numel(Event_handles)>1
-    delete(Event_handles(2:end));
-end
-
 Spikeline_handles = findobj(Figure,'Type', 'line', 'Tag', 'Spikes');
-Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
 
 %% Plot Spikes
 if strcmp(Clustertoshow,"All")
@@ -97,8 +91,8 @@ if strcmp(Clustertoshow,"All")
     end
 
     for i = 1:numCluster
-
-        IndiciesCurrentCluster = SpikeCluster == i-1; %% -1 bc. spike SpikeCluster output from kilosrt starts with 0. With 51 SpikeCluster found, SpikeCluster number is 0:50
+        
+        IndiciesCurrentCluster = SpikeCluster == i; %% 
 
         if isempty(Spikeline_handles)
             if strcmp(Type,"Continous") 
@@ -181,14 +175,14 @@ else %% If specific spike SpikeCluster selected
             end
         end
     end
-
+    
     IndiciesCurrentCluster = SpikeCluster == str2double(Clustertoshow);
 
     if sum(IndiciesCurrentCluster) > 0
         if strcmp(Type,"Continous")
-            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow)+1,:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow)+1,:),'MarkerSize',3, 'Parent', Figure, 'Tag', 'ClusterSpikes');
+            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow),:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow),:),'MarkerSize',3, 'Parent', Figure, 'Tag', 'ClusterSpikes');
         elseif strcmp(Type,"Eventrelated")
-            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow)+1,:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow)+1,:),'MarkerSize',3, 'Parent', Figure, 'Tag', 'ClusterSpikes');
+            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow),:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow),:),'MarkerSize',3, 'Parent', Figure, 'Tag', 'ClusterSpikes');
         end
     end
 end
@@ -196,6 +190,11 @@ end
 if strcmp(Type,"Eventrelated")
     %% Plot Event line
     Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
+    if length(Event_handles)>1
+        delete(Event_handles(2:end));
+        Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
+    end
+
     if isempty(Event_handles)
         eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,ChannelPositions(end,2)],'Color','r','LineWidth',2, 'Parent', Figure, 'Tag', 'Event');
     else
@@ -212,10 +211,14 @@ if strcmp(Type,"Eventrelated")
         legendHandle = legend(eventLine, {'Trigger'});
         set(legendHandle, 'HandleVisibility', 'off');
     end
+    
 elseif strcmp(Type,"Continous")
     if PlotEvents
+        legend(Figure, 'on');
         %% Plot Event line
-        
+        Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
+        delete(Event_handles(:));
+
         for i = 1:length(EventIndicies)
             line(Figure,[EventIndicies(i),EventIndicies(i)],[0,ChannelPositions(end,2)],'Color','k','LineWidth',1.5, 'Tag', 'Event');
             Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
@@ -233,5 +236,12 @@ elseif strcmp(Type,"Continous")
                 set(legendHandle, 'HandleVisibility', 'off');
             end
         end
+
+    else
+        Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
+        delete(Event_handles(:));
+        
+        legend(Figure, 'off');
+        
     end
 end

@@ -1,4 +1,4 @@
-function [Data] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD)
+function [Data] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
@@ -57,11 +57,8 @@ if isstring(SpikeTimes)
     return;
 end
 
-if ~strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
-    Figure.NextPlot = "replace"; 
-    plot(Figure,0,0);
-    Figure.NextPlot = "add"; 
-    set(Figure,'xticklabel',{[]});
+if min(CluterPositions)==0
+    CluterPositions = CluterPositions+1;
 end
 
 if strcmp(TypeofAnalysis,"Spike Map")
@@ -81,32 +78,52 @@ end
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
 
-    cla(Figure);
-
-    [TempData,TextArea] = Continous_Kilosort_Spikes_Check_and_Extract_Waveforms(Data,TextArea,SpikeTimes,CluterPositions,PlotInfo);
-    
-    if isempty(TempData) % if not preprocessed
-       Data = [];
+    if ~isnan(PlotInfo.Units)
+        ClustertoShow = PlotInfo.Units;
+        WavesinCluster = CluterPositions == ClustertoShow;
+        ClusterWaveforms = Waveforms(WavesinCluster==1,:);
+        WavePositions = WaveformChannel(WavesinCluster==1);
     else
-        Data = TempData; % if preprocessed
+        ClusterWaveforms = Waveforms;
+        WavePositions = WaveformChannel;
     end
-
-    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),Data.Spikes.Waveforms.waveFormsMean,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD);
+    
+    Meanwaveform = NaN(1,length(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2)),size(ClusterWaveforms,2));
+    NumWaveforms = length(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
+    ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
+    %if strcmp(ClustertoShowDropDown,"All") || strcmp(ClustertoShowDropDown,"Non")
+        for nchannel = 1:length(ChannelRange)
+            ChannelIndicies = WavePositions == ChannelRange(nchannel);
+            if sum(ChannelIndicies)==1
+                TempCurrentWaveforms = ClusterWaveforms(ChannelIndicies==1,:);
+                [a,MaxAmplitudeIndicies] = maxk(max(TempCurrentWaveforms,[],2),NumWaveforms);
+                Meanwaveform(1,nchannel,:) = ClusterWaveforms(MaxAmplitudeIndicies,:);
+            elseif sum(ChannelIndicies)>1
+                TempCurrentWaveforms = ClusterWaveforms(ChannelIndicies==1,:);
+                [a,MaxAmplitudeIndicies] = maxk(max(TempCurrentWaveforms,[],2),NumWaveforms);
+                Meanwaveform(1,nchannel,:) = mean(TempCurrentWaveforms(MaxAmplitudeIndicies,:),1,'omitnan');
+            elseif sum(ChannelIndicies)==0
+                Meanwaveform(1,nchannel,:) = NaN;
+            end
+        end
+    %end
+    
+    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),Meanwaveform,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD);
 end
 
 if strcmp(TypeofAnalysis,"Waveforms from Raw Data")
-    [Data,TextArea] = Continous_Kilosort_Spikes_Check_and_Extract_Waveforms(Data,TextArea,SpikeTimes,CluterPositions,PlotInfo);
-
-    Continous_Kilosort_Spikes_Plot_Raw_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units,PlotInfo.Waveforms);
+    Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,PlotInfo,ClusterToShow,Figure);
 end
 
 if strcmp(TypeofAnalysis,"Waveforms Templates")
-    Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units,rgbMatrix)
+    if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
+        Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units,rgbMatrix)
+    end
 end
 
 if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     
-    if ~isempty(PlotInfo.Units)
+    if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         % Select Units
         ClusterToPlot = CluterPositions==PlotInfo.Units;
         SpikeAmps = SpikeAmps(ClusterToPlot==1);
@@ -125,13 +142,13 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
                     
 end
 
 if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
 
-    if ~isempty(PlotInfo.Units)
+    if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         % Select Units
         ClusterToPlot = CluterPositions==PlotInfo.Units;
         SpikeAmps = SpikeAmps(ClusterToPlot==1);
@@ -149,17 +166,28 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
                     
 end
 
 if strcmp(TypeofAnalysis,"Template from Max Amplitude Channel")
-    Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,PlotInfo.Units,rgbMatrix)
+    if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
+        Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,PlotInfo.Units,rgbMatrix)
+    else
+
+    end
 end
 
 if strcmp(TypeofAnalysis,"Spike Triggered LFP")
 
-    [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Kilosort",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD);
+    if ~isnan(PlotInfo.Units)
+        ClustertoShowIndicie = PlotInfo.Units;
+        SpikesinCluster = CluterPositions == ClustertoShowIndicie;
+        SpikeTimes = SpikeTimes(SpikesinCluster==1);
+        SpikePositions = SpikePositions(SpikesinCluster==1);
+    end
+
+    [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Kilosort",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClusterToShow);
     
     if isempty(TempData) % if not preprocessed
        Data = [];

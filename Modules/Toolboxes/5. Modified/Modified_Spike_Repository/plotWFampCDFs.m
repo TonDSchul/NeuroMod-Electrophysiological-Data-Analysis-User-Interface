@@ -1,4 +1,4 @@
-function plotWFampCDFs(pdfs, cdfs, ampBins, depthBins,PDFCDF,Figure,Channeldepth,ChannelSpacing,SpikeType,TwoORThreeD)
+function plotWFampCDFs(pdfs, cdfs, ampBins, depthBins,PDFCDF,Figure,Channeldepth,ChannelSpacing,SpikeType,TwoORThreeD,ClustertoShow)
 
 depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
 ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
@@ -16,7 +16,7 @@ if strcmp(PDFCDF,"PDF")
             surface(Figure,ampX, depthX, min_z * ones(size(pdfs)), ...
             'CData', pdfs, 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         else
-            set(PowerDepth2D_handles(1),'XData',ampX,'>Data', depthX,'ZData', min_z * ones(size(pdfs)), ...
+            set(PowerDepth2D_handles(1),'XData',ampX,'YData', depthX,'ZData', min_z * ones(size(pdfs)), ...
             'CData', pdfs, 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         end
 
@@ -63,7 +63,12 @@ if strcmp(PDFCDF,"PDF")
 
     xlabel(Figure,'Spike Amplitude (mV)');
     ylabel(Figure,'Depth on Probe (µm)');
-    title(Figure,'Probability Density Function');
+    if strcmp(ClustertoShow,"All") || strcmp(ClustertoShow,"Non")
+        title(Figure,strcat("All Units Probability Density Function"));
+    else
+        title(Figure,strcat("Unit ",ClustertoShow," Probability Density Function"));
+    end
+
     cbar_handle=colorbar('peer',Figure,'location','WestOutside');
     cbar_handle.Label.String = "firing rate (sp/s)";
     cbar_handle.Label.Rotation = 270;
@@ -89,7 +94,7 @@ else % if CDF
             surface(Figure,ampX, depthX, min_z * ones(size(cdfs)), ...
             'CData', cdfs, 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         else
-            set(PowerDepth2D_handles(1),'XData',ampX,'>Data', depthX,'ZData', min_z * ones(size(cdfs)), ...
+            set(PowerDepth2D_handles(1),'XData',ampX,'YData', depthX,'ZData', min_z * ones(size(cdfs)), ...
             'CData', cdfs, 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         end
 

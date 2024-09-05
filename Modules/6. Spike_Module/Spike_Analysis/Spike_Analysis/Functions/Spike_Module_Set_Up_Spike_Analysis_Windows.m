@@ -70,17 +70,22 @@ if strcmp(EventWindow,"Non")
         texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
     else
-        texttoshow = strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));
+        if isfield(app.Mainapp.Data.Info,'SpikeSorting')
+            texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
+            strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
+        else
+            texttoshow = strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));
+        end
     end
 else
     %% Manage TextField
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
         texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
-        strcat("Number of Cluster: ",num2str(length(unique(SpikeCluster))))];
+        strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
     else
         if isfield(app.Mainapp.Data.Info,'SpikeSorting')
             texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
-            strcat("Number of Cluster: ",num2str(length(unique(SpikeCluster))))];
+            strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
         else
             texttoshow = strcat("Number of Spikes: ",num2str(length(SpikeTimes)));
         end
@@ -109,12 +114,12 @@ end
 if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"Non")
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
-elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && strcmp(EventWindow,"Non") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
+elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
 elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"EventWindow")
     % Exatract number of spike clusters Kilosort found
-    app.numCluster = numel(unique(SpikeCluster));
+    app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
 end
 
 if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
@@ -129,16 +134,19 @@ else
 end
 
 %% Manage Cluster Selection
-if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") 
     texttoshow = {};
     
-    texttoshow{1} = 'Non';
-    texttoshow{2} = 'All';
-    
-    for i = 0:app.numCluster-1
-        texttoshow{i+3} = num2str(i);
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~isfield(app.Mainapp.Data.Info,'SpikeSorting')
+        texttoshow{1} = 'Non';
+    else
+        texttoshow{1} = 'Non';
+        texttoshow{2} = 'All';
+         
+        for i = 1:app.numCluster
+            texttoshow{i+2} = num2str(i);
+        end
     end
-    
     app.ClustertoshowDropDown.Items = texttoshow;
 end
 
@@ -151,8 +159,9 @@ if strcmp(EventWindow,"Non")
     app.ChannelSelectionforPlottingEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.Raw,1)));
 
     %% Set up GUI components
-
-    app.WaveformSelectionforPlottingEditField.Value = strcat('1,1');
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+        app.WaveformSelectionforPlottingEditField.Value = strcat('1,100');
+    end
 end
 
 %% Prepare and Initiate Plots

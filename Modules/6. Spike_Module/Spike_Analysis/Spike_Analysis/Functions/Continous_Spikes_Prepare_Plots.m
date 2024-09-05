@@ -1,4 +1,4 @@
-function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,ClustertoshowDropDown,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,ClustertoshowDropDown,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow)
+function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,ClustertoshowDropDown,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,ClustertoshowDropDown,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow)
 
 %________________________________________________________________________________________
 %% Function to prepare plots for internal and kilosort continous spike analysis
@@ -103,21 +103,16 @@ PlotInfo.Waveforms = [];
 PlotInfo.NrWaveformsToExtract = [];
 PlotInfo.SpikeRateNumBins = [];
 
-if strcmp(SpikeType,"Kilosort")
-    if strcmp(ClustertoshowDropDown.Value,"All") || strcmp(ClustertoshowDropDown.Value,"Non")
-        if ~strcmp(SpikeAnalysisType.Value,'Spike Map') && ~strcmp(SpikeAnalysisType.Value,'Spike Amplitude Density Along Depth') && ~strcmp(SpikeAnalysisType.Value,'Cumulative Spike Amplitude Density Along Depth') && ~strcmp(SpikeAnalysisType.Value,'Spike Triggered LFP')
-            msgbox("Error: Please Select a Cluster! Auto-djusted to the first cluster");
-            ClustertoshowDropDown.Value = '0';
-            PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value)+1;
-        end
-    else
-        PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value)+1;
-    end   
+if strcmp(ClustertoshowDropDown.Value,"All") || strcmp(ClustertoshowDropDown.Value,"Non")
+    PlotInfo.Units(1) = NaN;
+else
+    PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value);
 end
 
 commaindicie = find(ChannelEditField.Value == ',');
 PlotInfo.ChannelSelection(1) = str2double(ChannelEditField.Value(1:commaindicie(1)-1));
 PlotInfo.ChannelSelection(2) = str2double(ChannelEditField.Value(commaindicie(1)+1:end));
+NumChannel = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
 
 commaindicie = find(WaveformEditField.Value == ',');
 PlotInfo.Waveforms(1) = str2double(WaveformEditField.Value(1:commaindicie(1)-1));
@@ -130,7 +125,7 @@ PlotInfo.TimeWindowSpiketriggredLFP(2) = str2double(TimeWindowSpiketriggredLFPEd
 PlotInfo.NrWaveformsToExtract = numel(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
 PlotInfo.SpikeRateNumBins = str2double(SpikeRateNumBinsEditField.Value);
 
-if strcmp(SpikeAnalysisType.Value,"Spike Map")
+if strcmp(SpikeAnalysisType.Value,"Spike Map") 
     Eventindicie = [];
     if isfield(Data.Info,"EventChannelNames") && ~strcmp(Eventstoshow,"Non")
         for i = 1:length(Data.Info.EventChannelNames)
@@ -211,17 +206,26 @@ if isempty(SpikeTimes)
     SpikeAmps = [];
     CluterPositions = [];
     ChannelPosition = [];
+    WaveformChannel = [];
     PlotInfo = [];
     return;
 end
 
+WaveformChannel = [];
 if strcmp(SpikeType,"Kilosort")
     SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==1);
     CluterPositions = Data.Spikes.SpikeCluster(SelectedChannelIndicies==1);
     ChannelPosition = Data.Spikes.ChannelPosition;
-else
-    CluterPositions = zeros(1,length(SpikePositions))';
+    Waveforms = Data.Spikes.Waveforms(SelectedChannelIndicies==1,:);
+    WaveformChannel = Data.Spikes.WaveformChannel(SelectedChannelIndicies==1);
+elseif strcmp(SpikeType,"Internal")
+    if isempty(Data.Spikes.SpikeCluster)
+        CluterPositions = zeros(1,length(SpikePositions))';
+    else
+        CluterPositions = Data.Spikes.SpikeCluster(SelectedChannelIndicies==1);
+    end
     SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==1);
     ChannelPosition = Data.Spikes.ChannelPosition;
+    Waveforms = Data.Spikes.Waveforms(SelectedChannelIndicies==1,:);
 end
 

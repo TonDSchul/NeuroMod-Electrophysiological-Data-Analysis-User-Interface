@@ -57,9 +57,9 @@ if strcmp(Type,"Initial") && ~strcmp(Type,"NewCluster") || strcmp(Type,"BinsizeC
     
     %% Plot
    
-    if strcmp(Data.Info.SpikeType,"Kilosort")
+    %if strcmp(Data.Info.SpikeType,"Kilosort")
         yyaxis(TimeSpikeFigure, 'left');
-    end
+    %end
     if length(SpikesInBins)+0.5 ~= 0.5
         xlim(TimeSpikeFigure,[0.5,length(SpikesInBins)+0.5])
     end
@@ -96,6 +96,8 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
 
     SpikesInBins = [];
     
+    yyaxis(TimeSpikeFigure, 'left');
+
     if strcmp(Data.Info.SpikeType,"Kilosort")
         cN = numBins;  % number of steps/chunks
         dN = length(ChannelSelection(1):ChannelSelection(2))*Data.Info.ChannelSpacing;
@@ -110,7 +112,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     % Divide the data into chunks (last chunk is smaller than the rest)
 
     [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(TempSpikePos,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel");
-
+    
     % Get Frequency
     SpikesInBins = SpikesInBins/Data.Time(end);
     if length(SpikesInBins)+0.5 ~= 0.5
@@ -132,9 +134,8 @@ if strcmp(Type,"BinsizeChangeInitial")
     return;
 end
 
-if  ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
-
-    SpikeswithinRange = zeros(1,length(ClusterSpikeTimes));
+%% Plot Unit spike Rate
+if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
 
     cN = numBins;  % number of steps/chunks
     % Divide the data into chunks (last chunk is smaller than the rest)
@@ -145,6 +146,10 @@ if  ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
     
     [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(ClusterSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
 
+    % Normalize spike rate over all channel in which spikes where found
+    if strcmp(Data.Info.SpikeType,"Internal")
+        SpikesInBins = SpikesInBins./length(unique(SpikePositions(CluterPositions == ClusterNr)));
+    end
     %% Plot 
     
     yyaxis(TimeSpikeFigure, 'right');
@@ -160,24 +165,22 @@ if  ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
     if strcmp(Type,"NewCluster")
         %xlim(TimeSpikeFigure,[0 1000]);
         if isempty(Cluster_handles)
-            bar(TimeSpikeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(ClustertoShow)+1,:),'Tag','ClusterRateRight');
+            bar(TimeSpikeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(ClustertoShow),:),'Tag','ClusterRateRight');
         else
-            set(Cluster_handles(:), 'YData', SpikesInBins,'FaceColor', rgb_matrix(str2double(ClustertoShow)+1,:),'Tag','ClusterRateRight');
+            set(Cluster_handles(:), 'YData', SpikesInBins,'FaceColor', rgb_matrix(str2double(ClustertoShow),:),'Tag','ClusterRateRight');
         end
     else
         delete(Cluster_handles(:));
         Cluster_handles = findobj(TimeSpikeFigure, 'Tag', 'ClusterRateRight');
-        bar(TimeSpikeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(ClustertoShow)+1,:),'Tag','ClusterRateRight'); 
+        bar(TimeSpikeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(ClustertoShow),:),'Tag','ClusterRateRight'); 
     end
  
 end
 
 if strcmp(ClustertoShow,"All") || strcmp(ClustertoShow,"Non")
-    if strcmp(Data.Info.SpikeType,"Kilosort")
-        yyaxis(TimeSpikeFigure, 'right');
-        Cluster_handles = findobj(TimeSpikeFigure, 'Tag', 'ClusterRateRight');
-        if ~isempty(Cluster_handles)
-            delete(Cluster_handles(:));
-        end
+    yyaxis(TimeSpikeFigure, 'right');
+    Cluster_handles = findobj(TimeSpikeFigure, 'Tag', 'ClusterRateRight');
+    if ~isempty(Cluster_handles)
+        delete(Cluster_handles(:));
     end
 end

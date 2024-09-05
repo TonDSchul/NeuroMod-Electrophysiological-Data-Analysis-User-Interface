@@ -31,6 +31,10 @@ if strcmp(AnalysisTypeDropDown,"Spike Triggered Average") && PlotInfo.ChannelsTo
     return;
 end
 
+if min(SpikeCluster)==0
+    SpikeCluster = SpikeCluster+1;
+end
+
 if strcmp(AnalysisTypeDropDown,"Spike Map")
     if ~strcmp(ClustertoshowDropDown,"All") && ~strcmp(ClustertoshowDropDown,"Non")
         Spikes_Plot_Spike_Times("Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing)

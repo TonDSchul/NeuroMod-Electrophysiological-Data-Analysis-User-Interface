@@ -174,7 +174,8 @@ elseif KSversion == 3
         disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
     end
 end
-%% If no KilosortData found: Spike Filed is emptyx but has to be deleted
+
+%% If no KilosortData found: Spike Field is emptyx but has to be deleted
 if isempty(Data.Spikes)
     fieldsToDelete = {'Spikes'};
     % Delete fields
@@ -184,7 +185,7 @@ if isempty(Data.Spikes)
     fieldsToDelete = {'EventRelatedSpikes'};
     % Delete fields
     Data = rmfield(Data, fieldsToDelete);
-    if isfield(Data,'EtRelatedSpikes')
+    if isfield(Data,'EventRelatedSpikes')
         fieldsToDelete = {'EventRelatedSpikes'};
         % Delete fieldsven
         Data = rmfield(Data, fieldsToDelete);
@@ -201,11 +202,31 @@ if isfield(Data,'EventRelatedSpikes')
 end
 
 if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
-    msgbox("Warning: Max spike time longer than time vector. Please try another kilosort output file or compute again with int16!" )
+    msgbox("Warning: Max spike time longer than time vector. Please try another kilosort output file or compute again with int16 as format when saving for kilosort!" )
 end
 
 %% Specify SpikeType
 Data.Info.SpikeType = 'Kilosort';
+
+%% Extract Waveforms
+% Extract Waveforms
+[Data.Spikes.Waveforms,SpikesWithWaveform,WaveFormChannel] = Continous_Internal_Spikes_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeAmps,Data.Spikes.SpikePositions(:,2),Data.Spikes.SpikeCluster,[1,size(Data.Raw,1)],[],1,0,[],[]);
+% Remove NaN from Waveforms
+% Some SPikes can be removed when they are too close to the edge of the
+% recording to have a complete waveform
+if sum(SpikesWithWaveform)>0
+    NumSpikeRemoved = length(find(SpikesWithWaveform==0));
+    if NumSpikeRemoved>0
+        msgbox(strcat("Warning: ",num2str(NumSpikeRemoved)," Spikes removed bc they are too close to the time limits"))
+    end
+    Data.Spikes.SpikeTimes = Data.Spikes.SpikeTimes(SpikesWithWaveform==1);
+    Data.Spikes.SpikePositions(SpikesWithWaveform==0,:) = [];
+    Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
+    Data.Spikes.Waveforms = Data.Spikes.Waveforms(SpikesWithWaveform==1,:);
+    Data.Spikes.WaveformChannel = WaveFormChannel(SpikesWithWaveform==1);
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1); 
+    Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
+end
 
 if KSversion == 3
     msgbox("Kilosort 3 data successfully loaded.");

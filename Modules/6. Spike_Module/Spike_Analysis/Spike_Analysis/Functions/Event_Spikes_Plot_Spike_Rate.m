@@ -18,7 +18,7 @@ function Event_Spikes_Plot_Spike_Rate(Data,Time,Type,rgb_matrix,SpikeTimes,Spike
 % 6. SpikePositions: nspikes x 1 double with spike positions (in um) - for
 % internal: channelnr * ChannelSpacing
 % 7. SpikeCluster: nspikes x 1 double with spike cluster identity (integer,
-% 1-indexed)- for internal spikes: all 1 since no clustering is done
+% 1-indexed)-
 % 8. NumEvents: double, number of events to normaloze spike rate
 % 9. Clustertoshow: char, 'Non' OR 'All' or a single number like '4' for
 % unit 4
@@ -150,7 +150,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     end
 end
 
-if  ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,"BinsizeChange") && ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non")
+if ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,"BinsizeChange") && ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non")
 
     SpikeswithinRange = zeros(1,length(ClusterSpikeTimes));
 
@@ -164,6 +164,11 @@ if  ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,
     ClusterSpikeTimes = ClusterSpikeTimes+abs(Time(1));
     [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(ClusterSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
     
+    % Normalize spike rate over all channel in which spikes where found
+    if strcmp(Data.Info.SpikeType,"Internal")
+        SpikesInBins = SpikesInBins./length(unique(SpikePositions(SpikeCluster == ClusterNr)));
+    end
+
     %% Calculate mean over all channel
     ChannelRange = ChannelToPlot(1):ChannelToPlot(2);
     SpikesInBins = ((SpikesInBins./BinSizeTime))/NumEvents;
@@ -187,16 +192,30 @@ if  ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,
     if ~strcmp(Type,"BinsizeChange")
         yyaxis(SpikeRateTimeFigure, 'right');
         if isempty(Cluster_handles)
-            bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(Clustertoshow)+1,:),'Tag','ClusterRate');
+            bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(Clustertoshow),:),'Tag','ClusterRate');
         else
-            set(Cluster_handles(1), 'YData', SpikesInBins,'FaceColor', rgb_matrix(str2double(Clustertoshow)+1,:),'Tag','ClusterRate');
+            set(Cluster_handles(1), 'YData', SpikesInBins,'FaceColor', rgb_matrix(str2double(Clustertoshow),:),'Tag','ClusterRate');
         end
     else
         delete(Cluster_handles(:));
         yyaxis(SpikeRateTimeFigure, 'right');
         Cluster_handles = findobj(SpikeRateTimeFigure, 'Tag', 'ClusterRate');
-        bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(Clustertoshow)+1,:),'Tag','ClusterRate'); 
+        bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(str2double(Clustertoshow),:),'Tag','ClusterRate'); 
     end
+
+    % Set the x-tick labels to the correct time values
+    % Calculate bin centers or edges
+    bin_edges = Time(1) + (0:cN) * BinSizeTime;
+    bin_centers = bin_edges(1:end-1) + BinSizeTime/2;
+
+    max_xticks = 50;
+    tick_interval = max(1, round(cN / max_xticks));
+
+    x_ticks = 1:tick_interval:cN;
+    x_tick_labels = arrayfun(@(x) sprintf('%.2f', x), bin_centers(x_ticks), 'UniformOutput', false);
+
+    SpikeRateTimeFigure.XTick = x_ticks;
+    SpikeRateTimeFigure.XTickLabel = x_tick_labels;
  
 end
 

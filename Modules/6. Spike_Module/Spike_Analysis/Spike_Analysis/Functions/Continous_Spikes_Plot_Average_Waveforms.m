@@ -101,7 +101,11 @@ set(Figure, 'YDir', 'reverse');
 if strcmp(SpikeType,"Kilosort")
     title(Figure,strcat("Unit ",num2str(UnitstoPlot)," Average of Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
 else
-    title(Figure,strcat("Average of Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+    if strcmp(UnitstoPlot,"All") || strcmp(UnitstoPlot,"Non")
+        title(Figure,strcat("All Units Average of Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+    else
+        title(Figure,strcat("Unit ",UnitstoPlot," Average of Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+    end
 end
 
 cbar_handle=colorbar('peer',Figure,'location','WestOutside');

@@ -93,13 +93,6 @@ if strcmp(SpikeAnalysisType,"Waveforms from Raw Data")
     ChannelSelection(1) = str2double(ChannelEditField.Value(1:commaindicie(1)-1));
     ChannelSelection(2) = str2double(ChannelEditField.Value(commaindicie(1)+1:end));
     ChannelformRange = ChannelSelection(1):ChannelSelection(2);
-
-    %% Check if inputs will work
-    if numel(ChannelformRange) > 1 && numel(WaveformRange) > 1 
-        msgbox('Channelselection, Unitselection and Waveformselection have too many indicies. Two of those have to be set to a single value (i.e. 10,10)!')
-        Error=1;
-        return;
-    end
 end
 
 if strcmp(SpikeAnalysisType,"Waveforms Templates")

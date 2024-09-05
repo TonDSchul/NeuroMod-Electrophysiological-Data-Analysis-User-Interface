@@ -87,7 +87,11 @@ for nevents = 1:size(Data.EventRelatedData,2)
     if strcmp(SpikeType,"Kilosort")
         Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
     else
-        Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;zeros(sum(SpikeIndicieWithinCurrentEvent),1)]; 
+        if isfield(Data.Info,'SpikeSorting')
+            Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
+        else
+            Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;zeros(sum(SpikeIndicieWithinCurrentEvent),1)]; 
+        end
     end
 
     if sum(Data.EventRelatedSpikes.SpikeTimes(Data.EventRelatedSpikes.SpikeTimes<=0)) > 0

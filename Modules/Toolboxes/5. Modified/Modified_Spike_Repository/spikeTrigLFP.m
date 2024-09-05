@@ -1,4 +1,4 @@
-function mnLFP = spikeTrigLFP(tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD)
+function mnLFP = spikeTrigLFP(tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD,ClustertoShow)
 % function mnLFP = spikeTrigLFP(tLFP, lfpdat, theseST, winAroundSpike)
 %
 % returns nChannels x nTimePoints mean spike-triggered LFP. 
@@ -156,8 +156,12 @@ if Plot
         legendHandle = legend(eventLine, {'Spikes Time'});
         set(legendHandle, 'HandleVisibility', 'off');
     end
-
-    title(Figure,'Spike Triggered LFP')
+    if strcmp(ClustertoShow,"All") || strcmp(ClustertoShow,"Non")
+        title(Figure,'All Units Spike Triggered LFP')
+    else
+        title(Figure,strcat("Unit ",ClustertoShow," Spike Triggered LFP"));
+    end
+    
     xlabel(Figure,'Time [ms]')
     ylabel(Figure,'Depth [µm]')
     xlim(Figure,[min(Time) max(Time)]);

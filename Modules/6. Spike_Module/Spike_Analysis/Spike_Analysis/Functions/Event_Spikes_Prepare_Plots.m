@@ -113,7 +113,11 @@ TempEvents = Data.EventRelatedSpikes.SpikeEvents(SelectedChannelIndicies);
 if strcmp(SpikeType,"Kilosort")
     TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster(SelectedChannelIndicies);
 else
-    TempSpikeCluster = zeros(1,length(TempSpikePositions))';
+     if isfield(Data.Info,'SpikeSorting')
+        TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster(SelectedChannelIndicies);
+     else
+        TempSpikeCluster = zeros(1,length(TempSpikePositions))';
+     end
 end
 
 %% Select Data based on Event Selecion

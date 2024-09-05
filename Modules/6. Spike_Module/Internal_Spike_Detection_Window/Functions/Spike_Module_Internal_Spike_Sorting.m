@@ -51,7 +51,7 @@ if isfile(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')))
     % First Load Spike Data and check whether its the same
     load(strcat(strcat(SpikeSortingPath,'\spikes.mat')),'TempSpikes','SpikeInfo');
     
-    if isfield(Data,'Spikes')
+    if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
         if ~isequal(TempSpikes.SpikeTimes,Data.Spikes.SpikeTimes) || ~isequal(TempSpikes.SpikePositions,Data.Spikes.SpikePositions)
             msgbox("Warning: Spike Data clustering was based on is not the same as current spike dataset. Current Spike Dataset is replaced.");
             Data.Spikes = TempSpikes;

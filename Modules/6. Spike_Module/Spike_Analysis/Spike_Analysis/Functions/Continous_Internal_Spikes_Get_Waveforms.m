@@ -1,4 +1,4 @@
-function [Waveforms,BiggestSpikeIndicies] = Continous_Internal_Spikes_Get_Waveforms(Data,SpikeTimes,Amplitudes,SpikePositions,SpikeCluster,ChannelSelection,NRWaveformsToExtract,AllSpikes,Plot,Figure,WaveformsToPlot)
+function [Waveforms,BiggestSpikeIndicies,WaveFormChannel] = Continous_Internal_Spikes_Get_Waveforms(Data,SpikeTimes,Amplitudes,SpikePositions,SpikeCluster,ChannelSelection,NRWaveformsToExtract,AllSpikes,Plot,Figure,WaveformsToPlot)
 
 %________________________________________________________________________________________
 %% Function to extract biggest spike waveforms with amplitudes of each spike already given.
@@ -39,53 +39,37 @@ function [Waveforms,BiggestSpikeIndicies] = Continous_Internal_Spikes_Get_Wavefo
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-%% Set up to Extract Waveforms of these Amplitudes
-% Not necessary to distinguish to downsampled data since waveforms are
-% extracted from raw data if preprocessed data is downsampled
-% if Downsample == 0
-%     TimePoints = Data.Info.NativeSamplingRate/1000;
-% else
-%     TimePoints = Data.Info.DownsampledSampleRate/1000;
-% end
-
-% Spike Positions start at 0. Howver they get accessed in a loop and
-% compared to channel, so need to be 1
-% ZeroPosition = SpikePositions == 0;
-% if sum(ZeroPosition)>1
-%     SpikePositions = SpikePositions+1;
-% end
-
-if ~Plot
-    if isfield(Data,'Preprocessed') 
-        if isfield(Data.Info,'FilterMethod') 
-            if ~strcmp(Data.Info.FilterMethod,'High-Pass')
-                msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms");
-            end
-        else
+if isfield(Data,'Preprocessed') 
+    if isfield(Data.Info,'FilterMethod') 
+        if ~strcmp(Data.Info.FilterMethod,'High-Pass')
             msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms");
         end
     else
         msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms");
     end
-    
-    TimePoints = Data.Info.NativeSamplingRate/1000;
-    
-    % If weird circumstances ensure minimum
-    if TimePoints*2+1 < 50
-        TimePoints = 25;
-    end
-    
-    ChannelRange = ChannelSelection(1):ChannelSelection(2);
-    LengthWaveform = TimePoints*2+1;
-    
-    Waveforms = NaN(length(SpikeTimes),LengthWaveform);
+else
+    msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms");
+end
 
-    %% Set up to extract Biggest Amplitudes
-    
-    % Initialize a cell array to store indices of the top NRWaveformsToExtract amplitudes per channel
-    
+% Rough automatic num samples for spikes
+TimePoints = Data.Info.NativeSamplingRate/1000;
+
+% If weird circumstances ensure minimum
+if TimePoints*2+1 < 50
+    TimePoints = 25;
+end
+
+ChannelRange = ChannelSelection(1):ChannelSelection(2);
+LengthWaveform = TimePoints*2+1;
+
+WaveFormChannel = [];
+%% Set up to extract Biggest Amplitudes
+
+% Initialize a cell array to store indices of the top NRWaveformsToExtract amplitudes per channel
+
+if strcmp(Data.Info.SpikeType,"Internal")
+    Waveforms = NaN(length(SpikeTimes),LengthWaveform);
     BiggestSpikeIndicies = zeros(length(SpikeTimes),1);
-           
     % Extract Corresponding waveforms
     for nwaves = 1:length(SpikeTimes) 
         if isfield(Data,'Preprocessed') && ~isfield(Data.Info,'DownsampleFactor')
@@ -104,7 +88,43 @@ if ~Plot
             end
         end
     end
-end % if ~Plot
+elseif strcmp(Data.Info.SpikeType,"Kilosort")
+    Waveforms = NaN(length(SpikeTimes),LengthWaveform);
+    BiggestSpikeIndicies = zeros(length(SpikeTimes),1);
+    % Extract Corresponding waveforms
+    for nwaves = 1:length(SpikeTimes)
+        % For Kilosort extract for each waveform the data from each channel
+        TempWave = NaN(size(Data.Raw,1),LengthWaveform);
+        for nchannel = 1:size(Data.Raw,1)
+            if isfield(Data,'Preprocessed') && ~isfield(Data.Info,'DownsampleFactor')
+                if SpikeTimes(nwaves)-TimePoints > 0 && SpikeTimes(nwaves)+TimePoints <= size(Data.Preprocessed,2)
+                    TempWave(nchannel,1:LengthWaveform) = Data.Preprocessed(nchannel,SpikeTimes(nwaves)-TimePoints:SpikeTimes(nwaves)+TimePoints);
+                else
+                    TempWave(nchannel,1:LengthWaveform) = NaN;
+                end
+            else
+                if SpikeTimes(nwaves)-TimePoints > 0 && SpikeTimes(nwaves)+TimePoints <= size(Data.Raw,2)
+                    TempWave(nchannel,1:LengthWaveform) = Data.Raw(nchannel,SpikeTimes(nwaves)-TimePoints:SpikeTimes(nwaves)+TimePoints);
+                else
+                    TempWave(nchannel,1:LengthWaveform) = NaN;
+                end
+            end
+        end
+
+        [MaxChannelValue,~] = max(TempWave,[],1);
+        
+        if ~isnan(MaxChannelValue)
+            [~,MaxChannelIndicie] = max(MaxChannelValue);
+            WaveFormChannel(nwaves) = MaxChannelIndicie;
+            Waveforms(nwaves,1:LengthWaveform) = TempWave(MaxChannelIndicie,:);
+            BiggestSpikeIndicies(nwaves) = 1;
+        else
+            Waveforms(nwaves,1:LengthWaveform) = NaN;
+            WaveFormChannel(nwaves) = NaN;
+        end
+    end
+end
+
 
 
 
