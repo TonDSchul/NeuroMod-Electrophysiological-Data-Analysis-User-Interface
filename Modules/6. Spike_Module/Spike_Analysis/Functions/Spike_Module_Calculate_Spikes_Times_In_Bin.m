@@ -33,33 +33,23 @@ SpikesPerBin = zeros(1,NumBins);
 
 if strcmp(SpikeRateType,"SpikeRateoverTime")
 
-    Currentbinmin = 0;
-    Currentbinmax = BinSize;
-    for currentbiniteration = 1:NumBins
-        
-        SpikesPerBin(currentbiniteration) = sum(SpikeTimes > Currentbinmin & SpikeTimes <= Currentbinmax);
-    
-        Currentbinmin = Currentbinmax;
-        Currentbinmax = Currentbinmin+BinSize;
-    end
+    % Calculate the bin edges based on the desired bin size and number of bins
+    minEdge = 0; % Minimum value of SpikePositions
+    maxEdge = NumBins*BinSize; % Define the range of bins
+    binEdges = minEdge:BinSize:maxEdge;  % Create bin edges
+
+    % Count the number of SpikePositions in each bin
+    [SpikesPerBin, ~] = histcounts(SpikeTimes, binEdges);
 
 elseif strcmp(SpikeRateType,"SpikeRateoverChannel")
 
-    Currentbinmin = 0;
-    Currentbinmax = BinSize;
-    for currentbiniteration = 1:NumBins
-        
-        SpikesPerBin(currentbiniteration) = sum(SpikePositions >= Currentbinmin & SpikePositions < Currentbinmax);
-    
-        Currentbinmin = Currentbinmax;
-        Currentbinmax = Currentbinmin+BinSize;
-    end
-end
+    % Calculate the bin edges based on the desired bin size and number of bins
+    minEdge = 0; % Minimum value of SpikePositions
+    maxEdge = NumBins*BinSize; % Define the range of bins
+    binEdges = minEdge:BinSize:maxEdge;  % Create bin edges
 
-% If BinSize is not equally dividing range, take care of last values by
-% introducing a new bin
-if sum(SpikeTimes>Currentbinmax) > 0
-    SpikesPerBin(end) = SpikesPerBin(end)+sum(SpikeTimes>Currentbinmax);
+    % Count the number of SpikePositions in each bin
+    [SpikesPerBin, ~] = histcounts(SpikePositions, binEdges);
 end
 
 %% Convert to Frequeny

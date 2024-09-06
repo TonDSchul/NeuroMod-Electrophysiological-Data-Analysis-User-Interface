@@ -50,7 +50,7 @@ NumChannel = length(ChannelSelection(1):ChannelSelection(2));
 
 %% Plot Spikes
 xlim(Figure,[Time(1),Time(end)]);
-ylim(Figure,[0-ChannelSpacing/2,((NumChannel-1)*ChannelSpacing)+ChannelSpacing/2]);
+ylim(Figure,[0,((NumChannel)*ChannelSpacing)]);
 ylabel(Figure,'Depth (um)')
 
 title(Figure,strcat("Spike Positions Across Time and Depth Channel ", num2str(ChannelSelection)));

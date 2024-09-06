@@ -325,7 +325,7 @@ Data.Info.SpikeType = 'Internal';
 
 %% Lastly extract Waveforms
 % Extract Waveforms
-[Data.Spikes.Waveforms,SpikesWithWaveform,~] = Continous_Internal_Spikes_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeAmps,Data.Spikes.SpikePositions(:,2),Data.Spikes.SpikeCluster,[1,size(Data.Raw,1)],[],1,0,[],[]);
+[Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikePositions(:,2),"NormalWaveforms");
 % Remove NaN from Waveforms
 % Some SPikes can be removed when they are too close to the edge of the
 % recording to have a complete waveform

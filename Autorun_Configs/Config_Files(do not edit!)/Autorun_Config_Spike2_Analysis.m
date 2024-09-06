@@ -32,8 +32,8 @@ function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
 % What to execute
 
 %AutorunConfig.FunctionOrder = ["Load_Data","Static_Power_Spectrum","Preprocess_Continous_Data","Internal_Spike_Detection","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
-AutorunConfig.FunctionOrder = ["Load_Data","Save_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
-
+%AutorunConfig.FunctionOrder = ["Load_Data","Save_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum"];
 % General Information
 AutorunConfig.AutorunConfigName = "Spike2 LFP and Spike Analysis";
 AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)

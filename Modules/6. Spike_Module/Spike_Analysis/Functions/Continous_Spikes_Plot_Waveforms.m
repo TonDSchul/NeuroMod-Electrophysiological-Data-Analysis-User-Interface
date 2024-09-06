@@ -67,9 +67,9 @@ end
 % Bring the mean plot to the front using uistack
 uistack(MeanPlot, 'top');
 if ~isnan(PlotInfo.Units)
-    title(Figure,strcat("Cluster ",ClusterSelection," Waveforms ",num2str(PlotInfo.Waveforms(1)),",",num2str(PlotInfo.Waveforms(end))," Channel ",num2str(PlotInfo.ChannelSelection)));
+    title(Figure,strcat("Cluster ",ClusterSelection," Biggest Waveforms ",num2str(PlotInfo.Waveforms(1)),",",num2str(PlotInfo.Waveforms(end))," Inbetween Channel ",num2str(PlotInfo.ChannelSelection)));
 else
-    title(Figure,strcat("All Cluster, Waveforms ",num2str(PlotInfo.Waveforms(1)),",",num2str(PlotInfo.Waveforms(end))," Channel ",num2str(PlotInfo.ChannelSelection)));
+    title(Figure,strcat("All Cluster, Biggest Waveforms ",num2str(PlotInfo.Waveforms(1)),",",num2str(PlotInfo.Waveforms(end))," Inbetween Channel ",num2str(PlotInfo.ChannelSelection)));
 end
 xlabel(Figure,"Time [ms]");
 ylabel(Figure,"Signal [mV]");

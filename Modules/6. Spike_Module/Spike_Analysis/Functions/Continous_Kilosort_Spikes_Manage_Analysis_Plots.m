@@ -77,38 +77,44 @@ if strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
 end
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
-
+    
     if ~isnan(PlotInfo.Units)
         ClustertoShow = PlotInfo.Units;
         WavesinCluster = CluterPositions == ClustertoShow;
-        ClusterWaveforms = Waveforms(WavesinCluster==1,:);
-        WavePositions = WaveformChannel(WavesinCluster==1);
+        ClusterWaveforms = Waveforms(:,WavesinCluster==1,:);
     else
         ClusterWaveforms = Waveforms;
-        WavePositions = WaveformChannel;
     end
     
-    Meanwaveform = NaN(1,length(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2)),size(ClusterWaveforms,2));
-    NumWaveforms = length(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
-    ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
-    %if strcmp(ClustertoShowDropDown,"All") || strcmp(ClustertoShowDropDown,"Non")
-        for nchannel = 1:length(ChannelRange)
-            ChannelIndicies = WavePositions == ChannelRange(nchannel);
-            if sum(ChannelIndicies)==1
-                TempCurrentWaveforms = ClusterWaveforms(ChannelIndicies==1,:);
-                [a,MaxAmplitudeIndicies] = maxk(max(TempCurrentWaveforms,[],2),NumWaveforms);
-                Meanwaveform(1,nchannel,:) = ClusterWaveforms(MaxAmplitudeIndicies,:);
-            elseif sum(ChannelIndicies)>1
-                TempCurrentWaveforms = ClusterWaveforms(ChannelIndicies==1,:);
-                [a,MaxAmplitudeIndicies] = maxk(max(TempCurrentWaveforms,[],2),NumWaveforms);
-                Meanwaveform(1,nchannel,:) = mean(TempCurrentWaveforms(MaxAmplitudeIndicies,:),1,'omitnan');
-            elseif sum(ChannelIndicies)==0
-                Meanwaveform(1,nchannel,:) = NaN;
-            end
-        end
-    %end
+    % Find n number of biggest waveforms
+    % Prepare: Waveforms in 3d matrix (nchannel,nwaves,ntime) for spike
+    % waveform over depth plots. Here we need the spike waveform of the
+    % channel the spike was detected in.
+    NumWaveForms = length(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
+    Waveformstoplot = NaN(size(ClusterWaveforms,2),size(ClusterWaveforms,3));
+
+    for nwaves = 1:size(ClusterWaveforms,2)
+        ChannelSelection = double(Data.Spikes.SpikeChannel(nwaves));
+        Waveformstoplot(nwaves,:) = squeeze(ClusterWaveforms(ChannelSelection,nwaves,:));       
+    end
+
+    [MaxValue,~] = max(Waveformstoplot,[],2);
+    [~,MaxIndex] = maxk(MaxValue,NumWaveForms);
     
-    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),Meanwaveform,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD);
+    WaveFormSelection = Waveforms(:,MaxIndex,:);
+    
+    MeanWaveForm = NaN(1,size(WaveFormSelection,1),size(WaveFormSelection,3));
+
+    if size(WaveFormSelection,2)>1
+        MeanWaveForm(1,:,:) = squeeze(mean(WaveFormSelection,2));
+    else
+        MeanWaveForm(1,:,:) = squeeze(WaveFormSelection);
+    end
+   
+    %% Just Some Channel Selected
+    MeanWaveForm = MeanWaveForm(1,PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:);
+    
+    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),MeanWaveForm,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD);
 end
 
 if strcmp(TypeofAnalysis,"Waveforms from Raw Data")
@@ -171,11 +177,11 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
 end
 
 if strcmp(TypeofAnalysis,"Template from Max Amplitude Channel")
-    if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
+    %if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,PlotInfo.Units,rgbMatrix)
-    else
+    %else
 
-    end
+    %end
 end
 
 if strcmp(TypeofAnalysis,"Spike Triggered LFP")
@@ -190,7 +196,7 @@ if strcmp(TypeofAnalysis,"Spike Triggered LFP")
     [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Kilosort",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClusterToShow);
     
     if isempty(TempData) % if not preprocessed
-       Data = [];
+        Data = [];
     else
         Data = TempData; % if preprocessed
     end

@@ -37,7 +37,8 @@ elseif ndims(MeanWaveform)==2
     Time = Time*1000; % Convert to ms
 end
 
-ydata = 0:ChannelSpacing:(NumChannel-1)*ChannelSpacing;
+ydata = linspace(0,(NumChannel)*ChannelSpacing,NumChannel);
+%ydata = ChannelSpacing:ChannelSpacing:(NumChannel)*ChannelSpacing;
 
 if strcmp(TwoORThreeD,"TwoD")
     PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
@@ -49,8 +50,9 @@ if strcmp(TwoORThreeD,"TwoD")
     min_z = 0;
     if isempty(PowerDepth2D_handles)
         % 2D Plot
-        surface(Figure,Time, ydata, min_z * ones(size(squeeze(MeanWaveform))), ...
-        'CData', squeeze(MeanWaveform), 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+        MeanWaveform=squeeze(MeanWaveform);
+        surface(Figure,Time, ydata, min_z * ones(size(MeanWaveform)), ...
+        'CData', MeanWaveform, 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
     else
         % 2D Plot
         set(PowerDepth2D_handles(1),'XData',Time,'YData', ydata,'ZData', min_z * ones(size(squeeze(MeanWaveform))), ...
@@ -98,13 +100,13 @@ end
 
 set(Figure, 'YDir', 'reverse'); 
 
-if strcmp(SpikeType,"Kilosort")
-    title(Figure,strcat("Unit ",num2str(UnitstoPlot)," Average of Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+if strcmp(UnitstoPlot,"All") || strcmp(UnitstoPlot,"Non")
+    title(Figure,strcat("All Units Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
 else
-    if strcmp(UnitstoPlot,"All") || strcmp(UnitstoPlot,"Non")
-        title(Figure,strcat("All Units Average of Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+    if isnumeric(UnitstoPlot)
+        title(Figure,strcat("Unit ",num2str(UnitstoPlot)," Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
     else
-        title(Figure,strcat("Unit ",UnitstoPlot," Average of Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+        title(Figure,strcat("Unit ",UnitstoPlot," Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
     end
 end
 
@@ -121,6 +123,7 @@ colormap(Figure,colormap_BlueWhiteRed);
 Figure.CLim = [NewCLim(1) NewCLim(2)]; 
 
 if ydata(1) ~= ydata(end)
+   % ylim(Figure,[0,ydata(end)])
     ylim(Figure,[ydata(1),ydata(end)])
 end
 xlim(Figure,[Time(1),Time(end)]);

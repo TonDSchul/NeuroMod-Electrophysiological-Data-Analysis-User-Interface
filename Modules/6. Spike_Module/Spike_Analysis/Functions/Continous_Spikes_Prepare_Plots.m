@@ -1,4 +1,4 @@
-function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,ClustertoshowDropDown,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,ClustertoshowDropDown,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow)
+function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,ClustertoshowDropDown,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,ClustertoshowDropDown,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow,Waveforms)
 
 %________________________________________________________________________________________
 %% Function to prepare plots for internal and kilosort continous spike analysis
@@ -176,12 +176,22 @@ if ExecuteInGUI == 1
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         WaveformEditField.Enable = "off";
         ChannelEditField.Enable = "on";
+        if strcmp(ClustertoshowDropDown.Value,"All") || strcmp(ClustertoshowDropDown.Value,"Non")
+            ClustertoshowDropDown.Value = '1';
+            PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value);
+            msgbox("Warning: Template from Max Amplitude Channel only available for specific units. Unit Seelction was autoadjusted to the first one.")
+        end
     end
     
     if strcmp(SpikeAnalysisType.Value,"Template from Max Amplitude Channel")
         TimeWindowSpiketriggredLFPEditField.Enable = "off";
         WaveformEditField.Enable = "off";
         ChannelEditField.Enable = "off";
+        if strcmp(ClustertoshowDropDown.Value,"All") || strcmp(ClustertoshowDropDown.Value,"Non")
+            ClustertoshowDropDown.Value = '1';
+            PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value);
+            msgbox("Warning: Template from Max Amplitude Channel only available for specific units. Unit Seelction was autoadjusted to the first one.")
+        end
     end
     
     if strcmp(SpikeAnalysisType.Value,"Cumulative Spike Amplitude Density Along Depth") || strcmp(SpikeAnalysisType.Value,"Spike Amplitude Density Along Depth")
@@ -216,8 +226,11 @@ if strcmp(SpikeType,"Kilosort")
     SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==1);
     CluterPositions = Data.Spikes.SpikeCluster(SelectedChannelIndicies==1);
     ChannelPosition = Data.Spikes.ChannelPosition;
-    Waveforms = Data.Spikes.Waveforms(SelectedChannelIndicies==1,:);
-    WaveformChannel = Data.Spikes.WaveformChannel(SelectedChannelIndicies==1);
+    if ndims(Waveforms)==3
+        Waveforms = Waveforms(:,SelectedChannelIndicies==1,:);
+    else
+        Waveforms = Waveforms(SelectedChannelIndicies==1,:);
+    end
 elseif strcmp(SpikeType,"Internal")
     if isempty(Data.Spikes.SpikeCluster)
         CluterPositions = zeros(1,length(SpikePositions))';
@@ -226,6 +239,11 @@ elseif strcmp(SpikeType,"Internal")
     end
     SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==1);
     ChannelPosition = Data.Spikes.ChannelPosition;
-    Waveforms = Data.Spikes.Waveforms(SelectedChannelIndicies==1,:);
+    if ndims(Waveforms)==3
+        Waveforms = Waveforms(:,SelectedChannelIndicies==1,:);
+    else
+        Waveforms = Waveforms(SelectedChannelIndicies==1,:);
+    end
+    
 end
 

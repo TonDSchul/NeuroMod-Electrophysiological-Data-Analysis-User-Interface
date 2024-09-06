@@ -45,20 +45,30 @@ function [Data] = Continous_Internal_Spikes_Manage_Analysis_Plots(TypeofAnalysis
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
+%% Prepare all
+% Check basic requirements of spikes being within channelselection
+
 if isstring(SpikeTimes)
     msgbox("No Spikes found with selected Parameter. Nothing is plotted.")
     return;
 end
 
+% CLuster ID's can start with 0 (from Kilosort). Its used for indexing, so
+% min value has to be 1
+
 if min(CluterPositions)==0
     CluterPositions = CluterPositions+1;
 end
 
+% If no spike clustering with internal spikes available
 if ~isempty(Data.Spikes.SpikeCluster)
     numCluster = length(unique(Data.Spikes.SpikeCluster));
 else
     numCluster = 1;
 end
+
+%% Execute Selection
+%% Spike Map with amplitude color coding
 
 if strcmp(TypeofAnalysis,"Spike Map") 
     if ~isnan(PlotInfo.Units)
@@ -74,6 +84,8 @@ if strcmp(TypeofAnalysis,"Spike Map")
     Spikes_Plot_Spike_Times("Continous",RGBMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,ChannelPosition,Figure,numCluster,ClustertoShow,PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing)
     Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,Plottype,RGBMatrix,ClustertoShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing) 
 end
+
+%% Spike Rate plots updating
 
 if strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
     if ~isnan(PlotInfo.Units)
@@ -91,8 +103,10 @@ if strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
     Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,"Initial",RGBMatrix,ClustertoShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing)
 end
 
+%% Channel waveforms
+
 if strcmp(TypeofAnalysis,"Channel Waveforms")
-   Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,PlotInfo,ClustertoShowDropDown,Figure);
+    Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,PlotInfo,ClustertoShowDropDown,Figure);
 end
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
@@ -100,34 +114,37 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     if ~isnan(PlotInfo.Units)
         ClustertoShow = PlotInfo.Units;
         WavesinCluster = CluterPositions == ClustertoShow;
-        ClusterWaveforms = Waveforms(WavesinCluster==1,:);
-        WavePositions = SpikePositions(WavesinCluster==1);
+        ClusterWaveforms = Waveforms(:,WavesinCluster==1,:);
     else
         ClusterWaveforms = Waveforms;
-        WavePositions = SpikePositions;
     end
+
+    % Find n number of biggest waveforms
+    % Prepare: Waveforms in 3d matrix (nchannel,nwaves,ntime) for spike
+    % waveform over depth plots. Here we need the spike waveform of the
+    % channel the spike was detected in.
+    NumWaveForms = length(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
+    Waveformstoplot = NaN(size(ClusterWaveforms,2),size(ClusterWaveforms,3));
+    for nwaves = 1:size(ClusterWaveforms,2)
+        ChannelSelection = ((SpikePositions(nwaves))./Data.Info.ChannelSpacing)+1;
+        Waveformstoplot(nwaves,:) = squeeze(ClusterWaveforms(ChannelSelection,nwaves,:));       
+    end
+    [MaxValue,~] = max(Waveformstoplot,[],2);
+    [~,MaxIndex] = maxk(MaxValue,NumWaveForms);
     
-    Meanwaveform = NaN(1,length(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2)),size(ClusterWaveforms,2));
-    NumWaveforms = length(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
+    WaveFormSelection = Waveforms(:,MaxIndex,:);
     
-    %if strcmp(ClustertoShowDropDown,"All") || strcmp(ClustertoShowDropDown,"Non")
-        for nchannel = 1:length(PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2))
-            ChannelIndicies = WavePositions == (nchannel-1)*Data.Info.ChannelSpacing;
-            if sum(ChannelIndicies)==1
-                TempCurrentWaveforms = ClusterWaveforms(ChannelIndicies==1,:);
-                [a,MaxAmplitudeIndicies] = maxk(max(TempCurrentWaveforms,[],2),NumWaveforms);
-                Meanwaveform(1,nchannel,:) = ClusterWaveforms(MaxAmplitudeIndicies,:);
-            elseif sum(ChannelIndicies)>1
-                TempCurrentWaveforms = ClusterWaveforms(ChannelIndicies==1,:);
-                [a,MaxAmplitudeIndicies] = maxk(max(TempCurrentWaveforms,[],2),NumWaveforms);
-                Meanwaveform(1,nchannel,:) = mean(TempCurrentWaveforms(MaxAmplitudeIndicies,:),1,'omitnan');
-            elseif sum(ChannelIndicies)==0
-                Meanwaveform(1,nchannel,:) = NaN;
-            end
-        end
-    %end
+    MeanWaveForm = NaN(1,size(WaveFormSelection,1),size(WaveFormSelection,3));
+    if size(WaveFormSelection,2)>1
+        MeanWaveForm(1,:,:) = squeeze(mean(WaveFormSelection,2));
+    else
+        MeanWaveForm(1,:,:) = squeeze(WaveFormSelection);
+    end
+   
+    %% Just Some Channel Selected
+    MeanWaveForm = MeanWaveForm(1,PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:);
     
-    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,ClustertoShowDropDown,Meanwaveform,Data.Info.ChannelSpacing,"Internal",PlotInfo.Waveforms,TwoORThreeD);
+    Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,ClustertoShowDropDown,MeanWaveForm,Data.Info.ChannelSpacing,"Internal",PlotInfo.Waveforms,TwoORThreeD);
 end
 
 %% basic quantification of spiking plot

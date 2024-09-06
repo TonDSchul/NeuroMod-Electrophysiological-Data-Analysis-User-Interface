@@ -107,10 +107,10 @@ if isempty(KSversion)
 end
 
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
+[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, ~, Data.Spikes.SpikeChannel,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
 
-Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
-Data.Spikes.SpikePositions(:,2) = SpikePositions;
+% Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
+% Data.Spikes.SpikePositions(:,2) = SpikePositions;
 
 %% Apply ScalingFactor if available (Kilosort works with int format and saves results as such 
 %% Scalingfactor is saved automatically by the GUI when the user saves data for kilosort.)
@@ -144,7 +144,7 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i}(1:end-4),'channel_positions')
         Data.Spikes.ChannelPosition = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'spike_positions')
-       %Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
+       Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'templates_ind')
         Data.Spikes.templates_ind = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'templates')
@@ -209,8 +209,15 @@ end
 Data.Info.SpikeType = 'Kilosort';
 
 %% Extract Waveforms
-% Extract Waveforms
-[Data.Spikes.Waveforms,SpikesWithWaveform,WaveFormChannel] = Continous_Internal_Spikes_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeAmps,Data.Spikes.SpikePositions(:,2),Data.Spikes.SpikeCluster,[1,size(Data.Raw,1)],[],1,0,[],[]);
+% For Kilosort we dont have channel information to extract from raw or
+% preprocessed data --> Therefor we take channel closest to position
+
+SpikePositions = Data.Spikes.SpikePositions(:,2)+Data.Info.ChannelSpacing;
+SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
+SpikePositions = round(SpikePositions);
+%SpikePositions = double(Data.Spikes.SpikeChannel);
+
+[Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
 % Remove NaN from Waveforms
 % Some SPikes can be removed when they are too close to the edge of the
 % recording to have a complete waveform
@@ -223,7 +230,6 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikePositions(SpikesWithWaveform==0,:) = [];
     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
     Data.Spikes.Waveforms = Data.Spikes.Waveforms(SpikesWithWaveform==1,:);
-    Data.Spikes.WaveformChannel = WaveFormChannel(SpikesWithWaveform==1);
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1); 
     Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
 end
