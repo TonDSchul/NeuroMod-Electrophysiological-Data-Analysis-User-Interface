@@ -60,8 +60,8 @@ if KSVersion == 4
     
     % center of mass is sum(coords.*features)/sum(features)
     spikeDepths = sum(spikeFeatYcoords.*pcFeat.^2,2)./sum(pcFeat.^2,2);
-
-else
+    spikeDepths(isnan(spikeDepths))=0;
+else %% no pcfeature anymore in KS3 --> no center of mass
     Loadname = strcat(ksDir,'\rez.mat');
     load(Loadname,'rez');
     spikeDepths= rez.xy(:,1);

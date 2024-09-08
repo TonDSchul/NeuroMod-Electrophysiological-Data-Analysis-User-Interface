@@ -276,15 +276,17 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
             end
           
             SpikeTimes = cell2mat(Sequences);
+            
+            
             Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes,SpikeTimes];
             Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
             Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+            
         end
     end
-
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
-
 end
+
 
 %% If no Spikes found, fields are empty. Delete field
 if isempty(Data.Spikes.SpikeTimes)
@@ -345,6 +347,7 @@ if sum(SpikesWithWaveform)>0
         end
     end
 end
+
 
 
 

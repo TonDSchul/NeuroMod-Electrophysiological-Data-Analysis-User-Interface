@@ -77,7 +77,7 @@ if strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
 end
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
-    
+    % Select Cluster spike infos
     if ~isnan(PlotInfo.Units)
         ClustertoShow = PlotInfo.Units;
         WavesinCluster = CluterPositions == ClustertoShow;
@@ -92,7 +92,8 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     % channel the spike was detected in.
     NumWaveForms = length(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
     Waveformstoplot = NaN(size(ClusterWaveforms,2),size(ClusterWaveforms,3));
-
+    
+    %% Get max waveforms 
     for nwaves = 1:size(ClusterWaveforms,2)
         ChannelSelection = double(Data.Spikes.SpikeChannel(nwaves));
         Waveformstoplot(nwaves,:) = squeeze(ClusterWaveforms(ChannelSelection,nwaves,:));       
@@ -101,10 +102,16 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     [MaxValue,~] = max(Waveformstoplot,[],2);
     [~,MaxIndex] = maxk(MaxValue,NumWaveForms);
     
-    WaveFormSelection = Waveforms(:,MaxIndex,:);
+    if isempty(MaxIndex)
+        msgbox("No Spikes found for selected parameter!");
+        return;
+    end
     
-    MeanWaveForm = NaN(1,size(WaveFormSelection,1),size(WaveFormSelection,3));
+    WaveFormSelection = ClusterWaveforms(:,MaxIndex,:);
 
+    MeanWaveForm = NaN(1,size(WaveFormSelection,1),size(WaveFormSelection,3));
+    
+    % If only one wave, dimensions change
     if size(WaveFormSelection,2)>1
         MeanWaveForm(1,:,:) = squeeze(mean(WaveFormSelection,2));
     else
@@ -141,11 +148,11 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
 
     %% basic quantification of spiking plot
-    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange)-1)*Data.Info.ChannelSpacing;
+    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange))*Data.Info.ChannelSpacing;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
 
-    SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
+    %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
@@ -165,11 +172,11 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     
     %% basic quantification of spiking plot
     ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
-    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange)-1)*Data.Info.ChannelSpacing;
+    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange))*Data.Info.ChannelSpacing;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
 
-    SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
+    %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);

@@ -37,7 +37,9 @@ elseif ndims(MeanWaveform)==2
     Time = Time*1000; % Convert to ms
 end
 
-ydata = linspace(0,(NumChannel)*ChannelSpacing,NumChannel);
+ydata = linspace(0,(NumChannel-1)*ChannelSpacing,NumChannel);
+
+%ydata = linspace(0,(NumChannel)*ChannelSpacing,NumChannel);
 %ydata = ChannelSpacing:ChannelSpacing:(NumChannel)*ChannelSpacing;
 
 if strcmp(TwoORThreeD,"TwoD")

@@ -107,10 +107,13 @@ if isempty(KSversion)
 end
 
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, ~, Data.Spikes.SpikeChannel,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
+[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
 
-% Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
-% Data.Spikes.SpikePositions(:,2) = SpikePositions;
+if KSversion == 3
+    %load(stringArray(foundrez),'rez');
+    Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
+    Data.Spikes.SpikePositions(:,2) = SpikePositions;
+end
 
 %% Apply ScalingFactor if available (Kilosort works with int format and saves results as such 
 %% Scalingfactor is saved automatically by the GUI when the user saves data for kilosort.)
@@ -136,6 +139,7 @@ end
 for i = 1:length(fileNames)
     if strcmp(fileNames{i}(1:end-4),'spike_clusters')
         Data.Spikes.SpikeCluster = readNPY(fullfile(folderPath,fileNames{i}));
+        Data.Spikes.SpikeCluster = double(Data.Spikes.SpikeCluster);
     %elseif strcmp(fileNames{i}(1:end-4),'spike_times')
     elseif strcmp(fileNames{i}(1:end-4),'spike_templates')
         Data.Spikes.SpikeTemplates = readNPY(fullfile(folderPath,fileNames{i}));
@@ -144,7 +148,9 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i}(1:end-4),'channel_positions')
         Data.Spikes.ChannelPosition = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'spike_positions')
-       Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
+        if KSversion == 4
+            Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
+        end
     elseif strcmp(fileNames{i}(1:end-4),'templates_ind')
         Data.Spikes.templates_ind = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'templates')
@@ -160,8 +166,11 @@ for i = 1:length(fileNames)
     end
 end
 
-% Normalize to 0 um as first channel
-Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
+% Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
+if Data.Spikes.ChannelMap(1) == Data.Info.ChannelSpacing
+    msgbox("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are therefore substracted by the channelspacing to rescale to 0um.")
+    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
+end
 
 if KSversion == 4
     if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
@@ -202,7 +211,29 @@ if isfield(Data,'EventRelatedSpikes')
 end
 
 if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
-    msgbox("Warning: Max spike time longer than time vector. Please try another kilosort output file or compute again with int16 as format when saving for kilosort!" )
+    SpikeAboveTime = Data.Spikes.SpikeTimes>length(Data.Time);
+
+    Data.Spikes.SpikeTimes(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikePositions(SpikeAboveTime==1,:) = [];
+    Data.Spikes.SpikeAmps(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
+
+    msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct kilosort outpout or try Kilsoort with another format (int16)." )
+end
+
+SpikeTimesSmaller0 = Data.Spikes.SpikeTimes<= 0;
+
+if sum(SpikeTimesSmaller0)>0
+    Data.Spikes.SpikeTimes(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikePositions(SpikeTimesSmaller0==1,:) = [];
+    Data.Spikes.SpikeAmps(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikeChannel(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikeCluster(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikeTemplates(SpikeTimesSmaller0==1) = [];
+
+    msgbox("Warning: spike time(s) smaller or equal to 0 found and deleted. This is a known behavior fixed in newer Kilosort 4 versions." )
 end
 
 %% Specify SpikeType
@@ -232,6 +263,7 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.Waveforms = Data.Spikes.Waveforms(SpikesWithWaveform==1,:);
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1); 
     Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
+    Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
 end
 
 if KSversion == 3

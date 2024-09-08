@@ -18,7 +18,7 @@ end
 
 %% Select just number of waveforms specified -- use max amplitude wavefroms
 % Select for each Channel Individually
-NumWaveformsToPlot = numel((PlotInfo.Waveforms(1):PlotInfo.Waveforms(2)))*numel((PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2)));
+NumWaveformsToPlot = numel((PlotInfo.Waveforms(1):PlotInfo.Waveforms(2)));
 [BiggestAmplitude,BiggestAmplitudeIndex] = maxk(max(abs(WaveformsInCluster),[],2),NumWaveformsToPlot);
 
 WaveformsInCluster = WaveformsInCluster(BiggestAmplitudeIndex,:);

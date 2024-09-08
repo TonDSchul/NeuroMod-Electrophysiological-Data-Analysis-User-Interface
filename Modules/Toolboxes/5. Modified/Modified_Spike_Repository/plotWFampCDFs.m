@@ -75,7 +75,7 @@ if strcmp(PDFCDF,"PDF")
     colormap(Figure,colormap_greyZero_blackred);
     xlim(Figure,[min(ampX) max(ampX)])
     
-    ylim(Figure,[0,depthX(end-1)])
+    ylim(Figure,[0,Channeldepth])
     manualxticklabels = min(ampX):max(ampX)/20:max(ampX);
 
     %Add xticks
@@ -148,7 +148,7 @@ else % if CDF
     colormap(Figure,colormap_greyZero_blackred);
     xlim(Figure,[min(ampX) max(ampX)])
     
-    ylim(Figure,[0,depthX(end-1)])
+    ylim(Figure,[0,Channeldepth])
 
     manualxticklabels = min(ampX):max(ampX)/20:max(ampX);
 

@@ -35,12 +35,13 @@ end
 
 if strcmp(SpikeType,'Kilosort')
     if Channel_Selection(1)~=Channel_Selection(2)
-        ChannelRange = (Channel_Selection(1):Channel_Selection(2))*ChannelSpacing;
+        ChannelRange = (Channel_Selection(1):Channel_Selection(2)-1)*ChannelSpacing;
     else
-        ChannelRange(1) = (Channel_Selection(1)*ChannelSpacing)-(ChannelSpacing/2);
-        ChannelRange(2) = (Channel_Selection(2)*ChannelSpacing)+(ChannelSpacing/2);
+        ChannelRange(1) = ((Channel_Selection(1)-1)*ChannelSpacing)-(ChannelSpacing/2);
+        ChannelRange(2) = ((Channel_Selection(2)-1)*ChannelSpacing)+(ChannelSpacing/2);
     end
 end
+
 % SpikeIndicies within ChannelRange
 SelectedChannelIndicies = SpikePositions >= ChannelRange(1) & SpikePositions <= ChannelRange(end);
 

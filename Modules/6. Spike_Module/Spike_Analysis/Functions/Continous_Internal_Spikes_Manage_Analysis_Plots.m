@@ -110,7 +110,7 @@ if strcmp(TypeofAnalysis,"Channel Waveforms")
 end
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
-    
+    % Select Cluster spike infos
     if ~isnan(PlotInfo.Units)
         ClustertoShow = PlotInfo.Units;
         WavesinCluster = CluterPositions == ClustertoShow;
@@ -119,6 +119,7 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
         ClusterWaveforms = Waveforms;
     end
 
+    %% Get max waveforms 
     % Find n number of biggest waveforms
     % Prepare: Waveforms in 3d matrix (nchannel,nwaves,ntime) for spike
     % waveform over depth plots. Here we need the spike waveform of the
@@ -126,15 +127,17 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     NumWaveForms = length(PlotInfo.Waveforms(1):PlotInfo.Waveforms(2));
     Waveformstoplot = NaN(size(ClusterWaveforms,2),size(ClusterWaveforms,3));
     for nwaves = 1:size(ClusterWaveforms,2)
-        ChannelSelection = ((SpikePositions(nwaves))./Data.Info.ChannelSpacing)+1;
+        ChannelSelection = ((SpikePositions(nwaves))./Data.Info.ChannelSpacing)+1; % convert um in channelindicies starting with 1
         Waveformstoplot(nwaves,:) = squeeze(ClusterWaveforms(ChannelSelection,nwaves,:));       
     end
     [MaxValue,~] = max(Waveformstoplot,[],2);
     [~,MaxIndex] = maxk(MaxValue,NumWaveForms);
     
-    WaveFormSelection = Waveforms(:,MaxIndex,:);
+    WaveFormSelection = ClusterWaveforms(:,MaxIndex,:);
     
     MeanWaveForm = NaN(1,size(WaveFormSelection,1),size(WaveFormSelection,3));
+
+    % If only one wave, dimensions change
     if size(WaveFormSelection,2)>1
         MeanWaveForm(1,:,:) = squeeze(mean(WaveFormSelection,2));
     else
