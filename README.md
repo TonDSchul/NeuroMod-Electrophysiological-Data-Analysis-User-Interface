@@ -134,8 +134,8 @@ To extract data from any dataset in one of the supported data formats select the
 
 <table>
   <tr>
-    <td><img src="Modules/MISC/Images/Example_Image_4.jpg" style="max-width:60%; height:auto;"/></td>
-    <td><img src="Modules/MISC/Images/Example_Image_5.jpg" style="max-width:60%; height:auto;"/></td>
+    <td><img src="Modules/MISC/Images/Example_Image_4.jpg" style="max-width:20%; height:auto;"/></td>
+    <td><img src="Modules/MISC/Images/Example_Image_5.jpg" style="max-width:20%; height:auto;"/></td>
   </tr>
 </table>
 
