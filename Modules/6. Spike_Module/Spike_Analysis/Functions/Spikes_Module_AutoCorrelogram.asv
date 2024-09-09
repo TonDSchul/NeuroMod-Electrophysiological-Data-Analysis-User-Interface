@@ -1,5 +1,8 @@
 function Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,figs,Units,NumBins)
 
+
+parpool;
+
 %% Prepare Data
 MaxNrUnits = 0;
 for i = 1:length(Units)
@@ -55,13 +58,13 @@ for nplots = 1:length(Units)
             if sum(SpikeIndicies)>0
                 TemSpikes = SpikeTimes(SpikeIndicies==1);
                 Cluster = SpikeCluster(SpikeIndicies==1);
-
+            
                 ClusterIndicies = Cluster == Units{nplots}(nUnit);
                 TemSpikes = TemSpikes(ClusterIndicies==1);
-
+            
                 spikeTimes_sec = (TemSpikes / Data.Info.NativeSamplingRate)*1000; % convert to ms
                 nSpikes = length(spikeTimes_sec);
-
+    
                 % Compute interspike intervals (positive lags only)
                 for i = 1:nSpikes
                     for j = 1:nSpikes

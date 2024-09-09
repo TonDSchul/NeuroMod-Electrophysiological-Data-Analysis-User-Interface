@@ -11,6 +11,8 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 - [How to use the GUI](#how-to-use-the-gui)
   
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
+
+  - [Get Started With Example Data](#overview-of-required-matlab-toolboxes)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
  
@@ -122,6 +124,13 @@ If you want to extract .smrx files from Spike2, you need to install the Spike2 M
 https://ced.co.uk/upgrades/spike2matson
 
 When you extract .smrx for the first time, you are asked to select the folder in which you installed the Spike2 MATLAB SON Interface to be able to use the library. The path is saved permanently, so you only have to do this once.
+
+> ### **Get Started With Example Data**
+
+In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides. 
+It is ideal to follow along the youtube tutorial. All functionalities can be accesed in the module overview on the right side of the toolbox. 
+Just select an option and click in the "RUN" button. The first thing you have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Following along the descriptions in the window that opens, press some buttons or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing), you will get a message what to do, which will guide you through the procedure by trial and error. 
 
 > ### **Overview of Other Toolboxes Used**
 

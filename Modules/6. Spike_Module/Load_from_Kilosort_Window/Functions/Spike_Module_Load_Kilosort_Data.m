@@ -107,7 +107,7 @@ if isempty(KSversion)
 end
 
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
+[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, ~,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
 
 if KSversion == 3
     %load(stringArray(foundrez),'rez');
@@ -216,7 +216,7 @@ if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     Data.Spikes.SpikeTimes(SpikeAboveTime==1) = [];
     Data.Spikes.SpikePositions(SpikeAboveTime==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeAboveTime==1) = [];
-    Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
+    %Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
 
@@ -229,7 +229,7 @@ if sum(SpikeTimesSmaller0)>0
     Data.Spikes.SpikeTimes(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikePositions(SpikeTimesSmaller0==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeTimesSmaller0==1) = [];
-    Data.Spikes.SpikeChannel(SpikeTimesSmaller0==1) = [];
+    %Data.Spikes.SpikeChannel(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikeCluster(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikeTemplates(SpikeTimesSmaller0==1) = [];
 
@@ -246,6 +246,8 @@ Data.Info.SpikeType = 'Kilosort';
 SpikePositions = Data.Spikes.SpikePositions(:,2)+Data.Info.ChannelSpacing;
 SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
 SpikePositions = round(SpikePositions);
+
+Data.Spikes.SpikeChannel = SpikePositions;
 %SpikePositions = double(Data.Spikes.SpikeChannel);
 
 [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");

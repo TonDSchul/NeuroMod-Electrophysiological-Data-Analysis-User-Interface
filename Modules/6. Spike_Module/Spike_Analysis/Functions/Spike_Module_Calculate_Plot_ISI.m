@@ -1,4 +1,4 @@
-function [ISIs] = Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,Units,Waves,figs,NumBins,MaxISITime)
+function [ISIs] = Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,SpikePositions,SpikeCluster,SpikeChannel,Units,Waves,figs,NumBins,MaxISITime)
 
 % Define the number of bins
 numBins = NumBins;
@@ -16,7 +16,7 @@ for nplots = 1:length(Units)
     if ~isempty(Units{nplots})
         na = strcat("UIAxes_",num2str(nplots));
         Figurename = figs.(na);
-        title(Figurename,strcat("Probability Distribution ISI <= ",num2str(MaxISITime)," s"));
+        title(Figurename,strcat("Probability ISI <= ",num2str(MaxISITime)," s (All Unit Waveforms)"));
         xlabel(Figurename,'Interspike Interval [s]');
         xlim(Figurename,[-0.5,numBins+0.5]);
         ylabel(Figurename,'Probability [%]');
@@ -47,21 +47,25 @@ for nplots = 1:length(Units)
         % Extract Isi channelwise to avoid artefacts from end of one channel to
         % start of the next.
         
-        if strcmp(Data.Info.SpikeType,"Internal")
-            for nchannel = 1:size(Data.Raw,1)
-                SpikeIndicies = Data.Spikes.SpikePositions(:,2)==nchannel;
-                if sum(SpikeIndicies)>0
-                    TemSpikes = Data.Spikes.SpikeTimes(SpikeIndicies==1);
-                    Cluster = Data.Spikes.SpikeCluster(SpikeIndicies==1);
+        for nchannel = 1:size(Data.Raw,1)
+            if strcmp(Data.Info.SpikeType,"Internal")
+                SpikeIndicies = SpikePositions ==nchannel;
+            else
+                SpikeIndicies = SpikeChannel ==nchannel;
+            end
+
+            if sum(SpikeIndicies)>0
+                TemSpikes = SpikeTimes(SpikeIndicies==1);
+                Cluster = SpikeCluster(SpikeIndicies==1);
+            
+                ClusterIndicies = Cluster == Units{nplots}(nUnit);
+                TemSpikes = TemSpikes(ClusterIndicies==1);
                 
-                    ClusterIndicies = Cluster == Units{nplots}(nUnit);
-                    TemSpikes = TemSpikes(ClusterIndicies==1);
-                    
-                    %InterspikeIntervals = [InterspikeIntervals;(diff(TemSpikes))]; % Convert to s
-                    InterspikeIntervals = [InterspikeIntervals;abs((diff(sort(TemSpikes))))]; % Convert to s
-                end
+                %InterspikeIntervals = [InterspikeIntervals;(diff(TemSpikes))]; % Convert to s
+                InterspikeIntervals = [InterspikeIntervals;abs((diff(sort(TemSpikes))))]; % Convert to s
             end
         end
+       
         
         if ~isempty(InterspikeIntervals)
             
@@ -75,7 +79,7 @@ for nplots = 1:length(Units)
             end
 
             % Compute the counts per bin
-            [counts, edges] = histcounts(InterspikeIntervals, numBins);
+            [counts, ~] = histcounts(InterspikeIntervals, numBins);
 
             % Convert to probability
             InterspikeIntervals = counts./sum(counts);          
@@ -84,24 +88,19 @@ for nplots = 1:length(Units)
             % For waveform in ms
             if isempty(Barhandles)
                 Barplots = Barplots+1;
-                bplot = bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:),'Tag','ISI'); % Adjust 'BinWidth' as needed
+                bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); % Adjust 'BinWidth' as needed
             else
                 Barplots = Barplots+1;
                 if length(Barhandles)>=Barplots
-                    set(Barhandles(Barplots),'YData',InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:),'Tag','ISI'); % Adjust 'BinWidth' as needed+
-                    bplot = Barhandles(Barplots);
+                    set(Barhandles(Barplots),'YData',InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); % Adjust 'BinWidth' as needed+
                 else
-                    bplot = bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:),'Tag','ISI'); % Adjust 'BinWidth' as needed
+                    bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); % Adjust 'BinWidth' as needed
                 end
-            end
-
-            bplot.FaceAlpha = 0.5; %
-            
+            end            
         end
-
-    ISIs{nplots,nUnit} = InterspikeIntervals;
-
     end%For nUnits
+
+    Barhandles = findobj(Figurename, 'Tag', 'ISI');
 
     if length(Barhandles)>Barplots
         delete(Barhandles(Barplots+1:end));

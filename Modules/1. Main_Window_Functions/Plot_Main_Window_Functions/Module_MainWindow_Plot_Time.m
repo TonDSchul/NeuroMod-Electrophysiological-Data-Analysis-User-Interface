@@ -30,7 +30,6 @@ if strcmp(PlotType,"Initial")
     set(UIAxis,'yticklabel',{[]});
     xlim(UIAxis,[Time(1),Time(end)]);
     xlabel(UIAxis,"Time [s]")
-    UIAxis.Color = [0.90,0.90,0.90];
     TimeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Timelines');
 
     if isempty(TimeHandles)
