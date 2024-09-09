@@ -132,6 +132,13 @@ It is ideal to follow along the youtube tutorial. All functionalities can be acc
 Just select an option and click in the "RUN" button. The first thing you have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
 To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Following along the descriptions in the window that opens, press some buttons or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing), you will get a message what to do, which will guide you through the procedure by trial and error. 
 
+<table>
+  <tr>
+    <td><img src="Modules/MISC/Images/Example_Image_4.jpg" style="max-width:100%; height:auto;"/></td>
+    <td><img src="Modules/MISC/Images/Example_Image_5.jpg" style="max-width:100%; height:auto;"/></td>
+  </tr>
+</table>
+
 > ### **Overview of Other Toolboxes Used**
 
 Some aspects of data extraction and analysis are handled by other Toolboxes, which dont have to be installed since the required functions are included in the source code (Data Path\Modules\Toolboxes).
