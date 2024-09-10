@@ -26,7 +26,11 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 
 > ## **Data Formats and Capabilities**
 
-<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" style="max-width:100%; height:auto;" /><br>
+<div align="center">
+  <img src="Modules/MISC/Images/Example_Image_1.jpg" width="800" height="auto" />
+</div>
+
+<br>
 
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
@@ -127,11 +131,13 @@ When you extract .smrx for the first time, you are asked to select the folder in
 
 > ### **Get Started With Example Data**
 
-In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides. 
-It is ideal to follow along the youtube tutorial. All functionalities can be accesed in the module overview on the right side of the toolbox. 
-Just select an option and click in the "RUN" button. The first thing you have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Following along the descriptions in the window that opens, press some buttons or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing), you will get a message what to do, which will guide you through the procedure by trial and error. 
 
+ <img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="250" height="auto"/>
+
+
+In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides. It is ideal to follow along the youtube tutorial. The first thing you have to do is to either extract data from a recording or to load data you previously saved with the toolbox. To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Following along the descriptions in the window that opens, press the "Select Data Folder" button and select a file with ONLY ONE! recording. Example data can be found in the corresponding folder of this Toolbox. When the recording format of the file(s) in the folder fits, you will see them in the window. Press the "Probe Information" button to specify the chann spacing and optionally change the order of your recording channel. Click on Proceed and "Extract Data". After being succesfully, you will see your data traces in the main window. 
+
+    
 > ### **Overview of Other Toolboxes Used**
 
 Some aspects of data extraction and analysis are handled by other Toolboxes, which dont have to be installed since the required functions are included in the source code (Data Path\Modules\Toolboxes).
