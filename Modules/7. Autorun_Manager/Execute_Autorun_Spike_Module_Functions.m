@@ -51,8 +51,19 @@ if strcmp(FunctionOrder,'Internal_Spike_Detection')
     end
 end
 
+% 5.2 Internal Spike Clustering
 %______________________________________________________________________________________________________
-% 5.2 Load from Kilosort
+
+if strcmp(FunctionOrder,'Create_Internal_Spike_Sorting')   
+    SpikeSortingPath = strcat(Data.Info.Data_Path,'\Wave_Clus');
+    [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Clustering");
+elseif strcmp(FunctionOrder,'Load_Internal_Spike_Sorting')
+    SpikeSortingPath = strcat(Data.Info.Data_Path,'\Wave_Clus');
+    [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Loading");
+end
+
+%______________________________________________________________________________________________________
+% 5.3 Load from Kilosort
 %______________________________________________________________________________________________________
 if strcmp(FunctionOrder,'Load_from_Kilosort')
 
@@ -95,7 +106,7 @@ if strcmp(FunctionOrder,'Load_from_Kilosort')
 end
 
 %______________________________________________________________________________________________________
-% 5.3 Save for Kilosort
+% 5.4 Save for Kilosort
 %______________________________________________________________________________________________________
 if strcmp(FunctionOrder,'Save_for_Kilosort')
     Execute = 1;

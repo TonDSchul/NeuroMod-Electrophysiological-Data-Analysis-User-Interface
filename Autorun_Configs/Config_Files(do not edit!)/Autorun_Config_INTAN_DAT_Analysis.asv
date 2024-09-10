@@ -34,7 +34,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_Kilosort","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Internal_Spike_Detection","Load_Internal_Spike_Sorting","Continous_Spike_Analysis"];
 %AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Save_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
 
 % General Information
@@ -91,13 +91,13 @@ AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 
 % preprocessing instance.
 
 AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter"]; % Preprocessing ethod to apply.Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR multiple Inputs like ["Filter","Downsample"]
-AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter","Downsample"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR multiple Inputs like ["Filter","Downsample"]
 AutorunConfig.PreprocessCont.FilterMethod{1} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
-AutorunConfig.PreprocessCont.FilterMethod{2} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
+AutorunConfig.PreprocessCont.FilterMethod{2} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
 AutorunConfig.PreprocessCont.FilterType{1} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
 AutorunConfig.PreprocessCont.FilterType{2} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
 AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "300"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
-AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "300"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
+AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
 AutorunConfig.PreprocessCont.FilterDirection{1} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterDirection{2} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterOrder{1} = "3"; % Filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
@@ -124,13 +124,9 @@ AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate = "200"; % Number of bins for t
 AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,100'; %as char
 
 % Control Single Units in the above plots:
-% Every plot specified above is plotted once with Clustertoshow as selected unit.
-% If UnitsToPlot is non empty, all of the above plots will be plotted for
-% each unit specified in UnitsToPlot and saved in a seperate folder calles
-% "units". If UnitsToPlot is empty, just plots for Clustertoshow are
-% created
-AutorunConfig.ContSpikeAnalysis.Clustertoshow = "All"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 1!)
-AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+% 
+AutorunConfig.ContSpikeAnalysis.Clustertoshow = "All"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 0!) --- IMPORTANT: This is only for the "Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth" and "Spike Triggered LFP" Plottypes!!!! It shows the cluster in the main plots on the top left
+AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4. Event Data Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

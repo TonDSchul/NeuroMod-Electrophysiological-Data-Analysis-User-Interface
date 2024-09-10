@@ -42,28 +42,28 @@ if LoadedData == false
     if strcmp(RecordingsSystem,"Open Ephys")
         folderName = strcat('Matlab\',OENodePath);
         if strcmp(PlotName,"TF")
-            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,"\",Plottype,"_",SaveName,PlotAddons);
+            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,"\",Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes")
-            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,'_',Plottype);
-        elseif strcmp(PlotName,"KilosortContinousIteration") 
-            Filename = strcat(LoadDataPath,'\Matlab\',OENodePath,'\Units','\',SaveName,'_',Plottype);
+            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,' ',Plottype);
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+            Filename = strcat(LoadDataPath,'\Matlab\',OENodePath,'\Units','\',SaveName,' ',Plottype);
             folderName = 'Matlab\Units';
         elseif strcmp(PlotName,"KilosortContinous") 
-            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,'_',Plottype);
+            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,' ',Plottype);
         else
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName);
         end
     else
         folderName = 'Matlab';
         if strcmp(PlotName,"TF")
-            Filename = strcat(LoadDataPath,"\Matlab\",Plottype,"_",SaveName,PlotAddons);
+            Filename = strcat(LoadDataPath,"\Matlab\",Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes") 
-            Filename = strcat(LoadDataPath,"\Matlab\",Plottype,'_',SaveName);
-        elseif strcmp(PlotName,"KilosortContinousIteration") 
-            Filename = strcat(LoadDataPath,'\Matlab\Units\',SaveName,'_',Plottype);
+            Filename = strcat(LoadDataPath,"\Matlab\",Plottype,' ',SaveName);
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+            Filename = strcat(LoadDataPath,'\Matlab\Units\',SaveName,' ',Plottype);
             folderName = 'Matlab\Units';
         elseif strcmp(PlotName,"KilosortContinous") 
-            Filename = strcat(LoadDataPath,"\Matlab\",SaveName,'_',Plottype);
+            Filename = strcat(LoadDataPath,"\Matlab\",SaveName,' ',Plottype);
         else
             Filename = strcat(LoadDataPath,"\Matlab\",SaveName);
         end
@@ -79,14 +79,14 @@ elseif LoadedData == true
     if strcmp(RecordingsSystem,"Open Ephys")
         folderName = strcat('Matlab\',OENodePath);
         if strcmp(PlotName,"TF")
-            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,"\",Plottype,"_",SaveName,PlotAddons);
+            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,"\",Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes") 
-            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,'_',Plottype);
-        elseif strcmp(PlotName,"KilosortContinousIteration") 
-            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\Units\',SaveName,'_',Plottype);
+            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,' ',Plottype);
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\Units\',SaveName,' ',Plottype);
             folderName = strcat('Matlab\',OENodePath,'\Units');
         elseif strcmp(PlotName,"KilosortContinous") 
-            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,'_',Plottype);
+            Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,' ',Plottype);
         else
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName);
         end
@@ -99,14 +99,14 @@ elseif LoadedData == true
         % % LoadDataPath = LoadDataPath(1:Dashindex(end-1)-1);
 
         if strcmp(PlotName,"TF")
-            Filename = strcat(LoadDataPath,'\Matlab\',Plottype,"_",SaveName,PlotAddons);
+            Filename = strcat(LoadDataPath,'\Matlab\',Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes") || strcmp(PlotName,"KilosortContinous")
-            Filename = strcat(LoadDataPath,'\Matlab\',Plottype,"_",SaveName);
-        elseif strcmp(PlotName,"KilosortContinousIteration") 
-            Filename = strcat(LoadDataPath,'\Matlab\Units\',SaveName,'_',Plottype);
+            Filename = strcat(LoadDataPath,'\Matlab\',Plottype," ",SaveName);
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+            Filename = strcat(LoadDataPath,'\Matlab\Units\',SaveName,' ',Plottype);
             folderName = strcat('Matlab\Units');
         elseif strcmp(PlotName,"KilosortContinous") 
-            Filename = strcat(LoadDataPath,'\Matlab\',Plottype,"_",SaveName);
+            Filename = strcat(LoadDataPath,'\Matlab\',Plottype," ",SaveName);
         else  
             Filename = strcat(LoadDataPath,'\Matlab\',SaveName);
         end
