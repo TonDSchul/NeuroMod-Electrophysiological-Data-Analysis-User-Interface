@@ -34,17 +34,7 @@ function [Waveforms,BiggestSpikeIndicies] = Spikes_Module_Get_Waveforms(Data,Spi
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-if isfield(Data,'Preprocessed') 
-    if isfield(Data.Info,'FilterMethod') 
-        if ~strcmp(Data.Info.FilterMethod,'High-Pass')
-            msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms");
-        end
-    else
-        msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms");
-    end
-else
-    msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms");
-end
+%%
 
 % Rough automatic num samples for spikes
 TimePoints = Data.Info.NativeSamplingRate/1000;

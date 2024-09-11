@@ -12,6 +12,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Preprocess_Continous_Data'
 % 'Static_Power_Spectrum'
 % 'Continous_Spike_Analysis'
+% 'Continous_Unit_Analysis'
 %______________________
 %--- Event Module ---
 %______________________
@@ -22,6 +23,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Event_Analysis_ERP'
 % 'Event_Analysis_CSD'
 % 'Event_Analysis_TimeFrequencyPower'
+% 'Event_Unit_Analysis'
 %______________________
 %--- Spike Module ---
 %______________________
@@ -34,7 +36,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_Kilosort","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Extract_Event_Related_Data","Load_from_Kilosort","Continous_Unit_Analysis","Event_Unit_Analysis"];
 %AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Save_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
 
 % General Information
@@ -122,7 +124,6 @@ AutorunConfig.ContSpikeAnalysis.EventChannelToPlot = "Non"; %Non for no event pl
 AutorunConfig.ContSpikeAnalysis.TimeWindowSpiketriggredLFP = '-0.005,0.25'; %as char
 AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate = "200"; % Number of bins for the spike rate plots as char
 AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,100'; %as char
-
 % Control Single Units in the above plots:
 % Every plot specified above is plotted once with Clustertoshow as selected unit.
 % If UnitsToPlot is non empty, all of the above plots will be plotted for
@@ -131,6 +132,19 @@ AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,100'; %as char
 % created
 AutorunConfig.ContSpikeAnalysis.Clustertoshow = "All"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 1!)
 AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+%% 3.4 Unit Analysis
+%______________________________________________________________________________________________________
+AutorunConfig.ContinousUnitAnalysis.NumBins = "150";
+AutorunConfig.ContinousUnitAnalysis.MaxTImeISI = "0.15";
+
+AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1 = '20';
+AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2 = '20';
+AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3 = '20';
+
+AutorunConfig.ContinousUnitAnalysis.UnitsPlot1 = '1,2,3';
+AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
+AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4. Event Data Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -145,7 +159,7 @@ AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.5'; % Threshold o
 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
-AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" OR "Preprocessed" as char
+AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Raw"; %"Raw" OR "Preprocessed" as char
 %% 4.2 Prepro event related data
 %______________________________________________________________________________________________________
 % Trial/Event Deletion
@@ -187,8 +201,19 @@ AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins = '100'; % Number of bin
 AutorunConfig.AnalyseEventSpikesModule.Normalize = true; % Only for Heatmap and applicable if heatmap as plot type selected
 AutorunConfig.AnalyseEventSpikesModule.BaselineWindow = '-0.2,-0.05'; % Window of event related data used to normalize (Before the event trigger)
 AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage = '-0.005,0.1';
-% Kilosort Plots
 AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = 'All'; % CLuster/Unit to plot; 'All' OR 'Non' OR 'Clusternumber' as char i.e. '1' --> plots cluster/unit 1
+%% 4.5 Unit Analysis
+%______________________________________________________________________________________________________
+AutorunConfig.EventUnitAnalysis.NumBins = "150";
+AutorunConfig.EventUnitAnalysis.MaxTImeISI = "0.15";
+
+AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot1 = '20';
+AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot2 = '20';
+AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot3 = '20';
+
+AutorunConfig.EventUnitAnalysis.UnitsPlot1 = '1,2,3';
+AutorunConfig.EventUnitAnalysis.UnitsPlot2 = '4,5,6';
+AutorunConfig.EventUnitAnalysis.UnitsPlot3 = '5,6,8';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5. Spike Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

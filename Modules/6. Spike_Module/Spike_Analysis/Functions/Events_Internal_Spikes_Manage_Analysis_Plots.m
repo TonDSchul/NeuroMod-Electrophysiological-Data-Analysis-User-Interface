@@ -54,7 +54,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap")
     end
 elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     
-    [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Internal",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD);
+    [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Internal",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoshowDropDown);
     
     % Spike Rate -- extract events again with last input being 0
      [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',0);
@@ -71,72 +71,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
         Data = [];
     else
         Data = TempData; % if preprocessed
-    end
-    
-elseif strcmp(AnalysisTypeDropDown,"ISI (All Channel together)") || strcmp(AnalysisTypeDropDown,"ISI (Over Channel)")
-    
-    % some Spikeindicies are ngative to account for event time. This has to
-    % be undone
-    TempSpikeTimes = SpikeTimes + PlotInfo.TimearoundEvent(1);
-
-    %%!!! ISI has top be done per Trial and Channel!!! Otherwise there will be
-    %%artefacts from the time difference of the end of channel 1 to the start of channel 2 or
-    %%event 1 to 2
-    if strcmp(AnalysisTypeDropDown,"ISI (All Channel together)")
-        ISI = [];
-    elseif strcmp(AnalysisTypeDropDown,"ISI (Over Channel)")
-        ISI = cell(1,PlotInfo.ChannelNr);
-    end
-
-    for nchannel = 1:PlotInfo.ChannelNr
-        for nevent = 1:length(PlotInfo.EventRange)
-            SpikesIndicies = SpikeEvents == nevent;
-            SpikesIndicies = SpikesIndicies + SpikePositions == (nchannel*Data.Info.ChannelSpacing);
-            SpikesIndicies(SpikesIndicies>1) = 1;
-            TempEventSpikeTimes=TempSpikeTimes(SpikesIndicies==1);
-
-            if strcmp(AnalysisTypeDropDown,"ISI (All Channel together)")
-                ISI = [ISI;abs(diff(sort(TempEventSpikeTimes)))];
-            elseif strcmp(AnalysisTypeDropDown,"ISI (Over Channel)")
-                ISI{nchannel} = [ISI{nchannel};abs(diff(sort(TempEventSpikeTimes)))];
-            end
-        end
-    end
-
-    bins = 0:0.003:0.5;  % Define 1 ms bins.
-    if strcmp(AnalysisTypeDropDown,"ISI (All Channel together)")
-        set(Figure, 'YDir', 'normal');
-        % Get the counts for each bin using histcounts
-        [Counts, ~] = histcounts(ISI, bins);
-        ISIProbability = Counts./length(ISI);
-    elseif strcmp(AnalysisTypeDropDown,"ISI (Over Channel)")
-        set(Figure, 'YDir', 'reverse');
-        Counts = zeros(nchannel,length(bins)-1);
-        ISIProbability = zeros(nchannel,length(bins)-1);
-        for nchannel = 1:length(ISI)
-            % Get the counts for each bin using histcounts
-            [Counts(nchannel,:), ~] = histcounts(ISI{nchannel}, bins);
-            ISIProbability(nchannel,:) = Counts(nchannel,:)./length(ISI{nchannel});
-        end
-    end
-
-    if strcmp(AnalysisTypeDropDown,"ISI (All Channel together)")
-        bar(Figure,ISIProbability,'FaceColor','r', 'EdgeColor', 'k')
-        title(Figure,'ISI Probability Distribution All Channel Together', 'FontSize', 14);
-        xlim(Figure,[0 length(Counts)]);
-        ylim(Figure,[0 max(ISIProbability)]);
-
-    elseif strcmp(AnalysisTypeDropDown,"ISI (Over Channel)")
-        surf(Figure,ISIProbability)
-        imagesc(Figure,ISIProbability)
-
-        imagesc(Figure,bins,0:0.01:1,ISIProbability);
-        title(Figure,'ISI Probability Distribution All Channel Together', 'FontSize', 14);
-        xlim(Figure,[bins(1) bins(end)]);
-        ylim(Figure,[0 max(ISIProbability,[],'all')]);
-    end
-
-    title(Figure,'ISI Probability Distribution', 'FontSize', 14);
+    end  
 
 elseif strcmp(AnalysisTypeDropDown,"Spike Field Coherence")
 

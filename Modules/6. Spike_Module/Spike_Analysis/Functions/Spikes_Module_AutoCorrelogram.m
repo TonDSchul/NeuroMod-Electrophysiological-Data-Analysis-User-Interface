@@ -44,6 +44,8 @@ for nplots = 1:length(Units)
         nspikes = sum(SpikeCluster == Units{nplots}(nUnit));
         interspikeIntervals = NaN(1,(nspikes^2)+1);
         ZeroTimeDifference = 0;
+        
+        h = waitbar(0, 'Calculating Autocorrelogram...', 'Name','Calculating Autocorrelogram...');
 
         for nchannel = 1:size(Data.Raw,1)
             if strcmp(Data.Info.SpikeType,"Internal")
@@ -74,7 +76,14 @@ for nplots = 1:length(Units)
                     end
                 end
             end
+            
+            fraction = nchannel/size(Data.Raw,1);
+            msg = sprintf('Calculating Autocorrelogram... (%d%% done)', round(100*fraction));
+            waitbar(fraction, h, msg);
+
         end%nchannel
+
+        close(h);
 
         if ZeroTimeDifference ~= 0
             disp(strcat(num2str(ZeroTimeDifference)," SpikeTime Differences are zero"));

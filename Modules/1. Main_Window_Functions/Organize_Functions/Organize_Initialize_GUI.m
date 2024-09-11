@@ -48,9 +48,6 @@ if strcmp(Type,"Initial")
     app.UIAxes_2.NextPlot = "replace"; 
     plot(app.UIAxes_2,0,0);
 
-    %app.UIAxes.Color = [0.90,0.90,0.90];
-    app.UIAxes_2.Color = [0.90,0.90,0.90];
-    
     % Reset App Properties
     app.ChannelSelectionEditField.Value = "";
     app.ChannelSelection = [];

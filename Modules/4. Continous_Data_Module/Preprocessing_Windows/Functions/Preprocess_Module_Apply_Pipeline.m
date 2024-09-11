@@ -56,7 +56,8 @@ h = [];
 
 if PlotExample == 1
     if isfield(Data,'Raw')
-        Data.Raw = Data.Raw(:,1:5000);
+        Data.Raw = Data.Raw(:,1:Data.Info.NativeSamplingRate);
+        Data.Time = Data.Time(1:Data.Info.NativeSamplingRate);
     end
 end
 
@@ -221,6 +222,7 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
             msg = sprintf('Downsampling... (%d%% done)', round(100*(4/4)));
             waitbar(4/4, h2, msg);
         end
+
         close(h2);
     elseif strcmp(PreprocessingSteps(PPSteps),"Normalize")
 
@@ -273,21 +275,23 @@ if PlotExample == 1
     figure();
     hold( 'on' );
     
+    ChannelToPlot = round(size(Data.Raw,1)/2);
+
     % When downsampled data: different time vector!
     if strcmp(PreprocessingSteps,"Downsampling")
-        TimeToPlot = Data.Time <= 0.07;
-        TimeDSToPlot = TimeDownsampled <= 0.07;
-        plot(Data.Time(TimeToPlot == 1),Data.Raw(1,TimeToPlot == 1),'LineWidth',2,'Color','b');
-        plot(TimeDownsampled(TimeDSToPlot == 1),Data.Preprocessed(1,TimeDSToPlot == 1),'LineWidth',2,'Color','r');
+        TimeToPlot = Data.Time <= 1;
+        TimeDSToPlot = Data.TimeDownsampled <= 1;
+        plot(Data.Time(TimeToPlot == 1),Data.Raw(ChannelToPlot,TimeToPlot == 1),'LineWidth',1.5,'Color','b');
+        plot(Data.TimeDownsampled(TimeDSToPlot == 1),Data.Preprocessed(ChannelToPlot,TimeDSToPlot == 1),'LineWidth',1.5,'Color','r');
     else
-        plot(Data.Time(1:5000),Data.Raw(1,1:5000),'LineWidth',2,'Color','b');
-        plot(Data.Time(1:5000),Data.Preprocessed(1,1:5000),'LineWidth',2,'Color','r');
+        plot(Data.Time(1:Data.Info.NativeSamplingRate),Data.Raw(ChannelToPlot,1:Data.Info.NativeSamplingRate),'LineWidth',1.5,'Color','b');
+        plot(Data.Time(1:Data.Info.NativeSamplingRate),Data.Preprocessed(ChannelToPlot,1:Data.Info.NativeSamplingRate),'LineWidth',1.5,'Color','r');
     end
     
     legend("Original Signal","Filtered Signal")
     xlabel('Time [s]');
     ylabel('Signal [mV]');
-    titlestring = "Original vs. filtered Signal Channel 1";
+    titlestring = strcat("Channel ",num2str(ChannelToPlot)," Original vs. filtered Signal");
     title(titlestring);
     drawnow;
     hold( 'off' );

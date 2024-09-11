@@ -135,7 +135,11 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
     TempCutStop = [];
     TempChannelDeletion = [];
     TempSpike2EventChannelToTake = [];
-    
+    TempSpikeSorting = [];
+    TempSpikeDetectionNrStd = [];
+    TempSpikeDetectionThreshold = [];
+    TempKilosortScalingFactor = [];
+
     if isfield(Data.Info,'Spike2EventChannelToTake')
         TempSpike2EventChannelToTake = Data.Info.Spike2EventChannelToTake;
     end
@@ -150,6 +154,22 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
 
     if isfield(Data.Info,'ChannelDeletion')
         TempChannelDeletion = Data.Info.ChannelDeletion;
+    end
+
+    if isfield(Data.Info,'SpikeSorting')
+        TempSpikeSorting = Data.Info.SpikeSorting;
+    end
+
+    if isfield(Data.Info,'SpikeDetectionNrStd')
+        TempSpikeDetectionNrStd = Data.Info.SpikeDetectionNrStd;
+    end
+
+    if isfield(Data.Info,'SpikeDetectionThreshold')
+        TempSpikeDetectionThreshold = Data.Info.SpikeDetectionThreshold;
+    end
+
+    if isfield(Data.Info,'KilosortScalingFactor')
+        TempKilosortScalingFactor = Data.Info.KilosortScalingFactor;
     end
 
     if isfield(Data.Info,'DownsampleFactor')
@@ -191,6 +211,26 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
     if ~isempty(TempCutStart)
          Data.Info.CutStart = TempCutStart;
     end
+
+    if ~isempty(TempSpikeDetectionThreshold)
+        Data.Info.SpikeDetectionThreshold = TempSpikeDetectionThreshold;
+    end
+
+    if ~isempty(TempKilosortScalingFactor)
+        Data.Info.KilosortScalingFactor = TempKilosortScalingFactor;
+    end
+
+    if ~isempty(TempSpike2EventChannelToTake)
+        Data.Info.Spike2EventChannelToTake = TempSpike2EventChannelToTake;
+    end
+
+    if ~isempty(TempSpikeSorting)
+        Data.Info.SpikeSorting = TempSpikeSorting;
+    end
+    
+    if ~isempty(TempSpikeDetectionNrStd)
+        Data.Info.SpikeDetectionNrStd = TempSpikeDetectionNrStd;
+    end
     
     if ~isempty(TempCutStop)
         Data.Info.CutEnd = TempCutStop;
@@ -198,10 +238,6 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
 
     if ~isempty(TempChannelDeletion)
         Data.Info.ChannelDeletion = TempChannelDeletion;
-    end
-
-    if ~isempty(TempSpike2EventChannelToTake)
-        Data.Info.Spike2EventChannelToTake = TempSpike2EventChannelToTake;
     end
 
     if ~isempty(TempEventChannel)

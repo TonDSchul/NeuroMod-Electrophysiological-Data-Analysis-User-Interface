@@ -75,9 +75,14 @@ if isfile(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')))
     end
 
     load(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')),'cluster_class','par');
+
+    Data.Spikes.SpikeCluster = cluster_class(:,1);
+    Data.Info.SpikeType = "Internal";
+    Data.Info.SpikeSorting = "WaveClus";
+
     msgbox("Spike Sorting Data succesfully loaded.");
+else
+    msgbox("Warning: No Spike Clustering Found!.");
 end
 
-Data.Spikes.SpikeCluster = cluster_class(:,1);
-Data.Info.SpikeType = "Internal";
-Data.Info.SpikeSorting = "WaveClus";
+

@@ -411,8 +411,17 @@ if isfield(Data,'Events')
                     BaselineWindow.Value = AutorunConfig.AnalyseEventSpikesModule.BaselineWindow;
     
                     TextArea = [];
-                    [~,~,~,~] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,numCluster,AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting);
+
+                    [TempData,~,~,~] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,numCluster,AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting);
      
+                    if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP")
+                        if ~isempty(TempData)
+                            Data = TempData;
+                        end
+                    else
+                        Data = TempData;
+                    end
+
                     %% Properly set up plot for saving (x axis ticks/labels and stuff like that)
                     if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
                         [~] = Execute_Autorun_Set_Up_Figure(UIAxes,0,"Left Axis Only",[],[],"Time [s]",[],[],8);
@@ -423,7 +432,7 @@ if isfield(Data,'Events')
     
                     %% Plot Results if turned on
                     if strcmp(AutorunConfig.SaveFigures,"on")
-                        Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Event_Kilosort_", DataPath, AutorunConfig.AnalyseEventSpikesModule.Plottype(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventSpikes")
+                        Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Event Kilosort ", DataPath, AutorunConfig.AnalyseEventSpikesModule.Plottype(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventSpikes")
                     end
     
                 end
@@ -448,8 +457,23 @@ if isfield(Data,'Events')
                 end
     
                 BaselineWindow.Value = AutorunConfig.AnalyseEventSpikesModule.BaselineWindow;
-    
-                rgbMatrix = lines(1);
+
+                if isfield(Data.Info,'SpikeSorting')
+                    if ~isempty(Data.Spikes.Waveforms)
+                        % Exatract number of spike clusters Kilosort found
+                        numCluster = numel(unique(Data.Spikes.SpikeCluster));
+                        % Define unique color for each cluster
+                        rgbMatrix = lines(numCluster);
+                    end
+                else
+                    if strcmp(AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions,"All") % When no cluster present
+                        AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = "Non";
+                    end
+                    
+                    numCluster = 1;
+                    % Define unique color for each cluster
+                    rgbMatrix = lines(1);
+                end
     
                 % Loop over multiple analysis plots
                 for i = 1:length(AutorunConfig.AnalyseEventSpikesModule.Plottype)
@@ -464,9 +488,13 @@ if isfield(Data,'Events')
     
                     %% Prepare Analysis
                     TextArea = [];
-                    [TempData,~,~,~] = Events_Internal_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting);
+                    [TempData,~,~,~] = Events_Internal_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions,numCluster);
             
-                    if ~isempty(TempData)
+                    if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP")
+                        if ~isempty(TempData)
+                            Data = TempData;
+                        end
+                    else
                         Data = TempData;
                     end
     
@@ -480,7 +508,7 @@ if isfield(Data,'Events')
                     
                     %% Plot if turned on
                     if strcmp(AutorunConfig.SaveFigures,"on")
-                        Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Event_Internal", DataPath, AutorunConfig.AnalyseEventSpikesModule.Plottype(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "InternalEventSpikes")
+                        Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Event Internal", DataPath, AutorunConfig.AnalyseEventSpikesModule.Plottype(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "InternalEventSpikes")
                     end
     
                 end
@@ -490,4 +518,70 @@ if isfield(Data,'Events')
 else % if isfield(Data,'Events')
     disp("No Events found, skipping step.");
     msgbox("No Events found, skipping step.");
+end
+
+if strcmp(FunctionOrder,'Event_Unit_Analysis')
+    Execute = 1;
+
+    if ~isfield(Data,'Spikes')
+        disp("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data, skipping step");
+        Execute = 0;
+    else
+        if strcmp(Data.Info.SpikeType,"Internal")
+            if ~isfield(Data.Info,'SpikeSorting')
+                disp("Warning: No spike clustering found for internal spikes, skipping step.");
+                Execute = 0;
+            end
+        end
+    end
+
+    if Execute == 1
+        UnitAnalysisFigure = figure();
+        UIAxes_1 = subplot(3,3,1);
+        UIAxes_2 = subplot(3,3,2);
+        UIAxes_3 = subplot(3,3,3);
+        UIAxes_4 = subplot(3,3,4);
+        UIAxes_5 = subplot(3,3,5);
+        UIAxes_6 = subplot(3,3,6);
+        UIAxes_7 = subplot(3,3,7);
+        UIAxes_8 = subplot(3,3,8);
+        UIAxes_9 = subplot(3,3,9);
+
+        UIAxes_1.NextPlot = "add";
+        UIAxes_2.NextPlot = "add";
+        UIAxes_3.NextPlot = "add";
+        UIAxes_4.NextPlot = "add";
+        UIAxes_5.NextPlot = "add";
+        UIAxes_6.NextPlot = "add";
+        UIAxes_7.NextPlot = "add";
+        UIAxes_8.NextPlot = "add";
+        UIAxes_9.NextPlot = "add";
+        
+        if strcmp(Data.Info.SpikeType,"Internal")
+            [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Internal",0);
+        elseif strcmp(Data.Info.SpikeType,"Kilosort")
+            [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0);
+        end
+        
+        if Error == 0
+            [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.EventUnitAnalysis.UnitsPlot1,AutorunConfig.EventUnitAnalysis.UnitsPlot2,AutorunConfig.EventUnitAnalysis.UnitsPlot3,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot2,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot3,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,UIAxes_7,UIAxes_8,UIAxes_9,"StartUp","EventWindow");
+    
+            %% Plot Waveforms
+            
+            Spike_Waveforms_Plot_Waveforms(Data,Units,SpikeWaveforms,SpikeCluster,Waves,Wavefigs);
+    
+            %% Plot ISI
+            
+            Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,SpikePositions,SpikeCluster,SpikeChannel,Units,Waves,ISIfigs,str2double(AutorunConfig.EventUnitAnalysis.NumBins),str2double(AutorunConfig.EventUnitAnalysis.MaxTImeISI));
+      
+            %% Plot Autocorrelogramme
+    
+            Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.EventUnitAnalysis.NumBins));
+    
+            %% Plot Results if turned on
+            if strcmp(AutorunConfig.SaveFigures,"on")
+                Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Event Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
+            end
+        end
+    end
 end

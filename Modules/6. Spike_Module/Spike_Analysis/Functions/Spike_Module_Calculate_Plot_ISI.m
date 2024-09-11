@@ -61,8 +61,10 @@ for nplots = 1:length(Units)
                 ClusterIndicies = Cluster == Units{nplots}(nUnit);
                 TemSpikes = TemSpikes(ClusterIndicies==1);
                 
-                %InterspikeIntervals = [InterspikeIntervals;(diff(TemSpikes))]; % Convert to s
-                InterspikeIntervals = [InterspikeIntervals;abs((diff(sort(TemSpikes))))]; % Convert to s
+                if length(TemSpikes)>1
+                    %InterspikeIntervals = [InterspikeIntervals;(diff(TemSpikes))]; % Convert to s
+                    InterspikeIntervals = [InterspikeIntervals;abs((diff(sort(TemSpikes))))]; % Convert to s
+                end
             end
         end
        

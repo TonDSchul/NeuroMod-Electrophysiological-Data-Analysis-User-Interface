@@ -52,7 +52,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap")
     end
 elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     
-    [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Kilosort",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD);
+    [TempData,~] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Kilosort",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoshowDropDown);
     
     %% No again normalized to event time for spike rate
 

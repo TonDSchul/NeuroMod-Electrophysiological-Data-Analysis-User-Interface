@@ -231,8 +231,6 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             Data = TempData;
                         end
     
-                        
-    
                         if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes,1,"Left Axis Only",Data.Time,20,"Time [s]",[],[],8);
                         end
@@ -282,6 +280,9 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                     rgbMatrix = lines(numCluster);
                 end
             else
+                if strcmp(AutorunConfig.ContSpikeAnalysis.Clustertoshow,"All") % When no cluster present
+                    AutorunConfig.ContSpikeAnalysis.Clustertoshow = "Non";
+                end
                 numCluster = 1;
                 % Define unique color for each cluster
                 rgbMatrix = lines(1);
@@ -300,7 +301,8 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                 TotalIterations = 1;
             else
                 if ~isfield(Data.Info,'SpikeSorting')
-                    dips("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
+                    TotalIterations = 1;
+                    disp("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
                 else
                     TotalIterations = 2;
                 end
@@ -396,3 +398,61 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
         end % if Internal Spikes present
     end % if Execute == 1
 end % if FunctionOrder == "Cont. Spike Analysis"
+
+if strcmp(FunctionOrder,'Continous_Unit_Analysis')
+    Execute = 1;
+
+    if ~isfield(Data,'Spikes')
+        disp("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data, skipping step");
+        Execute = 0;
+    else
+        if strcmp(Data.Info.SpikeType,"Internal")
+            if ~isfield(Data.Info,'SpikeSorting')
+                disp("Warning: No spike clustering found for internal spikes, skipping step.");
+                Execute = 0;
+            end
+        end
+    end
+
+    if Execute == 1
+        UnitAnalysisFigure = figure();
+        UIAxes_1 = subplot(3,3,1);
+        UIAxes_2 = subplot(3,3,2);
+        UIAxes_3 = subplot(3,3,3);
+        UIAxes_4 = subplot(3,3,4);
+        UIAxes_5 = subplot(3,3,5);
+        UIAxes_6 = subplot(3,3,6);
+        UIAxes_7 = subplot(3,3,7);
+        UIAxes_8 = subplot(3,3,8);
+        UIAxes_9 = subplot(3,3,9);
+
+        UIAxes_1.NextPlot = "add";
+        UIAxes_2.NextPlot = "add";
+        UIAxes_3.NextPlot = "add";
+        UIAxes_4.NextPlot = "add";
+        UIAxes_5.NextPlot = "add";
+        UIAxes_6.NextPlot = "add";
+        UIAxes_7.NextPlot = "add";
+        UIAxes_8.NextPlot = "add";
+        UIAxes_9.NextPlot = "add";
+        
+        [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.ContinousUnitAnalysis.UnitsPlot1,AutorunConfig.ContinousUnitAnalysis.UnitsPlot2,AutorunConfig.ContinousUnitAnalysis.UnitsPlot3,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,UIAxes_7,UIAxes_8,UIAxes_9,"StartUp","ContinousWindow");
+
+        %% Plot Waveforms
+        
+        Spike_Waveforms_Plot_Waveforms(Data,Units,SpikeWaveforms,SpikeCluster,Waves,Wavefigs);
+
+        %% Plot ISI
+        
+        Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,SpikePositions,SpikeCluster,SpikeChannel,Units,Waves,ISIfigs,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),str2double(AutorunConfig.ContinousUnitAnalysis.MaxTImeISI));
+  
+        %% Plot Autocorrelogramme
+
+        Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins));
+
+        %% Plot Results if turned on
+        if strcmp(AutorunConfig.SaveFigures,"on")
+            Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
+        end
+    end
+end

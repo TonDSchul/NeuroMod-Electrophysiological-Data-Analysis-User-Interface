@@ -31,6 +31,8 @@ if strcmp(PlotType,"Initial")
     xlim(UIAxis,[Time(1),Time(end)]);
     xlabel(UIAxis,"Time [s]")
     TimeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Timelines');
+    %app.UIAxes.Color = [0.90,0.90,0.90];
+    UIAxis.Color = [0.90,0.90,0.90];
 
     if isempty(TimeHandles)
         % line(UIAxis,[Time(1),Time(end)],[0,0],'Color','k','LineWidth',3,'Tag','Timelines');

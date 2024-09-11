@@ -92,5 +92,19 @@ end
 %% Save Scalingfactor for later when kilosort is loaded to scale amplitude back
 Data.Info.KilosortScalingFactor = scalingFactor;
 
+%Save Scaling Factor in same directory as kilsoort data
+CharPath = convertStringsToChars(folderPath);
+dashindex = strfind(CharPath,'\');
+
+FolderForScaling = CharPath(1:dashindex(end)-1);
+
+if strcmp(Format,'int32')
+    Savename = strcat(FolderForScaling,"\Scaling Factor int32.mat");
+elseif strcmp(Format,'int16')
+    Savename = strcat(FolderForScaling,"\Scaling Factor int16.mat");
+end
+
+save(Savename,'scalingFactor');
+
 fclose(fidRaw);
 close(h);

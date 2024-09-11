@@ -88,6 +88,11 @@ else
     folderPath = SelectedFolder;
 end
 
+%% Check if data wa high pass filtered - if not do it here, otherwise waveforms will look weird. (recommended is also top take the grand average)
+%if ~isfield(Data.)
+
+
+
 %% First detect KS version -- only 3 has rez.mat file and params.py
 [stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
 KSversion = [];
@@ -250,7 +255,59 @@ SpikePositions = round(SpikePositions);
 Data.Spikes.SpikeChannel = SpikePositions;
 %SpikePositions = double(Data.Spikes.SpikeChannel);
 
-[Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
+%% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
+% Detect high pass filter
+HigPassFiltered = 1;
+
+if isfield(Data,'Preprocessed') 
+    if isfield(Data.Info,'FilterMethod') 
+        if ~strcmp(Data.Info.FilterMethod,'High-Pass')
+            msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+            HigPassFiltered = 0;
+        end
+    else
+        msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+        HigPassFiltered = 0;
+    end
+else
+    msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+    HigPassFiltered = 0;
+end
+
+%%% if it has to be high pass filtered --> save as TempData, extract
+%%% waveforms and delete temp variable
+if HigPassFiltered == 0
+    PreproInfo = [];
+    PreprocessingSteps = [];
+
+    Methods = ["Filter"];
+    [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR","300","Zero-phase forward and reverse","3",[],Data.Info.NativeSamplingRate);
+        
+    if isfield(PreproInfo,'ChannelDeletion')
+        ChannelDeletion = PreproInfo.ChannelDeletion;
+    else
+        ChannelDeletion = [];
+    end
+    
+    TextArea = [];
+    
+    [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+    
+    [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+    
+    %% Now extract Waveforms
+    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
+    
+    clear TempData;
+
+else % If high pass was already applied
+
+    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
+    
+end
+
+
+
 % Remove NaN from Waveforms
 % Some SPikes can be removed when they are too close to the edge of the
 % recording to have a complete waveform
