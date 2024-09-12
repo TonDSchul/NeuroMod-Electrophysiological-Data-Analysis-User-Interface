@@ -83,6 +83,7 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
     %% Correlated Noise: Mean of signal
     if strcmp(Type,"All Channel")
         CN = mean(Data.Preprocessed,'all');
+        CNSTD = std2(Data.Preprocessed);
     end
     
     for nchannel = 1:size(Data.Preprocessed,1) % Channel
@@ -94,15 +95,13 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
     
         % Mean and std based on input 
         if strcmp(Type,"All Channel")
-            CNSTD = std(Data.Preprocessed(nchannel,:));
             Threshold = CN+STDThreshold.*CNSTD;
-            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
-
+            indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
         elseif strcmp(Type,"Individual Ch.")
             CN = mean(Data.Preprocessed(nchannel,:));
             CNSTD = std(Data.Preprocessed(nchannel,:));
             Threshold = CN+STDThreshold.*CNSTD;
-            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
+            indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
         end
         
         %% Spikes can have multiple consecutive samples below the threshold. Only one can be kept. Here, the smallest amplitude indicies is kept
@@ -153,6 +152,7 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
 
     if strcmp(Type,"All Channel")
         CN = median(Data.Preprocessed,'all');
+        CNSTD = std2(Data.Preprocessed);
     end
 
     for nchannel = 1:size(Data.Preprocessed,1) % Channel
@@ -164,15 +164,14 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
     
         % Mean
         if strcmp(Type,"All Channel")
-            CNSTD = std(Data.Preprocessed(nchannel,:));
             Threshold = CN+STDThreshold.*CNSTD;
-            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
+            indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
 
         elseif strcmp(Type,"Individual Ch.")
             CN = median(Data.Preprocessed(nchannel,:));
             CNSTD = std(Data.Preprocessed(nchannel,:));
             Threshold = CN+STDThreshold.*CNSTD;
-            indices = find(abs(Data.Preprocessed(nchannel,:)) < -Threshold);
+            indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
         end
        
         %% Spikes can have multiple consecutive samples below the threshold. Only one can be kept. Here, the smallest amplitude indicies is kept
@@ -276,8 +275,6 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
             end
           
             SpikeTimes = cell2mat(Sequences);
-            
-            
             Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes,SpikeTimes];
             Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
             Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
@@ -296,6 +293,7 @@ if isempty(Data.Spikes.SpikeTimes)
     msgbox("Warning: No Spikes found.");
     Data.Info.SpikeType = 'Non';
     close(h);
+    ToKeep = [];
     return;
 end
 

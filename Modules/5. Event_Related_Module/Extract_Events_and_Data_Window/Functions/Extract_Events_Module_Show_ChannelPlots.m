@@ -34,6 +34,7 @@ if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,
         if strcmp(Data.Info.RecordingType,"IntanDat")
             [FilePaths,~,EventInfo,~,InfoRhd,~] = CheckIntanDatFiles(Folder);
             % Load Rhd Info file
+            RHDData = [];
             if isempty(app.EventChannelNames)
                 [~,~,~,~,~,~,~,~,~,app.EventChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
             end

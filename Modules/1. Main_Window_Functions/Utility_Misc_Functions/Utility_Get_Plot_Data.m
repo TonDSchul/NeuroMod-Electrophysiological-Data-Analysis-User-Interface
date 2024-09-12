@@ -61,7 +61,6 @@ else
     else
         disp(['Selected folder: ', Fullsavefile]);
     end
-
 end
 
 %% Save Data

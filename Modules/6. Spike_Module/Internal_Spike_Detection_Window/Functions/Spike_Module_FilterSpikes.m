@@ -32,54 +32,61 @@ h = waitbar(0, 'Filtering Spike Indicies...', 'Name','Filtering Spike Indicies..
 %% Attempted Filtering of artefacts across all channel
 % This code finds spike indicies that are the same +/-1 sample across more
 % than 10 channel
-% Initialize empty arrays for concatenated results
 SpikeTimes = Data.Spikes.SpikeTimes;
 SpikePositions = Data.Spikes.SpikePositions(:,2);
 
-% Sort SpikeTimes and keep track of the original indices
-[sortedSpikeTimes, sortIdx] = sort(SpikeTimes);
-sortedSpikePositions = SpikePositions(sortIdx);
-Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(sortIdx);
-Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(sortIdx);
+% % Sort SpikeTimes and keep track of the original indices
+% [SpikeTimes, sortIdx] = sort(SpikeTimes);
+% SpikePositions = SpikePositions(sortIdx);
+% Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(sortIdx);
+% Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(sortIdx);
 
 % Initialize logical index array to mark values to keep
-toKeep = true(size(sortedSpikeTimes));
+toKeep = true(size(SpikeTimes));
 
 % Vectorized search for spike times within ±1 sample
-ProgressSteps = round(length(sortedSpikeTimes)/100);
+ProgressSteps = round(length(SpikeTimes)/100);
 CurrentProgress = ProgressSteps;
-for i = 1:length(sortedSpikeTimes)
+
+for i = 1:length(SpikeTimes)
+
     if i == CurrentProgress
-        % Update the progress bar
-       fraction = CurrentProgress/length(sortedSpikeTimes);
+       % Update the progress bar
+       fraction = CurrentProgress/length(SpikeTimes);
        msg = sprintf('Filtering Spike Indicies... (%d%% done)', round(100*fraction));
        waitbar(fraction, h, msg);
        CurrentProgress = round(CurrentProgress+ProgressSteps);
     end
-    % Create a logical array for spike times within +/- tolerance sample
-    SameIndicies = abs(sortedSpikeTimes - sortedSpikeTimes(i)) <= Tolerance;
+
+    % spike times within +/- tolerance sample
+    SameIndicies = abs(SpikeTimes - SpikeTimes(i)) <= Tolerance;
 
     if sum(SameIndicies) > 1
-        uniqueChannels = unique(sortedSpikePositions(SameIndicies));
+        uniqueChannels = unique(SpikePositions(SameIndicies));
         if length(uniqueChannels) > ArtefactDepth
-            toKeep(SameIndicies) = false;
+            % if also consecutive channel
+            differences = diff(uniqueChannels);
+            NumConsecutiveIndices = sum(differences == 1);
+            % -1 bc of difference --> 10 channels being the same means 9
+            % diffs of 1
+            if NumConsecutiveIndices >= ArtefactDepth-1
+                toKeep(SameIndicies) = false;
+            end
         end
     end
 end
 
 % For later output save indices deleted
-TempToKeep.SpikeTimes = sortedSpikeTimes(~toKeep);
-TempToKeep.SpikePosition = sortedSpikePositions(~toKeep);
+TempToKeep.SpikeTimes = SpikeTimes(~toKeep);
+TempToKeep.SpikePosition = SpikePositions(~toKeep);
 TempToKeep.SpikeAmps = Data.Spikes.SpikeAmps(~toKeep);
 TempToKeep.SpikeIndiciestoKeep = toKeep;
 
-
 % Remove the marked spike times and corresponding positions
-Data.Spikes.SpikeTimes = sortedSpikeTimes(toKeep);
-
+Data.Spikes.SpikeTimes = SpikeTimes(toKeep);
 TempSpikePositions = Data.Spikes.SpikePositions(:,1);
 TempSpikePositions = TempSpikePositions(toKeep);
-TempSpikePositions(:,2) = sortedSpikePositions(toKeep);
+TempSpikePositions(:,2) = SpikePositions(toKeep);
 Data.Spikes.SpikePositions = TempSpikePositions;
 
 Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(toKeep);
