@@ -1,4 +1,4 @@
-function [climsTF] = Event_Module_Time_Frequency_Main(EventRelatedData,Figure,SampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,Type,Plottype,WaveletType,TwoORThreeD)
+function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(EventRelatedData,Figure,SampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,Type,Plottype,WaveletType,TwoORThreeD,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% Main Function to call correct TF analysis and plotting functions with correct event related data portion based on input in app window
@@ -48,7 +48,7 @@ EventTime = 0-TimearoundEvent(1):1/SampleRate:TimearoundEvent(2);
 
 if strcmp(WaveletType,"Moorlet Wavelets")
     [tf,frex] = Event_Module_Time_Frequency_Wavelet_ITPC_Cycles(EventRelatedData,EventTime,[],TF.FreqRange,TF.Range_cycles);
-    [climsTF] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,EventTime,TF.FreqRange,tf,frex,0,Plottype,Type,DataChannelSelected,EventNrRange,TwoORThreeD);
+    [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,EventTime,TF.FreqRange,tf,frex,0,Plottype,Type,DataChannelSelected,EventNrRange,TwoORThreeD,CurrentPlotData);
 elseif strcmp(WaveletType,"Filter Hilbert")
     [tf,frex] = Event_Module_Time_Frequency_Hilbert_TimeFrequ_ITPC (EventRelatedData,SampleRate,EventTime,TF.FreqRange,TF.FilterRange,TF.FilterOrder,[EventNrRange(1),EventNrRange(2)],DataChannelSelected,[]);
     Event_Module_Time_Frequency_Plot_Hilbert_TF (tf,frex,EventTime,TF.FreqRange,0,Figure,0,Type,Plottype);

@@ -1,4 +1,4 @@
-function Event_Spikes_Plot_Spike_Rate(Data,Time,Type,rgb_matrix,SpikeTimes,SpikePositions,SpikeCluster,NumEvents,Clustertoshow,NumBins,SpikeRateTimeFigure,SpikeRateChannelFigure,KilosortChannelPos,SampleRate,ChannelToPlot)
+function CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,Time,Type,rgb_matrix,SpikeTimes,SpikePositions,SpikeCluster,NumEvents,Clustertoshow,NumBins,SpikeRateTimeFigure,SpikeRateChannelFigure,KilosortChannelPos,SampleRate,ChannelToPlot,CurrentPlotData)
 
 %________________________________________________________________________________________
 
@@ -37,7 +37,7 @@ function Event_Spikes_Plot_Spike_Rate(Data,Time,Type,rgb_matrix,SpikeTimes,Spike
 
 %________________________________________________________________________________________
 
-%% Spike Rate over Timeapp.Mainapp
+%% Spike Rate over Time
 ClusterSpikeTimes = [];
 
 if strcmp(Clustertoshow,"Non") || strcmp(Clustertoshow,"All") || strcmp(Type,"BinsizeChangeInitial")
@@ -103,6 +103,19 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     SpikeRateTimeFigure.XTick = x_ticks;
     SpikeRateTimeFigure.XTickLabel = x_tick_labels;
 
+    % Save data main plot -- time spike rate
+    if strcmp(Clustertoshow,"Non") || strcmp(Clustertoshow,"All")
+        CurrentPlotData.MainRateTimeXData = 1:length(SpikesInBins);
+        CurrentPlotData.MainRateTimeYData = SpikesInBins;
+        CurrentPlotData.MainRateTimeCData = [];
+        if strcmp(Data.Info.SpikeType,"Kilosort")
+            CurrentPlotData.MainRateTimeType = strcat("Events Kilosort All Spikes Spike Rate Times");
+        else
+            CurrentPlotData.MainRateTimeType = strcat("Events Internal All Spikes Spike Rate Times");
+        end
+        CurrentPlotData.MainRateTimeXTicks = SpikeRateTimeFigure.XTickLabel;
+    end
+
     %% Spike Rate over Channel
     %if ~strcmp(Type,"BinsizeChange")
 
@@ -110,7 +123,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     
     if strcmp(Data.Info.SpikeType,"Kilosort")
         cN = str2double(NumBins);  % number of steps/chunks
-        dN = length(ChannelToPlot(1):ChannelToPlot(2))*Data.Info.ChannelSpacing;
+        dN = (length(ChannelToPlot(1):ChannelToPlot(2))-1)*Data.Info.ChannelSpacing;
         TempSpikePos = SpikePositions;
         BinSize = dN/cN;
     else
@@ -130,8 +143,8 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
         Samplefrequency = 1/BinSizeTime;
         SpikesInBins = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikesInBins, [], Samplefrequency, 1, cN);
     end
-    if length(SpikesInBins)+0.5~=0.5
-        ylim(SpikeRateChannelFigure,[0.5,length(SpikesInBins)+0.5])
+    if ~isempty(SpikesInBins)
+        ylim(SpikeRateChannelFigure,[0,length(SpikesInBins)])
     end
     if max(SpikesInBins)~= 0
         xlim(SpikeRateChannelFigure,[0 max(SpikesInBins)]);
@@ -144,7 +157,19 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     SpikeRateChannelFigure.FontSize = 10;
     set(SpikeRateChannelFigure,'yticklabel',{[]})
 
-    %end
+    %% save plotted data in case user wants to save 
+    % Save data main plot -- channel spike rate
+    
+    CurrentPlotData.MainRateChannelXData = 1:length(SpikesInBins);
+    CurrentPlotData.MainRateChannelYData = SpikesInBins;
+    CurrentPlotData.MainRateChannelCData = [];
+    if strcmp(Data.Info.SpikeType,"Kilosort")
+        CurrentPlotData.MainRateChannelType = strcat("Events Kilosort All Spikes Spike Rate Channel");
+    else
+        CurrentPlotData.MainRateChannelType = strcat("Events Internal All Spikes Spike Rate Channel");
+    end
+    CurrentPlotData.MainRateChannelXTicks = SpikeRateChannelFigure.XTickLabel;
+
     if strcmp(Type,"BinsizeChangeInitial")
         return;
     end
@@ -225,4 +250,19 @@ if strcmp(Clustertoshow,"All") || strcmp(Type,"NewCluster") && strcmp(Clustertos
     if ~isempty(Cluster_handles)
         delete(Cluster_handles(:));
     end
+end
+
+%% save plotted data in case user wants to save 
+
+% Save data Units spike rate (over time only)
+if ~strcmp(Clustertoshow,"Non") && ~strcmp(Clustertoshow,"All")
+    CurrentPlotData.MainRateUnitXData = 1:length(SpikesInBins);
+    CurrentPlotData.MainRateUnitYData = SpikesInBins;
+    CurrentPlotData.MainRateUnitCData = [];
+    if strcmp(Data.Info.SpikeType,"Kilosort")
+        CurrentPlotData.MainRateUnitType = strcat("Events Kilosort Unit ", Clustertoshow ," Spike Rate Time");
+    else
+        CurrentPlotData.MainRateUnitType = strcat("Events Internal Unit ", Clustertoshow ," Spike Rate Time");
+    end
+    CurrentPlotData.MainRateUnitXTicks = SpikeRateTimeFigure.XTickLabel;
 end

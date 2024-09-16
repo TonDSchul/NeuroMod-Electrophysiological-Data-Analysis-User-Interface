@@ -1,4 +1,4 @@
-function Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,SpikeCluster,Waveforms,PlotInfo,ClusterSelection,Figure)
+function CurrentPlotData = Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,SpikeCluster,Waveforms,PlotInfo,ClusterSelection,Figure,CurrentPlotData)
 
 %% Plot Data 
 
@@ -71,9 +71,21 @@ if ~isnan(PlotInfo.Units)
 else
     title(Figure,strcat("All Cluster, Biggest Waveforms ",num2str(PlotInfo.Waveforms(1)),",",num2str(PlotInfo.Waveforms(end))," Inbetween Channel ",num2str(PlotInfo.ChannelSelection)));
 end
+
 xlabel(Figure,"Time [ms]");
 ylabel(Figure,"Signal [mV]");
 xlim(Figure,[Time(1),Time(end)])
+
 if max(WaveformsInCluster,[],'all') ~= min(WaveformsInCluster,[],'all')
     ylim(Figure,[min(WaveformsInCluster,[],'all'),max(WaveformsInCluster,[],'all')])
 end
+
+CurrentPlotData.MainXData = Time;
+CurrentPlotData.MainYData = WaveformsInCluster;
+CurrentPlotData.MainCData = [];
+if strcmp(Data.Info.SpikeType,"Kilosort")
+    CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Individual Spike Waveforms");
+else
+    CurrentPlotData.MainType = strcat("Continous Internal Spikes: Individual Spike Waveforms");
+end
+CurrentPlotData.MainXTicks = Figure.XTickLabel;

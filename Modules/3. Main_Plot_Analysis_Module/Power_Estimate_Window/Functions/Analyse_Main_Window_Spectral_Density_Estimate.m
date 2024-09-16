@@ -1,4 +1,4 @@
-function [currentYlim] = Analyse_Main_Window_Spectral_Density_Estimate(Data,SampleRate,Figure,TimeWindow,PDLim,LockYLim)
+function [currentYlim,CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(Data,SampleRate,Figure,TimeWindow,PDLim,LockYLim,CurrentPlotData)
 
 %________________________________________________________________________________________
 
@@ -124,3 +124,10 @@ else
      currentYlim(2) = max([Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],[],'all');
      ylim(Figure,currentYlim);
 end
+
+%% save plotted data in case user wants to save 
+CurrentPlotData.XData = [1,2,3,4,5];
+CurrentPlotData.YData = [Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma];
+CurrentPlotData.CData = [];
+CurrentPlotData.Type = "Spectral Estimate";
+CurrentPlotData.XTicks = Figure.XTickLabel;

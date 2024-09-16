@@ -1,4 +1,4 @@
-function mnLFP = spikeTrigLFP(tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD,ClustertoShow)
+function [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData)
 % function mnLFP = spikeTrigLFP(tLFP, lfpdat, theseST, winAroundSpike)
 %
 % returns nChannels x nTimePoints mean spike-triggered LFP. 
@@ -175,3 +175,23 @@ if Plot
     %Add xticks
     Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);
 end
+
+CurrentPlotData.MainXData = Time;
+CurrentPlotData.MainYData = ydata;
+CurrentPlotData.MainCData = mnLFP;
+
+if strcmp(AppWidnow,"Continous")
+    if strcmp(Data.Info.SpikeType,"Kilosort")
+        CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Spike Triggered Average");
+    else
+        CurrentPlotData.MainType = strcat("Continous Internal Spikes: Spike Triggered Average");
+    end
+else
+    if strcmp(Data.Info.SpikeType,"Kilosort")
+        CurrentPlotData.MainType = strcat("Events Kilosort Spikes: Spike Triggered Average");
+    else
+        CurrentPlotData.MainType = strcat("Events Internal Spikes: Spike Triggered Average");
+    end
+end
+
+CurrentPlotData.MainXTicks = Figure.XTickLabel;

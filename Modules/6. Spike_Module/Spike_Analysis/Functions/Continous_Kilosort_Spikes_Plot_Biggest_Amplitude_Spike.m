@@ -1,4 +1,4 @@
-function Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,units,rgbMatrix)
+function CurrentPlotData = Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,units,rgbMatrix,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% Function to plot biggest template of waveforms
@@ -41,3 +41,10 @@ end
 
 %Add xticks
 Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);
+
+% save data for export
+CurrentPlotData.MainXData = Time;
+CurrentPlotData.MainYData = Data.Spikes.BiggestAmplWaveform(units,:);
+CurrentPlotData.MainCData = [];
+CurrentPlotData.MainType = strcat("Continous Spikes: Individual Spike Waveforms");
+CurrentPlotData.MainXTicks = Figure.XTickLabel;

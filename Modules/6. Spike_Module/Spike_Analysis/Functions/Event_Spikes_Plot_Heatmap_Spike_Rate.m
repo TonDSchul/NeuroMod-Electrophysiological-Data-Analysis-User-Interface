@@ -1,4 +1,4 @@
-function Event_Spikes_Plot_Heatmap_Spike_Rate(SpikeTimes,SpikePositions,Figure,SR,time_bin_size,depth_edges,time_edges,nevents,eventtime,Normalize,NormWindow,Clustertoshow,ClusterIdentity,rgbMatrix,ChannelsToPlot,ChannelSpacing,appWindow,TwoORThreeD)
+function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(SpikeTimes,SpikePositions,Figure,SR,time_bin_size,depth_edges,time_edges,nevents,eventtime,Normalize,NormWindow,Clustertoshow,ClusterIdentity,rgbMatrix,ChannelsToPlot,ChannelSpacing,appWindow,TwoORThreeD,CurrentPlotData)
 
 %________________________________________________________________________________________
 
@@ -232,4 +232,17 @@ end
 %Add xticks
 Execute_Autorun_Set_Up_Figure(Figure,1,"Non",time_edges,20,[],[],[],10);
 xlabel(Figure,"Time [ms]")
+
+%% Save data main plot for export
+CurrentPlotData.MainXData = time_edges(1:end-1);
+CurrentPlotData.MainYData = DepthToPlot;
+CurrentPlotData.MainCData = spike_rates;
+
+if strcmp(appWindow,"Kilosort")
+    CurrentPlotData.MainType = strcat("Event Kilosort Heatmap Spike Rates");
+else
+    CurrentPlotData.MainType = strcat("Event Internal Heatmap Spike Rates");
+end
+
+CurrentPlotData.MainXTicks = Figure.XTickLabel;
 

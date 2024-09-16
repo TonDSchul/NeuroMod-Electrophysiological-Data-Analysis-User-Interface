@@ -1,4 +1,4 @@
-function Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoints,TimeRangeViewBox,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,CurrentTimeStartIndicie,CurrentTimeEndIndicie,PreprocDataPlotCheckBox,DownsampleSPikeRate,CutoffFreque,FilterOrder)
+function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoints,TimeRangeViewBox,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,CurrentTimeStartIndicie,CurrentTimeEndIndicie,PreprocDataPlotCheckBox,DownsampleSPikeRate,CutoffFreque,FilterOrder,CurrentPlotData)
 
 %________________________________________________________________________________________
 
@@ -33,7 +33,6 @@ function Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoints,TimeRangeViewBox,
 % 11. Basically same as CurrentTimePoints + length(TimeRangetoPlot) -- ToDo
 % 12. PreprocDataPlotCheckBox: value of checkbox in main window to plot
 % preprocessed data. This is necessary to handle downsampled data if it should exist
-
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -136,3 +135,10 @@ else
         ylim(Figure,[0 max(filteredSpikeRate)]);
     end
 end
+
+%% save plotted data in case user wants to save 
+CurrentPlotData.XData = 1:length(filteredSpikeRate);
+CurrentPlotData.YData = filteredSpikeRate;
+CurrentPlotData.CData = [];
+CurrentPlotData.Type = strcat("Spike Rate with ",num2str(Timerangebin),"s per Bin");
+CurrentPlotData.XTicks = Figure.XTickLabel;

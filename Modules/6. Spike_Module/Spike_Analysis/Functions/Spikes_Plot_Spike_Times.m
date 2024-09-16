@@ -1,4 +1,4 @@
-function Spikes_Plot_Spike_Times(Type,rgb_matrix,Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmps,ChannelPositions,Figure,numCluster,Clustertoshow,PlotEvents,EventIndicies,ChannelSelection,ChannelSpacing)
+function [CurrentPlotData] = Spikes_Plot_Spike_Times(Data,Type,rgb_matrix,Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmps,ChannelPositions,Figure,numCluster,Clustertoshow,PlotEvents,EventIndicies,ChannelSelection,ChannelSpacing,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% Function to plot spike times with amplitude color coding
@@ -68,6 +68,8 @@ if numel(Spikeline_handles)>numCluster
 end
 
 Spikeline_handles = findobj(Figure,'Type', 'line', 'Tag', 'Spikes');
+
+IndiciesCurrentCluster = [];
 
 %% Plot Spikes
 if strcmp(Clustertoshow,"All")
@@ -242,6 +244,53 @@ elseif strcmp(Type,"Continous")
         delete(Event_handles(:));
         
         legend(Figure, 'off');
-        
     end
 end
+
+%% save plotted data in case user wants to save 
+% Save data main plot
+if strcmp(Clustertoshow,"Non") || strcmp(Clustertoshow,"All")
+    if ~isempty(IndiciesCurrentCluster)
+        CurrentPlotData.MainXData = SpikeTimes(IndiciesCurrentCluster)';
+        CurrentPlotData.MainYData = SpikePositions(IndiciesCurrentCluster)';
+        CurrentPlotData.MainCData = SpikeAmps(IndiciesCurrentCluster)';
+    else
+        CurrentPlotData.MainXData = SpikeTimes';
+        CurrentPlotData.MainYData = SpikePositions';
+        CurrentPlotData.MainCData = SpikeAmps';
+    end
+    if strcmp(Type,"Continous")
+        if strcmp(Data.Info.SpikeType,"Kilosort")
+            CurrentPlotData.MainType = strcat("Continous Kilosort All Spike Times");
+        else
+            CurrentPlotData.MainType = strcat("Continous Internal All Spike Times");
+        end
+    else
+        if strcmp(Data.Info.SpikeType,"Kilosort")
+            CurrentPlotData.MainType = strcat("Events Kilosort All Spike Times");
+        else
+            CurrentPlotData.MainType = strcat("Events Internal All Spike Times");
+        end
+    end
+    CurrentPlotData.MainXTicks = Figure.XTickLabel;
+end
+
+% Save data Units
+if ~strcmp(Clustertoshow,"Non") && ~strcmp(Clustertoshow,"All")
+    if ~isempty(IndiciesCurrentCluster)
+        CurrentPlotData.MainUnitXData = SpikeTimes(IndiciesCurrentCluster)';
+        CurrentPlotData.MainUnitYData = SpikePositions(IndiciesCurrentCluster)';
+        CurrentPlotData.MainUnitCData = SpikeAmps(IndiciesCurrentCluster)';
+    else
+        CurrentPlotData.MainUnitXData = SpikeTimes';
+        CurrentPlotData.MainUnitYData = SpikePositions';
+        CurrentPlotData.MainUnitCData = SpikeAmps';
+    end
+    if strcmp(Data.Info.SpikeType,"Kilosort")
+        CurrentPlotData.MainUnitType = strcat("Continous Kilosort Unit Spike Times");
+    else
+        CurrentPlotData.MainUnitType = strcat("Continous Internal Unit Spike Times");
+    end
+    CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
+end
+

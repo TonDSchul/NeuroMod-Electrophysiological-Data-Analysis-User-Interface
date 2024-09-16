@@ -1,4 +1,4 @@
-function [ISIs] = Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,SpikePositions,SpikeCluster,SpikeChannel,Units,Waves,figs,NumBins,MaxISITime)
+function [ISIs,CurrentPlotData] = Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,SpikePositions,SpikeCluster,SpikeChannel,Units,Waves,figs,NumBins,MaxISITime,CurrentPlotData)
 
 % Define the number of bins
 numBins = NumBins;
@@ -98,8 +98,20 @@ for nplots = 1:length(Units)
                 else
                     bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); % Adjust 'BinWidth' as needed
                 end
-            end            
-        end
+            end      
+
+            %% Save results to ba able to export 
+            CurrentPlotData.UnitAnalyisISIXData{nplots,nUnit} = 1:length(InterspikeIntervals);
+            CurrentPlotData.UnitAnalyisISIYData{nplots,nUnit} = InterspikeIntervals;
+            CurrentPlotData.UnitAnalyisISICData{nplots,nUnit} = [];
+            
+            if strcmp(Data.Info.SpikeType,"Kilosort")
+                CurrentPlotData.UnitAnalyisISIType{nplots,nUnit} = strcat("Continous Kilosort Unit ",num2str(Units{nplots}(nUnit))," Analyis: ISI");
+            else
+                CurrentPlotData.UnitAnalyisISIType{nplots,nUnit} = strcat("Continous Internal Unit ",num2str(Units{nplots}(nUnit))," Analyis: ISI");
+            end
+
+        end % if spike indicies found
     end%For nUnits
 
     Barhandles = findobj(Figurename, 'Tag', 'ISI');
@@ -122,7 +134,10 @@ for nplots = 1:length(Units)
     % Set the x-tick labels to the corresponding time values
     Figurename.XTickLabel = string(Time(tickIndices));
 
+    for i = 1:length(Units{nplots})
+        CurrentPlotData.UnitAnalyisISIXTicks{nplots,i} = Figurename.XTickLabel;
+    end
+
     drawnow;
     
-
 end%For nPlots

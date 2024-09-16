@@ -1,4 +1,4 @@
-function Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,figs,Units,NumBins)
+function CurrentPlotData = Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,figs,Units,NumBins,CurrentPlotData)
 
 %% Prepare Data
 MaxNrUnits = 0;
@@ -91,23 +91,39 @@ for nplots = 1:length(Units)
 
         interspikeIntervals(isnan(interspikeIntervals)) = [];
         
-        % Create the histogram for the autocorrelogram
-        [counts, ~] = histcounts(interspikeIntervals, binEdges);
-
-        % ssttd = std(counts);
-        % counts(counts>ssttd*10) = 0;
-
-        NRbarplots = NRbarplots+1;
-
-        if isempty(Barhandles)
-            bar(Figurename,binEdges(1:end-1), counts, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5, 'Tag','AutoCorre');
-        else
-            if length(Barhandles)>=NRbarplots
-                set(Barhandles(NRbarplots),'XData',binEdges(1:end-1),'YData', counts, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5, 'Tag','AutoCorre');
-            else
+        if ~isempty(interspikeIntervals)
+            % Create the histogram for the autocorrelogram
+            [counts, ~] = histcounts(interspikeIntervals, binEdges);
+    
+            % ssttd = std(counts);
+            % counts(counts>ssttd*10) = 0;
+    
+            NRbarplots = NRbarplots+1;
+    
+            if isempty(Barhandles)
                 bar(Figurename,binEdges(1:end-1), counts, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5, 'Tag','AutoCorre');
+            else
+                if length(Barhandles)>=NRbarplots
+                    set(Barhandles(NRbarplots),'XData',binEdges(1:end-1),'YData', counts, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5, 'Tag','AutoCorre');
+                else
+                    bar(Figurename,binEdges(1:end-1), counts, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5, 'Tag','AutoCorre');
+                end
             end
-        end     
+            
+            %% Save results to ba able to export 
+            CurrentPlotData.UnitAnalyisAutoXData{nplots,nUnit} = binEdges(1:end-1);
+            CurrentPlotData.UnitAnalyisAutoYData{nplots,nUnit} = counts;
+            CurrentPlotData.UnitAnalyisAutoCData{nplots,nUnit} = [];
+            
+            if strcmp(Data.Info.SpikeType,"Kilosort")
+                CurrentPlotData.UnitAnalyisAutoType{nplots,nUnit} = strcat("Continous Kilosort Unit ",num2str(Units{nplots}(nUnit))," Analyis: Autocorrelogram");
+            else
+                CurrentPlotData.UnitAnalyisAutoType{nplots,nUnit} = strcat("Continous Internal Unit ",num2str(Units{nplots}(nUnit))," Analyis: Autocorrelogram");
+            end
+            
+            CurrentPlotData.UnitAnalyisAutoXTicks{nplots,nUnit} = Figurename.XTickLabel;
+
+        end %~isempty(interspikeIntervals)
     end%nunits
 
     Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');

@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower] = Continous_Power_Spectrum_Over_Depth(Data,DataSource,PowerSpecResults,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,DataSource,PowerSpecResults,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth
@@ -84,3 +84,13 @@ dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % H
 
 Figure_2.NextPlot = "add";
 plotLFPpower(BandPower.F, BandPower.allPowerEst, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD);
+
+%% save plotted data in case user wants to save 
+dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);
+nC = size(BandPower.allPowerEst,1); 
+
+CurrentPlotData.XData = BandPower.F(dispF)';
+CurrentPlotData.YData = (0:nC-1)*Data.Info.ChannelSpacing;
+CurrentPlotData.CData = 10*log10(BandPower.allPowerEst(:,dispF))';
+CurrentPlotData.Type = "Power Spectrum over Depth";
+CurrentPlotData.XTicks = Figure.XTickLabel';

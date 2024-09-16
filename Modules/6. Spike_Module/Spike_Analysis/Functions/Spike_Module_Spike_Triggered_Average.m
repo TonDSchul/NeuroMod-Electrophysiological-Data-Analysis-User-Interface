@@ -1,4 +1,4 @@
-function [Data,mnLFP] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,ChannelSelection,appWindow,TextArea,TimeWindowSpiketriggredLFP,Plot,TwoORThreeD,ClustertoShow)
+function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,ChannelSelection,appWindow,TextArea,TimeWindowSpiketriggredLFP,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData)
 
 %% Check what data is available -- has to be low pass filtered and downsampled
 % - but still leave it to the user by just giving a warning and option to
@@ -34,6 +34,7 @@ end
 
 %% if no low pass and/or not downsampled open window to ask user to do it automatically
 UserOptions = [];
+
 if LowPass == 0 || Downsampled == 0
     PreproSpikeAverageWindow = SpikeTrgAvgAskPrepro(DatatoUse,Downsampled,LowPass);
     
@@ -121,18 +122,18 @@ if strcmp(DatatoUse,'Preprocessed')
     if ~isempty(Data.Preprocessed)
         if Downsampled == 0
             winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : TimeWindowSpiketriggredLFP(2);
-            mnLFP = spikeTrigLFP(Data.Time, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,Data.Info.SpikeType,Plot,TwoORThreeD,ClustertoShow);
+            [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, Data.Time, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
         else
             winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.DownsampledSampleRate) : TimeWindowSpiketriggredLFP(2);
-            mnLFP = spikeTrigLFP(Data.TimeDownsampled, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.DownsampledSampleRate,TextArea,Data.Info.ChannelSpacing,Data.Info.SpikeType,Plot,TwoORThreeD,ClustertoShow);
+            [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.TimeDownsampled, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.DownsampledSampleRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
         end
     else
         winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : TimeWindowSpiketriggredLFP(2);
-        mnLFP = spikeTrigLFP(Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,Data.Info.SpikeType,Plot,TwoORThreeD,ClustertoShow);
+        [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
     end
 else
     winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : TimeWindowSpiketriggredLFP(2);
-    mnLFP = spikeTrigLFP(Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,Data.Info.SpikeType,Plot,TwoORThreeD,ClustertoShow);
+    [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
 end
 
 %% Determine whether new prepro data is saved for main dataset
@@ -142,42 +143,3 @@ if ~isempty(UserOptions)
     end
 end
 
-%________________________________________________________________________________________
-
-%% Function to compute and plot spike rate over depth (as a Heatmap)
-% This function takes all spikes and sorts for those in the event range
-% every time, the window for event spike analysis is opened. It is saved as
-% Data.EventRelatedSpikes structure, which gets overwritten every time
-
-% This function gets called in the main window when the user clicks on run
-% for event spike analysis (Internal and Kilosort)
-
-% Input:
-% 1. SpikeTimes: nspikes x 1 double in seconds. Spike time before event is
-% negativ
-% 2. SpikePositions: nspikes x 1 double with spike positions (in um) - for
-% internal: channelnr * ChannelSpacing
-% 3. Figure: Figure axes object to plot in
-% 4. SR: SampleRate as double in Hz
-% 5. time_bin_size: double, Bin size in seconds
-% 6. depth_edges: edges of depth bins (in um)
-% 7. time_edges: edges of depth bins (in s)
-% 8. nevents: number of events to divide spike rate by to normalize for a
-% single trial/event
-% 9. eventtime: double, Time in seconds to plot event line at (default at 0s)
-% 10. Normalize: 1 to basline normalized, 0 if not
-% 11. NormWindow: 1x2 double with min and max of time range (in seconds with negativ possible)
-% 12. Clustertoshow: char, 'Non' OR 'All' or a single number like '4' for
-% unit 4
-% 13. ClusterIdentity: nspikes x 1 double with unit identitiy for each spike
-% 14. rgbMatrix: nunits x 3 double with rgb values 
-% 15. ChannelsToPlot: 1 x 2 double with channel to plot, i.e. [1,10] for
-% channel 1 to 10 
-% 16. ChannelSpacing: in um from Data.Info.ChannelSpacing
-% 17. appWindow: char, 'Kilosort' OR 'Internal' to see which window it
-% comes from
-
-% Author: Tony de Schultz
-% Department systemsphysiology of learning, LIN Magdeburg.
-
-%________________________________________________________________________________________

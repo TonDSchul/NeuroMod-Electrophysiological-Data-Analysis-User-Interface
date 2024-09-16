@@ -1,0 +1,168 @@
+function Error = Utility_Save_Data_as_MAT(Fullsavefile,PlottedData,Analysis)
+
+Error = 0;
+if contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
+    if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") 
+        if ~isfield(PlottedData,'MainRateUnitType')
+            msgbox("Error: No unit was plotted to export data from.")
+            Error = 1;
+            return;
+        end
+    end
+    if ~contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") 
+        if ~isfield(PlottedData,'MainUnitType')
+            msgbox("Error: No unit was plotted to export data from.")
+            Error = 1;
+            return;
+        end
+    end
+end
+
+DataToSave = [];
+
+%% First For spike analyis (Continous and events); Otherwise unit analysis window
+if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contains(Analysis,"Current") && ~contains(Analysis,"Phase")
+
+%% Write TextInfos
+if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes") % XData = Non - spike Data
+    DataToSave.Type =  PlottedData.Type;
+    DataToSave.XData =  PlottedData.XData;
+    DataToSave.YData =  PlottedData.YData;
+    if isfield(DataToSave,'CData')
+        if ~isempty(PlottedData.CData)
+            DataToSave.CData =  PlottedData.CData;
+        end
+    end
+    DataToSave.XTicks =  PlottedData.XTicks;
+elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
+    if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") 
+        DataToSave.MainRateUnitType =  PlottedData.MainRateUnitType;
+        DataToSave.MainRateUnitXData =  PlottedData.MainRateUnitXData;
+        DataToSave.MainRateUnitYData =  PlottedData.MainRateUnitYData;
+        if isfield(DataToSave,'MainRateUnitCData')
+            if ~isempty(PlottedData.MainRateUnitCData)
+                DataToSave.MainRateUnitCData =  PlottedData.MainRateUnitCData;
+            end
+        end
+        DataToSave.MainRateUnitXTicks =  PlottedData.MainRateUnitXTicks;
+
+    elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && contains(Analysis,"Channel")
+        DataToSave.MainRateChannelType =  PlottedData.MainRateChannelType;
+        DataToSave.MainRateChannelXData =  PlottedData.MainRateChannelXData;
+        DataToSave.MainRateChannelYData =  PlottedData.MainRateChannelYData;
+        if isfield(DataToSave,'MainRateChannelCData')
+            if ~isempty(PlottedData.MainRateChannelCData)
+                DataToSave.MainRateChannelCData =  PlottedData.MainRateChannelCData;
+            end
+        end
+        DataToSave.MainRateChannelXTicks =  PlottedData.MainRateChannelXTicks;
+
+    elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && ~contains(Analysis,"Channel")
+        DataToSave.MainRateTimeType =  PlottedData.MainRateTimeType;
+        DataToSave.MainRateTimeXData =  PlottedData.MainRateTimeXData;
+        DataToSave.MainRateTimeYData =  PlottedData.MainRateTimeYData;
+        if isfield(DataToSave,'MainRateTimeCData')
+            if ~isempty(PlottedData.MainRateTimeCData)
+                DataToSave.MainRateTimeCData =  PlottedData.MainRateTimeCData;
+            end
+        end
+        DataToSave.MainRateTimeXTicks =  PlottedData.MainRateTimeXTicks;
+
+    elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+        DataToSave.MainUnitType =  PlottedData.MainUnitType;
+        DataToSave.MainUnitXData =  PlottedData.MainUnitXData;
+        DataToSave.MainUnitYData =  PlottedData.MainUnitYData;
+        if isfield(DataToSave,'MainUnitCData')
+            if ~isempty(PlottedData.MainUnitCData)
+                DataToSave.MainUnitCData =  PlottedData.MainUnitCData;
+            end
+        end
+        DataToSave.MainUnitXTicks =  PlottedData.MainUnitXTicks;
+
+    elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+        DataToSave.MainType =  PlottedData.MainType;
+        DataToSave.MainXData =  PlottedData.MainXData;
+        DataToSave.MainYData =  PlottedData.MainYData;
+        if isfield(DataToSave,'MainCData')
+            if ~isempty(PlottedData.MainCData)
+                DataToSave.MainCData =  PlottedData.MainCData;
+            end
+        end
+        DataToSave.MainXTicks =  PlottedData.MainXTicks;
+    end
+end
+
+end
+
+if contains(Analysis,"Plot")
+
+    % Write TextInfos
+        AnalyisText = convertStringsToChars(Analysis);
+        SelectedPlot = str2double(AnalyisText(end-1:end)); 
+
+        if contains(Analysis,"Waveform Analysis")
+            
+            DataToSave.UnitAnalyisWaveformsType =  PlottedData.UnitAnalyisWaveformsType;
+            DataToSave.UnitAnalyisWaveformsXData =  PlottedData.UnitAnalyisWaveformsXData;
+            DataToSave.UnitAnalyisWaveformsYData =  PlottedData.UnitAnalyisWaveformsYData;
+            %No CData
+            DataToSave.UnitAnalyisWaveformsXTicks =  PlottedData.UnitAnalyisWaveformsXTicks;
+            DataToSave.DimensionsOfCells = ["Nr Plots (1 to 3)","Nr Units per Plot"];
+
+        elseif contains(Analysis,"ISI Analyis")
+            
+            DataToSave.UnitAnalyisISIType =  PlottedData.UnitAnalyisISIType;
+            DataToSave.UnitAnalyisISIXData =  PlottedData.UnitAnalyisISIXData;
+            DataToSave.UnitAnalyisISIYData =  PlottedData.UnitAnalyisISIYData;
+            %No CData
+            DataToSave.UnitAnalyisISIXTicks =  PlottedData.UnitAnalyisISIXTicks;
+            DataToSave.DimensionsOfCells = ["Nr Plots (1 to 3)","Nr Units per Plot"];
+
+        elseif contains(Analysis,"Autocorrelogram Analyis")
+            
+            DataToSave.UnitAnalyisAutoType =  PlottedData.UnitAnalyisAutoType;
+            DataToSave.UnitAnalyisAutoXData =  PlottedData.UnitAnalyisAutoXData;
+            DataToSave.UnitAnalyisAutoYData =  PlottedData.UnitAnalyisAutoYData;
+            %No CData
+            DataToSave.UnitAnalyisAutoXTicks =  PlottedData.UnitAnalyisAutoXTicks;
+            DataToSave.DimensionsOfCells = ["Nr Plots (1 to 3)","Nr Units per Plot"];
+
+        end
+
+end
+
+if contains(Analysis,"Event Related") || contains(Analysis,"Current")
+
+    if contains(Analysis,"Potential") && contains(Analysis,"Events")
+        DataToSave.ERPoverEventsType =  PlottedData.ERPoverEventsType;
+        DataToSave.ERPoverEventsXData =  PlottedData.ERPoverEventsXData;
+        DataToSave.ERPoverEventsYData =  PlottedData.ERPoverEventsYData;
+        %No CData
+        DataToSave.ERPoverEventsXTicks =  PlottedData.ERPoverEventsXTicks;
+    
+    elseif contains(Analysis,"Potential") && contains(Analysis,"Channel")
+        DataToSave.ERPoverChannelType =  PlottedData.ERPoverChannelType;
+        DataToSave.ERPoverChannelXData =  PlottedData.ERPoverChannelXData;
+        DataToSave.ERPoverChannelYData =  PlottedData.ERPoverChannelYData;
+        %No CData
+        DataToSave.ERPoverChannelXTicks =  PlottedData.ERPoverChannelXTicks;
+
+    elseif contains(Analysis,"Current")
+        DataToSave.CSDType =  PlottedData.CSDType;
+        DataToSave.CSDXData =  PlottedData.CSDXData;
+        DataToSave.CSDYData =  PlottedData.CSDYData;
+        DataToSave.CSDCData =  PlottedData.CSDCData;
+        DataToSave.CSDXTicks =  PlottedData.CSDXTicks;
+    end
+
+end
+
+if contains(Analysis,"Phase")
+    DataToSave.TFPowerType =  PlottedData.TFPowerType;
+    DataToSave.TFPowerXData =  PlottedData.TFPowerXData;
+    DataToSave.TFPowerYData =  PlottedData.TFPowerYData;
+    DataToSave.TFPowerCData =  PlottedData.TFPowerCData;
+    DataToSave.TFPowerXTicks =  PlottedData.TFPowerXTicks;
+end
+
+save(Fullsavefile,"DataToSave");

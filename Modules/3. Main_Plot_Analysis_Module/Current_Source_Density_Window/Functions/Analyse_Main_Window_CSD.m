@@ -1,4 +1,4 @@
-function [currentClim] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,ChannelSelection,CSDClim,Figure,DatatoPlot,TimeRangetoPlot,Plottype,LockCLim,TwoORThreeD)
+function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,ChannelSelection,CSDClim,Figure,DatatoPlot,TimeRangetoPlot,Plottype,LockCLim,TwoORThreeD,CurrentPlotData)
 
 %________________________________________________________________________________________
 
@@ -141,3 +141,10 @@ else
     currentClim(2) = max(csd,[],'all');
     Figure.CLim = currentClim;
 end
+
+%% save plotted data in case user wants to save 
+CurrentPlotData.XData = TimeRangetoPlot;
+CurrentPlotData.YData = ds(1:size(csd,2));
+CurrentPlotData.CData = csd';
+CurrentPlotData.Type = "Current Source Density";
+CurrentPlotData.XTicks = Figure.XTickLabel;

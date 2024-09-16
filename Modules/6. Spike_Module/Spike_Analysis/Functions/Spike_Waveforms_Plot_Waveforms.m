@@ -1,4 +1,4 @@
-function Spike_Waveforms_Plot_Waveforms(Data,Units,Waveforms,SpikeCluster,Waves,figs)
+function CurrentPlotData = Spike_Waveforms_Plot_Waveforms(Data,Units,Waveforms,SpikeCluster,Waves,figs,CurrentPlotData)
 
 %% Prepare Data
 MaxNrUnits = 0;
@@ -91,6 +91,20 @@ for nplots = 1:length(Units)
             end
 
             uistack(meanline, 'top'); 
+
+            %% Save results to ba able to export 
+            CurrentPlotData.UnitAnalyisWaveformsXData{nplots,nindividualunits} = Time;
+            CurrentPlotData.UnitAnalyisWaveformsYData{nplots,nindividualunits} = TempWaves;
+            CurrentPlotData.UnitAnalyisWaveformsCData{nplots,nindividualunits} = [];
+            
+            if strcmp(Data.Info.SpikeType,"Kilosort")
+                CurrentPlotData.UnitAnalyisWaveformsType{nplots,nindividualunits} = strcat("Continous Kilosort Unit ",num2str(Units{nplots}(nindividualunits))," Analyis: Waveforms");
+            else
+                CurrentPlotData.UnitAnalyisWaveformsType{nplots,nindividualunits} = strcat("Continous Internal Unit ",num2str(Units{nplots}(nindividualunits))," Analyis: Waveforms");
+            end
+
+            CurrentPlotData.UnitAnalyisWaveformsXTicks{nplots,nindividualunits} = Figurename.XTickLabel;
+
         end
     end % individual units
     
@@ -106,4 +120,6 @@ for nplots = 1:length(Units)
     end
 
     drawnow;
+
 end % 3 plots
+

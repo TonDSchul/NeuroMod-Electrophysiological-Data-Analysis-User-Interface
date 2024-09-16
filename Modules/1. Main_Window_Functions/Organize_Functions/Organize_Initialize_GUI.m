@@ -116,6 +116,12 @@ if strcmp(Type,"Initial")
     app.EventDataCheckBox.Enable = "off";
     app.SpikeDataCheckBox_2.Enable = "off";
 
+    app.CurrentPlotData.XData = [];
+    app.CurrentPlotData.YData = [];
+    app.CurrentPlotData.CData = [];
+    app.CurrentPlotData.Type = "Non";
+    app.CurrentPlotData.XTicks = [];
+    
 elseif strcmp(Type,"Loading")
 
     % Enable/Disable buttons

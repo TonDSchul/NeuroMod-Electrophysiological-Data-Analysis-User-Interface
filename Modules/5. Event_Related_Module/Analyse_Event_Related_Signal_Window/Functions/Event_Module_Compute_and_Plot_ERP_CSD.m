@@ -1,4 +1,4 @@
-function [CSDClim,Trialplot,Meanplot,Eventplot] = Event_Module_Compute_and_Plot_ERP_CSD(Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD)
+function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot ERP and CSD for event analysis windows
@@ -42,6 +42,9 @@ function [CSDClim,Trialplot,Meanplot,Eventplot] = Event_Module_Compute_and_Plot_
 % For ERP per Channel plot: If i.e. channel 1-10 not plotted, index of those lines is still 1:10.
 % therefore colormap index has to be real channels
 
+Trialplot = [];
+Meanplot = [];
+Eventplot = [];
 CSDClim = [];
 
 % Extract Cell with eventindicies of selected event channel
@@ -152,6 +155,17 @@ if isempty(CSD)
             MeanLinesHandles = findobj(Figure, 'Type', 'line', 'Tag', 'MeanLines');
             delete(MeanLinesHandles(:));
         end
+
+        %% save plotted data in case user wants to save 
+        % Save data main plot -- channel spike rate
+        
+        CurrentPlotData.ERPoverEventsXData = EventTime;
+        CurrentPlotData.ERPoverEventsYData = DataLinestoPlot;
+        CurrentPlotData.ERPoverEventsCData = [];
+        CurrentPlotData.ERPoverEventsType = strcat("Event Related Potential over Events");
+
+        CurrentPlotData.ERPoverEventsXTicks = Figure.XTickLabel;
+
     end
 
     if strcmp(Type,'MultipleERPOnly') || strcmp(Type,'All')
@@ -219,7 +233,17 @@ if isempty(CSD)
             set(legendHandle, 'HandleVisibility', 'off');
         end
 
+        %% save plotted data in case user wants to save 
+        % Save data main plot -- channel spike rate
+        
+        CurrentPlotData.ERPoverChannelXData = EventTime;
+        CurrentPlotData.ERPoverChannelYData = EventRelatedData;
+        CurrentPlotData.ERPoverChannelCData = [];
+        CurrentPlotData.ERPoverChannelType = strcat("Event Related Potential over Channel");
+        CurrentPlotData.ERPoverChannelXTicks = Figure2.XTickLabel;
+
     end
+
 %% Plot CSD
 else
 
@@ -355,5 +379,14 @@ else
     cbar_handle=colorbar('peer',Figure,'location','EastOutside');
     cbar_handle.Label.String = "Signal [mV/mm^2]";
     cbar_handle.Label.Rotation = 270;
+
+    %% save plotted data in case user wants to save 
+    % Save data main plot -- channel spike rate
+    
+    CurrentPlotData.CSDXData = EventTime;
+    CurrentPlotData.CSDYData = ds;
+    CurrentPlotData.CSDCData = csd';
+    CurrentPlotData.CSDType = strcat("Current Source Density");
+    CurrentPlotData.CSDXTicks = Figure.XTickLabel;
 
 end

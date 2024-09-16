@@ -1,4 +1,4 @@
-function Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField)
+function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum of a signal using pwelch method
@@ -62,22 +62,32 @@ if length(PWelch_handles) > 1
     PWelch_handles = findobj(Figure,'Type', 'line', 'Tag', 'Pwelch');
 end
 
-%Welch Method
-if ~isempty(PWelch_handles)
-    set(PWelch_handles(1), 'XData', Freq, 'YData', 10*log10(Welchpowspect),'LineWidth',2,'Tag','Pwelch','Color','b');
-else
-    line(Figure,Freq,10*log10(Welchpowspect),'LineWidth',2,'Tag','Pwelch','Color','b');
-end
-
 commaindicie = find(FrequencyRangeHzEditField == ',');
 dispRange(1) = str2double(FrequencyRangeHzEditField(1:commaindicie(1)-1)); % Hz
 dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % Hz
+DispIndicies = Freq>dispRange(1) & Freq<dispRange(2);
+
+%Welch Method
+if ~isempty(PWelch_handles)
+    set(PWelch_handles(1), 'XData', Freq(DispIndicies), 'YData', 10*log10(Welchpowspect(DispIndicies)),'LineWidth',2,'Tag','Pwelch','Color','b');
+else
+    line(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',2,'Tag','Pwelch','Color','b');
+end
+
 
 xlabel(Figure, 'Frequency (Hz)');
 ylabel(Figure, 'Power/Frequency (dB/Hz)');
-ylim(Figure,[min(10*log10(Welchpowspect),[],'all') max(10*log10(Welchpowspect),[],'all')])
+ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(Welchpowspect(DispIndicies)),[],'all')])
 
 xlim(Figure,[dispRange(1) dispRange(2)]);
 title(Figure,titlestring);
 drawnow;
 hold(Figure, 'off' );
+
+%% save plotted data in case user wants to save 
+CurrentPlotData.XData = Freq(DispIndicies)';
+CurrentPlotData.YData = 10*log10(Welchpowspect(DispIndicies))';
+CurrentPlotData.CData = [];
+CurrentPlotData.Type = "Static P-Welch Spectrum";
+CurrentPlotData.XTicks = Figure.XTickLabel;
+

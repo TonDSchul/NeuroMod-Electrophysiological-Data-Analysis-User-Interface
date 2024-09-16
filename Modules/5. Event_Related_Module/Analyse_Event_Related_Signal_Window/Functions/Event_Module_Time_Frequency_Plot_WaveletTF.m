@@ -1,4 +1,4 @@
-function [climsTF] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection,TwoORThreeD)
+function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection,TwoORThreeD,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths 
@@ -117,7 +117,7 @@ if strcmp(TwoORThreeD,"TwoD")
     if isempty(Event_handles)
         xline(Figure,0,'--','Color','r' ,'LineWidth',2,'Tag', 'Event'); 
     else
-        set(Event_handles(1),0,'--','Color','r' ,'LineWidth',2,'Tag', 'Event'); 
+        set(Event_handles(1),'Value',0,'Color','r' ,'LineWidth',2,'Tag', 'Event'); 
     end
 
 else %3D Plot
@@ -152,3 +152,12 @@ cbar_handle.Label.Rotation = 270;
 title(Figure,strcat("Total Time Frequency Power Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
 xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
 ylim(Figure,[costumfrex(1) costumfrex(3)])
+
+%% save plotted data in case user wants to save 
+% Save data main plot -- channel spike rate
+    
+CurrentPlotData.TFPowerXData = time;
+CurrentPlotData.TFPowerYData = frexcycle;
+CurrentPlotData.TFPowerCData = Datatouse;
+CurrentPlotData.TFPowerType = strcat("Time Frequency Power Moorlet Wavelets");
+CurrentPlotData.TFPowerXTicks = Figure.XTickLabel;

@@ -1,4 +1,4 @@
-function Continous_Spikes_Plot_Average_Waveforms(Figure,Data,ChannelSelection,UnitstoPlot,MeanWaveform,ChannelSpacing,SpikeType,WaveformsToPlot,TwoORThreeD)
+function CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,ChannelSelection,UnitstoPlot,MeanWaveform,ChannelSpacing,SpikeType,WaveformsToPlot,TwoORThreeD,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% Function to plot average waveforms over each channel for a single unit
@@ -132,3 +132,15 @@ xlim(Figure,[Time(1),Time(end)]);
 
 %Add xticks
 Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);
+
+%% save plotted data in case user wants to save 
+
+CurrentPlotData.MainXData = Time;
+CurrentPlotData.MainYData = ydata;
+CurrentPlotData.MainCData = squeeze(MeanWaveform);
+if strcmp(Data.Info.SpikeType,"Kilosort")
+    CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Average Waveform");
+else
+    CurrentPlotData.MainType = strcat("Continous Internal Spikes: Average Waveform");
+end
+CurrentPlotData.MainXTicks = Figure.XTickLabel;

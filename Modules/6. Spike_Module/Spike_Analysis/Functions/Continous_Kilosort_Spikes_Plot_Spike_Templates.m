@@ -1,4 +1,4 @@
-function Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,ChannelSelection,units,rgbMatrix)
+function CurrentPlotData = Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,ChannelSelection,units,rgbMatrix,CurrentPlotData)
  
 %________________________________________________________________________________________
 %% Function to plot template of spikes for each channel selected
@@ -71,3 +71,9 @@ title(Figure,strcat("Spike Templates of Unit ",num2str(units)," Across Channel "
 
 %Add xticks
 Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);
+
+CurrentPlotData.MainXData = Time;
+CurrentPlotData.MainYData = Datatoplot;
+CurrentPlotData.MainCData = [];
+CurrentPlotData.MainType = strcat("Continous Spikes: Spike Templates");
+CurrentPlotData.MainXTicks = Figure.XTickLabel;
