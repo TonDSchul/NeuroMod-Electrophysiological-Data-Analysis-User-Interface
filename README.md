@@ -140,9 +140,8 @@ When you extract .smrx for the first time, you are asked to select the folder in
 <img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
 
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides. 
-It is ideal to follow along the youtube tutorial. All functionalities can be accesed in the module overview on the right side of the toolbox. 
-Just select an option and click in the "RUN" button. The first thing you have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Following along the descriptions in the window that opens, press some buttons or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing), you will get a message what to do, which will guide you through the procedure by trial and error. 
+The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example Datasets are saved in the corresponding folder of the toolbox. Following along the descriptions in the window that opens, specify the folder and channelspacing or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing or selecting a folder without a supported recording file), you will get a message what was going wrong and what the issue is.
 
 > ### **Overview of Other Toolboxes Used**
 
