@@ -1,2 +1,2 @@
-This folder contains all modified functions from the Spikes repository on GitHub from Nick Steinmetz (nsteinme) that are used to analyse Kilosort data. They are saved apart from the other files to prevent being overwritten when the repository and files should be updated. 
+This folder contains all modified functions from the Spikes repository on GitHub from Cortex Lab that are used to analyse Kilosort data. They are saved apart from the other files to prevent being overwritten when the repository and files should be updated. 
 The repository can be found here: https://github.com/cortex-lab/spikes

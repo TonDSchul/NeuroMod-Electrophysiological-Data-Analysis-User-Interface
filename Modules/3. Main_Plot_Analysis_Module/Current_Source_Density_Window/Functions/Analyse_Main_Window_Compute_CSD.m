@@ -27,7 +27,7 @@ function [csd,ds]=Analyse_Main_Window_Compute_CSD(dat,ds,hamwidth)
 %% Init
 
 %hamwidth=5; %size of hamming window. Has two be odd (3,5,7...) 7 is standard
-ds=ds/1000; % millimeter spacing of electrode contacts: Neuronexus: 50 um, Cambridge Neurotech H6B AND H7b 25um
+ds=ds/1000; % convert um to millimeter spacing of electrode contacts: Neuronexus: 50 um, Cambridge Neurotech H6B AND H7b 25um
 
 %% Referencing
 

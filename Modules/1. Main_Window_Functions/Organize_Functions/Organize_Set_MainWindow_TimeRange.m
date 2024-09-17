@@ -5,7 +5,7 @@ function Organize_Set_MainWindow_TimeRange(app,CurrentTimeRange,TimeLimit,Operat
 %% Function to increase or decrease the amopunt of time plotted in the main window
 % This function is called when the user clicks on the + or - button in the
 % time control panel of the main window to change the amount of time shown.
-% The amount the plot window is changed is based on the checkboxes of the
+% The amount the time range is changed by is based on the checkboxes of the
 % time control panel
 
 %NOTE: app.sCheckBox are the check box fields in the GUI time control

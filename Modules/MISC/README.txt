@@ -1,1 +1,9 @@
-This folder contains permanently saved files usually not modified or if, then automatically. This includes the Logo and pictures for the readme file, Licenses of other toolboxes used as well as static variables. So far, the only static variable is save in the 'CEDS64Path.mat' file, holding the path to the MATLAB Son Library for analysis of Spike2 data. This variable is autosaved and updated.
+______________________________________________
+NeuroMod Toolbox; MISC README
+Author: Tony de Schultz
+______________________________________________
+
+This folder contains permanently saved files usually not modified or if, then automatically.
+This includes the Logo and pictures for the readme file, Licenses of other toolboxes used as well as static variables. 
+So far, the only static variable is save in the 'CEDS64Path.mat' file, holding the path to the MATLAB Son Library for analysis of Spike2 data. 
+This variable is autosaved and updated automatically if necessary.

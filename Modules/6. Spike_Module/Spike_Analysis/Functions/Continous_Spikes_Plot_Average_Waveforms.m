@@ -6,18 +6,28 @@ function CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,C
 % This function is called in the
 % Continous_Kilosort_Spikes_Manage_Analysis_Plots and Continous_Internal_Spikes_Manage_Analysis_Plots function
 
+%NOTE: it takes a nchannel x ntimewaveforms matrix as input,
+%where the mean was already claculated over each waveform 
+
 % Inputs:
 % 1. Figure: fugire aces handle to plot in
 % 2. Data: main window app structure (just needed for Data.Info to get samplerate)
 % 3. ChannelSelection: 1x2 double with channelselection of user, i.e. [1,10]
 % for channel 1 to 10 
 % 4. UnitstoPlot: number of unit selected as double (just for title) 
-% 5. MeanWaveform: depending on whether one or multiple channel selected
-% either a 3d double matrix with nunit x nchannel x ntime or 2D matrix (1x1xntime)
+% 5. MeanWaveform: nchannel x ntime matrix holding averaged waveform for
+% each channel
 % 6. ChannelSpacing: in um as double, from Data.Info.ChannelSpacing
 % 7. SpikeType: char, Type of spike to analyse, either 'Kilosort' OR 'Internal'
 % 8. WaveformsToPlot: 1x2 double with waveformselection of user, i.e. [1,10]
 % for 10 waveforms
+% 9. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

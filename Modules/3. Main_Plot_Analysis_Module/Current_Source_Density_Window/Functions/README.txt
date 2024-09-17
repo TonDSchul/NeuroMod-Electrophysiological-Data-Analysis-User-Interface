@@ -30,10 +30,16 @@ File: Analyse_Main_Window_CSD.m
 % supposed to be overwritten. "Non" otherwise 
 % 8. LockCLim: 1 or 0 as double. 1 to only update clim when current clim
 % exceeds global clim from csd window
+% 9. TwoORThreeD: string, either "TwoD" or "ThreeD", specifies number of
+% dimensions of plot
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Output:
 % 1. currentClim: global clim - either unchanged from previous csd plot if
 % limits were no exceeded or current clim otherwise. 
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

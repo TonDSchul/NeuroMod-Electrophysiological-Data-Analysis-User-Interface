@@ -6,7 +6,7 @@ function Analysis_Hilbert_Inspect_NarrowBand_Filterkernel (srate,costumfrex,orde
 %         2.costumfrex: Frequency range of narrowband filter [min freq, max
 %         frequ, steps from min to max freq] in Hz double
 %         3.orderfactor: Order nr. for filter double
-%         4.costumfilter: Filter Width, Min and max in Hz [min freq, max freq]
+%         4.costumfilter: 1x2 double, Filter Width, Min and max in Hz [min freq, max freq]
 %
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -31,6 +31,12 @@ function CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,Time,Type,rgb_matri
 % 14. SampleRate: double in Hz
 % 15. ChannelToPlot: 1x2 double with channel to plot, i.e. [1,10] for
 % channel 1 to 10
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -2,8 +2,7 @@ function [Data,CurrentPlotData] = Continous_Internal_Spikes_Manage_Analysis_Plot
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
-% This function uses a functions from the spike repository from Nick
-% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% This function uses a functions from the spike repository from Cortex lab on Github: https://github.com/cortex-lab/spikes
 % Function used: computeWFampsOverDepth
 %                plotWFampCDFs
 %                spikeTrigLFP
@@ -39,7 +38,15 @@ function [Data,CurrentPlotData] = Continous_Internal_Spikes_Manage_Analysis_Plot
 % 12. Figure3: figure axes handle for spike rate over channel 
 % 13. RGBMatrix: nwaveforms x 3 double with rgb values for each waveform
 % plotted
+% 14. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 15. ClustertoShowDropDown: char, contains the unit selection the user
+% makes, Either "All" OR "Non" OR "1" or whatever over unit number
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
+% Outputs:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

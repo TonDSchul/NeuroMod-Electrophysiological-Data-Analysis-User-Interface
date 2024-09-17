@@ -35,53 +35,10 @@ File: Continous_Internal_Spikes_Check_Inputs.m
 
  ###################################################### 
 
-File: Continous_Internal_Spikes_Get_Biggest_Amplitude_and_Waveforms.m
-%________________________________________________________________________________________
-%% Function to extract biggest spike waveforms with amplitudes of each spike already given.
-
-% This function is executed every time some waveform analysis has to be
-% done. Extraction is fast enough for that. 
-% Note: Code extracts n number of biggest wavforms found, with n being the
-% specified nr by the user. Gets saved in main window Data structure, but
-% overwritten everytime here
-
-%gets called whenever the user selects an analysis in the cont. internal spikes window that requires waveforms
-
-% Inputs: 
-% 1. Data = needs to contain raw or preprocessed data to extract wveforms
-% from
-% 2. SpikeTimes nspikes x 1 double with spike times in samples of each spike
-% 3. Amplitudes = N x 1 double or single with amplitudes of each spike
-% (analyzed in internal spike detection) to get biggest amplitude
-% 4. SpikePositions = N x 1 double or single with spike poisiton (integer specifying channel) of each spike
-% (analyzed in internal spike detection) 
-% 5. ChannelSelection = 2 x 1 double or single; from , to like [1,10] for
-% channel 1 to 10 
-% 6. NRWaveformsToExtract: -- not used here
-% 7. Downsample:  -- not used here
-% 8. Plot: char, specifies if waveforms should be plotted
-% 9. Figure: figure axes handle to plot waveforms on
-% 10. WaveformsToPlot: 1x2 double specifying how man waveforms should be
-% analysed, i.e. [1,10] for 10 waveforms
-
-% Outputs:
-% 1. Waveforms: nchannel x nwaveforms x ntime matrix saving each extract
-% waveform
-% 2. BiggestSpikeIndicies: 1 x nrspikes (length of SpikeTimes). 1 if spike waveform was extracted, 0 if spike waveform was NOT
-% extracted
-
-% Author: Tony de Schultz
-% Department systemsphysiology of learning, LIN Magdeburg.
-%________________________________________________________________________________________
-
-
- ###################################################### 
-
 File: Continous_Internal_Spikes_Manage_Analysis_Plots.m
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
-% This function uses a functions from the spike repository from Nick
-% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% This function uses a functions from the spike repository from Cortex lab on Github: https://github.com/cortex-lab/spikes
 % Function used: computeWFampsOverDepth
 %                plotWFampCDFs
 %                spikeTrigLFP
@@ -117,7 +74,15 @@ File: Continous_Internal_Spikes_Manage_Analysis_Plots.m
 % 12. Figure3: figure axes handle for spike rate over channel 
 % 13. RGBMatrix: nwaveforms x 3 double with rgb values for each waveform
 % plotted
+% 14. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 15. ClustertoShowDropDown: char, contains the unit selection the user
+% makes, Either "All" OR "Non" OR "1" or whatever over unit number
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
+% Outputs:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -143,7 +108,6 @@ File: Continous_Kilosort_Spikes_Check_Inputs.m
 % field
 % 2. ChannelEditField: object holding app text with the field Value containing a char of the user input. Correct format: ChannelEditField.Value = '1,10' for channel 1 to 10. 
 % 3. WaveformEditField: object holding app text with the field Value containing a char of the user input. Correct format: WaveformEditField.Value = '1,10' for waveforms 1 to 10. 
-% 4. UnitsEditField: object holding app text with the field Value containing a char of the user input. Correct format: UnitsEditField.Value = '1,10' for units 1 to 10. 
 % 5. SpikeAnalysisType: Name as char of analysis done, Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR "Waveforms from Raw Data" OR
 % "Average Waveforms Across Channel" OR "Waveforms Templates" OR "Template from Max Amplitude Channel" OR "Cumulative Spike Amplitude Density
 % Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
@@ -152,47 +116,13 @@ File: Continous_Kilosort_Spikes_Check_Inputs.m
 % Output:
 % 1. ChannelEditField: object holding app text with the field Value
 % containing a char of corrected or unchanged input 
-% 3. WaveformEditField: object holding app text with the field Value
+% 2. WaveformEditField: object holding app text with the field Value
 % containing a char of corrected or unchanged input 
-% 4. UnitsEditField: object holding app text with the field Value
-% containing a char of corrected or unchanged input 
-% 5. Error: Indicates if an error happened consisting of too many channel,
+% 3. Error: Indicates if an error happened consisting of too many channel,
 % units and waveforms selcted which would result in a 3d matrix. Then the
 % code stops and the user gets a message
-% 6: SpikeRateBinsEditField: object holding app text with the field Value
+% 4: SpikeRateBinsEditField: object holding app text with the field Value
 % containing a char of corrected or unchanged input 
-
-% Author: Tony de Schultz
-% Department systemsphysiology of learning, LIN Magdeburg.
-%________________________________________________________________________________________
-
-
- ###################################################### 
-
-File: Continous_Kilosort_Spikes_Check_and_Extract_Waveforms.m
-%________________________________________________________________________________________
-%% Function to extract waveforms of kilosort spikes from raw or preprocessed data
-% This function is executed every time some continous kilosort spikes
-% analysis containing waveforms is executed
-% This function uses a functions from the spike repository from Nick
-% Steinmetz on Github: https://github.com/cortex-lab/spikes
-% Function used: getWaveForms
-
-% Inputs:
-% 1. Data: main window data structure with Data.Spikes , Data.Time and
-% Data.Info
-% 2. TextArea: app window text object to show number of cluster and spikes
-% found
-% 3. SpikeTimes: nspikes x 1 double in seconds
-% 4. SpikeClusters: N x 1 double or single with cliuster identity (integer specifying the unit/cluster of that spike) of each spike
-% (analyzed in internal spike detection) 
-% 5. PlotInfo: 
-
-%Output:
-% 1. Data: main window data structure with added field
-% Data.Spikes.Waveforms as Unit x waveforms x channel 
-% 2. app window text object to show number of cluster and spikes
-% found
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -204,8 +134,7 @@ File: Continous_Kilosort_Spikes_Check_and_Extract_Waveforms.m
 File: Continous_Kilosort_Spikes_Manage_Analysis_Plots.m
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
-% This function uses a functions from the spike repository from Nick
-% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% This function uses a functions from the spike repository from Cortex lab on Github: https://github.com/cortex-lab/spikes
 % Function used: computeWFampsOverDepth
 %                plotWFampCDFs
 %                spikeTrigLFP
@@ -243,10 +172,15 @@ File: Continous_Kilosort_Spikes_Manage_Analysis_Plots.m
 % 13. ClusterToShow: either single double number or chars 'All' OR 'Non'
 % 14. Figure2: figure axes handle for spike rate over time 
 % 15. Figure3: figure axes handle for spike rate over channel 
+% 16. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 17. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info
 % field
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -269,30 +203,12 @@ File: Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike.m
 % 2. Data: main window data structure with Data.Spikes and Data.Info field; Data.Spikes with field Data.Spikes.BiggestAmplWaveform
 % 4. units: unitselection as double, for title (waveform already extracted for just that unit)
 % 5. rgbMatrix: ntemplates x 3 double with rgb values for each template 
+% 6. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
-% Author: Tony de Schultz
-% Department systemsphysiology of learning, LIN Magdeburg.
-%________________________________________________________________________________________
-
-
- ###################################################### 
-
-File: Continous_Kilosort_Spikes_Plot_Raw_Waveforms.m
-%________________________________________________________________________________________
-%% Function to plot waveforms that where extracted for Kilosort spikes
-% Note: For each spike the specified nr of waveforms over all selected channel are plotted
-
-% This function is called in the
-% Continous_Kilosort_Spikes_Manage_Analysis_Plots function
-
-% Inputs:
-% 1. Figure: Figure axes handle top plot in 
-% 2. Data: main window data structure with Data.Spikes and Data.Info field; Data.Spikes with field Data.Spikes.Waveforms.waveForms
-% 3. ChannelSelection: 1x2 double with channel to plot the waveforms for,
-% i.e. [1,10] for channel 1 to 10
-% 4. units: unitselection as double, for title (waveform already extracted for just that unit)
-% 5. Waveforms: 1x2 double with wavefor selection of user, i.e. [1,10] for
-% 10 waveforms
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -316,6 +232,12 @@ File: Continous_Kilosort_Spikes_Plot_Spike_Templates.m
 % i.e. [1,10] for channel 1 to 10
 % 4. units: unitselection as double (1-indexed!)
 % 5. rgbMatrix: ntemplates x 3 double with rgb values for each template 
+% 6. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -362,18 +284,28 @@ File: Continous_Spikes_Plot_Average_Waveforms.m
 % This function is called in the
 % Continous_Kilosort_Spikes_Manage_Analysis_Plots and Continous_Internal_Spikes_Manage_Analysis_Plots function
 
+%NOTE: it takes a nchannel x ntimewaveforms matrix as input,
+%where the mean was already claculated over each waveform 
+
 % Inputs:
 % 1. Figure: fugire aces handle to plot in
 % 2. Data: main window app structure (just needed for Data.Info to get samplerate)
 % 3. ChannelSelection: 1x2 double with channelselection of user, i.e. [1,10]
 % for channel 1 to 10 
 % 4. UnitstoPlot: number of unit selected as double (just for title) 
-% 5. MeanWaveform: depending on whether one or multiple channel selected
-% either a 3d double matrix with nunit x nchannel x ntime or 2D matrix (1x1xntime)
+% 5. MeanWaveform: nchannel x ntime matrix holding averaged waveform for
+% each channel
 % 6. ChannelSpacing: in um as double, from Data.Info.ChannelSpacing
 % 7. SpikeType: char, Type of spike to analyse, either 'Kilosort' OR 'Internal'
 % 8. WaveformsToPlot: 1x2 double with waveformselection of user, i.e. [1,10]
 % for 10 waveforms
+% 9. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -391,8 +323,8 @@ File: Continous_Spikes_Plot_Spike_Rate.m
 % 2. SpikeTimes nspikes x 1 double in seconds
 % 3. SpikePositions = N x 1 double or single in um
 % 4. CluterPositions = N x 1 double or single with cliuster identity (integer specifying the unit/cluster of that spike) of each spike
-% (analyzed in internal spike detection) NOTE: for internal spikes, no
-% units get analyse. Therefore this vector has to be made up of just 1 
+% (analyzed in internal spike detection) NOTE: if no spike clustering for
+% internal spikes, all spikecluster are 1
 % 5. TimeSpikeFigure: Figure handle to app.UIaxes_3 Spike Rate over time 
 % 6. TemplateFigure: Figure handle to app.UIaxes_5 Spike Rate over channel 
 % 7. Type: "Initial" when plotting for the first time after resetting,
@@ -401,8 +333,54 @@ File: Continous_Spikes_Plot_Spike_Rate.m
 % 9. numCluster: Number of clusters (saved under app.numCluster within Analyse_Kilosort_Window)
 % 10. ClustertoShow: Number of cluster the user selected to highlight in their color. Can
 % be "All" to show all cluster in their color, "Non" to show no colors or a
-% number as a string to show only that cluster. Indexing starts with 0!
+% number as a string to show only that cluster. 
 % 11. numBins: Number of bins selectd in the analysis window (string or char)
+% 12. ChannelSelection: 1x2 double with channel [from to], i.e. [1,10] for
+% channel 1 to 10 
+% 13. ChannelSpacing: as double in um, not required yet but always helpful
+% to have
+% 14. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Continous_Spikes_Plot_Waveforms.m
+%________________________________________________________________________________________
+%% Function to plot spike rate from kilosortData over time and over Channel
+
+% NOTE: This function takes waveforms of all spikes, the number of waveforms to
+% plot and only plots the n biggest waveforms!
+
+% Input:
+% 1. Data: Data structure containing KilosortData
+% 2. SpikeTimes nspikes x 1 double in seconds
+% 3. SpikePositions = N x 1 double or single in um
+% 4. SpikeCluster = N x 1 double or single with cluster/unit identity (integer specifying the unit/cluster of that spike) of each spike
+% (analyzed in internal spike detection) NOTE: if no spike clustering for
+% internal spikes, all spikecluster are 1
+% 5. Waveforms: nspikes x ntimewaveform matrix with waveforms for each
+% spike
+% 6. PlotInfo: structure containing user selected parameter for analysis. Comes from Continous_Spikes_Prepare_Plots.m function
+% 7. ClusterSelection: Number of cluster the user selected to highlight in their color. Can
+% be "All" to show all cluster in their color, "Non" to show no colors or a
+% number as a string to show only that cluster. 
+% 8. Figure: figure object handle to plot data in
+% 9. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -430,7 +408,7 @@ File: Continous_Spikes_Prepare_Plots.m
 % the field ChannelEditField.Value, like '1,10' for channel 1 to 10
 % 3. WaveformEditField: text field of app containing userinput as char in
 % the field WaveformEditField.Value, like '1,10' for waveforms 1 to 10
-% 4. UnitsEditField: text field of app containing userinput as char in
+% 4. ClustertoshowDropDown: text field of app containing userinput as char in
 % the field UnitsEditField.Value, like '1' for unit 1
 % 5. DifferentInput -  not used now. Can be used to determine specific type
 % of input at a certain time point
@@ -448,6 +426,8 @@ File: Continous_Spikes_Prepare_Plots.m
 % 10. ExecuteInGUI: Equals 1 if this function is called within the GUI, NOT
 % the Autorun
 % 11. Eventstoshow: char indicating the event to show in the plot; Either 'Non' or char with event channel name, like 'DIN-04'
+% 12: Waveforms: nspikes x ntimewaveforms matrix with waveforms for each
+% spikes (spikes in Data.Spikes.Waveforms)
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double in seconds and within the
@@ -478,6 +458,10 @@ File: Continous_Spikes_Prepare_Plots.m
 % 11. TimeWindowSpiketriggredLFPEditField: text field of app containing userinput as char in
 % the field TimeWindowSpiketriggredLFPEditField.Value, like '-0.005,0.2' --
 % corrected if format was wrong
+% 12. WaveformChannel: if order of waveforms changed or waveforms deleted,
+% this has to be capture in the channel for each waveform too. Unchanged,
+% channel info comes from Data.Spikes.SpikePositions. Not necessary yet but
+% usefull to have ready.
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -554,6 +538,13 @@ File: Event_Spikes_Plot_Heatmap_Spike_Rate.m
 % 16. ChannelSpacing: in um from Data.Info.ChannelSpacing
 % 17. appWindow: char, 'Kilosort' OR 'Internal' to see which window it
 % comes from
+% 18. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 19. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -582,7 +573,7 @@ File: Event_Spikes_Plot_Spike_Rate.m
 % 6. SpikePositions: nspikes x 1 double with spike positions (in um) - for
 % internal: channelnr * ChannelSpacing
 % 7. SpikeCluster: nspikes x 1 double with spike cluster identity (integer,
-% 1-indexed)- for internal spikes: all 1 since no clustering is done
+% 1-indexed)-
 % 8. NumEvents: double, number of events to normaloze spike rate
 % 9. Clustertoshow: char, 'Non' OR 'All' or a single number like '4' for
 % unit 4
@@ -595,6 +586,12 @@ File: Event_Spikes_Plot_Spike_Rate.m
 % 14. SampleRate: double in Hz
 % 15. ChannelToPlot: 1x2 double with channel to plot, i.e. [1,10] for
 % channel 1 to 10
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -614,9 +611,11 @@ File: Event_Spikes_Prepare_Plots.m
 % the function that selects plotting functions based on input
 % This means it checks the correct format of inputs, corrects it with
 % standard values if necessary and pools them in a structure accessed later
-% for analysis and plotting
+% for analysis and plotting. This function also selects the spikes in the
+% channalerange
 
 % Inputs:
+
 % 1. Data: main window app structure with Data.Info and Data.Spikes fields
 % 2. EventRangeEditField: text field of app containing event range userinput as char in
 % the field EventRangeEditField.Value, like '1,10' for events 1 to 10
@@ -628,27 +627,191 @@ File: Event_Spikes_Prepare_Plots.m
 % the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins
 % 6. SpikeType: Type of spikes of dataset, either 'Kilosort' OR 'Internal'
 % (from Data.Info.SpikeTpe)
+% 7. SpikeTriggereAverage: 1 if spiked triggered average is computed, 0
+% otherwise
+% 8. SpikeTriggeredAverageField: field of app window holding time range for
+% spiked triggered average, as char, i.e. '-0.05,0.2'
 
 %Outputs:
-% 6. PlotInfo: structure holding gathered info about user input, contains
+
+% 1. PlotInfo: structure holding gathered info about user input, contains
 % fields: PlotInfo.TimearoundEvent,PlotInfo.EventNr,PlotInfo.EventRange,PlotInfo.ChannelsToPlot,PlotInfo.Time,PlotInfo.ChannelNr,PlotInfo.SpikeRateNumBins,PlotInfo.depth_bin_size,PlotInfo.time_bin_size ,PlotInfo.depth_edges,PlotInfo.time_edges , PlotInfo.NormWindow
-% 1. SpikeTimes: nspikes x 1 double with just spike indicies within the
+% 2. SpikeTimes: nspikes x 1 double with just spike indicies within the
 % channelrange
-% 2.SpikePositions: nspikes x 1 double with spike poisiton spike indicies within the
+% 3.SpikePositions: nspikes x 1 double with spike poisiton spike indicies within the
 % channelrange (in um)
-% 3.SpikeAmplitude: nspikes x 1 double with just spike amplitudes indicies within the
+% 4.SpikeAmplitude: nspikes x 1 double with just spike amplitudes indicies within the
 % channelrange
-% 4. SpikeCluster: nspikes x 1 double with just spike cluster ID's indicies within the
+% 5. SpikeCluster: nspikes x 1 double with just spike cluster ID's indicies within the
 % channelrange
-% 5. SpikeEvents: nspikes x 1 double with just event identity (integers)
-% 6. BaselineWindowField: text field of app containing basline window range userinput as char in
+% 6. SpikeEvents: nspikes x 1 double with just event identity (integers)
+% 7. BaselineWindowField: text field of app containing basline window range userinput as char in
 % the field ChannelEditField.Value, like '-0.005,0' for channel -0.005s to 0s
-% 7. ChannelSelectionField: text field of app containing channel range userinput as char in
+% 8. ChannelSelectionField: text field of app containing channel range userinput as char in
 % the field ChannelEditField.Value, like '1,10' for channel 1 to 10
-% 8. EventRangeEditField: text field of app containing event range userinput as char in
+% 9. EventRangeEditField: text field of app containing event range userinput as char in
 % the field EventRangeEditField.Value, like '1,10' for events 1 to 10
-% 9. SpikeRateNumBinsEditField: text field of app containing basline num bins for spike rate userinput as char in
+% 10. SpikeRateNumBinsEditField: text field of app containing basline num bins for spike rate userinput as char in
 % the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Events_Internal_Spikes_Manage_Analysis_Plots.m
+%________________________________________________________________________________________
+%% Function to organize and select analysis and plot functions for event internal spikes based on user input
+% This function uses a functions from the spike repository from Cortex lab on Github: https://github.com/cortex-lab/spikes
+% Function used: computeWFampsOverDepth
+%                plotWFampCDFs
+%                spikeTrigLFP
+
+% This function is executed every time some event internal spikes analysis has to be done and plotted
+
+% Inputs:
+% 1. Data: main window data structure with time vector (Data.Time) and Info
+% field
+% 2. EventRangeEditField: user input for events to show, char 'from, to',
+% i.e. '1,10' for events 1 to 10;
+% 3. Figure: figure object handle to main plot in the middle of the window
+% 4. AnalysisTypeDropDown: string, specifies which analysis was selected by user,
+% Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR Channel Waveforms OR
+% "Average Waveforms Across Channel" OR "Cumulative Spike Amplitude Density
+% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
+% 5. SpikeRateNumBinsEditField: user input for number of bins of spike rate plots, char,
+% i.e. '100' for 100 bins
+% 6. TextArea: internal event spike app window textarea to show number of
+% spikes and cluster
+% 7. rgbMatrix: nwavefors x 3 matrix, with RGB values for each waveform/template to
+% be plotted to ensure consistency of colors
+% 8. ChannelSelectionforPlottingEditField: user input for cahnnel to show, char 'from, to',
+% i.e. '1,10' for channel 1 to 10;
+% 9. BaselineWindowStartStopinsEditField: user input for time range of baseline window (for spike rate heatmap), char 'from, to',
+% i.e. '-0.2,0' for -200ms to 0ms timw window as baseline
+% 10. BaselineNormalizeCheckBox: check box whether baseline normalization should be applied. BaselineNormalizeCheckBox.Value is either
+% 1 if checked or 0 if not
+% 11. TimeWindowSpiketriggredLFPEditField:  user input for time range of baseline window (for spike rate heatmap), char 'from, to',
+% i.e. '-0.05,0.2' for -5ms to 200ms timw window as baseline
+% 12. Figure2: figure object handle to plot spike rate over time 
+% 13. Figure3: figure object handle to plot spike rate over time 
+% 14. TwoORThreeDchar: either "TwoD" or "ThreeD" for 2d or 3d plot
+% 15. numCluster: double, number of different units/cluster found in spike
+% sorting
+% 16. ClustertoShowDropDown: char, contains the unit selection the user
+% makes, Either "All" OR "Non" OR "1" or whatever over unit number
+% 17. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Outputs:
+% 1. Data: main app data structure 
+% 2. ChannelSelectionforPlottingEditField: same as input to show auto
+% changes if they were made (i.e. more channel selected than available)
+% 3. EventRangeEditField: same as input to show auto
+% changes if they were made (i.e. more channel selected than available)
+% 4. SpikeRateNumBinsEditField: same as input to show auto
+% changes if they were made (i.e. more channel selected than available)
+% 5. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Events_Kilosort_Spikes_Manage_Analysis_Plots.m
+%________________________________________________________________________________________
+%% Function to organize and select analysis and plot functions for event kilosort spikes based on user input
+% This function uses a functions from the spike repository from Cortex lab on Github: https://github.com/cortex-lab/spikes
+% Function used: computeWFampsOverDepth
+%                plotWFampCDFs
+%                spikeTrigLFP
+
+% This function is executed every time some event kilosort spikes analysis has to be done and plotted
+
+% Inputs:
+% 1. Data: main window data structure with time vector (Data.Time) and Info
+% field
+% 2. EventRangeEditField: user input for events to show, char 'from, to',
+% i.e. '1,10' for events 1 to 10;
+% 3. Figure: figure object handle to main plot in the middle of the window
+% 4. AnalysisTypeDropDown: string, specifies which analysis was selected by user,
+% Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR Channel Waveforms OR
+% "Average Waveforms Across Channel" OR "Cumulative Spike Amplitude Density
+% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
+% 5. SpikeRateNumBinsEditField: user input for number of bins of spike rate plots, char,
+% i.e. '100' for 100 bins
+% 6. TextArea: internal event spike app window textarea to show number of
+% spikes and cluster
+% 7. rgbMatrix: nwavefors x 3 matrix, with RGB values for each waveform/template to
+% be plotted to ensure consistency of colors
+% 8. numCluster: double, number of different units/cluster found in spike
+% sorting
+% 9. ClustertoShowDropDown: char, contains the unit selection the user
+% makes, Either "All" OR "Non" OR "1" or whatever over unit number
+% 10. ChannelSelectionforPlottingEditField: user input for cahnnel to show, char 'from, to',
+% i.e. '1,10' for channel 1 to 10;
+% 11. BaselineWindowStartStopinsEditField: user input for time range of baseline window (for spike rate heatmap), char 'from, to',
+% i.e. '-0.2,0' for -200ms to 0ms timw window as baseline
+% 12. BaselineNormalizeCheckBox: check box whether baseline normalization should be applied. BaselineNormalizeCheckBox.Value is either
+% 1 if checked or 0 if not
+% 13. TimeWindowSpiketriggredLFPEditField:  user input for time range of baseline window (for spike rate heatmap), char 'from, to',
+% i.e. '-0.05,0.2' for -5ms to 200ms timw window as baseline
+% 14. Figure2: figure object handle to plot spike rate over time 
+% 15. Figure3: figure object handle to plot spike rate over time 
+% 16. TwoORThreeDchar, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 17. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Outputs:
+% 1. Data: main app data structure 
+% 2. ChannelSelectionforPlottingEditField: same as input to show auto
+% changes if they were made (i.e. more channel selected than available)
+% 3. EventRangeEditField: same as input to show auto
+% changes if they were made (i.e. more channel selected than available)
+% 4. SpikeRateNumBinsEditField: same as input to show auto
+% changes if they were made (i.e. more channel selected than available)
+% 5. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Calculate_Plot_ISI.m
+%________________________________________________________________________________________
+%% Function to calculate and plot the ISI of a number of spikes
+
+% This function is called in the unit analysis window when the ISI has to
+% be computed
+
+% Note: computed for all spikes, not only selected nr of waveforms. Is computed channel wise to avoid artefacts from channel in loop. 
+
+% Inputs:
+% 1. Data: data structure from the main window holding spike data
+% 2. SpikeTimes: nspikes x 1 with spike times in samples
+% 3. SpikePositions: nspikes x 1 with nr of channel for each spike (for kilosort in um, for internal spikes channel identity)
+% 4. SpikeCluster: nspikes x 1 with cluster/unit identity of each spike
+% 5. SpikeChannel: nspikes x 1 with nr of channel for each spike
+% 6. Units: 1x3 cell array, each cell contains the units for a plot as a 1 x nunits vector
+% 7. Waves: 1x3 cell array, each cell contains the nr of waveforms for a plot as a 1 x nunits vector
+% 8. figs: structure, each field is a figure object handle to plot in
+% 9. NumBins: nr bins for ISI, as double
+% 10. MaxISITime: Max ISI to be displayed in bar plot, as double in seconds
+% 11. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Outputs:
+% 1. ISIs: ISI for seelcted time range that is plotted, 1 x nbins vector
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -674,11 +837,93 @@ File: Spike_Module_Calculate_Spikes_Times_In_Bin.m
 % 3: NumBins: Number of bins as double
 % 4: BinSize: Size of each bin as double in samples
 % 5: Samplingrate: as double in Hz
+% 6. SpikeRateType: either "SpikeRateoverTime" or "SpikeRateoverChannel"
 
 %Outputs:
-% 2. SpikesPerBin: 1 x nbins double; If Samplingrate = 1 as input, spike rate is given as number of
+% 1. SpikesPerBin: 1 x nbins double; If Samplingrate = 1 as input, spike rate is given as number of
 % spikes per bin. When you input a proper Samplingrate > 1, this function
 % returns the spike rate in Hz for each bin
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Prepare_WaveForm_Window_and_Analysis.m
+%________________________________________________________________________________________
+%% Function to calculate and plot the selected number of waveforms to plot
+
+% This function is called in the unit analysis window to prepare and check data for
+% plotting
+
+% Note: computed for all spikes, not only selected nr of waveforms. Is computed channel wise to avoid artefacts from channel in loop. 
+
+% Inputs:
+% 1. Data: data structure from the main window holding spike data
+% F1, F2.. = figure handles for figures 1 to 3 for current plot
+% U1, U2.. = app.UnitSelection.Value for all 3 of those objects in the app
+% window
+% W1, W2.. = app.WaveSelection.Value for all 3 of those objects in the app
+% window
+% 3. Type: string representing what was changed by the user, either "U1" or
+% "U2" or "U3" --> U1 when first unit input field was changed, U2 for
+% second and so on
+% 4. SpikeWindow: "EventWindow" when started from the event module,
+% "ContinousWindow" when started from the continous module
+
+% Outputs
+
+% 1. Units: 1x3 cell array, each cell contains the units for a plot as a 1 x nunits vector
+% 2. Waves: 1x3 cell array, each cell contains the nr of waveforms for a plot as a 1 x nunits vector
+% 3. Wavefigs: structure, each field is a figure object handle to plot waveforms in
+% 4. ISIfigs: structure, each field is a figure object handle to plot ISI's in
+% 5. AutoCfigs: structure, each field is a figure object handle to plot Autocorrelogram in
+% 6. SpikeTimes: nspikes x 1 with spike times in samples
+% 7. SpikePositions: nspikes x 1 with nr of channel for each spike (for kilosort in um, for internal spikes channel identity)
+% 8. SpikeCluster: nspikes x 1 with cluster/unit identity of each spike
+% 9. SpikeWaveforms: nspikes x ntimewaveform matrix holding waveform for each
+% spike
+% 10. SpikeChannel: nspikes x 1 with nr of channel for each spike
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Prepare_WaveForm_Window_and_Analysis_Check_Inputs.m
+%________________________________________________________________________________________
+%% Function to check inputs for waveform plots in unit analyisis windows
+
+% This function is called in the unit analysis window to prepare and check data for
+% plotting. If the inputs have the wrong format, they are checked and
+% autochanged if format was violated.
+
+% Inputs:
+% 1. W1: char, irst (most left)
+% app window textarea to write nr of waveforms in. (saved in
+% W1.Value)
+% 2. W2: char, second (most left) app window textarea to write nr of waveforms in. (saved in
+% W1.Value)
+% 3. W3: char, third (most left) app window textarea to write nr of waveforms in. (saved in
+% W1.Value)
+% 4. BinSize: char, editfield of nr of bins to show
+% 5. ISIMaxTime : char, editfield of max time for ISI to plot
+
+% Outputs
+% 1. W1: char, irst (most left)
+% app window textarea to write nr of waveforms in. (saved in
+% W1.Value)
+% 2. W2: char, second (most left) app window textarea to write nr of waveforms in. (saved in
+% W1.Value)
+% 3. W3: char, third (most left) app window textarea to write nr of waveforms in. (saved in
+% W1.Value)
+% 4. BinSize: char, editfield of nr of bins to show
+% 5. ISIMaxTime : char, editfield of max time for ISI to plot
 
 
 % Author: Tony de Schultz
@@ -706,7 +951,7 @@ File: Spike_Module_Set_Up_Spike_Analysis_Windows.m
 
 % Outputs
 % 1. app: app object with individual fields having a char added to their
-% .Value fields
+% Value fields
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -717,43 +962,132 @@ File: Spike_Module_Set_Up_Spike_Analysis_Windows.m
 
 File: Spike_Module_Spike_Triggered_Average.m
 %________________________________________________________________________________________
+%% Function to prepare and execute spike triggered average analysis
+% This function organizes inputs, checks for proper filtering of data (low pass and downsampled)
+% and calls the functions to calculate and plot the Spike triggered average
 
-%% Function to compute and plot spike rate over depth (as a Heatmap)
-% This function takes all spikes and sorts for those in the event range
-% every time, the window for event spike analysis is opened. It is saved as
-% Data.EventRelatedSpikes structure, which gets overwritten every time
+% Inputs:
+% 1. Data: data structure from the main window holding spike data
+% 2. SpikeTimes: nspikes x 1 with spike times in samples
+% 3. SpikePositions: nspikes x 1 with nr of channel for each spike (for kilosort in um, for internal spikes channel identity)
+% 4. Figure: handle to plot object to plot in 
+% 5. ChannelSelection: 1x2 channelselcteion [from, to], i.e [1,10] for
+% channel 1 to 10
+% 6. appWindow: string, "Continous" or "Events", depending what module is
+% executing this function
+% 7. TextArea: text area object of window to plot nr of spikes and cluster
+% in
+% 8. TimeWindowSpiketriggredLFP: 1x2 double with time window to extract STA
+% from
+% 8. Plot: double, 1 to plot data, 0 if only computation required
+% 9. TwoORThreeD: either "TwoD" or "ThreeD" for 2d or 3d plot
+% 10. ClustertoShow: char, contains the unit selection the user
+% makes, Either "All" OR "Non" OR "1" or whatever over unit number
+% 11. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
-% This function gets called in the main window when the user clicks on run
-% for event spike analysis (Internal and Kilosort)
-
-% Input:
-% 1. SpikeTimes: nspikes x 1 double in seconds. Spike time before event is
-% negativ
-% 2. SpikePositions: nspikes x 1 double with spike positions (in um) - for
-% internal: channelnr * ChannelSpacing
-% 3. Figure: Figure axes object to plot in
-% 4. SR: SampleRate as double in Hz
-% 5. time_bin_size: double, Bin size in seconds
-% 6. depth_edges: edges of depth bins (in um)
-% 7. time_edges: edges of depth bins (in s)
-% 8. nevents: number of events to divide spike rate by to normalize for a
-% single trial/event
-% 9. eventtime: double, Time in seconds to plot event line at (default at 0s)
-% 10. Normalize: 1 to basline normalized, 0 if not
-% 11. NormWindow: 1x2 double with min and max of time range (in seconds with negativ possible)
-% 12. Clustertoshow: char, 'Non' OR 'All' or a single number like '4' for
-% unit 4
-% 13. ClusterIdentity: nspikes x 1 double with unit identitiy for each spike
-% 14. rgbMatrix: nunits x 3 double with rgb values 
-% 15. ChannelsToPlot: 1 x 2 double with channel to plot, i.e. [1,10] for
-% channel 1 to 10 
-% 16. ChannelSpacing: in um from Data.Info.ChannelSpacing
-% 17. appWindow: char, 'Kilosort' OR 'Internal' to see which window it
-% comes from
+% Outputs
+% 1. Data: data structure from the main window holding spike data
+% 2. mnLFP: ndepth x ntime field triggered average
+% 3. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
+
+ ###################################################### 
+
+File: Spike_Waveforms_Plot_Waveforms.m
+%________________________________________________________________________________________
+%% Function to calculate and plot the selected number of waveforms to plot
+
+% This function is called in the unit analysis window when the ISI has to
+% be computed
+
+% Note: computed for all spikes, not only selected nr of waveforms. Is computed channel wise to avoid artefacts from channel in loop. 
+
+% Inputs:
+% 1. Data: data structure from the main window holding spike data
+% 2. Units: 1x3 cell array, each cell contains the units for a plot as a 1 x nunits vector
+% 3. Waveforms: nspikes x ntimewaveform matrix holding waveform for each
+% spike
+% 4. SpikeCluster: nspikes x 1 with cluster/unit identity of each spike
+% 5. Waves: 1x3 cell array, each cell contains the nr of waveforms to plot as a 1 x nwaveforms vector
+% 6. figs: structure, each field is a figure object handle to plot in
+% 7. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Outputs:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spikes_Module_AutoCorrelogram.m
+%________________________________________________________________________________________
+%% Function to calculate and plot the Autocorrelogram for all spikes
+
+% This function is called in the unit analysis window when the ISI has to
+% be computed
+
+% Note: computed for all spikes, not only selected nr of waveforms. Is computed channel wise to avoid artefacts from channel in loop. 
+
+% Inputs:
+% 1. Data: data structure from the main window holding spike data
+% 2. SpikeTimes: nspikes x 1 with spike times in samples
+% 3. SpikePositions: nspikes x 1 with nr of channel for each spike (for kilosort in um, for internal spikes channel identity)
+% 4. SpikeChannel: nspikes x 1 with nr of channel for each spike
+% 5. SpikeCluster: nspikes x 1 with cluster/unit identity of each spike
+% 6. figs: structure, each field is a figure object handle to plot in
+% 7. Units: 1x3 cell array, each cell contains the units for a plot as a 1 x nunits vector
+% 8. NumBins: nr bins for ISI, as double
+% 9. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Outputs:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spikes_Module_Get_Waveforms.m
+%________________________________________________________________________________________
+%% Function to extract biggest spike waveforms with amplitudes of each spike already given.
+
+% This function is executed after Spike Detection and after loading
+% kilosort spike data to extract waveforms for all spikes in a nspike x ntimewaveforms matrix.
+% When average waveform over channel is selected as analyisis method, this
+% function is also called to extract waveforms in a nchannel x nspikes x
+% ntimewaveform matrix. (Waveform over all channel fo each spike)
+
+% Inputs: 
+% 1. Data: data structure from the main window holding spike data
+% 2. SpikeTimes: nspikes x 1 with spike times in samples
+% 3. SpikePositions: nspikes x 1 with nr of channel for each spike 
+% 4. WaveFormType: "AverageWaveforms" for Waveform over all channel fo each
+% spike when average waveform over channel analysis is selected OR
+% something else for nspikes x ntimewaveform matrix
+
+% Outputs:
+% 1. Waveforms: nspikes x ntime  OR nchannel x nspikes x ntime 
+% 2. BiggestSpikeIndicies: 1 x nrspikes (length of SpikeTimes). 1 if spike waveform was extracted, 0 if spike waveform was NOT
+% extracted --> i.e. when so close to time limits, that waveform cannot be
+% extracted
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
 
@@ -762,8 +1096,7 @@ File: Spike_Module_Spike_Triggered_Average.m
 File: Spikes_Plot_Spike_Times.m
 %________________________________________________________________________________________
 %% Function to plot spike times with amplitude color coding
-% This function uses a functions from the spike repository from Nick
-% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% This function uses a functions from the spike repository from Cortex Lab on Github: https://github.com/cortex-lab/spikes
 %Function used: plotDriftmap -- function was modified to fit the purpose of this Toolbox
 
 % This function is called on startup of the event spike windows and continous spike windows to plot the
@@ -793,6 +1126,12 @@ File: Spikes_Plot_Spike_Times.m
 % 14. ChannelSelection: 1x2 double with channelselction, i.e. [1,10] for
 % channel 1 to 10
 % 15. ChannelSpacing: double in um, from Data.Info.ChannelSpacing
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+%Output
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

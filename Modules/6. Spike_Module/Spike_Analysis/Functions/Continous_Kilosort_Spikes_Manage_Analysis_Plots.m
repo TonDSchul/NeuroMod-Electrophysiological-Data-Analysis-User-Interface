@@ -2,8 +2,7 @@ function [Data,CurrentPlotData] = Continous_Kilosort_Spikes_Manage_Analysis_Plot
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
-% This function uses a functions from the spike repository from Nick
-% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% This function uses a functions from the spike repository from Cortex lab on Github: https://github.com/cortex-lab/spikes
 % Function used: computeWFampsOverDepth
 %                plotWFampCDFs
 %                spikeTrigLFP
@@ -41,10 +40,15 @@ function [Data,CurrentPlotData] = Continous_Kilosort_Spikes_Manage_Analysis_Plot
 % 13. ClusterToShow: either single double number or chars 'All' OR 'Non'
 % 14. Figure2: figure axes handle for spike rate over time 
 % 15. Figure3: figure axes handle for spike rate over channel 
+% 16. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 17. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info
 % field
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

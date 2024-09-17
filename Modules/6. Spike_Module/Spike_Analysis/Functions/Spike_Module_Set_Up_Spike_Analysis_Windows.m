@@ -17,7 +17,7 @@ function [app] = Spike_Module_Set_Up_Spike_Analysis_Windows(app,WindowType,Event
 
 % Outputs
 % 1. app: app object with individual fields having a char added to their
-% .Value fields
+% Value fields
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

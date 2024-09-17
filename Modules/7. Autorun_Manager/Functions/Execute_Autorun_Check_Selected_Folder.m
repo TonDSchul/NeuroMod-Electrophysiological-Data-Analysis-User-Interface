@@ -1,5 +1,20 @@
 function [filteredFolderContents] = Execute_Autorun_Check_Selected_Folder(folderPath)
 
+%________________________________________________________________________________________
+%% This function checks whether the folder selected is proper
+% it checks whther the folder contains files with a proper file extension
+
+% Inputs:
+% 1. folderPath: char, path to the folder that has to be checked
+
+% 2. filteredFolderContents: string array with name of valid folder
+% contents
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 % Step 2: Get the contents of the folder
 contents = dir(folderPath);
 

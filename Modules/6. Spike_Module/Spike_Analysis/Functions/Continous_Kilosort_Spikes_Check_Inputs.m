@@ -24,13 +24,12 @@ function [ChannelEditField,WaveformEditField,Error,SpikeRateBinsEditField] = Con
 % Output:
 % 1. ChannelEditField: object holding app text with the field Value
 % containing a char of corrected or unchanged input 
-% 3. WaveformEditField: object holding app text with the field Value
+% 2. WaveformEditField: object holding app text with the field Value
 % containing a char of corrected or unchanged input 
-
-% 5. Error: Indicates if an error happened consisting of too many channel,
+% 3. Error: Indicates if an error happened consisting of too many channel,
 % units and waveforms selcted which would result in a 3d matrix. Then the
 % code stops and the user gets a message
-% 6: SpikeRateBinsEditField: object holding app text with the field Value
+% 4: SpikeRateBinsEditField: object holding app text with the field Value
 % containing a char of corrected or unchanged input 
 
 % Author: Tony de Schultz

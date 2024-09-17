@@ -9,7 +9,8 @@ File: Analyse_Main_Window_LowPassFilter_SpikeRate.m
 
 % Inputs:
 % 1. SpikeRate - Vector of spike rates to be filtered as 1x nbins double vector.
-% 2. cutoffFreq - is hard coded at line 29 -- but preserved if changed to manual input from GUI or somewhere else, as double.
+% 2. cutoffFreq - comes from spike rate app window public property "CutoffFreque". Right now its empty as standard. This means cutoff is
+% autocalculated here in line 29;
 % 3. samplingRate - Sampling rate of the SpikeRate as double in Hz.
 % 4. filterOrder - Order of the Butterworth filter as double.
 % 5. BinSize - not necessary here, but maybe for autosetting cutoff and
@@ -56,11 +57,22 @@ File: Analyse_Main_Window_Spike_Rate.m
 % 8: SampleRate: in Hz as double (i.e. Data.Info.NativeSamplingRate)
 % 9. Channelselection: 1 x 2 double vector with channels to plot. [1,10]
 % means channel 1 to 10 
-% 10. Basically same as CurrentTimePoints -- ToDo
-% 11. Basically same as CurrentTimePoints + length(TimeRangetoPlot) -- ToDo
+% 10. CurrentTimeStartIndicie: Start indices of time window--- not used
+% here but maybe usefull!
+% 11. CurrentTimeEndIndicie: Stop indices of time window--- not used
+% here but maybe usefull!
 % 12. PreprocDataPlotCheckBox: value of checkbox in main window to plot
 % preprocessed data. This is necessary to handle downsampled data if it should exist
+% 13. LowPassSpikeRate: 1 to low pass filter spike rate, 0 otherwise
+% 14. CutoffFreque - comes from spike rate app window public property "CutoffFreque". Right now its empty as standard. This means cutoff is
+% autocalculated in Analyse_Main_Window_LowPassFilter_SpikeRate.m;
+% 15. FilterOrder: Low Pass filter order as doublee
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

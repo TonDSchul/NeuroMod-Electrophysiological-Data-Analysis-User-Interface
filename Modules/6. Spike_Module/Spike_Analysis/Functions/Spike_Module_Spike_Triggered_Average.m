@@ -1,5 +1,41 @@
 function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,ChannelSelection,appWindow,TextArea,TimeWindowSpiketriggredLFP,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData)
 
+%________________________________________________________________________________________
+%% Function to prepare and execute spike triggered average analysis
+% This function organizes inputs, checks for proper filtering of data (low pass and downsampled)
+% and calls the functions to calculate and plot the Spike triggered average
+
+% Inputs:
+% 1. Data: data structure from the main window holding spike data
+% 2. SpikeTimes: nspikes x 1 with spike times in samples
+% 3. SpikePositions: nspikes x 1 with nr of channel for each spike (for kilosort in um, for internal spikes channel identity)
+% 4. Figure: handle to plot object to plot in 
+% 5. ChannelSelection: 1x2 channelselcteion [from, to], i.e [1,10] for
+% channel 1 to 10
+% 6. appWindow: string, "Continous" or "Events", depending what module is
+% executing this function
+% 7. TextArea: text area object of window to plot nr of spikes and cluster
+% in
+% 8. TimeWindowSpiketriggredLFP: 1x2 double with time window to extract STA
+% from
+% 8. Plot: double, 1 to plot data, 0 if only computation required
+% 9. TwoORThreeD: either "TwoD" or "ThreeD" for 2d or 3d plot
+% 10. ClustertoShow: char, contains the unit selection the user
+% makes, Either "All" OR "Non" OR "1" or whatever over unit number
+% 11. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Outputs
+% 1. Data: data structure from the main window holding spike data
+% 2. mnLFP: ndepth x ntime field triggered average
+% 3. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 %% Check what data is available -- has to be low pass filtered and downsampled
 % - but still leave it to the user by just giving a warning and option to
 % low pass filter and downsample directly here

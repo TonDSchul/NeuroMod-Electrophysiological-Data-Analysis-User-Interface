@@ -3,11 +3,14 @@ function [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,E
 %________________________________________________________________________________________
 %% Function to extract event related data as a nchannel x nevents x ntime matrix
 
+% It is only computed once and the saved in the Data structure. Either
+% extracted from Raw or Preprocessed Data and for one event channel. 
+
 % Inputs: 
 % 1.Data: Data structure with raw data, preprocessed data, event data and
 % the infio structure with infos about extracted events.
 % 2. EventChannel: Name of the event channel you want to calculate the ERD
-% data for; as char; i.e. 'DIN-04' (saved in Data.Info.EventChannelNames)
+% data for; as char; i.e. 'DIN-04' for Intan (saved in Data.Info.EventChannelNames)
 % 3. TimeWindowBefore: Time in seconds to take before each event as double,
 % always positive!
 % 4. TimeWindowAfter: Time in seconds to take after each event as double,

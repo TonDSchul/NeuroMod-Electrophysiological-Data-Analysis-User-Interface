@@ -34,6 +34,8 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = 
 % to be loaded earlier already to know what can be shown as otions in the
 % GUI. --> not as nicely doable as with individual .dat files for each
 % event
+% 11. executablefolder: char with the path to the currently execute GUI
+% instance, comes from public property in main window
 
 % Outputs:
 % 1. Data: Data structure with added field:

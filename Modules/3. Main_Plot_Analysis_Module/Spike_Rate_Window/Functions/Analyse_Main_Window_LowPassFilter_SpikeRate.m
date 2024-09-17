@@ -6,7 +6,8 @@ function filteredSpikeRate = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikeRa
 
 % Inputs:
 % 1. SpikeRate - Vector of spike rates to be filtered as 1x nbins double vector.
-% 2. cutoffFreq - is hard coded at line 29 -- but preserved if changed to manual input from GUI or somewhere else, as double.
+% 2. cutoffFreq - comes from spike rate app window public property "CutoffFreque". Right now its empty as standard. This means cutoff is
+% autocalculated here in line 29;
 % 3. samplingRate - Sampling rate of the SpikeRate as double in Hz.
 % 4. filterOrder - Order of the Butterworth filter as double.
 % 5. BinSize - not necessary here, but maybe for autosetting cutoff and
@@ -25,7 +26,7 @@ nyquistFreq = samplingRate / 2;
 
 if isempty(cutoffFreq)
     % Automatically set the cutoff frequency as a fraction of Nyquist frequency
-    cutoffFreq = (0.45 * nyquistFreq); %adjust the fraction as needed
+    cutoffFreq = (0.45 * nyquistFreq);
 end
 % Calculate the dynamic cutoff frequency based on BinSize
 % Inverse relationship: lower BinSize -> higher cutoffFreq

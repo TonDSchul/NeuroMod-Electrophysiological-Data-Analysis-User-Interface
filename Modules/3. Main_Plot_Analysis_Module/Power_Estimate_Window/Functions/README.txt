@@ -25,10 +25,14 @@ File: Analyse_Main_Window_Spectral_Density_Estimate.m
 % limits have to be changed. Only applies if LockYLim = 1, 
 % 6. LockYLim: 1 or 0 as double. 1 to only update ylim when current ylim
 % exceeds global ylim from Spectral_Power_Estimate_Window
+% 7. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Output:
 % 1. currentYlim: global ylim - either unchanged from previous power estimate plot if
 % limits were no exceeded or current ylim otherwise. 
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

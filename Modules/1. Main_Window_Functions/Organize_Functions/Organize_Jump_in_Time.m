@@ -12,7 +12,8 @@ function [app] = Organize_Jump_in_Time(app,Direction,TimeLimit,TimeRange,SampleR
 % Inputs: 
 % 1. app: app object of GUI main window
 % 2. Direction: string, Options: "Backwards" to go backwards in time OR "Forward" to go forwards in time
-% 3. TimeLimit: Max Time to determine whether jump violates time limits. (app.Data.Time(end))
+% 3. TimeLimit: Max Time in seconds to determine whether jump violates time
+% limits. (app.Data.Time(end)) as double
 % 4. TimeRange: Time to jump, as double in seconds
 % 5. SampleRate in Hz as double
 

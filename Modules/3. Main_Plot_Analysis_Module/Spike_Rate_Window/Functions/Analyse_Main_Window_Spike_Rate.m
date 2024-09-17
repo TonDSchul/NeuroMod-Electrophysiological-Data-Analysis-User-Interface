@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoints,TimeRangeViewBox,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,CurrentTimeStartIndicie,CurrentTimeEndIndicie,PreprocDataPlotCheckBox,DownsampleSPikeRate,CutoffFreque,FilterOrder,CurrentPlotData)
+function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoints,TimeRangeViewBox,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,CurrentTimeStartIndicie,CurrentTimeEndIndicie,PreprocDataPlotCheckBox,LowPassSpikeRate,CutoffFreque,FilterOrder,CurrentPlotData)
 
 %________________________________________________________________________________________
 
@@ -29,10 +29,22 @@ function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoin
 % 8: SampleRate: in Hz as double (i.e. Data.Info.NativeSamplingRate)
 % 9. Channelselection: 1 x 2 double vector with channels to plot. [1,10]
 % means channel 1 to 10 
-% 10. Basically same as CurrentTimePoints -- ToDo
-% 11. Basically same as CurrentTimePoints + length(TimeRangetoPlot) -- ToDo
+% 10. CurrentTimeStartIndicie: Start indices of time window--- not used
+% here but maybe usefull!
+% 11. CurrentTimeEndIndicie: Stop indices of time window--- not used
+% here but maybe usefull!
 % 12. PreprocDataPlotCheckBox: value of checkbox in main window to plot
 % preprocessed data. This is necessary to handle downsampled data if it should exist
+% 13. LowPassSpikeRate: 1 to low pass filter spike rate, 0 otherwise
+% 14. CutoffFreque - comes from spike rate app window public property "CutoffFreque". Right now its empty as standard. This means cutoff is
+% autocalculated in Analyse_Main_Window_LowPassFilter_SpikeRate.m;
+% 15. FilterOrder: Low Pass filter order as doublee
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -91,7 +103,7 @@ SpikesPerBin = SpikesPerBin./length(Channelselection(1):Channelselection(2));
 
 %% Low Pass filter results, bc of small bin sizes 
 
-if DownsampleSPikeRate == 1
+if LowPassSpikeRate == 1
     Samplefrequency = 1/Timerangebin;
     filteredSpikeRate = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikesPerBin, CutoffFreque, Samplefrequency, FilterOrder, numbins);
 else

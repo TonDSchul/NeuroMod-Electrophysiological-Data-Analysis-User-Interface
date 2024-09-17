@@ -2,8 +2,7 @@ function [CurrentPlotData] = Spikes_Plot_Spike_Times(Data,Type,rgb_matrix,Time,S
 
 %________________________________________________________________________________________
 %% Function to plot spike times with amplitude color coding
-% This function uses a functions from the spike repository from Nick
-% Steinmetz on Github: https://github.com/cortex-lab/spikes
+% This function uses a functions from the spike repository from Cortex Lab on Github: https://github.com/cortex-lab/spikes
 %Function used: plotDriftmap -- function was modified to fit the purpose of this Toolbox
 
 % This function is called on startup of the event spike windows and continous spike windows to plot the
@@ -33,6 +32,12 @@ function [CurrentPlotData] = Spikes_Plot_Spike_Times(Data,Type,rgb_matrix,Time,S
 % 14. ChannelSelection: 1x2 double with channelselction, i.e. [1,10] for
 % channel 1 to 10
 % 15. ChannelSpacing: double in um, from Data.Info.ChannelSpacing
+% 16. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+%Output
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -10,7 +10,7 @@ File: Analysis_Hilbert_Inspect_NarrowBand_Filterkernel.m
 %         2.costumfrex: Frequency range of narrowband filter [min freq, max
 %         frequ, steps from min to max freq] in Hz double
 %         3.orderfactor: Order nr. for filter double
-%         4.costumfilter: Filter Width, Min and max in Hz [min freq, max freq]
+%         4.costumfilter: 1x2 double, Filter Width, Min and max in Hz [min freq, max freq]
 %
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -48,12 +48,16 @@ File: Event_Module_Compute_and_Plot_ERP_CSD.m
 % 9. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
 % erp plots of one channel over all events OR 'MultipleERPOnly' for just
 % erp plot of each channel OR 'All' for both plots
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Outputs:
 % 1. CSDClim
 % 2. Trialplot: Handle to single trials of ERP plot for single channel
 % 3. Meanplot: Handle to ERP of ERP plot for single channel
 % 4. Eventplot: Handle to plotted event line of plots
+% 5. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -184,10 +188,14 @@ File: Event_Module_Time_Frequency_Main.m
 % trial phase clustering.
 % 9. WaveletType: determines type of TF analyisis, either "Moorlet
 % Wavelets" OR "Filter Hilbert"; NOTE: TODO: "Filter Hilbert" does not work yet 
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Outputs:
 % 1. climsTF: clim of current plot, saved by TF window to be able to auto
 % clim without calculating again
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -243,10 +251,14 @@ File: Event_Module_Time_Frequency_Plot_WaveletTF.m
 % channel 1 to 10
 % 10. EventSelection: 1 x 2 double with events to plot; i.e. [1,10] for
 % events 1 to 10
+% 11. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Outputs: 
 % 1. climsTF: current clim as 1 x 2 vector of plot so that user can set auto clim in the
 % GUI without having to calculate again
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

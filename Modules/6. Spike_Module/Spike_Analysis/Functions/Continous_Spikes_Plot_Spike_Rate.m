@@ -8,8 +8,8 @@ function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,Sp
 % 2. SpikeTimes nspikes x 1 double in seconds
 % 3. SpikePositions = N x 1 double or single in um
 % 4. CluterPositions = N x 1 double or single with cliuster identity (integer specifying the unit/cluster of that spike) of each spike
-% (analyzed in internal spike detection) NOTE: for internal spikes, no
-% units get analyse. Therefore this vector has to be made up of just 1 
+% (analyzed in internal spike detection) NOTE: if no spike clustering for
+% internal spikes, all spikecluster are 1
 % 5. TimeSpikeFigure: Figure handle to app.UIaxes_3 Spike Rate over time 
 % 6. TemplateFigure: Figure handle to app.UIaxes_5 Spike Rate over channel 
 % 7. Type: "Initial" when plotting for the first time after resetting,
@@ -18,8 +18,18 @@ function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,Sp
 % 9. numCluster: Number of clusters (saved under app.numCluster within Analyse_Kilosort_Window)
 % 10. ClustertoShow: Number of cluster the user selected to highlight in their color. Can
 % be "All" to show all cluster in their color, "Non" to show no colors or a
-% number as a string to show only that cluster. Indexing starts with 0!
+% number as a string to show only that cluster. 
 % 11. numBins: Number of bins selectd in the analysis window (string or char)
+% 12. ChannelSelection: 1x2 double with channel [from to], i.e. [1,10] for
+% channel 1 to 10 
+% 13. ChannelSpacing: as double in um, not required yet but always helpful
+% to have
+% 14. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

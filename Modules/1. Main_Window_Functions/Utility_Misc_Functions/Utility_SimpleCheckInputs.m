@@ -2,9 +2,9 @@ function [Corrected_Input] = Utility_SimpleCheckInputs(Input,Type,StandardValues
 
 %________________________________________________________________________________________
 %% Function to check whether user input into a field like the channelnr obeys format regulations
-% This is the primarily used function to check inputs and corrects them when they violate format, since it is more
-% robust than 'Organize_CheckProperInput' function.
-% Organize_CheckProperInput gets bit by bit replaced in the future 
+% This is the primarily used function to check inputs and corrects them
+% when they violate format. It is used in most app windows were the user
+% has to give input
 
 % Input Arguments:
 % 1. Input: input to be checked as char. I diretly pass the app.Button.Value

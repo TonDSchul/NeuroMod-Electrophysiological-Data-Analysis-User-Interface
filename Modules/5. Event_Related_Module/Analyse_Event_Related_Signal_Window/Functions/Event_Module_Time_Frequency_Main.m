@@ -28,10 +28,14 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(EventRelat
 % trial phase clustering.
 % 9. WaveletType: determines type of TF analyisis, either "Moorlet
 % Wavelets" OR "Filter Hilbert"; NOTE: TODO: "Filter Hilbert" does not work yet 
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Outputs:
 % 1. climsTF: clim of current plot, saved by TF window to be able to auto
 % clim without calculating again
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

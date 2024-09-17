@@ -2,6 +2,9 @@ function Module_MainWindow_Plot_Data(Data,UIAxis,Time,Channel_Selection,PlotLine
 
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
+
+% Gets called in the 'Organize_Prepare_Plot_and_Extract_GUI_Info' function
+
 % Input Arguments:
 % 1. Data: Channel x Time holding the raw/preprocessed data (single/double)
 % 2. UIAxis: App UIAxes object designating the plot you want to plot in

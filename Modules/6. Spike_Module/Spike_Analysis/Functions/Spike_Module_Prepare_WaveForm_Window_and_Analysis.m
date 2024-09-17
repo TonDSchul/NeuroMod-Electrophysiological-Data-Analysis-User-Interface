@@ -1,10 +1,43 @@
 function [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,U1,U2,U3,W1,W2,W3,F1,F2,F3,F4,F5,F6,F7,F8,F9,Type,SpikeWindow)
 
-%%
-% F1, F2.. = figure handles
-% U1, U2.. = app.UnitSelection.Value
-% W1, W2.. = app.WaveSelection.Value
+%________________________________________________________________________________________
+%% Function to calculate and plot the selected number of waveforms to plot
 
+% This function is called in the unit analysis window to prepare and check data for
+% plotting
+
+% Note: computed for all spikes, not only selected nr of waveforms. Is computed channel wise to avoid artefacts from channel in loop. 
+
+% Inputs:
+% 1. Data: data structure from the main window holding spike data
+% F1, F2.. = figure handles for figures 1 to 3 for current plot
+% U1, U2.. = app.UnitSelection.Value for all 3 of those objects in the app
+% window
+% W1, W2.. = app.WaveSelection.Value for all 3 of those objects in the app
+% window
+% 3. Type: string representing what was changed by the user, either "U1" or
+% "U2" or "U3" --> U1 when first unit input field was changed, U2 for
+% second and so on
+% 4. SpikeWindow: "EventWindow" when started from the event module,
+% "ContinousWindow" when started from the continous module
+
+% Outputs
+
+% 1. Units: 1x3 cell array, each cell contains the units for a plot as a 1 x nunits vector
+% 2. Waves: 1x3 cell array, each cell contains the nr of waveforms for a plot as a 1 x nunits vector
+% 3. Wavefigs: structure, each field is a figure object handle to plot waveforms in
+% 4. ISIfigs: structure, each field is a figure object handle to plot ISI's in
+% 5. AutoCfigs: structure, each field is a figure object handle to plot Autocorrelogram in
+% 6. SpikeTimes: nspikes x 1 with spike times in samples
+% 7. SpikePositions: nspikes x 1 with nr of channel for each spike (for kilosort in um, for internal spikes channel identity)
+% 8. SpikeCluster: nspikes x 1 with cluster/unit identity of each spike
+% 9. SpikeWaveforms: nspikes x ntimewaveform matrix holding waveform for each
+% spike
+% 10. SpikeChannel: nspikes x 1 with nr of channel for each spike
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 %% Event Window: Just select spike indicies of events selected
 

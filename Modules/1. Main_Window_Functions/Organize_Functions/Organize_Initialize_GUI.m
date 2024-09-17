@@ -2,7 +2,9 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 %________________________________________________________________________________________
 
 %% Function to Organize all basic mainapp values, properties, app parts and variables. 
-% This function is called all over the toolbox to reorganizes datasets.
+% This function is called all over the toolbox to initiate and organize app
+% windows and datasets
+
 % This is used, to initiate variables when the GUI is started, when data is
 % extracted (delete old data and autoset some values to match the new dataset), data is loaded (delete old data and autoset some values to match the new dataset)
 % or preprocessed 
@@ -17,13 +19,17 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 % was extracted from raw data, "Preprocessing" after preprocessing steps
 % were applied or "VariableDefinition" during the data extractionf from raw
 % data to centralize the fundamental infos of the Data.Info field 
-% 3. HeaderInfo: Infos about recording extracted from raw datasets. Gets
+% 3. Data: Data structure of the main window
+% 4. HeaderInfo: Infos about recording extracted from raw datasets. Gets
 % fused with Data.Info when Type = "VariableDefinition"
-% 4. SampleRate in Hz as double when Type = "VariableDefinition"
-% 5. SelectedFolder: Folder from whioch data was exracted or loade, as char
-% when Type = "VariableDefinition"
-% 6. RecordingType: string specifying the recording system when Type =
+% 5. SampleRate in Hz as double when Type = "VariableDefinition"
+% 6. SelectedFolder: Folder from which data was exracted or loaded from, as char
+% only applicable when Type = "VariableDefinition"
+% 7. RecordingType: string specifying the recording system when Type =
 %"Extracting", Options: "IntanDat", "IntanRHD", "Spike2", "Open Ephys"
+% 8. PreviousChannelDeletetion: 1 if channel were deleted, 0 if not. Not
+% inplemented yet, but prb necesary in future to delete channel in the
+% middle of the probe (not beginning with first or ending with last channel)
 % 7. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
 % 8. ChannelSpacing: in um as double
 

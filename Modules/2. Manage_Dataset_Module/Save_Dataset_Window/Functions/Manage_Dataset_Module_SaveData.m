@@ -25,7 +25,9 @@ function [filepath,Error] = Manage_Dataset_Module_SaveData(Data,Type,Whattosave,
 % data to load. Only required when executed from Autorun with MultipleFolder, since
 % then it automatically creates the save file folder, otherwise empty
 
-% Output: filepath = string of path the file was saved in
+% Output: 
+% 1. filepath: string of path the file was saved in
+% 2. Error: 1 if error occured, 0 otherwise
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

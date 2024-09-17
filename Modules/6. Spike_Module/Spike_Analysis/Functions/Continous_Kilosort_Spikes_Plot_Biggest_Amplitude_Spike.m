@@ -13,6 +13,12 @@ function CurrentPlotData = Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spik
 % 2. Data: main window data structure with Data.Spikes and Data.Info field; Data.Spikes with field Data.Spikes.BiggestAmplWaveform
 % 4. units: unitselection as double, for title (waveform already extracted for just that unit)
 % 5. rgbMatrix: ntemplates x 3 double with rgb values for each template 
+% 6. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

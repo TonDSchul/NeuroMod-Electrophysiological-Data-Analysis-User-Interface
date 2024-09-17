@@ -1,6 +1,8 @@
 function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,WhatToDo,NodeNr,NoddeID,InputChannelSelection,StateSelection)
 
-%% function to extract events from open ephys data
+%________________________________________________________________________________________
+%% Function to extract events from open ephys data
+
 % This function utilizes functions and some analysis workflows as well as
 % example data from the analysis-tools Github project from jsiegle
 % available at https://github.com/open-ephys/analysis-tools as well as the open-ephys-matlab-tools
@@ -32,6 +34,8 @@ function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,Wh
 % 5. InputChannelSelection: 1 x n double with indicie of which events that
 % were identified should be analyzed. if 3 event lines saved (3 events),
 % this would be [1,2,3] to extract indicies of all 3 of them
+% 6. StateSelection: char with a number (either '1' or '0', events can have state of 0 or 1).
+% User can specify this in the event extraction window
 
 % Output: 
 % 1. Events: 1 x nevents cell array with each cell containing a

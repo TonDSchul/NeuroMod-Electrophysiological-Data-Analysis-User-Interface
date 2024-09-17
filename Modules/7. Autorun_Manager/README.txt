@@ -1,0 +1,5 @@
+______________________________________________
+NeuroMod Toolbox; Autorun Manager README
+Author: Tony de Schultz
+______________________________________________
+

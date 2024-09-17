@@ -8,9 +8,11 @@ function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEv
 % the function that selects plotting functions based on input
 % This means it checks the correct format of inputs, corrects it with
 % standard values if necessary and pools them in a structure accessed later
-% for analysis and plotting
+% for analysis and plotting. This function also selects the spikes in the
+% channalerange
 
 % Inputs:
+
 % 1. Data: main window app structure with Data.Info and Data.Spikes fields
 % 2. EventRangeEditField: text field of app containing event range userinput as char in
 % the field EventRangeEditField.Value, like '1,10' for events 1 to 10
@@ -22,26 +24,31 @@ function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEv
 % the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins
 % 6. SpikeType: Type of spikes of dataset, either 'Kilosort' OR 'Internal'
 % (from Data.Info.SpikeTpe)
+% 7. SpikeTriggereAverage: 1 if spiked triggered average is computed, 0
+% otherwise
+% 8. SpikeTriggeredAverageField: field of app window holding time range for
+% spiked triggered average, as char, i.e. '-0.05,0.2'
 
 %Outputs:
-% 6. PlotInfo: structure holding gathered info about user input, contains
+
+% 1. PlotInfo: structure holding gathered info about user input, contains
 % fields: PlotInfo.TimearoundEvent,PlotInfo.EventNr,PlotInfo.EventRange,PlotInfo.ChannelsToPlot,PlotInfo.Time,PlotInfo.ChannelNr,PlotInfo.SpikeRateNumBins,PlotInfo.depth_bin_size,PlotInfo.time_bin_size ,PlotInfo.depth_edges,PlotInfo.time_edges , PlotInfo.NormWindow
-% 1. SpikeTimes: nspikes x 1 double with just spike indicies within the
+% 2. SpikeTimes: nspikes x 1 double with just spike indicies within the
 % channelrange
-% 2.SpikePositions: nspikes x 1 double with spike poisiton spike indicies within the
+% 3.SpikePositions: nspikes x 1 double with spike poisiton spike indicies within the
 % channelrange (in um)
-% 3.SpikeAmplitude: nspikes x 1 double with just spike amplitudes indicies within the
+% 4.SpikeAmplitude: nspikes x 1 double with just spike amplitudes indicies within the
 % channelrange
-% 4. SpikeCluster: nspikes x 1 double with just spike cluster ID's indicies within the
+% 5. SpikeCluster: nspikes x 1 double with just spike cluster ID's indicies within the
 % channelrange
-% 5. SpikeEvents: nspikes x 1 double with just event identity (integers)
-% 6. BaselineWindowField: text field of app containing basline window range userinput as char in
+% 6. SpikeEvents: nspikes x 1 double with just event identity (integers)
+% 7. BaselineWindowField: text field of app containing basline window range userinput as char in
 % the field ChannelEditField.Value, like '-0.005,0' for channel -0.005s to 0s
-% 7. ChannelSelectionField: text field of app containing channel range userinput as char in
+% 8. ChannelSelectionField: text field of app containing channel range userinput as char in
 % the field ChannelEditField.Value, like '1,10' for channel 1 to 10
-% 8. EventRangeEditField: text field of app containing event range userinput as char in
+% 9. EventRangeEditField: text field of app containing event range userinput as char in
 % the field EventRangeEditField.Value, like '1,10' for events 1 to 10
-% 9. SpikeRateNumBinsEditField: text field of app containing basline num bins for spike rate userinput as char in
+% 10. SpikeRateNumBinsEditField: text field of app containing basline num bins for spike rate userinput as char in
 % the field SpikeRateNumBinsEditField.Value, like '100' for 100 bins
 
 % Author: Tony de Schultz

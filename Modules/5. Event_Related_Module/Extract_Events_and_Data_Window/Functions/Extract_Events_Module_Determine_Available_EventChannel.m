@@ -5,19 +5,18 @@ function [EventInfo,FileEndingsExist,FilePaths,texttoshow,Info] = Extract_Events
 
 %gets called when the user starts the event extraction window. It first
 %searches automatically in the original data path if it can find event
-%data
+%data. It is necessary for the event extraction main function since it
+%flags the contens of the folder containing suitable event data in the
+%supported format. 
 
 % Inputs: 
 % 1.Data: Data structure with raw data, preprocessed data, event data and
 % the info structure with infos about extracted events.
 % 2. Path: char path to folder containing the recording (Data.Info.Data_Path)
-% 3. TextAreaObject: app window textarea to show infpramtion about fpund
-%channel in -- shows progress and path
-% 4. TextArea_2Object: app window textarea to show infpramtion about fpund
-%channel in -- shows found channel names and infos
 % 5. FileType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
 % Inputs"; For Open Ephys: "Record Node 101" --> This is what is selected
-% at standard in the GUI as File Type.
+% at standard in the GUI as File Type. -- not required anymore but prb
+% useful in future
 
 % Outputs:
 % 1. EventInfo: Contains fields: .DIChannel; .ADCChannel and .AUXChannel.

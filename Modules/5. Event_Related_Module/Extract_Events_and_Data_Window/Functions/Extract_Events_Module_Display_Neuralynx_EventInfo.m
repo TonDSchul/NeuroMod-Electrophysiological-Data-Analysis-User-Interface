@@ -1,5 +1,23 @@
 function [fieldData] = Extract_Events_Module_Display_Neuralynx_EventInfo(event)
 
+%________________________________________________________________________________________
+%% Function show event datain the extract data window text area - convert from dataframe to stringarray
+
+%Gets called after event data for neuralynx was loaded to diplay the
+%results
+
+% Inputs: 
+% 1.event: Dataframe holding event data. Usually contains event samples,
+% event times, event names and event types -- directly comes from fieldtrip
+% ft_read_events function
+
+% Outputs:
+% 1. fieldData: Data/Text to show in TextArea
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 %% Events is a 1xn structure and has to be converted to display contents in Textfield
     % Get the field names of the structure
     fieldNames = fieldnames(event);

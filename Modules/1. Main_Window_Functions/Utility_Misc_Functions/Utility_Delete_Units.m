@@ -1,5 +1,25 @@
 function [Data] = Utility_Delete_Units (Data,UnitToDelete)
 
+%________________________________________________________________________________________
+%% Function to delete all spike information of a selected unit 
+
+% This function gets called in the Unit Analysis window when the user
+% clicks on the 'Delete Unit' Button
+
+% Input Arguments:
+% 1. Data: main window structure holding dataset (including spike data as Data.Spikes)
+% 2. UnitToDelete: char, has to start with 'Unit' followed by a space
+% and a number, i.e. 'Unit 10' -- space is important!
+
+% Output Arguments:
+% 1. Data: main window structure holding dataset with deleted spikes of the
+% selected unit
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if min(Data.Spikes.SpikeCluster)==0
     Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster+1;
 end

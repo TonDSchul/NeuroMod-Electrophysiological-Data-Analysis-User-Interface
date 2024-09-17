@@ -2,15 +2,19 @@ function [Data,Error] = Organize_Delete_Dataset_Components(Data,ComponentToDelet
 %________________________________________________________________________________________
 
 %% Function to delete a specific field of the Data structure. 
+
+% Gets called in the Manage dataset components window when the user clicks
+% the 'Delete Dataset Component' Button
+
 % Inputs:
 % 1. Data: Data structure with Data.Raw or Data.Preprocessed, Data.Spikes
-% and so on for Data and Data.Info for information about data.
+% and so on as well as Data.Info for information about data.
 % 2: ComponentToDelete: string, determines which part of the dataset should
 % be deleted, otions: 
 %"Spikes" OR "EventRelatedSpikes" OR "EventRelatedData" OR "Events" OR "Preprocessed" OR "Raw" Or "PreprocessedEventRelatedData"
 
 % Output:
-% Error: 1 if no data would be left after deleting, 0 if otherwise, If 1,
+% Error: 1 if no data would be left after deleting, 0 if otherwise; If 1,
 % deletion is not executed
 
 % Author: Tony de Schultz

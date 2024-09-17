@@ -2,12 +2,19 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth
-% This function contains and uses functions from the Spike repository from Nick Steinmetz on Github at https://github.com/cortex-lab/spikes. 
+% This function contains and uses functions from the Spike repository from the Cortex Lab on Github at https://github.com/cortex-lab/spikes. 
 % They are saved in: GUIPath/Modules/6.Spike_Module/Spike_Analysis/Modified_Spike_Repository and are modified to
 % fit the purpose of this GUI
 % Functions used from the Spike repository: 
 % lfpBandPower
 % plotLFPpower -- all modified for the purpose of this GUI
+
+% NOTE: PowerSpecResults holds the results of the computations. If its not
+% empty, its not computed again since it takes a long time. In this case
+% the output BandPower is replaced by PowerSpecResults.
+
+% NOTE: PowerSpecResults has a field for raw data and preprocessed data,
+% since the spectrum can be computed for both 
 
 % Inputs:
 % 1. Data: Data structure with raw data and preprocessed data (if applicable); Raw and Preprocessed Data =
@@ -19,12 +26,12 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum
 % place 
 
 % Outputs:
-%PowerSpecResults = results of current computation or previously executed
+% 1. PowerSpecResults: results of current computation or previously executed
 %computation save in current GUI instance
-%BandPower 
-
-% NOTE: PowerSpecResults has a field for raw data and preprocessed data,
-% since the spectrum can be computed for both 
+% 2. BandPower: Current analysis results. Replaced by PowerSpecResults if
+% already computed
+% 3. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

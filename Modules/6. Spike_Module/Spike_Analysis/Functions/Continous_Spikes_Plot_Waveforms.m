@@ -1,5 +1,37 @@
 function CurrentPlotData = Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,SpikeCluster,Waveforms,PlotInfo,ClusterSelection,Figure,CurrentPlotData)
 
+%________________________________________________________________________________________
+%% Function to plot spike rate from kilosortData over time and over Channel
+
+% NOTE: This function takes waveforms of all spikes, the number of waveforms to
+% plot and only plots the n biggest waveforms!
+
+% Input:
+% 1. Data: Data structure containing KilosortData
+% 2. SpikeTimes nspikes x 1 double in seconds
+% 3. SpikePositions = N x 1 double or single in um
+% 4. SpikeCluster = N x 1 double or single with cluster/unit identity (integer specifying the unit/cluster of that spike) of each spike
+% (analyzed in internal spike detection) NOTE: if no spike clustering for
+% internal spikes, all spikecluster are 1
+% 5. Waveforms: nspikes x ntimewaveform matrix with waveforms for each
+% spike
+% 6. PlotInfo: structure containing user selected parameter for analysis. Comes from Continous_Spikes_Prepare_Plots.m function
+% 7. ClusterSelection: Number of cluster the user selected to highlight in their color. Can
+% be "All" to show all cluster in their color, "Non" to show no colors or a
+% number as a string to show only that cluster. 
+% 8. Figure: figure object handle to plot data in
+% 9. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Plot Data 
 
 %% Select Data according to cluster

@@ -14,6 +14,12 @@ function CurrentPlotData = Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure
 % i.e. [1,10] for channel 1 to 10
 % 4. units: unitselection as double (1-indexed!)
 % 5. rgbMatrix: ntemplates x 3 double with rgb values for each template 
+% 6. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -6,15 +6,19 @@ File: Organize_Delete_Dataset_Components.m
 %________________________________________________________________________________________
 
 %% Function to delete a specific field of the Data structure. 
+
+% Gets called in the Manage dataset components window when the user clicks
+% the 'Delete Dataset Component' Button
+
 % Inputs:
 % 1. Data: Data structure with Data.Raw or Data.Preprocessed, Data.Spikes
-% and so on for Data and Data.Info for information about data.
+% and so on as well as Data.Info for information about data.
 % 2: ComponentToDelete: string, determines which part of the dataset should
 % be deleted, otions: 
 %"Spikes" OR "EventRelatedSpikes" OR "EventRelatedData" OR "Events" OR "Preprocessed" OR "Raw" Or "PreprocessedEventRelatedData"
 
 % Output:
-% Error: 1 if no data would be left after deleting, 0 if otherwise, If 1,
+% Error: 1 if no data would be left after deleting, 0 if otherwise; If 1,
 % deletion is not executed
 
 % Author: Tony de Schultz
@@ -29,7 +33,9 @@ File: Organize_Initialize_GUI.m
 %________________________________________________________________________________________
 
 %% Function to Organize all basic mainapp values, properties, app parts and variables. 
-% This function is called all over the toolbox to reorganizes datasets.
+% This function is called all over the toolbox to initiate and organize app
+% windows and datasets
+
 % This is used, to initiate variables when the GUI is started, when data is
 % extracted (delete old data and autoset some values to match the new dataset), data is loaded (delete old data and autoset some values to match the new dataset)
 % or preprocessed 
@@ -44,13 +50,17 @@ File: Organize_Initialize_GUI.m
 % was extracted from raw data, "Preprocessing" after preprocessing steps
 % were applied or "VariableDefinition" during the data extractionf from raw
 % data to centralize the fundamental infos of the Data.Info field 
-% 3. HeaderInfo: Infos about recording extracted from raw datasets. Gets
+% 3. Data: Data structure of the main window
+% 4. HeaderInfo: Infos about recording extracted from raw datasets. Gets
 % fused with Data.Info when Type = "VariableDefinition"
-% 4. SampleRate in Hz as double when Type = "VariableDefinition"
-% 5. SelectedFolder: Folder from whioch data was exracted or loade, as char
-% when Type = "VariableDefinition"
-% 6. RecordingType: string specifying the recording system when Type =
+% 5. SampleRate in Hz as double when Type = "VariableDefinition"
+% 6. SelectedFolder: Folder from which data was exracted or loaded from, as char
+% only applicable when Type = "VariableDefinition"
+% 7. RecordingType: string specifying the recording system when Type =
 %"Extracting", Options: "IntanDat", "IntanRHD", "Spike2", "Open Ephys"
+% 8. PreviousChannelDeletetion: 1 if channel were deleted, 0 if not. Not
+% inplemented yet, but prb necesary in future to delete channel in the
+% middle of the probe (not beginning with first or ending with last channel)
 % 7. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
 % 8. ChannelSpacing: in um as double
 
@@ -80,7 +90,8 @@ File: Organize_Jump_in_Time.m
 % Inputs: 
 % 1. app: app object of GUI main window
 % 2. Direction: string, Options: "Backwards" to go backwards in time OR "Forward" to go forwards in time
-% 3. TimeLimit: Max Time to determine whether jump violates time limits. (app.Data.Time(end))
+% 3. TimeLimit: Max Time in seconds to determine whether jump violates time
+% limits. (app.Data.Time(end)) as double
 % 4. TimeRange: Time to jump, as double in seconds
 % 5. SampleRate in Hz as double
 
@@ -101,7 +112,7 @@ File: Organize_Prepare_Plot_and_Extract_GUI_Info.m
 
 %% Function to plot data in main window based on selecteions and datatypes of the GUI
 % This function is called when the user changes the main window data or
-% time plot to plot new data. This includes spikes and events
+% time plot to show new data. This includes spikes and event data. 
 
 % Inputs: 
 % 1. app: app object of GUI main window
@@ -133,7 +144,7 @@ File: Organize_Set_MainWindow_TimeRange.m
 %% Function to increase or decrease the amopunt of time plotted in the main window
 % This function is called when the user clicks on the + or - button in the
 % time control panel of the main window to change the amount of time shown.
-% The amount the plot window is changed is based on the checkboxes of the
+% The amount the time range is changed by is based on the checkboxes of the
 % time control panel
 
 %NOTE: app.sCheckBox are the check box fields in the GUI time control

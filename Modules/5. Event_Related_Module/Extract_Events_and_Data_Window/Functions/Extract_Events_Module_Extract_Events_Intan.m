@@ -3,11 +3,11 @@ function [Data] = Extract_Events_Module_Extract_Events_Intan(Data,Filetype,Input
 %________________________________________________________________________________________
 %% Function to coordinate Intan Event Extraction
 
-% This function actually loads event files (.data files only! .rhd are loaded when gui started to show info about it)and passes 1 x ntime vector of
+% This function actually loads event files (.dat files only! .rhd are loaded when gui started to show info about it) and passes 1 x ntime vector of
 % event data into Extract_Events_Module_Extract_Event_Indicies_Intan
 % function to extract event indicies exceeding a treshold
 
-%gets called in the Extract_Events_Module_Main_Function function when the user starts the event extraction for intan data
+% gets called in the Extract_Events_Module_Main_Function function when the user starts the event extraction for intan data
 
 % Inputs: 
 % 1.Data: Data structure with raw data, preprocessed data and

@@ -14,7 +14,7 @@ function [Data,InputChannelData] = Extract_Events_Module_Extract_Event_Indicies_
 % 1.Data: Data structure with raw data, preprocessed data and
 % the info structure.
 % 2. ChannelPath: 1 x n vector with indicies of event channel (indicies of
-% all foldercontents found) -- usefull but not used yet
+% all foldercontents found) -- usefull but not used here
 % 3. InputChannelType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
 % Inputs"; For Open Ephys: "Record Node 101" --> This is what is selected
 % at standard in the GUI as File Type.

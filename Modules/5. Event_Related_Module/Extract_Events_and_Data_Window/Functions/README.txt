@@ -6,11 +6,14 @@ File: Event_Module_Extract_Event_Related_Data.m
 %________________________________________________________________________________________
 %% Function to extract event related data as a nchannel x nevents x ntime matrix
 
+% It is only computed once and the saved in the Data structure. Either
+% extracted from Raw or Preprocessed Data and for one event channel. 
+
 % Inputs: 
 % 1.Data: Data structure with raw data, preprocessed data, event data and
 % the infio structure with infos about extracted events.
 % 2. EventChannel: Name of the event channel you want to calculate the ERD
-% data for; as char; i.e. 'DIN-04' (saved in Data.Info.EventChannelNames)
+% data for; as char; i.e. 'DIN-04' for Intan (saved in Data.Info.EventChannelNames)
 % 3. TimeWindowBefore: Time in seconds to take before each event as double,
 % always positive!
 % 4. TimeWindowAfter: Time in seconds to take after each event as double,
@@ -37,19 +40,18 @@ File: Extract_Events_Module_Determine_Available_EventChannel.m
 
 %gets called when the user starts the event extraction window. It first
 %searches automatically in the original data path if it can find event
-%data
+%data. It is necessary for the event extraction main function since it
+%flags the contens of the folder containing suitable event data in the
+%supported format. 
 
 % Inputs: 
 % 1.Data: Data structure with raw data, preprocessed data, event data and
 % the info structure with infos about extracted events.
 % 2. Path: char path to folder containing the recording (Data.Info.Data_Path)
-% 3. TextAreaObject: app window textarea to show infpramtion about fpund
-%channel in -- shows progress and path
-% 4. TextArea_2Object: app window textarea to show infpramtion about fpund
-%channel in -- shows found channel names and infos
 % 5. FileType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
 % Inputs"; For Open Ephys: "Record Node 101" --> This is what is selected
-% at standard in the GUI as File Type.
+% at standard in the GUI as File Type. -- not required anymore but prb
+% useful in future
 
 % Outputs:
 % 1. EventInfo: Contains fields: .DIChannel; .ADCChannel and .AUXChannel.
@@ -62,6 +64,28 @@ File: Extract_Events_Module_Determine_Available_EventChannel.m
 % 5. texttoshow: saves text that shows info about found event channel in
 % the event window
 % 6. Info: Only when open ephys to save nozes that where found
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Extract_Events_Module_Display_Neuralynx_EventInfo.m
+%________________________________________________________________________________________
+%% Function show event datain the extract data window text area - convert from dataframe to stringarray
+
+%Gets called after event data for neuralynx was loaded to diplay the
+%results
+
+% Inputs: 
+% 1.event: Dataframe holding event data. Usually contains event samples,
+% event times, event names and event types -- directly comes from fieldtrip
+% ft_read_events function
+
+% Outputs:
+% 1. fieldData: Data/Text to show in TextArea
+
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
@@ -84,7 +108,7 @@ File: Extract_Events_Module_Extract_Event_Indicies_Intan.m
 % 1.Data: Data structure with raw data, preprocessed data and
 % the info structure.
 % 2. ChannelPath: 1 x n vector with indicies of event channel (indicies of
-% all foldercontents found) -- usefull but not used yet
+% all foldercontents found) -- usefull but not used here
 % 3. InputChannelType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
 % Inputs"; For Open Ephys: "Record Node 101" --> This is what is selected
 % at standard in the GUI as File Type.
@@ -111,11 +135,11 @@ File: Extract_Events_Module_Extract_Events_Intan.m
 %________________________________________________________________________________________
 %% Function to coordinate Intan Event Extraction
 
-% This function actually loads event files (.data files only! .rhd are loaded when gui started to show info about it)and passes 1 x ntime vector of
+% This function actually loads event files (.dat files only! .rhd are loaded when gui started to show info about it) and passes 1 x ntime vector of
 % event data into Extract_Events_Module_Extract_Event_Indicies_Intan
 % function to extract event indicies exceeding a treshold
 
-%gets called in the Extract_Events_Module_Main_Function function when the user starts the event extraction for intan data
+% gets called in the Extract_Events_Module_Main_Function function when the user starts the event extraction for intan data
 
 % Inputs: 
 % 1.Data: Data structure with raw data, preprocessed data and
@@ -147,180 +171,109 @@ File: Extract_Events_Module_Extract_Events_Intan.m
 
  ###################################################### 
 
-File: Extract_Events_Module_Extract_Open_Ephys_Events.m
+File: Extract_Events_Module_Extract_Events_Neuralynx.m
+%________________________________________________________________________________________
+%% Function to extract event Data from Neuralynx recordings
+
+% This function gets caled when neurylynx events are supposed to be
+% extracted. It calls the fieldtrip ft_read_event and ft_read_header
+% functions for event data extraction
+
+% Inputs: 
+% 1.Filename: char, Name of the event file (.nve)
+% 2.Path: char, direcory containing the event data
+
+% Outputs:
+% 1. event: 1x1 dataframe with sample times, time points, event types, event
+% trigger information and so on. 
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-Info = [];
-Events = {};
 
-% Create a session (loads all data from the most recent recording)
-session = Session(Path);
+ ###################################################### 
 
-Info.NodeNrs = length(session.recordNodes);
+File: Extract_Events_Module_Extract_Open_Ephys_Events.m
+%________________________________________________________________________________________
+%% Function to extract events from open ephys data
 
-%% If Exctract event window is opened, just get indos about available events from all available nodes. -- Loops through all of them
-if strcmp(WhatToDo,"Get Information")
-    Events = cell(1,length(session.recordNodes));
-    
-    for k = 1:length(session.recordNodes)
-            
-        node = session.recordNodes{k};
-        
-        for j = 1:length(node.recordings)
-        
-            % Get the first recording 
-            recording = node.recordings{1,j};
-        
-            %% Handle Event Data
-            % 3. Overlay all available event data
-            eventProcessors = recording.ttlEvents.keys();
-            for p = 1:length(eventProcessors)
-                processor = eventProcessors{p};
-                events = recording.ttlEvents(processor);
-    
-                if ~isempty(events.line)
-                    Info.AvailabelNodes{k} = k;
-                    Events{k} = events;
-                end
-            end  
-        end % node.recordings
-    end
+% This function utilizes functions and some analysis workflows as well as
+% example data from the analysis-tools Github project from jsiegle
+% available at https://github.com/open-ephys/analysis-tools as well as the open-ephys-matlab-tools
+% Matlab file exchange project https://de.mathworks.com/matlabcentral/fileexchange/122372-open-ephys-matlab-tools
 
-    EventstoDeltete = [];
-    for i = 1:length(Events)
-        if isempty(Events{i})
-            EventstoDeltete = [EventstoDeltete,i];
-        end
-    end
-    if ~isempty(EventstoDeltete)
-        Events(EventstoDeltete) = [];
-        Info.AvailabelNodes(EventstoDeltete) = [];
-    end
-end
+% functions necessary from these sources that are used here were not modified, this code is
+% self written based on the load_all_formats function in the example
+% folder
+% functions used: 1. Session; 2. eventProcessors
 
-%% Extract actual events
-% -- here, not all nodes get analyzed but those that are selected by the
-% user
-if strcmp(WhatToDo,"All")
-    node = session.recordNodes{NodeNr};
-    Events = {};
-    
-    for j = 1:length(node.recordings)
-    
-        % Get the first recording 
-        recording = node.recordings{1,j};
-    
-        %% Handle Event Data
-        % 3. Overlay all available event data
-        eventProcessors = recording.ttlEvents.keys();
-        for p = 1:length(eventProcessors)
-            processor = eventProcessors{p};
-            events = recording.ttlEvents(processor);
-    
-            if ~isempty(events.line)
-                if isprop(events,'nodeID')
-                    if length(unique(events.nodeID)) > 1
-                        warning("Multiple Node IDs found. Only extracting events for the first one");
-                    end
-                    NodeIdIndicies = events.nodeID == events.nodeID(1);
-                    if isprop(events,'sample_number')
-                        sampleNumber = events.sample_number(NodeIdIndicies==1);
-                    elseif isprop(events,'sampleNumber')
-                        sampleNumber = events.sampleNumber(NodeIdIndicies==1);
-                    else
-                        for nprops = 1:length(events.Properties.VariableNames)
-                            if ~isempty(strfind(events.Properties.VariableNames{nprops},'sample'))
-                                fieldname = events.Properties.VariableNames{nprops};
-                                sampleNumber = eval(strcat('events.',fieldname));
-                            end
-                        end
-                    end
-                elseif isprop(events,'processor_id')
-                    if length(unique(events.processor_id)) > 1
-                        warning("Multiple processor IDs found. Only extracting events for the first one");
-                    end
-                    NodeIdIndicies = events.processor_id == events.processor_id(1);
-                    if isprop(events,'sample_number')
-                        sampleNumber = events.sample_number(NodeIdIndicies==1);
-                    elseif isprop(events,'sampleNumber')
-                        sampleNumber = events.sampleNumber(NodeIdIndicies==1);
-                    else
-                        for nprops = 1:length(events.Properties.VariableNames)
-                            if ~isempty(strfind(events.Properties.VariableNames{nprops},'sample'))
-                                fieldname = events.Properties.VariableNames{nprops};
-                                sampleNumber = eval(strcat('events.',fieldname));
-                            end
-                        end
-                    end
-                elseif isprop(events,'nodeId')
-                    if length(unique(events.nodeId)) > 1
-                        warning("Multiple Node IDs found. Only extracting events for the first one");
-                    end
-                    NodeIdIndicies = events.nodeId == events.nodeId(1);
-                    if isprop(events,'sample_number')
-                        sampleNumber = events.sample_number(NodeIdIndicies==1);
-                    elseif isprop(events,'sampleNumber')
-                        sampleNumber = events.sampleNumber(NodeIdIndicies==1);
-                    else
-                        for nprops = 1:length(events.Properties.VariableNames)
-                            if ~isempty(strfind(events.Properties.VariableNames{nprops},'sample'))
-                                fieldname = events.Properties.VariableNames{nprops};
-                                sampleNumber = eval(strcat('events.',fieldname));
-                            end
-                        end
-                    end
-                else
-                    NodeIdIndicies = zeros(length(events.line),1)+1;
-                    if isprop(events,'sample_number')
-                        sampleNumber = events.sample_number(NodeIdIndicies==1);
-                    elseif isprop(events,'sampleNumber')
-                        sampleNumber = events.sampleNumber(NodeIdIndicies==1);
-                    else
-                        for nprops = 1:length(events.Properties.VariableNames)
-                            if ~isempty(strfind(events.Properties.VariableNames{nprops},'sample'))
-                                fieldname = events.Properties.VariableNames{nprops};
-                                sampleNumber = eval(strcat('events.',fieldname));
-                            end
-                        end
-                    end
-                end
+% NOTE: depending on the node and prb. version of Open EPhys recording GUI,
+% particular field names were event indicies are saved can vary. The code
+% downbelow checks for all known to me, but can be uncomplete. It only
+% cheks events for the node selected in the event extraction window
+% NOTE: This code has two modi: first just retriving infomation, like the
+% dataframe saving event indicies and second to actually extract event data
 
-                eventlines = events.line(NodeIdIndicies==1);
-                states = events.state(NodeIdIndicies==1);
-    
-                for nevents = 1:length(InputChannelSelection) %% Loop over different event inputs
-                    if ~isempty(eventlines)
-                        
-                        EventLines = eventlines == InputChannelSelection(nevents);
-                        TempSampleNumber = sampleNumber(EventLines==1);
-                        TempEventState = states(EventLines==1);
-                        TempEventStateIndicies = double(TempEventState) == str2double(StateSelection);
-                        
-                        allsamples = double(TempSampleNumber(TempEventStateIndicies == 1));
-                        
-                        zerosample = allsamples == 0;
+% This gets called when the user clicks on event extraction in the event
+% extraction window and open ephys is recording format
 
-                        if sum(zerosample)>0
-                            msgbox("Warning: Sample Nr 0 found and deleted");
-                            allsamples(zerosample==1) = [];
-                        end
+% Input:
+% 1. Path: path as char to folder containing the recording
+% 2: WhatToDo: as string detetmines mode, see above, Otions: "Get
+% Information" OR "All" (also extract events)
+% 3. NodeNr: Indicie of recording node the user selects; indicie = position in
+% folder --> with three nodes, content of folder has 3 string elements.
+% Indicie is the indice of these 3 elements that was seleceted
+% 4. NoddeID: Not used yet, maybe necessary in future (saves node nr as double, i.e. 101)
+% 5. InputChannelSelection: 1 x n double with indicie of which events that
+% were identified should be analyzed. if 3 event lines saved (3 events),
+% this would be [1,2,3] to extract indicies of all 3 of them
+% 6. StateSelection: char with a number (either '1' or '0', events can have state of 0 or 1).
+% User can specify this in the event extraction window
 
-                        Events{nevents} = allsamples';
-                        
-                        Info.NrEventChannel = recording.ttlEvents.Count;
-                        Info.EventChannelName{nevents} = strcat("Event Input Line ",num2str(InputChannelSelection(nevents)));
-                        Info.EventChannelType = strcat("Recording Node ", num2str(NodeNr)," TTL");
-                        %% Event ChannelNames
+% Output: 
+% 1. Events: 1 x nevents cell array with each cell containing a
+% 1 x Nreventindicies double vector with event indicies (as samples).
+% Data.Events{2} is the second event input line found containing a 1x50
+% vector for 50 trials/events found with values 1231,135125,2454988 and so
+% on as samples when they happended
+% 2. Info: structure saving infos about extraction that get saved in main
+% Data.Info stucture
 
-                    else
-                        Events = [];
-                    end
-                end
-                
-            end
-        end  
-    end % node.recordings
-end % WhatToDo == "All"
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Extract_Events_Module_Load_and_Plot_Events.m
+%________________________________________________________________________________________
+%% Function load and plot event data in the show event data window (opened in the extract events window)
+
+% This function gets called whenever the user wants to see an example plot
+% of event data.
+
+% Inputs: 
+% 1. EventInfo: comes from the 'Extract_Events_Module_Determine_Available_EventChannel' function.
+%    contains recording system specific infos about events.
+% 2. FilePaths: contents of folder in which events were searched for (ncontens x 1 cell array with each cell containing a string)
+% 3. Figure: figure axes handle to plot event data in
+% 4. SelectedEventChannelNames: char, name of the event type (i.e. for Intan: Digital Inputs)
+% 5. AllChannelNames: Anmes if all possible name of the event types
+% 6. Data: main data structure from main window (mainly fot Data.Info field)
+% 7. RHDAllChannelData: Just If Intan .rhd: events are extracted ones, then saved in this
+% variable to be able to show again without having to extract again. Just
+% for Intan.rhd bc it takes by far the longest
+% 8. DownsampleRate: string, desired new sampling rate in Hz after
+% downsampling
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 
  ###################################################### 
@@ -360,6 +313,8 @@ File: Extract_Events_Module_Main_Function.m
 % to be loaded earlier already to know what can be shown as otions in the
 % GUI. --> not as nicely doable as with individual .dat files for each
 % event
+% 11. executablefolder: char with the path to the currently execute GUI
+% instance, comes from public property in main window
 
 % Outputs:
 % 1. Data: Data structure with added field:
@@ -431,6 +386,37 @@ File: Extract_Events_Module_Organize_Window_Intan_RHD.m
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Extract_Events_Module_Set_Up_Window.m
+%________________________________________________________________________________________
+%% Function to set up the events app window
+
+%gets called on startup of the extract event data window, populates fields
+%of window
+
+% Inputs: 
+% 1.app : main windwow app structure
+% 1.Data: Data structure with raw data, preprocessed data and
+% the info structure.
+% 2. EventInfo: Contains fields: .DIChannel; .ADCChannel and .AUXChannel.
+% The capture the indicie of the folder contents, which represent data for
+% digital, analog and aux channel. 
+% 3. Path: path to folder holding event recordings as char
+% 4. FilePaths: nfolderconents x 1 cell array with each cell containing a
+% string.
+% 5. FileEndingsExist: double, either 1 or 0 - 1 if ending exists
+% 6. texttoshow: app text area to show info in
+% 7. TimeOfExecution: string, Indicates when this function was called;
+% Options: "ChangedEventChannelType" OR "Initial"
+% 8. Info: only relevant for open ephys recordings
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
 %________________________________________________________________________________________
 
 

@@ -104,6 +104,57 @@ File: Utility_CreateChannelNames.m
 
  ###################################################### 
 
+File: Utility_Delete_Units.m
+%________________________________________________________________________________________
+%% Function to delete all spike information of a selected unit 
+
+% This function gets called in the Unit Analysis window when the user
+% clicks on the 'Delete Unit' Button
+
+% Input Arguments:
+% 1. Data: main window structure holding dataset (including spike data as Data.Spikes)
+% 2. UnitToDelete: char, has to start with 'Unit' followed by a space
+% and a number, i.e. 'Unit 10' -- space is important!
+
+% Output Arguments:
+% 1. Data: main window structure holding dataset with deleted spikes of the
+% selected unit
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Export_Dataset_Components.m
+%________________________________________________________________________________________
+%% Function to export some dataset components as txt,csv or .mat
+% This function gets called in the Export Dataset Components Window when
+% the user clicks the "Export" button
+
+% NOTE: At standard the folder to save dataset components in is:
+% Data_to_GUI\Analysis_Results
+
+% NOTE: To export Raw and Preprocessed data, use the save dataset function.
+% This saves the raw and/or preprocessed data as a .dat file which is faster and easier on memory.
+% Also prevents .txt or csv files from not being readable due to to much data.
+
+% Input Arguments:
+% 1. Data: main window structure holding dataset components (i.e. Data.Events, Data.Spikes ...)
+% 2. Component: Selected dataset component as string, i.e. "Events" or "Spikes"
+% 3. Format: Format to save data in, as string, ".mat" OR ".txt" OR ".csv"
+% 4. executableFolder_ Path to GUI currently executed as char (created on startup of Main Window)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Utility_Extract_Contents_of_Folder.m
 %________________________________________________________________________________________
 %% Function to extract all contents of a selcted folder and output them in a string array for easy use
@@ -127,59 +178,66 @@ File: Utility_Extract_Contents_of_Folder.m
  ###################################################### 
 
 File: Utility_Extract_Function_Headers_to_txt.m
-    headerDelimiter = '%________________________________________________________________________________________';
-    
-    fprintf(fidOut, 'This folder contains the following functions with respective Header:\n\n ###################################################### \n\n');
+%________________________________________________________________________________________
+%% Function to search for all function headers in all .m files of a folder and save in a txt. file
+% This function can be used to automatically create a README file in each
+% folder containing the function headers of each function
 
-    % Loop over each .m file
-    for i = 1:length(files)
-        filePath = fullfile(files(i).folder, files(i).name);
-        fidIn = fopen(filePath, 'r');
-        
-        if fidIn == -1
-            warning('Could not open file "%s". Skipping...', files(i).name);
-            continue;
-        end
-        
-        % Read the file line by line
-        isHeader = false;
-        headerLines = {};
-        
-        while ~feof(fidIn)
-            line = fgetl(fidIn);
-            if contains(line, headerDelimiter)
-                if isHeader
-                    % If we reach the second delimiter, break out of the loop
-                    headerLines{end+1} = line; %#ok<AGROW>
-                    break;
-                else
-                    % Start recording the header
-                    isHeader = true;
-                end
-            end
-            
-            if isHeader
-                headerLines{end+1} = line; %#ok<AGROW>
-            end
-        end
-        
-        fclose(fidIn);
-        
-        % Write the header to the output file
-        if ~isempty(headerLines)
-            fprintf(fidOut, 'File: %s\n', files(i).name);
-            for j = 1:length(headerLines)
-                fprintf(fidOut, '%s\n', headerLines{j});
-            end
-            fprintf(fidOut, '\n\n ###################################################### \n\n');
-        end
-    end
-    
-    % Close the output file
-    fclose(fidOut);
-    
-    fprintf('Headers extracted to "%s"\n', outputFilePath);
-end
+% Input Arguments:
+% 1. folderPath: Path to the folder holding .m files as char
+% 2. outputFileName: Name of the .txt file to save the header infos in (including the .txt file ending)
+
+% Output Arguments:
+% 1. stringArray: Contens of folder in a n x 1 string array with n being
+% the number of contents
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Get_Plot_Data.m
+%________________________________________________________________________________________
+%% Function to export plotted/analysed data from each window with the menu option to do so
+% This function gets called in all analysis windows with the option to
+% export the analysed data when the user wants to export
+
+% PlottedData is a structure holding all analysis results. It is filled in
+% the functions computing the plotted data directly and is shared across
+% all windows (Main window property). 
+
+% NOTE: Spike Analysis, Main Window Analysis and LFP Analysis all create new fieldnames and are
+% therefore saved seperately. This means that for example data from the continous spike
+% analysis is overwritten when event related spike analysis is computed.
+
+% Input Arguments:
+% 1. PlottedData: structure holding data that was plotted. Spike Analysis,
+% Main Window Analysis and LFP Analysis all create new fieldnames and are
+% therefore saved seperately.
+% 2. Data: Data structure from main window
+% 3. Format: Format to save data in, as string, ".mat" OR ".txt" OR ".csv"
+% 4. executableFolder_ Path to GUI currently executed as char (created on startup of Main Window)
+% 5. TimeRangeLiveWindows: double, Time duration in seconds of analysis window
+% 6. StartTime: double, Start time of window analysis (for main window plots its the satrt of the main data plot in the main window, otherwise 0 or negative for event related stuff)
+% 7: AnalysisType: string specifying the name of the analysis. This has to
+% obey some rules! For Unit analysis, it has to cointain the string "Unit".
+% For Spike analyis it has to contain "Spike" or "Spikes"
+% For Time Frequency power it has to contain the string "Phase"
+% For CSD and ERP anylsis it has to contain the string "Current" or
+% "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
+% Utility_Save_Data_as_MAT functions
+
+% Outout Arguments:
+% 1. PlottedData: structure holding data that was plotted in case something
+% about it was changed
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
 
 
  ###################################################### 
@@ -196,6 +254,64 @@ File: Utility_Initialize_Clicks_Plots.m
 
 % Input Arguments:
 % 1. app: main window app object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Save_Data_as_MAT.m
+%________________________________________________________________________________________
+%% Function to export plotted/analysed data as .mat files
+% This function gets called in the Utility_Get_Plot_Data function
+
+% Input Arguments:
+% 1. Fullsavefile: char, Pcomplete path to the .mat file to save data in (including the .mat file ending)
+% 2. PlottedData: structure holding data that was plotted. Spike Analysis,
+% Main Window Analysis and LFP Analysis all create new fieldnames and are
+% therefore saved seperately.
+% 3: Analysis: string specifying the name of the analysis. This has to
+% obey some rules! For Unit analysis, it has to cointain the string "Unit".
+% For Spike analyis it has to contain "Spike" or "Spikes"
+% For Time Frequency power it has to contain the string "Phase"
+% For CSD and ERP anylsis it has to contain the string "Current" or
+% "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
+% Utility_Save_Data_as_MAT functions
+
+% Output Arguments: 
+% 1. Error: 1 if an error occured, 0 if not. gets checked in Utility_Get_Plot_Data function
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Save_Data_as_TXT_CSV.m
+%________________________________________________________________________________________
+%% Function to export plotted/analysed data as .csv or .txt files
+% This function gets called in the Utility_Get_Plot_Data function
+
+% Input Arguments:
+% 1. Fullsavefile: char, Pcomplete path to the .mat file to save data in (including the .mat file ending)
+% 2. PlottedData: structure holding data that was plotted. Spike Analysis,
+% Main Window Analysis and LFP Analysis all create new fieldnames and are
+% therefore saved seperately.
+% 3: Analysis: string specifying the name of the analysis. This has to
+% obey some rules! For Unit analysis, it has to cointain the string "Unit".
+% For Spike analyis it has to contain "Spike" or "Spikes"
+% For Time Frequency power it has to contain the string "Phase"
+% For CSD and ERP anylsis it has to contain the string "Current" or
+% "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
+% Utility_Save_Data_as_MAT functions
+
+% Output Arguments: 
+% 1. Error: 1 if an error occured, 0 if not. gets checked in Utility_Get_Plot_Data function
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -227,9 +343,9 @@ File: Utility_Show_Info_Loaded_Data.m
 File: Utility_SimpleCheckInputs.m
 %________________________________________________________________________________________
 %% Function to check whether user input into a field like the channelnr obeys format regulations
-% This is the primarily used function to check inputs and corrects them when they violate format, since it is more
-% robust than 'Organize_CheckProperInput' function.
-% Organize_CheckProperInput gets bit by bit replaced in the future 
+% This is the primarily used function to check inputs and corrects them
+% when they violate format. It is used in most app windows were the user
+% has to give input
 
 % Input Arguments:
 % 1. Input: input to be checked as char. I diretly pass the app.Button.Value

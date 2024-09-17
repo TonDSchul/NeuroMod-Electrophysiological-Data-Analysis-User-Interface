@@ -16,9 +16,10 @@ function [SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,
 % 3: NumBins: Number of bins as double
 % 4: BinSize: Size of each bin as double in samples
 % 5: Samplingrate: as double in Hz
+% 6. SpikeRateType: either "SpikeRateoverTime" or "SpikeRateoverChannel"
 
 %Outputs:
-% 2. SpikesPerBin: 1 x nbins double; If Samplingrate = 1 as input, spike rate is given as number of
+% 1. SpikesPerBin: 1 x nbins double; If Samplingrate = 1 as input, spike rate is given as number of
 % spikes per bin. When you input a proper Samplingrate > 1, this function
 % returns the spike rate in Hz for each bin
 

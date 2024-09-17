@@ -4,30 +4,23 @@ function [Waveforms,BiggestSpikeIndicies] = Spikes_Module_Get_Waveforms(Data,Spi
 %% Function to extract biggest spike waveforms with amplitudes of each spike already given.
 
 % This function is executed after Spike Detection and after loading
-% kilosort spike data
+% kilosort spike data to extract waveforms for all spikes in a nspike x ntimewaveforms matrix.
+% When average waveform over channel is selected as analyisis method, this
+% function is also called to extract waveforms in a nchannel x nspikes x
+% ntimewaveform matrix. (Waveform over all channel fo each spike)
 
 % Inputs: 
-% 1. Data = needs to contain raw or preprocessed data to extract wveforms
-% from
-% 2. SpikeTimes nspikes x 1 double with spike times in samples of each spike
-% 3. Amplitudes = N x 1 double or single with amplitudes of each spike
-% (analyzed in internal spike detection) to get biggest amplitude
-% 4. SpikePositions = N x 1 double or single with spike poisiton (integer specifying channel) of each spike
-% (analyzed in internal spike detection) 
-% 5. ChannelSelection = 2 x 1 double or single; from , to like [1,10] for
-% channel 1 to 10 
-% 6. NRWaveformsToExtract: -- not used here
-% 7. AllSpikes:  1 to save waveforms for all spikes, 0 for just nr of
-% waveforms specified in WaveformsToPlot
-% 8. Plot: char, specifies if waveforms should be plotted
-% 9. Figure: figure axes handle to plot waveforms on
-% 10. WaveformsToPlot: 1x2 double specifying how man waveforms should be
-% analysed, i.e. [1,10] for 10 waveforms
+% 1. Data: data structure from the main window holding spike data
+% 2. SpikeTimes: nspikes x 1 with spike times in samples
+% 3. SpikePositions: nspikes x 1 with nr of channel for each spike 
+% 4. WaveFormType: "AverageWaveforms" for Waveform over all channel fo each
+% spike when average waveform over channel analysis is selected OR
+% something else for nspikes x ntimewaveform matrix
 
 % Outputs:
-% 1. Waveforms: nchannel x nwaveforms x ntime matrix saving each extract
-% waveform
+% 1. Waveforms: nspikes x ntime  OR nchannel x nspikes x ntime 
 % 2. BiggestSpikeIndicies: 1 x nrspikes (length of SpikeTimes). 1 if spike waveform was extracted, 0 if spike waveform was NOT
+% extracted --> i.e. when so close to time limits, that waveform cannot be
 % extracted
 
 % Author: Tony de Schultz

@@ -1,5 +1,32 @@
 function Extract_Events_Module_Set_Up_Window(app,Data,EventInfo,Path,FilePaths,FileEndingsExist,texttoshow,TimeOfExecution,Info)
 
+%________________________________________________________________________________________
+%% Function to set up the events app window
+
+%gets called on startup of the extract event data window, populates fields
+%of window
+
+% Inputs: 
+% 1.app : main windwow app structure
+% 1.Data: Data structure with raw data, preprocessed data and
+% the info structure.
+% 2. EventInfo: Contains fields: .DIChannel; .ADCChannel and .AUXChannel.
+% The capture the indicie of the folder contents, which represent data for
+% digital, analog and aux channel. 
+% 3. Path: path to folder holding event recordings as char
+% 4. FilePaths: nfolderconents x 1 cell array with each cell containing a
+% string.
+% 5. FileEndingsExist: double, either 1 or 0 - 1 if ending exists
+% 6. texttoshow: app text area to show info in
+% 7. TimeOfExecution: string, Indicates when this function was called;
+% Options: "ChangedEventChannelType" OR "Initial"
+% 8. Info: only relevant for open ephys recordings
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 ExistChangedEventChannelType = 0;
 % Only on Startup/Folder Change
 if strcmp(TimeOfExecution,"ChangedEventChannelType") 

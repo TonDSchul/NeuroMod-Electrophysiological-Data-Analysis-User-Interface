@@ -35,6 +35,8 @@ function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelP
 % 10. ExecuteInGUI: Equals 1 if this function is called within the GUI, NOT
 % the Autorun
 % 11. Eventstoshow: char indicating the event to show in the plot; Either 'Non' or char with event channel name, like 'DIN-04'
+% 12: Waveforms: nspikes x ntimewaveforms matrix with waveforms for each
+% spikes (spikes in Data.Spikes.Waveforms)
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double in seconds and within the
@@ -65,6 +67,10 @@ function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelP
 % 11. TimeWindowSpiketriggredLFPEditField: text field of app containing userinput as char in
 % the field TimeWindowSpiketriggredLFPEditField.Value, like '-0.005,0.2' --
 % corrected if format was wrong
+% 12. WaveformChannel: if order of waveforms changed or waveforms deleted,
+% this has to be capture in the channel for each waveform too. Unchanged,
+% channel info comes from Data.Spikes.SpikePositions. Not necessary yet but
+% usefull to have ready.
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

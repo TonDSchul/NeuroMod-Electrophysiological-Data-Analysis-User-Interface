@@ -13,11 +13,17 @@ function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figu
 % 3: DataType: Char that specifies how data is processed before pwelch.
 % Options: "Channel Individually" OR "Mean over all Channel"
 % 4: DataSource: string which data to use to compute? Either "Raw Data" or "Preprocessed Data"
-% 5: SelectedChannel: 1X2 double with channel over which pwelch is computed
+% 5: SelectedChannel: 1x2 double with channel over which pwelch is computed
 % (when no mean over channel selected). [Start Channel, Stop Channel] = all
 % channel from Start Channel to Stop Channel
 % 6: ChannelText: String which channel is analyzed -- only if power
 % spectrum over individual channel
+% 7. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Outputs:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

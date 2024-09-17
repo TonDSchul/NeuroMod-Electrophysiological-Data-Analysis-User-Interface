@@ -5,6 +5,9 @@ This folder contains the following functions with respective Header:
 File: Module_MainWindow_Plot_Data.m
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
+
+% Gets called in the 'Organize_Prepare_Plot_and_Extract_GUI_Info' function
+
 % Input Arguments:
 % 1. Data: Channel x Time holding the raw/preprocessed data (single/double)
 % 2. UIAxis: App UIAxes object designating the plot you want to plot in
@@ -48,9 +51,11 @@ File: Module_MainWindow_Plot_Time.m
 % 4. StopTimeIndex: Number of samples at which main window data plots ends
 % to draw red rectangle
 % 5. PlotType: "Initial" -- only input possible and needed so far
-% 6. EventPlot: "Events" to show event plots if within time range, any other
+% 6. rectangleHandle: Handle to red rectangle drawn in time plot. Input and output to be
+% able to access in rest of the GUI. Not needed yet
+% 7. EventPlot: "Events" to show event plots if within time range, any other
 % string like "Non" leads to no events being plotted
-% 7. EventData: vector of time points (in s as double) of the event selected
+% 8. EventData: vector of time points (in s as double) of the event selected
 % on the bottom right of the main window. Only needed if EventPlot = "Events"
 
 % Author: Tony de Schultz

@@ -1,4 +1,25 @@
 function Utility_Extract_Function_Headers_to_txt(folderPath, outputFileName)
+
+%________________________________________________________________________________________
+%% Function to search for all function headers in all .m files of a folder and save in a txt. file
+% This function can be used to automatically create a README file in each
+% folder containing the function headers of each function
+
+% Input Arguments:
+% 1. folderPath: Path to the folder holding .m files as char
+% 2. outputFileName: Name of the .txt file to save the header infos in (including the .txt file ending)
+
+% Output Arguments:
+% 1. stringArray: Contens of folder in a n x 1 string array with n being
+% the number of contents
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+
     % Check if the folder exists
     if ~isfolder(folderPath)
         error('The folder "%s" does not exist.', folderPath);

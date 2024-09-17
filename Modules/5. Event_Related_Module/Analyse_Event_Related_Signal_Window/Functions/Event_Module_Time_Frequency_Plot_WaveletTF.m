@@ -20,10 +20,14 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF 
 % channel 1 to 10
 % 10. EventSelection: 1 x 2 double with events to plot; i.e. [1,10] for
 % events 1 to 10
+% 11. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Outputs: 
 % 1. climsTF: current clim as 1 x 2 vector of plot so that user can set auto clim in the
 % GUI without having to calculate again
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

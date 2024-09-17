@@ -1,5 +1,30 @@
 function Extract_Events_Module_Load_and_Plot_Events(EventInfo,FilePaths,Figure,SelectedEventChannelNames,AllChannelNames,Data,RHDAllChannelData,DownsampleRate)
 
+%________________________________________________________________________________________
+%% Function load and plot event data in the show event data window (opened in the extract events window)
+
+% This function gets called whenever the user wants to see an example plot
+% of event data.
+
+% Inputs: 
+% 1. EventInfo: comes from the 'Extract_Events_Module_Determine_Available_EventChannel' function.
+%    contains recording system specific infos about events.
+% 2. FilePaths: contents of folder in which events were searched for (ncontens x 1 cell array with each cell containing a string)
+% 3. Figure: figure axes handle to plot event data in
+% 4. SelectedEventChannelNames: char, name of the event type (i.e. for Intan: Digital Inputs)
+% 5. AllChannelNames: Anmes if all possible name of the event types
+% 6. Data: main data structure from main window (mainly fot Data.Info field)
+% 7. RHDAllChannelData: Just If Intan .rhd: events are extracted ones, then saved in this
+% variable to be able to show again without having to extract again. Just
+% for Intan.rhd bc it takes by far the longest
+% 8. DownsampleRate: string, desired new sampling rate in Hz after
+% downsampling
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 %% Get original channel names
 if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
     for i = 1:length(AllChannelNames)

@@ -1,5 +1,30 @@
 function Error = Utility_Save_Data_as_MAT(Fullsavefile,PlottedData,Analysis)
 
+%________________________________________________________________________________________
+%% Function to export plotted/analysed data as .mat files
+% This function gets called in the Utility_Get_Plot_Data function
+
+% Input Arguments:
+% 1. Fullsavefile: char, Pcomplete path to the .mat file to save data in (including the .mat file ending)
+% 2. PlottedData: structure holding data that was plotted. Spike Analysis,
+% Main Window Analysis and LFP Analysis all create new fieldnames and are
+% therefore saved seperately.
+% 3: Analysis: string specifying the name of the analysis. This has to
+% obey some rules! For Unit analysis, it has to cointain the string "Unit".
+% For Spike analyis it has to contain "Spike" or "Spikes"
+% For Time Frequency power it has to contain the string "Phase"
+% For CSD and ERP anylsis it has to contain the string "Current" or
+% "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
+% Utility_Save_Data_as_MAT functions
+
+% Output Arguments: 
+% 1. Error: 1 if an error occured, 0 if not. gets checked in Utility_Get_Plot_Data function
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 Error = 0;
 if contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
     if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") 

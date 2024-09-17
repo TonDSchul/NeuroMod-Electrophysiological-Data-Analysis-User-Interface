@@ -34,6 +34,13 @@ function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(SpikeTimes,Spike
 % 16. ChannelSpacing: in um from Data.Info.ChannelSpacing
 % 17. appWindow: char, 'Kilosort' OR 'Internal' to see which window it
 % comes from
+% 18. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
+% 19. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

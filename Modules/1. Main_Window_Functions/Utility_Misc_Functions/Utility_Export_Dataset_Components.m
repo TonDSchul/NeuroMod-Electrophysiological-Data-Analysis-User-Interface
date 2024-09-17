@@ -1,5 +1,29 @@
 function Utility_Export_Dataset_Components(Data,Component,Format,executableFolder)
 
+%________________________________________________________________________________________
+%% Function to export some dataset components as txt,csv or .mat
+% This function gets called in the Export Dataset Components Window when
+% the user clicks the "Export" button
+
+% NOTE: At standard the folder to save dataset components in is:
+% Data_to_GUI\Analysis_Results
+
+% NOTE: To export Raw and Preprocessed data, use the save dataset function.
+% This saves the raw and/or preprocessed data as a .dat file which is faster and easier on memory.
+% Also prevents .txt or csv files from not being readable due to to much data.
+
+% Input Arguments:
+% 1. Data: main window structure holding dataset components (i.e. Data.Events, Data.Spikes ...)
+% 2. Component: Selected dataset component as string, i.e. "Events" or "Spikes"
+% 3. Format: Format to save data in, as string, ".mat" OR ".txt" OR ".csv"
+% 4. executableFolder_ Path to GUI currently executed as char (created on startup of Main Window)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 %% Save Path
 current_time = char(datetime('now'));
 current_time(current_time==':') = '_';
@@ -26,21 +50,33 @@ else
     end
 end
 
+%% Write Info File
+writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+
+writematrix(strcat("***** Recording Infos *****"),Fullsavefile, 'WriteMode', 'append');
+
+writestruct(Data.Info, Fullsavefile, FileType="json");
+
+writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+
+if strcmp(Component,"Info")
+    msgbox(strcat("Succesfully exported Dataseot to: ",Fullsavefile))
+    return;
+end
+
 %% Take Dataset
 DataToExport = Data.(Component);
-
-DataToExport = [1,2,3,4;4,3,2,1;1,2,3,4;4,3,2,1];
 
 %% Save as .csv in chunks
 
 if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info") && strcmp(Format,".txt")
 
-    h = waitbar(0, 'Exporting data...', 'Name','Exporting data...');
+    h = waitbar(0, strcat("Exporting ",Component ," Data..."), 'Name','Exporting Data...');
     
     if strcmp(Component,"Time")
-        writematrix(strcat("*****", Component," Data in s *****"),Fullsavefile);
+        writematrix(strcat("*****", Component," Vector in Seconds *****"),Fullsavefile, 'WriteMode', 'append');
     elseif strcmp(Component,"Events")
-        writematrix(strcat("*****", Component," Data in samples *****"),Fullsavefile);
+        writematrix(strcat("*****", Component," Data in Samples *****"),Fullsavefile, 'WriteMode', 'append');
         writematrix(strcat("***** Event Channel Type: ",Data.Info.EventChannelType," *****"),Fullsavefile, 'WriteMode', 'append');
         EventChannelNames = [];
         for z = 1:length(Data.Info.EventChannelNames)
@@ -54,7 +90,7 @@ if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info
         writematrix(strcat("***** Event Channel Names: ",EventChannelNames," *****"),Fullsavefile, 'WriteMode', 'append');
 
     elseif strcmp(Component,"Spikes")
-        writematrix(strcat("***** Spike Data Structure *****"),Fullsavefile);
+        writematrix(strcat("***** Spike Data Structure *****"),Fullsavefile, 'WriteMode', 'append');
     end
 
     if iscell(DataToExport)
@@ -68,15 +104,7 @@ if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info
 
     for ncomponents = 1:numiters
         
-        if strcmp(Component,"Raw") || strcmp(Component,"Preprocessed") 
-            writematrix(strcat("***** Channel ",num2str(ncomponents)," Data in uV *****"),Fullsavefile, 'WriteMode', 'append');
-        elseif strcmp(Component,"Events")
-            writematrix(strcat("*****", Component," Data for Event Channel ",Data.Info.EventChannelNames(ncomponents)," *****"),Fullsavefile, 'WriteMode', 'append');
-        elseif strcmp(Component,"Spikes")
-            writematrix(strcat("***** Content of Spike Data Field ",Spikefieldnames(ncomponents)," *****"),Fullsavefile, 'WriteMode', 'append');
-        end
-
-        if strcmp(Component,"Raw") || strcmp(Component,"Preprocessed") || strcmp(Component,"Time") 
+        if strcmp(Component,"Time") 
             numchunks = 1000;
             cols_per_chunk = floor(length(DataToExport)/numchunks);
         else
@@ -84,8 +112,30 @@ if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info
             if iscell(DataToExport)
                 cols_per_chunk = floor(length(DataToExport{ncomponents})/numchunks);
             elseif isstruct(DataToExport)
-                StrucDataToSave = DataToExport.(Spikefieldnames{ncomponents})';
-                cols_per_chunk = floor(length(StrucDataToSave)/numchunks);
+                if ndims(DataToExport.(Spikefieldnames{ncomponents}))<3
+                    StrucDataToSave = DataToExport.(Spikefieldnames{ncomponents})';
+                    cols_per_chunk = floor(length(StrucDataToSave)/numchunks);
+                else
+                    StrucDataToSave = DataToExport.(Spikefieldnames{ncomponents});
+                end
+            end
+        end
+
+        if strcmp(Component,"Events")
+            writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+            writematrix(strcat("*****", Component," Data for Event Channel ",Data.Info.EventChannelNames(ncomponents)," *****"),Fullsavefile, 'WriteMode', 'append');
+            writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        elseif strcmp(Component,"Spikes")
+            if strcmp(Spikefieldnames(ncomponents),"BiggestAmplWaveform") || strcmp(Spikefieldnames(ncomponents),"kept_spikes")
+                continue;
+            end
+
+            if ndims(StrucDataToSave)<3
+                writematrix(strcat("***** Content of Spike Data Field ",Spikefieldnames(ncomponents)," *****"),Fullsavefile, 'WriteMode', 'append');
+            elseif ndims(StrucDataToSave)==3
+                writematrix(strcat("***** Content of Spike Data Field ",Spikefieldnames(ncomponents)," is three dimensional and can not be sensibly saved. Please export as .mat file for full compatibility *****"),Fullsavefile, 'WriteMode', 'append');
+                disp(strcat("***** Content of Spike Data Field ",Spikefieldnames(ncomponents)," is three dimensional and can not be sensibly saved. Please export as .mat file for full compatibility *****"));
+                continue;
             end
         end
 
@@ -112,7 +162,7 @@ if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info
                         end
                     end
                 else
-                    chunk = DataToExport(ncomponents, col_range_Start:col_range_Stop);
+                    chunk = DataToExport(ncomponents, col_range_Start:col_range_Stop)';
                 end
             else % last chunk: all data till ends
                 if iscell(DataToExport)
@@ -136,11 +186,12 @@ if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info
             col_range_Stop = col_range_Stop+cols_per_chunk;
         
             % Write the current chunk of columns
-            writematrix(chunk', Fullsavefile,'WriteMode', 'append', 'Delimiter', ',');
+            writematrix(chunk', Fullsavefile,'WriteMode', 'append');
         
             % Update the progress bar
             fraction = nchunks/numchunks;
-            msg = sprintf('Exporting data... (%d%% done)', round(100*fraction));
+            
+            msg = sprintf('Exporting %s Data... (%d%% done)', Component, round(100*fraction));
             waitbar(fraction, h, msg);
         end
 

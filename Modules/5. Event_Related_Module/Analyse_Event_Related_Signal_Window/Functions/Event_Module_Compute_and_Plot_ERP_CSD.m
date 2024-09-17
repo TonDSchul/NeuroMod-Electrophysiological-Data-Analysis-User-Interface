@@ -28,12 +28,16 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % 9. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
 % erp plots of one channel over all events OR 'MultipleERPOnly' for just
 % erp plot of each channel OR 'All' for both plots
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Outputs:
 % 1. CSDClim
 % 2. Trialplot: Handle to single trials of ERP plot for single channel
 % 3. Meanplot: Handle to ERP of ERP plot for single channel
 % 4. Eventplot: Handle to plotted event line of plots
+% 5. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

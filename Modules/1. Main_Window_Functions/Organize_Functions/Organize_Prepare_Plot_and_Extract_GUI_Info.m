@@ -4,7 +4,7 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 
 %% Function to plot data in main window based on selecteions and datatypes of the GUI
 % This function is called when the user changes the main window data or
-% time plot to plot new data. This includes spikes and events
+% time plot to show new data. This includes spikes and event data. 
 
 % Inputs: 
 % 1. app: app object of GUI main window
