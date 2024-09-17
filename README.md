@@ -26,7 +26,7 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 
 > ## **Data Formats and Capabilities**
 
-<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" style="max-width:100%; height:auto;" /><br>
+<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" style="max-width:60%; height:auto;" /><br>
 
 <br>
 
