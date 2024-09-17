@@ -28,6 +28,8 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" style="max-width:100%; height:auto;" /><br>
 
+<br>
+
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 
