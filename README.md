@@ -14,7 +14,7 @@ The aim is to offer a comfortable and user-friendly experience with support for 
   
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
 
-  - [Get Started With Example Data](#overview-of-required-matlab-toolboxes)
+  - [Get Started With Example Data](#get-started-with-example-data)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
  
