@@ -109,7 +109,15 @@ Optimization Toolbox
 Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
 ```
-**4. For everything else:**
+**4. Wave_clus 3 Spike Sorting:**
+```matlab
+Image Processing Toolbox
+Parallel Computing Toolbox
+Signal Processing Toolbox
+Statistics and Machine Learning Toolbox
+Wavelet Toolbox
+```
+**5. For everything else:**
 ```matlab
 Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
