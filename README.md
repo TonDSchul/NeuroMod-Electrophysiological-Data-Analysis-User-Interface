@@ -1,4 +1,6 @@
-# Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab <img src="Modules/MISC/Images/Logo.png" align="right" width="200" height="200"/>
+# Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab 
+
+<img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
   
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
 It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all with prooven methods and without reinventing the wheel. 
@@ -26,9 +28,7 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 
 > ## **Data Formats and Capabilities**
 
-<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" style="max-width:60%; height:auto;" /><br>
-
-<br>
+<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="70%" />
 
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
@@ -136,6 +136,8 @@ https://ced.co.uk/upgrades/spike2matson
 When you extract .smrx for the first time, you are asked to select the folder in which you installed the Spike2 MATLAB SON Interface to be able to use the library. The path is saved permanently, so you only have to do this once.
 
 > ### **Get Started With Example Data**
+
+<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
 
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides. 
 It is ideal to follow along the youtube tutorial. All functionalities can be accesed in the module overview on the right side of the toolbox. 
