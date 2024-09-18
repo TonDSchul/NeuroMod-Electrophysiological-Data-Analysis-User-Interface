@@ -1,4 +1,6 @@
-# Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab <img src="Modules/MISC/Images/Logo.png" align="right" width="200" height="200"/>
+# Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab 
+
+<img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
   
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
 It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all with prooven methods and without reinventing the wheel. 
@@ -12,7 +14,7 @@ The aim is to offer a comfortable and user-friendly experience with support for 
   
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
 
-  - [Get Started With Example Data](#overview-of-required-matlab-toolboxes)
+  - [Get Started With Example Data](#get-started-with-example-data)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
  
@@ -26,14 +28,14 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 
 > ## **Data Formats and Capabilities**
 
-<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" style="max-width:100%; height:auto;" /><br>
+<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="70%" />
 
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
 
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
-Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods. 
+Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data (and unit analysis) visualization within the GUI.
+If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3. 
 
 __NOTE:__ Currently only Kilosort 3 and Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
@@ -109,7 +111,15 @@ Optimization Toolbox
 Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
 ```
-**4. For everything else:**
+**4. Wave_clus 3 Spike Sorting:**
+```matlab
+Image Processing Toolbox
+Parallel Computing Toolbox
+Signal Processing Toolbox
+Statistics and Machine Learning Toolbox
+Wavelet Toolbox
+```
+**5. For everything else:**
 ```matlab
 Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
@@ -127,10 +137,11 @@ When you extract .smrx for the first time, you are asked to select the folder in
 
 > ### **Get Started With Example Data**
 
+<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
+
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides. 
-It is ideal to follow along the youtube tutorial. All functionalities can be accesed in the module overview on the right side of the toolbox. 
-Just select an option and click in the "RUN" button. The first thing you have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Following along the descriptions in the window that opens, press some buttons or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing), you will get a message what to do, which will guide you through the procedure by trial and error. 
+The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example Datasets are saved in the corresponding folder of the toolbox. Following along the descriptions in the window that opens, specify the folder and channelspacing or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing or selecting a folder without a supported recording file), you will get a message what was going wrong and what the issue is.
 
 > ### **Overview of Other Toolboxes Used**
 
@@ -147,6 +158,12 @@ Data and event extraction of Open Ephys data formats is handled by the Open Ephy
 Check out the **Open Ephys Matlab Tools**: 
 
 https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
+
+Spike Sorting for internally detected spikes (with thresholding) is done using the Wave_clus 3 Toolbox from Github.
+
+Check out the **Wave_clus 3 Toolbox**: 
+
+https://github.com/csn-le/wave_clus?tab=readme-ov-file#wave_clus-3
 
 Lastly, some functions from the cortex-lab Github page were used ('Spikes' repository) for spike analysis and LFP Band power analysis. Almost all functions used were modified to make to fit the purpose of this GUI.
 

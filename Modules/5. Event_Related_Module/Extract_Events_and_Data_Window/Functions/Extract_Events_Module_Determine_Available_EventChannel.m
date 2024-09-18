@@ -97,7 +97,7 @@ if strcmp(Data.Info.RecordingType,"IntanDat")
     end
 
     if ~isempty(AmplifierDataIndex)
-        texttoshow(end+1) = "Amplifier Input Channel:";
+        texttoshow = [texttoshow;"Amplifier Input Channel:"];
         currentelements = length(texttoshow);
     
         for i = 1:length(AmplifierDataIndex)

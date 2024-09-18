@@ -58,6 +58,9 @@ if PlotExample == 1
     if isfield(Data,'Raw')
         Data.Raw = Data.Raw(:,1:Data.Info.NativeSamplingRate);
         Data.Time = Data.Time(1:Data.Info.NativeSamplingRate);
+        if isfield(Data,'Preprocessed')
+            Data.Preprocessed = Data.Preprocessed(:,1:Data.Info.NativeSamplingRate);
+        end
     end
 end
 
@@ -164,28 +167,44 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
             end
         end
 
-        NonNan = [];
+        clear NonNan
+
     elseif strcmp(PreprocessingSteps(PPSteps),"Median Filter")
+
         if PPSteps == 1 % If first step in pipeline: apply to raw data
             NonNan = ~isnan(Data.Raw);
+            TempRaw = zeros(size(Data.Raw));
+            for nchannel = 1:size(Data.Raw,1)
+                TempRaw(nchannel,1:sum(NonNan(nchannel,:))) = Data.Raw(nchannel,NonNan(nchannel,:));
+            end
         else
             NonNan = ~isnan(Data.Preprocessed);
+            TempPreprocessed = zeros(size(Data.Preprocessed));
+            for nchannel = 1:size(Data.Preprocessed,1)
+                TempPreprocessed(nchannel,1:sum(NonNan(nchannel,:))) = Data.Preprocessed(nchannel,NonNan(nchannel,:));
+            end
         end
+        
         h = waitbar(0, 'Median Filtering...', 'Name','Preprocessing...');
+
         %% Get Filter options
         [~,~,filterorder,~,~,~,~] = Preprocess_Module_Set_Filter_Parameter(PPSteps,PreprocessingSteps,PreProInfo);
         msg = sprintf('Median Filtering... (%d%% done)', round(100*(1/2)));
         waitbar(1/2, h, msg);
+
         if PPSteps == 1 % If first step in pipeline: apply to raw data
-            [Data.Preprocessed(:,NonNan)] = ft_preproc_medianfilter(Data.Raw(:,NonNan), filterorder);
+            [Data.Preprocessed] = ft_preproc_medianfilter(TempRaw, filterorder);
         else % If not first step in pipeline: apply to already preprocessed data
-            [Data.Preprocessed(:,NonNan)] = ft_preproc_medianfilter(Data.Preprocessed(:,NonNan), filterorder);
+            [Data.Preprocessed] = ft_preproc_medianfilter(TempPreprocessed, filterorder);
         end
+
         msg = sprintf('Median Filtering... (%d%% done)', round(100*(2/2)));
         waitbar(2/2, h, msg);
-        close(h);
-        NonNan = [];
+
+        clear TempPreprocessed TempRaw NonNan
+
     elseif strcmp(PreprocessingSteps(PPSteps),"Downsampling")
+
         h2 = waitbar(0, 'Downsampling...', 'Name','Preprocessing...');
         %% Get Filter options
         [~,~,~,~,~,~,DownsampleFactor] = Preprocess_Module_Set_Filter_Parameter(PPSteps,PreprocessingSteps,PreProInfo);
@@ -245,9 +264,9 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
     elseif strcmp(PreprocessingSteps(PPSteps),"GrandAverage")
 
         if PPSteps == 1 % If first step in pipeline: apply to raw data
-            Data.Preprocessed = bsxfun(@minus,Data.Raw,mean(Data.Raw,1));
+            Data.Preprocessed = bsxfun(@minus,Data.Raw,mean(Data.Raw,1,'omitnan'));
         else % If not first step in pipeline: apply to already preprocessed data
-            Data.Preprocessed = bsxfun(@minus,Data.Preprocessed,mean(Data.Preprocessed,1));
+            Data.Preprocessed = bsxfun(@minus,Data.Preprocessed,mean(Data.Preprocessed,1,'omitnan'));
         end
 
     elseif strcmp(PreprocessingSteps(PPSteps),"ChannelDeletion")

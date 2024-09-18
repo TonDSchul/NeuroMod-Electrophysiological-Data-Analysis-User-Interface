@@ -119,6 +119,7 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
                 end
             end   
             app.InputChannelSelectionEditField.Value = ChannelSelctionToShow;
+            app.NrInputChinfolderEditField.Value = num2str(length(ChannelSelctionToShow));
         else
             ChannelSelctionToShow = '';
             for i = 1:NumChannel
@@ -130,6 +131,7 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
                 end
             end   
             app.InputChannelSelectionEditField.Value = ChannelSelctionToShow;
+            app.NrInputChinfolderEditField.Value = num2str(NumChannel);
         end
 
         if strcmp(Data.Info.RecordingType,"Open Ephys")

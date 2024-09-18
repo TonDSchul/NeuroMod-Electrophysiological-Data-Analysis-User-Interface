@@ -65,10 +65,10 @@ if strcmp(type,"Filter")
                 Index = i;
                 flagexist = 1;
             elseif strcmp(PreprocessingSteps(i),"Band-Stop")
-                Index = i;
+                IndexBandstop = i;
                 flagbandstop = 1;
             elseif strcmp(PreprocessingSteps(i),"Median Filter")
-                Index = i;
+                IndexMedian = i;
                 flagmedian = 1;
             end
         end
@@ -77,7 +77,7 @@ if strcmp(type,"Filter")
     %% Save selected filterparameter (overwriting old settings happens here!)
     % If a filter except of the following two is selected: Parameter names
     % are the same and only one of them can be applied at a time -->
-    % handling all of these casess together
+    % handling all of these cases together
     if ~strcmp(FilterMethod,"Median Filter") && ~strcmp(FilterMethod,"Band-Stop")
         % Save all entered filter parameters
         Info.FilterMethod = FilterMethod;

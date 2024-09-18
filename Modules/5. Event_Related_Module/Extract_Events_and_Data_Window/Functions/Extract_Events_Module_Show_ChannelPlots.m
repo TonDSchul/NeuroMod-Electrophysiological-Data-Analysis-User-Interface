@@ -56,9 +56,9 @@ if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,
             FilePaths = RHDPath;
             
             if isempty(RHDAllChannelData)
-                [~,~,~,~,ChannelNameStructure,~,~,~,NumChannel] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",[]);
+                [~,~,~,~,~,~,~,~,NumChannel,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",[]);
             else
-                [~,~,~,~,ChannelNameStructure,~,~,~,NumChannel] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"NumChannel",[]);
+                [~,~,~,~,~,~,~,~,NumChannel,ChannelNames] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"NumChannel",[]);
             end
 
             if NumChannel.num_board_adc_channels == 0 && NumChannel.num_board_dig_in_channels == 0 && NumChannel.aux_input_channels == 0
@@ -67,24 +67,32 @@ if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,
             end
 
             EventInfo = [];
-            RHDEventChannelNames = cell(1,length(ChannelNameStructure));
+            RHDEventChannelNames = cell(1,length(ChannelNames));
             
-            for p = 1:length(ChannelNameStructure)
-                if strfind(ChannelNameStructure(p).native_channel_name,"DIGITAL")
-                    app.EventChannelNames.Digital{p} = ChannelNameStructure(p).custom_channel_name;
-                    if NumChannel.num_board_dig_in_channels > 0 && ~isfield(EventInfo,'DIChannel')
-                        EventInfo.DIChannel = 1:NumChannel.num_board_dig_in_channels;
-                    end                    
-                elseif strfind(ChannelNameStructure(p).native_channel_name,"ADC")
-                    app.EventChannelNames.Analog{p} = ChannelNameStructure(p).custom_channel_name;
-                    if NumChannel.num_board_adc_channels > 0 && ~isfield(EventInfo,'ADCChannel')
-                        EventInfo.ADCChannel = 1:NumChannel.num_board_dig_in_channels;
+            ChannelNamesfieldnames = fieldnames(ChannelNames);
+
+            for p = 1:length(ChannelNamesfieldnames)
+                if strfind(ChannelNamesfieldnames{p},'Digital')
+                    if ~isempty(ChannelNames.Digital)
+                        app.EventChannelNames.Digital= ChannelNames.Digital;
+                        if NumChannel.num_board_dig_in_channels > 0 && ~isfield(EventInfo,'DIChannel')
+                            EventInfo.DIChannel = 1:NumChannel.num_board_dig_in_channels;
+                        end    
                     end
-                elseif strfind(ChannelNameStructure(p).native_channel_name,"AUX")
-                    app.EventChannelNames.Aux{p} = ChannelNameStructure(p).custom_channel_name;
-                    if NumChannel.aux_input_channels > 0 && ~isfield(EventInfo,'AUXChannel')
-                        EventInfo.AUXChannel = 1:NumChannel.aux_input_channels;
-                    end  
+                elseif strfind(ChannelNamesfieldnames{p},'Analog')
+                    if ~isempty(ChannelNames.Analog)
+                        app.EventChannelNames.Analog = ChannelNames.Analog;
+                        if NumChannel.num_board_adc_channels > 0 && ~isfield(EventInfo,'ADCChannel')
+                            EventInfo.ADCChannel = 1:NumChannel.num_board_dig_in_channels;
+                        end
+                    end
+                elseif strfind(ChannelNamesfieldnames{p},'Aux')
+                    if ~isempty(ChannelNames.Aux)
+                        app.EventChannelNames.Aux = ChannelNames.Aux;
+                        if NumChannel.aux_input_channels > 0 && ~isfield(EventInfo,'AUXChannel')
+                            EventInfo.AUXChannel = 1:NumChannel.aux_input_channels;
+                        end  
+                    end
                 end
             end
         end
