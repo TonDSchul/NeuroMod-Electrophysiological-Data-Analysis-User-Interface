@@ -56,6 +56,7 @@ titlestring = strcat("Current source density analysis of main window time range 
 title(Figure,titlestring);
 xlabel(Figure,'Time [s]')
 ylabel(Figure,'Depth [µm]') 
+Figure.FontSize = 10;
 
 if strcmp(TwoORThreeD,"TwoD")
     PowerDepth_handles = findobj(Figure, 'Tag', 'PowerDepth');

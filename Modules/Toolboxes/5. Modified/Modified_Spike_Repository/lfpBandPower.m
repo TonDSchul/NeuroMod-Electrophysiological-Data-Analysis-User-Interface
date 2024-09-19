@@ -32,7 +32,7 @@ nClipSamps = round(lfpFs*clipDur);
 allPowerEstByBand = zeros(nClips, nChansInFile, nF);
 
 for n = 1:nClips
-    TextArea.Value = strcat('Analysing clip ',num2str(n),' of ',num2str(nClips));
+    %TextArea.Value = strcat('Analysing clip ',num2str(n),' of ',num2str(nClips));
     pause(0.01);
 
     DataIndicies = (1:nClipSamps)+sampStarts(n);

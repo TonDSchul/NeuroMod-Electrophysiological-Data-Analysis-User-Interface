@@ -27,9 +27,12 @@ if AddXticks
     numTicks = NumXTicksToShow; % Desired number of ticks
     tickIndices = round(linspace(1, length(XData), numTicks));
     xtickValues = XData(tickIndices); % Select the x values at these indices
-    % Set xticks and xticklabels for Figure
-    xticks(Figure, xtickValues); % Set the chosen x values as ticks
-    xticklabels(Figure, arrayfun(@num2str, xtickValues, 'UniformOutput', false)); % Generate labels for the x-ticks
+    
+    if length(unique(xtickValues))==length(tickIndices)
+        % Set xticks and xticklabels for Figure
+        xticks(Figure, xtickValues); % Set the chosen x values as ticks
+        xticklabels(Figure, arrayfun(@num2str, xtickValues, 'UniformOutput', false)); % Generate labels for the x-ticks
+    end
 end
 
 if ~isempty(XLabel)

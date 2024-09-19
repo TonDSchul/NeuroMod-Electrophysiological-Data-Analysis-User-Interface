@@ -120,6 +120,7 @@ xticklabels(Figure, cellstr(num2str(Timeofbins(:), '%.2f')));
 xlabel(Figure,strcat("Time [s]; ",num2str(Timerangebin),'s per bin'))
 hBar = findobj(Figure, 'Type', 'bar', 'Tag', 'Barobject');
 xlim(Figure,[1,length(Timeofbins)])
+Figure.FontSize = 10;
 
 if~isempty(hBar)
     %previousYLim = max(hBar.YData);

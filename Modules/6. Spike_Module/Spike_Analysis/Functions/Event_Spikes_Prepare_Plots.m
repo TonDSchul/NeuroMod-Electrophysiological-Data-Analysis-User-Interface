@@ -1,4 +1,4 @@
-function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,BaselineWindowField,ChannelSelectionField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionField,BaselineWindowField,SpikeRateNumBinsEditField,SpikeType,SpikeTriggereAverage,SpikeTriggeredAverageField)
+function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,BaselineWindowField,ChannelSelectionField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionField,BaselineWindowField,SpikeRateNumBinsEditField,SpikeType,SpikeTriggereAverage,SpikeTriggeredAverageField,SpikeBinSettings)
 %________________________________________________________________________________________
 %% Function to prepare plots for internal and kilosort event spike analysis
 
@@ -28,6 +28,9 @@ function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEv
 % otherwise
 % 8. SpikeTriggeredAverageField: field of app window holding time range for
 % spiked triggered average, as char, i.e. '-0.05,0.2'
+% 9. SpikeBinSettings: structure, save numbins in time and depth domain for spike
+% rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
+% standard. 
 
 %Outputs:
 
@@ -153,10 +156,12 @@ end
 %% Initialize Plot Info for heatmap
 % Define bin sizes
 numchannel = length(PlotInfo.ChannelsToPlot(1):PlotInfo.ChannelsToPlot(2));
-PlotInfo.depth_bin_size = Data.Info.ChannelSpacing; %20; % Depth bin size
-PlotInfo.time_bin_size = 0.006; % app.GeneralSettings.Time bin size in seconds
+
+PlotInfo.depth_bin_size = SpikeBinSettings.depth_bin_size; %20; % Depth bin size
+PlotInfo.time_bin_size = SpikeBinSettings.time_bin_size; % app.GeneralSettings.Time bin size in seconds
+
 % Define bin edges
-PlotInfo.depth_edges = 0:Data.Info.ChannelSpacing:numchannel*Data.Info.ChannelSpacing;
+PlotInfo.depth_edges = 0:PlotInfo.depth_bin_size:numchannel*Data.Info.ChannelSpacing;
 PlotInfo.time_edges = -PlotInfo.TimearoundEvent(1):PlotInfo.time_bin_size:PlotInfo.TimearoundEvent(2);
 
 commaindicie = strfind(BaselineWindowField.Value,",");

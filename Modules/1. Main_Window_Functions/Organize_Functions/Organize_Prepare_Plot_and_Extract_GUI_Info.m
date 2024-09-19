@@ -197,9 +197,9 @@ if isprop(app.CSDApp,'ExistflagCSD')
     ChannelSpacing = app.Data.Info.ChannelSpacing;
 
     if isfield(app.Data.Info,'DownsampleFactor')
-        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.TimeDownsampled(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.TwoORThreeD,app.CurrentPlotData);
+        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.TimeDownsampled(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData);
     else
-        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Time(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.TwoORThreeD,app.CurrentPlotData);
+        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Time(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData);
     end
 end
 

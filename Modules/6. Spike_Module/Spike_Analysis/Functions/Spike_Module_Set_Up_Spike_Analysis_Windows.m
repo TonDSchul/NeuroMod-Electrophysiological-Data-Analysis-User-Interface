@@ -44,24 +44,38 @@ if strcmp(EventWindow,"EventWindow")
     app.BaselineWindowStartStopinsEditField.Enable = "on";
     app.TimeWindowSpiketriggredLFPEditField.Enable = "off";
     app.BaselineWindowStartStopinsEditField.Value = strcat(num2str(-0.002),',',num2str(0.1)); 
+
+    % Standard Settings
+    app.SpikeBinSettings.depth_bin_size = app.Mainapp.Data.Info.ChannelSpacing; %20; % Depth bin size
+    app.SpikeBinSettings.time_bin_size = 0.006; % app.GeneralSettings.Time bin size in seconds
     
     app.ChannelSelectionforPlottingEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.Raw,1)));
 
     app.EventRangeEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.EventRelatedData,2)));
     
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
-        [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value);
+        [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings);
     else
-        [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Internal",0,app.TimeWindowSpiketriggredLFPEditField.Value);
+        [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Internal",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings);
     end
     
     app.BaselineWindowStartStopinsEditField.Value = strcat(num2str(-PlotInfo.TimearoundEvent(1)),',',num2str(0.1)); 
 
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
-        [~,SpikeTimes,~,~,SpikeCluster,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value);
+        [~,SpikeTimes,~,~,SpikeCluster,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings);
     else
-        [~,SpikeTimes,~,~,SpikeCluster,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Internal",0,app.TimeWindowSpiketriggredLFPEditField.Value);
+        [~,SpikeTimes,~,~,SpikeCluster,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Internal",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings);
     end
+
+    spaceindicie = find(app.Mainapp.Data.Info.EventRelatedDataTimeRange==' ');
+    if ~isempty(spaceindicie)
+        app.TimearoundEvent(1) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)-1));
+        app.TimearoundEvent(2) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
+        if app.TimearoundEvent(1) ~= 0
+            app.TimearoundEvent(1) = -app.TimearoundEvent(1);
+        end
+    end
+
 end
 
 if strcmp(EventWindow,"Non")

@@ -45,7 +45,7 @@ cd(executableFolder);
 
 if isempty(NewFolderSelection) % If folder no manually set by user 
     % Autoset folder which contents should be checked 
-    SelectedFolder = [executableFolder,'\Saved Data\GUI'];
+    SelectedFolder = [executableFolder,'\Example Data\Intan'];
 else
     SelectedFolder = NewFolderSelection;
 end
@@ -102,18 +102,47 @@ for i = 1:length(stringArray)
         currentstring = convertStringsToChars(stringArray(i));
         if length(currentstring) >=8
             if strcmp(currentstring(end-3:end),".mat") && ~strcmp(currentstring(end-7:end-4),"Info")
-                matfilecount = matfilecount + 1;
-                DataMatfileindex = [DataMatfileindex,i];
+                %% Check if selected mat file contains correct variable
+                variableName = 'Raw';  % Variable you want to load
+                
+                % Get the list of variables in the file
+                variablesInFile = who('-file', strcat(SelectedFolder,'\',currentstring));
+                
+                % Check if the desired variable exists
+                if ~ismember(variableName, variablesInFile)
+                    %msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
+                    continue;  % Exit if the variable does not exist
+                else
+                    matfilecount = matfilecount + 1;
+                    DataMatfileindex = [DataMatfileindex,i];
+                end
+
+                
             end
         end
         if strcmp(currentstring(end-3:end),".dat")
             DataDATfileindex = [DataDATfileindex,i];
         end
+
         % No data mat file
         if length(currentstring) >=8
             if strcmp(currentstring(end-3:end),".mat") && strcmp(currentstring(end-7:end-4),"Info")
-                CheckJustInfo = CheckJustInfo +1;
-                Infofileindex = [Infofileindex,i];
+                %% Check if selected mat file contains correct variable
+                variableName = 'Info';  % Variable you want to load
+                
+                % Get the list of variables in the file
+                variablesInFile = who('-file', strcat(SelectedFolder,'\',currentstring));
+                
+                % Check if the desired variable exists
+                if ~ismember(variableName, variablesInFile)
+                    %msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
+                    continue;  % Exit if the variable does not exist
+                else
+                    CheckJustInfo = CheckJustInfo +1;
+                    Infofileindex = [Infofileindex,i];
+                end
+
+                
             end
         end
     end
@@ -123,7 +152,15 @@ end
 Index = 1;
 
 DropDownMenuChar = cell(1,1);
-DropDownMenu_2Char = cell(1,length(DataDATfileindex));
+DropDownMenu_2Char = cell(1,1);
+
+if ~isempty(DataDATfileindex)
+    DropDownMenu_2Char = cell(1,length(DataDATfileindex));
+else
+    if ~isempty(DataMatfileindex)
+        DropDownMenu_2Char = cell(1,length(DataDATfileindex));
+    end
+end
 
 if find(Formatsfound == ".dat'")
     DropDownMenuChar{Index} = '.dat';

@@ -18,7 +18,7 @@ function Preprocessing_Events_PopulateInfoText(TextArea,Data)
 
 if isfield(Data.Info,'EventRelatedPreprocessing')
     [nchannel,ntrials,ntime] = size(Data.PreprocessedEventRelatedData);
-    TextArea.Value = ["Preprocessed Event Related Data found with dimensions:","","Nr Channel: ",num2str(nchannel),"Nr Trials: ",num2str(ntrials),"Nr Time Points:", num2str(ntime),"","Already applied preprocessing:"];
+    TextArea.Value = ["Please select the kind of preprocessing you want to conduct.","","Preprocessed Event Related Data found with dimensions:","","Nr Channel: ",num2str(nchannel),"Nr Trials: ",num2str(ntrials),"Nr Time Points:", num2str(ntime),"","Already applied preprocessing:"];
     infoString = [];
     fields = fieldnames(Data.Info.EventRelatedPreprocessing);
     for k = 1:numel(fields)
@@ -41,7 +41,7 @@ if isfield(Data.Info,'EventRelatedPreprocessing')
     TextArea.Value = [currentValue;"";infoString];
 
 else
-    TextArea.Value = "Event data was not preprocessed yet";
+    TextArea.Value = "Event data was not preprocessed yet. Please select the kind of preprocessing you want to conduct.";
     [nchannel,ntrials,ntime] = size(Data.EventRelatedData);
     TextArea.Value = [TextArea.Value,"","Event Data has following dimensions:","","Nr Channel: ",num2str(nchannel),"Nr Trials: ",num2str(ntrials),"Nr Time Points:", num2str(ntime)];
 end

@@ -87,6 +87,7 @@ ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(We
 
 xlim(Figure,[dispRange(1) dispRange(2)]);
 title(Figure,titlestring);
+Figure.FontSize = 10;
 drawnow;
 hold(Figure, 'off' );
 

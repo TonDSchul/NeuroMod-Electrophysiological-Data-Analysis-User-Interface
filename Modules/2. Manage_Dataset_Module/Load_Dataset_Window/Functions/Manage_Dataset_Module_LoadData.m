@@ -27,6 +27,9 @@ if strcmp(Format,".mat")
     Datatoload = [];
     %% Load Data   
     % Load the selected .mat file and save in the mainapp
+    h = waitbar(0, 'Loading saved .mat file...', 'Name','Loading saved .mat file...');
+    msg = sprintf('Loading saved .mat file... (%d%% done)', 50);
+    waitbar(50, h, msg);
     Datatoload = load(FullPath);
 end
 

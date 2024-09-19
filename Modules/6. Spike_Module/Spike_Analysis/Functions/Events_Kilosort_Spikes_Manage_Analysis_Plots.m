@@ -1,4 +1,4 @@
-function [Data,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData)
+function [Data,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for event kilosort spikes based on user input
@@ -42,6 +42,9 @@ function [Data,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRat
 % 16. TwoORThreeDchar, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 17. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 18. SpikeBinSettings: structure, save numbins in time and depth domain for spike
+% rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
+% standard. 
 
 % Outputs:
 % 1. Data: main app data structure 
@@ -72,9 +75,9 @@ end
 
 %% Prepare Plots
 if strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
-    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,"Kilosort",1,TimeWindowSpiketriggredLFPEditField);
+    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,"Kilosort",1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings);
 else
-    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,"Kilosort",0,TimeWindowSpiketriggredLFPEditField);
+    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,"Kilosort",0,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings);
 end
 
 % Check for errros

@@ -97,6 +97,7 @@ if isempty(PowerEstimatesHandles)
     xtick_labels = {strcat('Delta (',num2str(delta(1)),' - ',' ',num2str(delta(end)),' Hz)'), strcat('Theta (',num2str(theta(1)),' - ',' ',num2str(theta(end)),' Hz)'), strcat('Alpha (',num2str(alpha(1)),' - ',' ',num2str(alpha(end)),' Hz)'), strcat('Beta (',num2str(beta(1)),' - ',' ',num2str(beta(end)),' Hz)'), strcat('Gamma (',num2str(gamma(1)),' - ',' ',num2str(gamma(end)),' Hz)')};
     % Set the xtick labels
     Figure.XTickLabel = xtick_labels;    
+    Figure.FontSize = 10;
 else
     set(PowerEstimatesHandles, 'YData', [Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma], 'Tag', 'Barobject');
 end

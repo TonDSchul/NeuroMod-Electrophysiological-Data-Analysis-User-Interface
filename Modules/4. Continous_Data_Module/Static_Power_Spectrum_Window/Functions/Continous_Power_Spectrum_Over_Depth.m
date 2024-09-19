@@ -90,6 +90,8 @@ dispRange(1) = str2double(FrequencyRangeHzEditField(1:commaindicie(1)-1)); % Hz
 dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % Hz
 
 Figure_2.NextPlot = "add";
+Figure_2.FontSize = 10;
+Figure.FontSize = 10;
 plotLFPpower(BandPower.F, BandPower.allPowerEst, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD);
 
 %% save plotted data in case user wants to save 

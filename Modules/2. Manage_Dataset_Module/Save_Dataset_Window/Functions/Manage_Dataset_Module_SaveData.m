@@ -395,11 +395,13 @@ if ~isempty(Data)
     
             % Construct the full file path
             FullPath = fullfile(path, file);
+            filepath = FullPath;
         else
             dashindex = find(SelectedFolder=='\');
             filepath = SelectedFolder;
             filename = strcat(SelectedFolder(dashindex(end-1)+1:dashindex(end)-1),".mat");
             FullPath = fullfile(filepath, filename);
+            filepath = FullPath;
         end
 
         % Save the variables to the .mat file
