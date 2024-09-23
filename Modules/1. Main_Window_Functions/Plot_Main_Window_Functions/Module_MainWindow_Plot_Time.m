@@ -1,4 +1,4 @@
-function [rectangleHandle] = Module_MainWindow_Plot_Time(UIAxis,Time,StartTimeIndex,StopTimeIndex,PlotType,rectangleHandle,EventPlot,EventData)
+function [rectangleHandle] = Module_MainWindow_Plot_Time(UIAxis,Time,StartTimeIndex,StopTimeIndex,PlotType,rectangleHandle,EventPlot,EventData,PlotAppearance)
 %________________________________________________________________________________________
 %% Function to Plot Time in the Main Window
 % Input Arguments:
@@ -31,10 +31,12 @@ if strcmp(PlotType,"Initial")
     ylim(UIAxis,[-0.5,0.5])
     set(UIAxis,'yticklabel',{[]});
     xlim(UIAxis,[Time(1),Time(end)]);
-    xlabel(UIAxis,"Time [s]")
-    TimeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Timelines');
-    %app.UIAxes.Color = [0.90,0.90,0.90];
-    UIAxis.Color = [0.90,0.90,0.90];
+    xlabel(UIAxis,PlotAppearance.MainWindow.Data.TimeXLabel)
+    ylabel(UIAxis,PlotAppearance.MainWindow.Data.TimeYLabel)
+    title(UIAxis,PlotAppearance.MainWindow.Data.TimeTitle)
+    TimeHandles = findobj(UIAxis,'Tag', 'Timelines');
+    
+    UIAxis.Color = PlotAppearance.MainWindow.Data.Color.TimeBackground;
 
     if isempty(TimeHandles)
         % line(UIAxis,[Time(1),Time(end)],[0,0],'Color','k','LineWidth',3,'Tag','Timelines');
@@ -45,7 +47,24 @@ if strcmp(PlotType,"Initial")
         % Replicate y values to match the length of x_values
         y_start = repmat(-0.5, size(EventData));
         y_end = repmat(0.5, size(EventData));
-        line(UIAxis,[Time(EventData); Time(EventData)], [y_start; y_end],'LineWidth',1.5, 'Color', 'k','Tag','Eventlines'); % Adjust color as needed
+
+        EventHandles = findobj(UIAxis,'Tag', 'Eventlines');
+        
+        if isempty(EventHandles)
+            line(UIAxis,[Time(EventData); Time(EventData)], [y_start; y_end],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines'); % Adjust color as needed
+        else
+            if length(EventHandles) >= length(EventData)
+                for i = 1:length(EventData)
+                    set(EventHandles(i), 'XData', [Time(EventData(i)); Time(EventData(i))], 'YData', [y_start(i); y_end(i)],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines');
+                end
+                delete(EventHandles(i+1:end));
+            elseif length(EventHandles) < length(EventData)
+                for i = 1:length(EventHandles)
+                    set(EventHandles(i), 'XData', [Time(EventData(i)); Time(EventData(i))], 'YData', [y_start(i); y_end(i)],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines');
+                end
+                line(UIAxis,[Time(EventData(i+1:end)); Time(EventData(i+1:end))], [y_start(i+1:end); y_end(i+1:end)],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines'); % Adjust color as needed
+            end
+        end
     end
 
     %% Plot rectangle indicating selected time
@@ -59,7 +78,7 @@ if strcmp(PlotType,"Initial")
     height = 0.9; % Height of the rectangle
     
     % Plot the rectangle on the UIAxes
-    rectangleHandle = rectangle(UIAxis, 'Position', [x, y, width, height], 'EdgeColor', 'r', 'LineWidth', 2);
+    rectangleHandle = rectangle(UIAxis, 'Position', [x, y, width, height], 'EdgeColor', PlotAppearance.MainWindow.Data.Color.TimeRectangle, 'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.TimeRectangle);
     
 else
     
@@ -80,7 +99,7 @@ else
     newRectanglePosition = [x, y, width, height]; % Define new position
     % Update the position of the rectangle
     if isempty(rectangleHandle)
-        rectangleHandle = rectangle(UIAxis, 'Position', [x, y, width, height], 'EdgeColor', 'r', 'LineWidth', 2);
+        rectangleHandle = rectangle(UIAxis, 'Position', [x, y, width, height], 'EdgeColor', PlotAppearance.MainWindow.Data.Color.TimeRectangle, 'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.TimeRectangle);
     else
         set(rectangleHandle(1), 'Position', newRectanglePosition); % Update rectangle position
     end

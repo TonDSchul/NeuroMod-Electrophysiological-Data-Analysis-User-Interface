@@ -20,14 +20,29 @@ if isprop(UIAxes, type)
 
     % StringtoEval = strcat('UIAxes.',type,' = ',value,';');
     % eval(StringtoEval);
-    if strcmp(type,"xlim") || strcmp(type,"ylim")
-        StringtoEval = strcat(type,'(UIAxes,',value,');');
+    if strcmp(type,'xlim') || strcmp(type,'ylim')
+        commaindicie = find(value==',');
+
+        LowerLimit = value(1:commaindicie(1)-1);
+        UpperLimit = value(commaindicie(1)+1:end);
+
+        StringtoEval = strcat(type,'(UIAxes,[',LowerLimit,',',UpperLimit,']);');
         eval(StringtoEval);
-    else
+
+    elseif strcmp(type,'Fontsize')
+        StringtoEval = strcat('UIAxes.FontSize =',value,';');
+        eval(StringtoEval);
+    elseif ~strcmp(type,'BackgroundColor')
         StringtoEval = strcat(type,'(UIAxes,','"',value,'"',');');
         eval(StringtoEval);
     end
     
 else
-    error('Invalid property type for UIAxes');
+    if strcmp(type,'MainBackgroundColor')
+        UIAxes.Color = value;
+    elseif strcmp(type,'TimeBackgroundColor')
+        UIAxes.Color = value;
+    else
+        error('Invalid property type for UIAxes in updateUIAxesProperty');
+    end
 end

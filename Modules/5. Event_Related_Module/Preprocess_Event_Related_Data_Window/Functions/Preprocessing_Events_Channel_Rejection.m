@@ -136,9 +136,9 @@ if strcmp(Type,'PlotOnly') || strcmp(Type,'All')
     
     for i = 1:NumChannels
         if i <= length(ERPHandle)
-            set(ERPHandle(i), 'XData', Time, 'YData',ERPs(i, :) + (i - 1) * row_height, 'Tag', 'ERP');
+            set(ERPHandle(i), 'XData', Time, 'YData',ERPs(i, :) + (i - 1) * row_height, 'Tag', 'ERP','LineWidth',1.2);
         else
-            line(Figure,Time,ERPs(i, :) + (i - 1) * row_height, 'Tag', 'ERP');
+            line(Figure,Time,ERPs(i, :) + (i - 1) * row_height, 'Tag', 'ERP','LineWidth',1.2);
         end
         YMaxLimitsMultipeERP(i) = max(ERPs(i, :) + (i - 1) * row_height);
         YMinLimitsMultipeERP(i) = min(ERPs(i, :) + (i - 1) * row_height);

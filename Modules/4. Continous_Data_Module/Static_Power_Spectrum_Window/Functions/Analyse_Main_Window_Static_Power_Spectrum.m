@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData)
+function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData,PlotAppearance)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum of a signal using pwelch method
@@ -75,14 +75,13 @@ DispIndicies = Freq>dispRange(1) & Freq<dispRange(2);
 
 %Welch Method
 if ~isempty(PWelch_handles)
-    set(PWelch_handles(1), 'XData', Freq(DispIndicies), 'YData', 10*log10(Welchpowspect(DispIndicies)),'LineWidth',2,'Tag','Pwelch','Color','b');
+    set(PWelch_handles(1), 'XData', Freq(DispIndicies), 'YData', 10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
 else
-    line(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',2,'Tag','Pwelch','Color','b');
+    line(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
 end
 
-
-xlabel(Figure, 'Frequency (Hz)');
-ylabel(Figure, 'Power/Frequency (dB/Hz)');
+xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);
+ylabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeYLabel);
 ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(Welchpowspect(DispIndicies)),[],'all')])
 
 xlim(Figure,[dispRange(1) dispRange(2)]);

@@ -76,6 +76,13 @@ if strcmp(Type,"Initial")
     app.SpectralEstApp = [];
     app.PowerSpecResults = [];
 
+    [app.PlotAppearance] = Organize_Set_Standard_PlotAppearance("All",app.PlotAppearance);
+
+    app.UIAxes.Color = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
+    app.UIAxes_2.Color = app.PlotAppearance.MainWindow.Data.Color.TimeBackground;
+    app.UIAxes.FontSize = app.PlotAppearance.MainWindow.Data.MainFontSize;
+    app.UIAxes_2.FontSize = app.PlotAppearance.MainWindow.Data.TimeFontSize;
+
     %% Reset Standard GUI Values
 
     app.TextArea.Value = "";
@@ -350,8 +357,17 @@ elseif strcmp(Type,"Preprocessing")
 
     app.UIAxes.NextPlot = "replace"; 
     plot(app.UIAxes,0,0);
+    app.UIAxes.NextPlot = "add"; 
     app.UIAxes_2.NextPlot = "replace"; 
     plot(app.UIAxes_2,0,0);
+    app.UIAxes_2.NextPlot = "add"; 
+
+    %Take care of potentially changed backgroundcolor
+    app.UIAxes.Color = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
+    app.UIAxes_2.Color = app.PlotAppearance.MainWindow.Data.Color.TimeBackground;
+    app.UIAxes.FontSize = app.PlotAppearance.MainWindow.Data.MainFontSize;
+    app.UIAxes_2.FontSize = app.PlotAppearance.MainWindow.Data.TimeFontSize;
+
     app.RUNButton_3.Enable = "on";
 
 end

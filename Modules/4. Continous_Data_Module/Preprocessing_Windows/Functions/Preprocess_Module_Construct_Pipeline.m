@@ -120,11 +120,11 @@ if strcmp(type,"Filter")
     elseif flagbandstop == 1 && strcmp(FilterMethod,"Band-Stop") || flagmedian == 1 && strcmp(FilterMethod,"Median Filter")
         
         if strcmp(FilterMethod,"Band-Stop")
-            f = msgbox("Band-Stop Filter was already added. Previous Settings got replaced by the current ones");
+            msgbox("Band-Stop Filter was already added. Previous Settings got replaced by the current ones");
            
         end
         if strcmp(FilterMethod,"Median Filter")
-            f = msgbox("Median-Filter was already added. Previous Settings got replaced by the current ones");
+             msgbox("Median-Filter was already added. Previous Settings got replaced by the current ones");
             
         end
     else
@@ -134,6 +134,26 @@ if strcmp(type,"Filter")
             PreprocessingSteps = [PreprocessingSteps,convertCharsToStrings(FilterMethod)];
         else
             PreprocessingSteps = [PreprocessingSteps;convertCharsToStrings(FilterMethod)];
+        end
+    end
+    
+    % Check if downsampling is before it in the pipeline. If yes give
+    % warning for aliasing and give user the option to change
+    if strcmp(FilterMethod,"Low-Pass")
+        FlagDownsampledBeforeLP = 0;
+        if ~isempty(PreprocessingSteps)
+            for i = 1:length(PreprocessingSteps)
+                if strcmp(PreprocessingSteps(i),"Downsampling")
+                    FlagDownsampledBeforeLP = 1;
+                    DownsampledIndex = i;
+                end
+            end
+        end
+
+        if FlagDownsampledBeforeLP == 1
+            msgbox("Warning: Downsampling selected before low pass filtering. This leads to aliasing and is autochanged, so that low pass is applied before downsampling.")
+            PreprocessingSteps(DownsampledIndex) = "Low-Pass";
+            PreprocessingSteps(end) = "Downsampling";
         end
     end
     % display updated pipeline in preprocessing window textbox

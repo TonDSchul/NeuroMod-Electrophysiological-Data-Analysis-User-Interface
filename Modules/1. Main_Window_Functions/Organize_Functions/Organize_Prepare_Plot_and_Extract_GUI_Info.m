@@ -88,8 +88,10 @@ colorMap = app.tempcolorMapset(app.Channelrange(1):app.Channelrange(2),:);
 %% Handle Spike Data
 % If spikes addon in main window plot selected: extract spikes that fall
 % into the time range to be plotted
+
 if ~strcmp(Plotspikes,"Spikes") || ~isfield(app.Data,'Spikes')
     SpikeData = [];
+    Waveforms = [];
 elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
     SpikeData.Indicie = [];
     if isfield(app.Data.Info,'DownsampleFactor') && app.PreprocDataPlotCheckBox.Value == 1
@@ -121,17 +123,17 @@ if app.PreprocDataPlotCheckBox.Value == 1
     if isfield(app.Data.Info,'DownsampleFactor') 
         app.LastPlot = "Preprocessed";  
         SpikeDataType = app.Data.Info.SpikeType;
-        Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange(1):app.Channelrange(2),StartIndex:StopIndex),app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing)
+        Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange(1):app.Channelrange(2),StartIndex:StopIndex),app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType)
     % If Raw data has to be plotted
     else
         app.LastPlot = "Preprocessed";
         SpikeDataType = app.Data.Info.SpikeType;
-        Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange(1):app.Channelrange(2),StartIndex:StopIndex),app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing)
+        Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange(1):app.Channelrange(2),StartIndex:StopIndex),app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType)
     end
 elseif app.RawDataPlotCheckBox.Value == 1
     app.LastPlot = "Raw";
     SpikeDataType = app.Data.Info.SpikeType;
-    Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange(1):app.Channelrange(2),StartIndex:StopIndex),app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing)
+    Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange(1):app.Channelrange(2),StartIndex:StopIndex),app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType)
 end
 
 %% Plot Time
@@ -141,9 +143,9 @@ if PlotTime == 1
 % If Preprocessed data shown and downsampled: Pass downsampled time in plot
 % fct.
     if isfield(app.Data.Info,'DownsampleFactor') && app.PreprocDataPlotCheckBox.Value == 1
-        [app.rectangleHandle] = Module_MainWindow_Plot_Time(app.UIAxes_2,app.Data.TimeDownsampled,StartIndex,StopIndex,TimePlotInitial,app.rectangleHandle,EventPlot,EventData);
+        [app.rectangleHandle] = Module_MainWindow_Plot_Time(app.UIAxes_2,app.Data.TimeDownsampled,StartIndex,StopIndex,TimePlotInitial,app.rectangleHandle,EventPlot,EventData,app.PlotAppearance);
     else
-        [app.rectangleHandle] = Module_MainWindow_Plot_Time(app.UIAxes_2,app.Data.Time,StartIndex,StopIndex,TimePlotInitial,app.rectangleHandle,EventPlot,EventData);
+        [app.rectangleHandle] = Module_MainWindow_Plot_Time(app.UIAxes_2,app.Data.Time,StartIndex,StopIndex,TimePlotInitial,app.rectangleHandle,EventPlot,EventData,app.PlotAppearance);
     end
 end
 
