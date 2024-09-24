@@ -1,4 +1,4 @@
-function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection,TwoORThreeD,CurrentPlotData)
+function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection,TwoORThreeD,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths 
@@ -119,9 +119,9 @@ if strcmp(TwoORThreeD,"TwoD")
     end
 
     if isempty(Event_handles)
-        xline(Figure,0,'--','Color','r' ,'LineWidth',2,'Tag', 'Event'); 
+        xline(Figure,0,'Color',PlotAppearance.TFWindow.TriggerColor ,'LineWidth',PlotAppearance.TFWindow.TriggerLineWidth,'Tag', 'Event'); 
     else
-        set(Event_handles(1),'Value',0,'Color','r' ,'LineWidth',2,'Tag', 'Event'); 
+        set(Event_handles(1),'Value',0,'Color',PlotAppearance.TFWindow.TriggerColor ,'LineWidth',PlotAppearance.TFWindow.TriggerLineWidth,'Tag', 'Event'); 
     end
 
 else %3D Plot
@@ -140,9 +140,9 @@ else %3D Plot
     XGrid = zeros(size(YGrid));
     
     if isempty(Event_handles)
-        eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+        eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', PlotAppearance.TFWindow.TriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
     else
-        set(Event_handles(1),'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+        set(Event_handles(1),'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', PlotAppearance.TFWindow.TriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
         eventLine = Event_handles(1);
     end
 end
@@ -150,11 +150,11 @@ end
 climsTF(1) = min(Datatouse(~isinf(Datatouse)),[],'all');
 climsTF(2) = max(Datatouse(~isinf(Datatouse)),[],'all');
 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-cbar_handle.Label.String = "dB Power";
+cbar_handle.Label.String = PlotAppearance.TFWindow.CLabel;
 cbar_handle.Label.Rotation = 270;
 
 title(Figure,strcat("Total Time Frequency Power Channel ",num2str(ChannelSelection)," Events ",num2str(EventSelection)));
-xlabel(Figure,'Time [s]'), ylabel(Figure,'Frequency [Hz]')
+xlabel(Figure,PlotAppearance.TFWindow.XLabel), ylabel(Figure,PlotAppearance.TFWindow.YLabel)
 ylim(Figure,[costumfrex(1) costumfrex(3)])
 
 %% save plotted data in case user wants to save 

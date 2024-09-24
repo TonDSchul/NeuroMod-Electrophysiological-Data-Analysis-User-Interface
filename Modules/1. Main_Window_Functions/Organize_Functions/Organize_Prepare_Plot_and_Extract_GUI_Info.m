@@ -169,9 +169,9 @@ if isprop(app.PSTHApp,'Existflag')
 
     % Also contains the bar plot!
     if app.PreprocDataPlotCheckBox.Value == 1 && isfield(app.Data.Info,'DownsampleFactor')
-        [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate (app.Data,app.CurrentTimePoints,app.TimeRangeViewBox.Value,app.PSTHApp.BinRangeSlider.Value,app.PSTHApp.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.PSTHApp.LockYLimCheckBox.Value,app.Data.Info.DownsampledSampleRate,ChannelSelection,StartIndex,StopIndex,app.PreprocDataPlotCheckBox.Value,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData);
+        [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate (app.Data,app.CurrentTimePoints,app.TimeRangeViewBox.Value,app.PSTHApp.BinRangeSlider.Value,app.PSTHApp.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.PSTHApp.LockYLimCheckBox.Value,app.Data.Info.DownsampledSampleRate,ChannelSelection,StartIndex,StopIndex,app.PreprocDataPlotCheckBox.Value,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance);
     else
-        [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate (app.Data,app.CurrentTimePoints,app.TimeRangeViewBox.Value,app.PSTHApp.BinRangeSlider.Value,app.PSTHApp.UIAxes,app.Data.Time(StartIndex:StopIndex),app.PSTHApp.LockYLimCheckBox.Value,app.Data.Info.NativeSamplingRate,ChannelSelection,StartIndex,StopIndex,app.PreprocDataPlotCheckBox.Value,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData);
+        [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate (app.Data,app.CurrentTimePoints,app.TimeRangeViewBox.Value,app.PSTHApp.BinRangeSlider.Value,app.PSTHApp.UIAxes,app.Data.Time(StartIndex:StopIndex),app.PSTHApp.LockYLimCheckBox.Value,app.Data.Info.NativeSamplingRate,ChannelSelection,StartIndex,StopIndex,app.PreprocDataPlotCheckBox.Value,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance);
     end
 end
 
@@ -199,9 +199,9 @@ if isprop(app.CSDApp,'ExistflagCSD')
     ChannelSpacing = app.Data.Info.ChannelSpacing;
 
     if isfield(app.Data.Info,'DownsampleFactor')
-        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.TimeDownsampled(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData);
+        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.TimeDownsampled(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData,app.PlotAppearance);
     else
-        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Time(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData);
+        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,app.CSDApp.ChannelSelectionfromtoEditField.Value,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Time(StartIndex:StopIndex),"Initial",app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData,app.PlotAppearance);
     end
 end
 
@@ -224,9 +224,9 @@ if isprop(app.SpectralEstApp,'ExistflagSDE')
     end
 
     if isfield(app.Data.Info,'DownsampleFactor')
-        [app.SpectralEstApp.PDLim,app.CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Info.DownsampledSampleRate,app.SpectralEstApp.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.SpectralEstApp.PDLim,app.SpectralEstApp.LockYLimCheckBox.Value,app.CurrentPlotData);
+        [app.SpectralEstApp.PDLim,app.CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Info.DownsampledSampleRate,app.SpectralEstApp.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.SpectralEstApp.PDLim,app.SpectralEstApp.LockYLimCheckBox.Value,app.CurrentPlotData,app.PlotAppearance);
     else
-        [app.SpectralEstApp.PDLim,app.CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Info.NativeSamplingRate,app.SpectralEstApp.UIAxes,app.Data.Time(StartIndex:StopIndex),app.SpectralEstApp.PDLim,app.SpectralEstApp.LockYLimCheckBox.Value,app.CurrentPlotData);
+        [app.SpectralEstApp.PDLim,app.CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(app.Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),StartIndex:StopIndex),app.Data.Info.NativeSamplingRate,app.SpectralEstApp.UIAxes,app.Data.Time(StartIndex:StopIndex),app.SpectralEstApp.PDLim,app.SpectralEstApp.LockYLimCheckBox.Value,app.CurrentPlotData,app.PlotAppearance);
     end
 
 end

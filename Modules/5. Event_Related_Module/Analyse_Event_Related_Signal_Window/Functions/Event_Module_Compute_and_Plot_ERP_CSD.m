@@ -1,4 +1,4 @@
-function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData)
+function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot ERP and CSD for event analysis windows
@@ -74,8 +74,8 @@ if isempty(CSD)
         end
     
         xlim(Figure,[EventTime(1) EventTime(end)]);
-        xlabel(Figure,"Time [s]")
-        ylabel(Figure,"Event Related Potential [mV]")
+        xlabel(Figure,PlotAppearance.ERPWindow.SingleERP.XLabel)
+        ylabel(Figure,PlotAppearance.ERPWindow.SingleERP.YLabel)
         title(Figure,strcat("Event Related Potential Channel: ",num2str(DataChannelSelected)));
             
         TrialLinesHandles = findobj(Figure, 'Type', 'line', 'Tag', 'TrialLines');
@@ -94,17 +94,17 @@ if isempty(CSD)
         
         if isempty(TrialLinesHandles)
             if size(EventRelatedData,2) == 1
-                Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),:,:),1))', 'Color', [0.75 0.75 0.75],'Tag','TrialLines');
+                Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),:,:),1))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
             else
-                Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),:,:),1)), 'Color', [0.75 0.75 0.75],'Tag','TrialLines');
+                Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),:,:),1)), 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
             end
         else
             for i = 1:size(EventRelatedData,2)
                 if i <= length(TrialLinesHandles)
-                    set(TrialLinesHandles(i), 'YData', squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),i,:),1))', 'Color', [0.75 0.75 0.75], 'Tag', 'TrialLines');
+                    set(TrialLinesHandles(i), 'YData', squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),i,:),1))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth, 'Tag', 'TrialLines');
                     Trialplot = TrialLinesHandles(i);
                 else
-                    Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),i,:),1))', 'Color', [0.75 0.75 0.75],'Tag','TrialLines');
+                    Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),i,:),1))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
                 end
             end
         end
@@ -121,13 +121,13 @@ if isempty(CSD)
             end
         
             if isempty(MeanLinesHandles)
-                Meanplot = line(Figure,EventTime,mean(DataLinestoPlot,1),'Color','k','LineWidth',2,'Tag','MeanLines');
+                Meanplot = line(Figure,EventTime,mean(DataLinestoPlot,1),'Color',PlotAppearance.ERPWindow.SingleERP.MeanColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.MeanLineWidth,'Tag','MeanLines');
             else
-                set(MeanLinesHandles(1), 'YData', mean(DataLinestoPlot,1),'Color','k','LineWidth',2,'Tag','MeanLines');
+                set(MeanLinesHandles(1), 'YData', mean(DataLinestoPlot,1),'Color',PlotAppearance.ERPWindow.SingleERP.MeanColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.MeanLineWidth,'Tag','MeanLines');
                 Meanplot = MeanLinesHandles(1);
             end
            
-            %% Plot Event Line
+            %% Plot Trigger Line
             EventLinesHandles = findobj(Figure, 'Type', 'line', 'Tag', 'EventLines');
             
             if ~isempty(EventLinesHandles)
@@ -138,9 +138,9 @@ if isempty(CSD)
             end
             
             if isempty(EventLinesHandles)
-                Eventplot = line(Figure,[0,0],[min(min(DataLinestoPlot)) max(max(DataLinestoPlot))],'Color','r','LineWidth',2,'Tag','EventLines');
+                Eventplot = line(Figure,[0,0],[min(min(DataLinestoPlot)) max(max(DataLinestoPlot))],'Color',PlotAppearance.ERPWindow.SingleERP.TriggerColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.TriggerLineWidth,'Tag','EventLines');
             else
-                set(EventLinesHandles(:), 'XData',[0,0],'YData', [min(min(DataLinestoPlot)) max(max(DataLinestoPlot))],'Color','r','LineWidth',2,'Tag','EventLines');
+                set(EventLinesHandles(:), 'XData',[0,0],'YData', [min(min(DataLinestoPlot)) max(max(DataLinestoPlot))],'Color',PlotAppearance.ERPWindow.SingleERP.TriggerColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.TriggerLineWidth,'Tag','EventLines');
                 Eventplot = EventLinesHandles(1);
             end
 
@@ -188,7 +188,8 @@ if isempty(CSD)
         YMinLimitsMultipeERP = min(EventRelatedData,[],"all");
         xlim(Figure2, [EventTime(1),EventTime(end)]);
         ylim(Figure2, [YMinLimitsMultipeERP,YMaxLimitsMultipeERP]);
-        xlabel(Figure2,"Time [s]")
+        xlabel(Figure2,PlotAppearance.ERPWindow.MultipleERP.XLabel)
+        ylabel(Figure2,PlotAppearance.ERPWindow.MultipleERP.YLabel)
         title(Figure2,"Event Related Potential for all Channel");
     
         ChannelERPHandles = findobj(Figure2, 'Type', 'line', 'Tag', 'ChannelERP');
@@ -202,10 +203,10 @@ if isempty(CSD)
     
         for nchannel = 1:size(EventRelatedData,1)
             if nchannel <= length(ChannelERPHandles)
-                set(ChannelERPHandles(nchannel), 'YData', EventRelatedData(nchannel,:),'Color',adjustedcolormap(nchannel,:),'LineWidth',2,'Tag','ChannelERP');
+                set(ChannelERPHandles(nchannel), 'YData', EventRelatedData(nchannel,:),'Color',adjustedcolormap(nchannel,:),'LineWidth',PlotAppearance.ERPWindow.MultipleERP.MeanLineWidth,'Tag','ChannelERP');
                 Meanplot = ChannelERPHandles(1);
             else
-                Meanplot = line(Figure2,EventTime,EventRelatedData(nchannel,:),'Color',adjustedcolormap(nchannel,:),'LineWidth',2,'Tag','ChannelERP');
+                Meanplot = line(Figure2,EventTime,EventRelatedData(nchannel,:),'Color',adjustedcolormap(nchannel,:),'LineWidth',PlotAppearance.ERPWindow.MultipleERP.MeanLineWidth,'Tag','ChannelERP');
             end
         end
 
@@ -220,9 +221,9 @@ if isempty(CSD)
         end
         
         if isempty(EventLinesHandles)
-            Eventplot = line(Figure2,[0,0],[min(EventRelatedData,[],'all') max(EventRelatedData,[],'all')],'Color','r','LineWidth',2,'Tag','EventLines');
+            Eventplot = line(Figure2,[0,0],[min(EventRelatedData,[],'all') max(EventRelatedData,[],'all')],'Color',PlotAppearance.ERPWindow.MultipleERP.TriggerColor,'LineWidth',PlotAppearance.ERPWindow.MultipleERP.TriggerLineWidth,'Tag','EventLines');
         else
-            set(EventLinesHandles(:), 'XData',[0,0],'YData', [min(EventRelatedData,[],'all') max(EventRelatedData,[],'all')],'Color','r','LineWidth',2,'Tag','EventLines');
+            set(EventLinesHandles(:), 'XData',[0,0],'YData', [min(EventRelatedData,[],'all') max(EventRelatedData,[],'all')],'Color',PlotAppearance.ERPWindow.MultipleERP.TriggerColor,'LineWidth',PlotAppearance.ERPWindow.MultipleERP.TriggerLineWidth,'Tag','EventLines');
             Eventplot = EventLinesHandles(1);
         end
     
@@ -342,9 +343,9 @@ else
 
     if strcmp(TwoORThreeD,"TwoD")
         if isempty(Event_handles)
-            eventLine = line(Figure,[0, 0],ylim(Figure),'Color','r','LineWidth',2, 'Parent', Figure, 'Tag', 'Event');
+            eventLine = line(Figure,[0, 0],ylim(Figure),'Color',PlotAppearance.CSDWindow.TriggerColor,'LineWidth',PlotAppearance.CSDWindow.TriggerLineWidth, 'Parent', Figure, 'Tag', 'Event');
         else
-            set(Event_handles(1), 'XData', [0, 0], 'YData', ylim(Figure), 'Parent', Figure, 'Tag', 'Event');
+            set(Event_handles(1), 'XData', [0, 0], 'YData', ylim(Figure), 'Parent', Figure,'LineWidth',PlotAppearance.CSDWindow.TriggerLineWidth,'Color',PlotAppearance.CSDWindow.TriggerColor, 'Tag', 'Event');
             eventLine = Event_handles(1);
         end
     elseif strcmp(TwoORThreeD,"ThreeD")
@@ -357,9 +358,9 @@ else
         
         XGrid = zeros(size(YGrid));
         if isempty(Event_handles)
-            eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+            eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', PlotAppearance.CSDWindow.TriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
         else
-            set(Event_handles(1), 'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+            set(Event_handles(1), 'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', PlotAppearance.CSDWindow.TriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
             eventLine = Event_handles(1);
         end
     end
@@ -378,10 +379,10 @@ else
     ylim(Figure,[ds(1),ds(end)]);
     set(Figure,'YDir','reverse');
     title(Figure,"Event Related Current Source Density Analysis")
-    xlabel(Figure,'Time [s]')
-    ylabel(Figure,'Depth [µm]') 
+    xlabel(Figure,PlotAppearance.CSDWindow.XLabel)
+    ylabel(Figure,PlotAppearance.CSDWindow.YLabel) 
     cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-    cbar_handle.Label.String = "Signal [mV/mm^2]";
+    cbar_handle.Label.String = PlotAppearance.CSDWindow.CLabel;
     cbar_handle.Label.Rotation = 270;
 
     %% save plotted data in case user wants to save 

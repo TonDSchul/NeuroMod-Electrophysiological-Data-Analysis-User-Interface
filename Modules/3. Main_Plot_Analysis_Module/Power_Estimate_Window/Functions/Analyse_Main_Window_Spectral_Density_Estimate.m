@@ -1,4 +1,4 @@
-function [currentYlim,CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(Data,SampleRate,Figure,TimeWindow,PDLim,LockYLim,CurrentPlotData)
+function [currentYlim,CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(Data,SampleRate,Figure,TimeWindow,PDLim,LockYLim,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 
@@ -90,16 +90,17 @@ Avgtheta = mean(Power(thetaclosest_index));
 PowerEstimatesHandles = findobj(Figure, 'Type', 'bar', 'Tag', 'PowerEstimates');
 
 if isempty(PowerEstimatesHandles)
-    bar(Figure,[Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],'black','Tag','PowerEstimates');
+    bar(Figure,[Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],'FaceColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'EdgeColor', PlotAppearance.LivePowerEstimateWindow.BarColor,'Tag','PowerEstimates');
     title(Figure,"Spectral Power Estimate")
-    ylabel(Figure,"Power Estimate")
+    ylabel(Figure,PlotAppearance.LivePowerEstimateWindow.YLabel)
+    xlabel(Figure,PlotAppearance.LivePowerEstimateWindow.XLabel)
     %xlable(Figure,"");
     xtick_labels = {strcat('Delta (',num2str(delta(1)),' - ',' ',num2str(delta(end)),' Hz)'), strcat('Theta (',num2str(theta(1)),' - ',' ',num2str(theta(end)),' Hz)'), strcat('Alpha (',num2str(alpha(1)),' - ',' ',num2str(alpha(end)),' Hz)'), strcat('Beta (',num2str(beta(1)),' - ',' ',num2str(beta(end)),' Hz)'), strcat('Gamma (',num2str(gamma(1)),' - ',' ',num2str(gamma(end)),' Hz)')};
     % Set the xtick labels
     Figure.XTickLabel = xtick_labels;    
-    Figure.FontSize = 10;
+    Figure.FontSize = PlotAppearance.LivePowerEstimateWindow.FontSize;
 else
-    set(PowerEstimatesHandles, 'YData', [Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma], 'Tag', 'Barobject');
+    set(PowerEstimatesHandles, 'YData', [Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],'FaceColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'EdgeColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'Tag', 'Barobject');
 end
 
 if LockYLim== 1

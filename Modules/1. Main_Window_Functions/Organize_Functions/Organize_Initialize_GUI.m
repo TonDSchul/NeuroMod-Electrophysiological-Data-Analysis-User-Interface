@@ -76,8 +76,8 @@ if strcmp(Type,"Initial")
     app.SpectralEstApp = [];
     app.PowerSpecResults = [];
 
-    [app.PlotAppearance] = Organize_Set_Standard_PlotAppearance("All",app.PlotAppearance);
-
+    app.PlotAppearance = Utility_Save_Load_Delete_Plot_Appearance(app.PlotAppearance,app.executableFolder,"Load");
+   
     app.UIAxes.Color = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
     app.UIAxes_2.Color = app.PlotAppearance.MainWindow.Data.Color.TimeBackground;
     app.UIAxes.FontSize = app.PlotAppearance.MainWindow.Data.MainFontSize;

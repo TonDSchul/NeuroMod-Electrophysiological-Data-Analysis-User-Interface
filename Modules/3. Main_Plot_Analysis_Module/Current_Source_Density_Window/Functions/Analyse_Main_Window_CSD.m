@@ -1,4 +1,4 @@
-function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,ChannelSelection,CSDClim,Figure,DatatoPlot,TimeRangetoPlot,Plottype,LockCLim,TwoORThreeD,CurrentPlotData)
+function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,ChannelSelection,CSDClim,Figure,DatatoPlot,TimeRangetoPlot,Plottype,LockCLim,TwoORThreeD,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 
@@ -54,9 +54,9 @@ xlim(Figure,[TimeRangetoPlot(1),TimeRangetoPlot(end)]);
 ylim(Figure,[ds(1),ds(end-1)]);
 titlestring = strcat("Current source density analysis of main window time range channel ",ChannelSelection);
 title(Figure,titlestring);
-xlabel(Figure,'Time [s]')
-ylabel(Figure,'Depth [µm]') 
-Figure.FontSize = 10;
+xlabel(Figure,PlotAppearance.LiveCSDWindow.XLabel)
+ylabel(Figure,PlotAppearance.LiveCSDWindow.YLabel) 
+Figure.FontSize = PlotAppearance.LiveCSDWindow.FontSize;
 
 if strcmp(TwoORThreeD,"TwoD")
     PowerDepth_handles = findobj(Figure, 'Tag', 'PowerDepth');
@@ -70,7 +70,7 @@ if strcmp(TwoORThreeD,"TwoD")
         surface(Figure,TimeRangetoPlot, ds(1:size(csd,2)), min_z * ones(size(csd')), ...
         'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth');
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-        cbar_handle.Label.String = "Signal [mV/mm^2]";
+        cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;
     else
         set(PowerDepth_handles(1),'XData', TimeRangetoPlot, 'YData', ds(1:size(csd,2)), 'ZData', min_z * ones(size(csd')), ...
@@ -99,7 +99,7 @@ elseif strcmp(TwoORThreeD,"ThreeD")
 
     if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
-        cbar_handle.Label.String = "Signal [mV/mm^2]";
+        cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;
         % 3D Plot
         surf(Figure,TimeRangetoPlot,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')

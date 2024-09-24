@@ -129,27 +129,41 @@ elseif strcmp(ComponentToDelete,"Events")
     
 elseif strcmp(ComponentToDelete,"Preprocessed")
 
-    if ~isfield(Data,'Raw')
-        msgbox("Error: No raw data found. Either raw or preprocessed data required for the toolbox to work.");
-        Error = 1;
-        return;
+    %% If just Raw Data saved: Delete preprocessing infos from Data.Info structure.
+    % They all come after the field "ChannelOrder
+    % Find the index of the specific field
+    if isfield(Data.Info,'DownsampleFactor')
+        fieldsToDelete = {'TimeDownsampled','DownsampledSampleRate'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+        fieldsToDelete = {'DownsampleFactor'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
+    fieldNames = fieldnames(Data.Info);
+    idx = find(strcmp(fieldNames, 'Channelorder'));
+   
+    TempEventChannel = [];
+    TempEventDataType = [];
+    TempEventTimeRange = [];
+    TempPreproInfoType = [];
+    TempSpikeDetectionThreshold = [];
+    TempKilosortScalingFactor = [];
+    TempSpikeType = Data.Info.SpikeType;
     TempCutStart = [];
     TempCutStop = [];
     TempChannelDeletion = [];
     TempSpike2EventChannelToTake = [];
     TempSpikeSorting = [];
     TempSpikeDetectionNrStd = [];
-    TempSpikeDetectionThreshold = [];
-    TempKilosortScalingFactor = [];
-
-    if isfield(Data.Info,'Spike2EventChannelToTake')
-        TempSpike2EventChannelToTake = Data.Info.Spike2EventChannelToTake;
-    end
 
     if isfield(Data.Info,'CutStart')
         TempCutStart = Data.Info.CutStart;
+    end
+
+    if isfield(Data.Info,'Spike2EventChannelToTake')
+        TempSpike2EventChannelToTake = Data.Info.Spike2EventChannelToTake;
     end
 
     if isfield(Data.Info,'CutEnd')
@@ -158,6 +172,22 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
 
     if isfield(Data.Info,'ChannelDeletion')
         TempChannelDeletion = Data.Info.ChannelDeletion;
+    end
+
+    if isfield(Data.Info,'KilosortScalingFactor')
+        TempKilosortScalingFactor = Data.Info.KilosortScalingFactor;
+    end
+
+    if isfield(Data,'EventRelatedData')
+        TempEventChannel = Data.Info.EventRelatedDataChannel;
+        TempEventDataType = Data.Info.EventRelatedDataType;
+        TempEventTimeRange = Data.Info.EventRelatedDataTimeRange;
+    end
+
+    if isfield(Data,'PreprocessedEventRelatedData')
+        if isfield(Data.Info,'EventRelatedPreprocessing')
+            TempPreproInfoType = Data.Info.EventRelatedPreprocessing;
+        end
     end
 
     if isfield(Data.Info,'SpikeSorting')
@@ -171,37 +201,12 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
     if isfield(Data.Info,'SpikeDetectionThreshold')
         TempSpikeDetectionThreshold = Data.Info.SpikeDetectionThreshold;
     end
-
-    if isfield(Data.Info,'KilosortScalingFactor')
-        TempKilosortScalingFactor = Data.Info.KilosortScalingFactor;
-    end
-
-    if isfield(Data.Info,'DownsampleFactor')
-        fieldsToDelete = {'TimeDownsampled'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-        fieldsToDelete = {'DownsampleFactor','DownsampledSampleRate'};
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    fieldNames = fieldnames(Data.Info);
-    idx = find(strcmp(fieldNames, 'Channelorder'));
-   
-    TempEventChannel = [];
-    TempEventDataType = [];
-    TempEventTimeRange = [];
-
+    
     if isfield(Data.Info,'EventChannelNames')
-        TempEventChannel = Data.Info.EventRelatedDataChannel;
-        TempEventDataType = Data.Info.EventRelatedDataType;
-        TempEventTimeRange = Data.Info.EventRelatedDataTimeRange;
-    end
-
-    TempEventChannelNames = [];
-    TempEventChannelType = [];
-    if isfield(Data,'EventRelatedData')
         TempEventChannelNames = Data.Info.EventChannelNames;
         TempEventChannelType = Data.Info.EventChannelType;
+    else
+        TempEventChannelNames = [];
     end
 
     % Create a new structure with only the fields up to the found index
@@ -212,8 +217,14 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
         Data.Info.EventChannelType = TempEventChannelType;
     end
 
-    if ~isempty(TempCutStart)
-         Data.Info.CutStart = TempCutStart;
+    if ~isempty(TempPreproInfoType)
+        Data.Info.EventRelatedPreprocessing = TempPreproInfoType;
+    end
+
+    if ~isempty(TempEventChannel)
+        Data.Info.EventRelatedDataChannel = TempEventChannel;
+        Data.Info.EventRelatedDataType = TempEventDataType;
+        Data.Info.EventRelatedDataTimeRange = TempEventTimeRange;
     end
 
     if ~isempty(TempSpikeDetectionThreshold)
@@ -222,6 +233,18 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
 
     if ~isempty(TempKilosortScalingFactor)
         Data.Info.KilosortScalingFactor = TempKilosortScalingFactor;
+    end
+
+    if ~isempty(TempCutStart)
+         Data.Info.CutStart = TempCutStart;
+    end
+
+    if ~isempty(TempCutStop)
+        Data.Info.CutEnd = TempCutStop;
+    end
+
+    if ~isempty(TempChannelDeletion)
+        Data.Info.ChannelDeletion = TempChannelDeletion;
     end
 
     if ~isempty(TempSpike2EventChannelToTake)
@@ -235,25 +258,38 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
     if ~isempty(TempSpikeDetectionNrStd)
         Data.Info.SpikeDetectionNrStd = TempSpikeDetectionNrStd;
     end
-    
-    if ~isempty(TempCutStop)
-        Data.Info.CutEnd = TempCutStop;
-    end
 
-    if ~isempty(TempChannelDeletion)
-        Data.Info.ChannelDeletion = TempChannelDeletion;
-    end
-
-    if ~isempty(TempEventChannel)
-        Data.Info.EventRelatedDataChannel = TempEventChannel;
-        Data.Info.EventRelatedDataType = TempEventDataType;
-        Data.Info.EventRelatedDataTimeRange = TempEventTimeRange;
-    end
+    Data.Info.SpikeType = TempSpikeType;
 
     if isfield(Data,'Preprocessed')
         fieldsToDelete = {'Preprocessed'};
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'EventRelatedDataType')
+        if strcmp(Data.Info.EventRelatedDataType,"Preprocessed")
+            msgbox("Event related data is based on preprocessed data and will be deleted");
+            if isfield(Data,'EventRelatedData')
+                fieldsToDelete = {'EventRelatedData'};
+                % Delete fields
+                Data = rmfield(Data, fieldsToDelete);
+                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+                Data.Info = rmfield(Data.Info, fieldsToDelete);
+            end
+            if isfield(Data,'PreprocessedEventRelatedData')
+                fieldsToDelete = {'PreprocessedEventRelatedData'};
+                % Delete fields
+                Data = rmfield(Data, fieldsToDelete);
+                
+                if isfield(Data.Info,'EventRelatedPreprocessing')
+                    fieldsToDelete = {'EventRelatedPreprocessing'};
+                    % Delete fields
+                    Data.Info = rmfield(Data.Info, fieldsToDelete);
+                end
+
+            end
+        end
     end
 
 elseif strcmp(ComponentToDelete,"Raw")

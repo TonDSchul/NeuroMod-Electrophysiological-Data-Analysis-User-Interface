@@ -86,7 +86,7 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
     Error = 0;
     
     if isempty(Input) == 0 % If Trialselection field filled (empty = All Trials)
-        [TrialsToReject] = Utility_SimpleCheckInputs(TrialsToReject,"Two",'',1,0);
+        [TrialsToReject] = Utility_SimpleCheckInputs(TrialsToReject,"Two",strcat('1,',num2str(NrTrials)),1,0);
     end
 
     Trialselectionfield = TrialsToReject; 

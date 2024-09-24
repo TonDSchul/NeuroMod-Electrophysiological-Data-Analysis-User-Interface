@@ -3,13 +3,15 @@ function [PlotAppearance] = Organize_Set_Standard_PlotAppearance(Type,PlotAppear
 %________________________________________________________________________________________
 
 %% Function to set the standrad appearance settings of each plot.  
-% This function sets the standrad settings of all GUI plots. It also serves
-% as a template if user wants to reset his costumizations
-% All settings saved in one variable to be able to easily save and load variable as .mat to set new standard
-% settings. 
+% This function hard codes standard plot appearances. It is called when no
+% .m file is saved in GUI_Path/Modules/MISC/Variables (do not edit!) to
+% create a new Template_PlotAppearance.m file
 
 % Inputs
-% 1. PlotAppearance: strcuture holding all appearances.
+% 1. Type: string, Specifies what settings to reset to standard. "All" to
+% reset all appearances OR "MainDataPlot" OR "MainTimePlot" OR
+% "SpectrumPlot" to reet window specific plot settings.
+% 2. PlotAppearance: strcuture holding all appearances.
 
 % Outputs
 % 1. PlotAppearance: strcuture holding all appearances.
@@ -63,11 +65,111 @@ if strcmp(Type,"SpectrumPlot") || strcmp(Type,"All")
     PlotAppearance.SpectrumWindow.Data.TimeXLabel = "Frequency [Hz]";
     PlotAppearance.SpectrumWindow.Data.TimeYLabel = "Power/Frequency (dB/Hz)";
     PlotAppearance.SpectrumWindow.Data.TimeFontSize = 10;
-
-    % LineWodth
+    
+    % LineWidth
     PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth = 1.5; % blue
 
     % Color
     PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor = [1,1,1]; % white
     PlotAppearance.SpectrumWindow.Data.SpectrumColor = [0,0.447058823529412,0.741176470588235]; % blue
+end
+
+%% ERP Window
+if strcmp(Type,"ERPPlot") || strcmp(Type,"All") 
+    % Lables and Fontsize
+    PlotAppearance.ERPWindow.SingleERP.XLabel = "Time [s]";
+    PlotAppearance.ERPWindow.SingleERP.YLabel = "Signal [mV]";
+    PlotAppearance.ERPWindow.SingleERP.FontSize = 10;
+    
+    % LineWidth
+    PlotAppearance.ERPWindow.SingleERP.EventLineWidth = 1; % 
+    PlotAppearance.ERPWindow.SingleERP.MeanLineWidth = 2; % 
+    PlotAppearance.ERPWindow.SingleERP.TriggerLineWidth = 2; % 
+
+    % Color
+    PlotAppearance.ERPWindow.SingleERP.EventColor = [0.75,0.75,0.75]; % grey
+    PlotAppearance.ERPWindow.SingleERP.MeanColor = [0,0,0]; % black
+    PlotAppearance.ERPWindow.SingleERP.TriggerColor = [1,0,0]; % red
+    PlotAppearance.ERPWindow.SingleERP.BackgroundColor = [1,1,1]; % white
+
+    % Multiple ERPs (for each channel)
+    % Lables and Fontsize
+    PlotAppearance.ERPWindow.MultipleERP.XLabel = "Time [s]";
+    PlotAppearance.ERPWindow.MultipleERP.YLabel = "";
+    PlotAppearance.ERPWindow.MultipleERP.FontSize = 10;
+    
+    % LineWidth
+    PlotAppearance.ERPWindow.MultipleERP.MeanLineWidth = 2; % 
+    PlotAppearance.ERPWindow.MultipleERP.TriggerLineWidth = 2; % 
+
+    % Color
+    PlotAppearance.ERPWindow.MultipleERP.TriggerColor = [1,0,0]; % red
+    PlotAppearance.ERPWindow.MultipleERP.BackgroundColor = [1,1,1]; % white
+end
+
+%% CSD Window
+if strcmp(Type,"CSDPlot") || strcmp(Type,"All") 
+    % Lables and Fontsize
+    PlotAppearance.CSDWindow.XLabel = "Time [s]";
+    PlotAppearance.CSDWindow.YLabel = "Depth [µm]";
+    PlotAppearance.CSDWindow.CLabel = "Signal [mV/mm^2]";
+    PlotAppearance.CSDWindow.FontSize = 10;
+    
+    % LineWidth
+    PlotAppearance.CSDWindow.TriggerLineWidth = 2; % 
+
+    % Color
+    PlotAppearance.CSDWindow.TriggerColor = [1,0,0]; % red
+    PlotAppearance.CSDWindow.BackgroundColor = [1,1,1]; % white
+
+end
+
+%% TF Window
+if strcmp(Type,"TFPlot") || strcmp(Type,"All") 
+    % Lables and Fontsize
+    PlotAppearance.TFWindow.XLabel = "Time [s]";
+    PlotAppearance.TFWindow.YLabel = "Frequency [Hz]";
+    PlotAppearance.TFWindow.CLabel = "dB Power";
+    PlotAppearance.TFWindow.FontSize = 10;
+    
+    % LineWidth
+    PlotAppearance.TFWindow.TriggerLineWidth = 2; % 
+
+    % Color
+    PlotAppearance.TFWindow.TriggerColor = [1,0,0]; % red
+    PlotAppearance.TFWindow.BackgroundColor = [1,1,1]; % white
+
+end
+
+%% CSD Live Window
+if strcmp(Type,"LiveCSDPlot") || strcmp(Type,"All") 
+    % Lables and Fontsize
+    PlotAppearance.LiveCSDWindow.XLabel = "Time [s]";
+    PlotAppearance.LiveCSDWindow.YLabel = "Depth [µm]";
+    PlotAppearance.LiveCSDWindow.CLabel = "Signal [mV/mm^2]";
+    PlotAppearance.LiveCSDWindow.FontSize = 10;
+
+    PlotAppearance.LiveCSDWindow.BackgroundColor = [1,1,1]; % white
+end
+
+%% Power Estimate Live Window
+if strcmp(Type,"PowerEstimatePlot") || strcmp(Type,"All") 
+    % Lables and Fontsize
+    PlotAppearance.LivePowerEstimateWindow.XLabel = "";
+    PlotAppearance.LivePowerEstimateWindow.YLabel = "Power Estimate";
+    PlotAppearance.LivePowerEstimateWindow.FontSize = 10;
+
+    PlotAppearance.LivePowerEstimateWindow.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.LivePowerEstimateWindow.BarColor = [0,0,0]; % black
+end
+
+%% Live Spike Rate Window
+if strcmp(Type,"LiveSpikeRatePlot") || strcmp(Type,"All") 
+    % Lables and Fontsize
+    PlotAppearance.LiveSpikeRateWindow.XLabel = "Time [s]";
+    PlotAppearance.LiveSpikeRateWindow.YLabel = "Spike Rate [Hz]";
+    PlotAppearance.LiveSpikeRateWindow.FontSize = 10;
+
+    PlotAppearance.LiveSpikeRateWindow.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.LiveSpikeRateWindow.BarColor = [0,0,0]; % black
 end

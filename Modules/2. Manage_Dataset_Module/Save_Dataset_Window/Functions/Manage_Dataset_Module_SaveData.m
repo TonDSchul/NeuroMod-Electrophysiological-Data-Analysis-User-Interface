@@ -71,7 +71,7 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
     TempEventChannel = [];
     TempEventDataType = [];
     TempEventTimeRange = [];
-    TempPreproInfo = [];
+    TempPreproInfoType = [];
     TempSpikeDetectionThreshold = [];
     TempKilosortScalingFactor = [];
     TempSpikeType = Data.Info.SpikeType;
@@ -109,7 +109,9 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
     end
 
     if isfield(Data,'PreprocessedEventRelatedData')
-        TempPreproInfo = Data.Info.EventRelatedPreprocessing;
+        if isfield(Data.Info,'EventRelatedPreprocessing')
+            TempPreproInfoType = Data.Info.EventRelatedPreprocessing;
+        end
     end
 
     if isfield(Data.Info,'SpikeSorting')
@@ -139,8 +141,8 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
         Data.Info.EventChannelType = TempEventChannelType;
     end
 
-    if ~isempty(TempPreproInfo)
-        Data.Info.EventRelatedPreprocessing = TempPreproInfo;
+    if ~isempty(TempPreproInfoType)
+        Data.Info.EventRelatedPreprocessing = TempPreproInfoType;
     end
 
     if ~isempty(TempEventChannel)
@@ -203,9 +205,13 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
                 fieldsToDelete = {'PreprocessedEventRelatedData'};
                 % Delete fields
                 Data = rmfield(Data, fieldsToDelete);
-        
-                fieldsToDelete = {'EventRelatedPreprocessing'};
-                Data.Info = rmfield(Data.Info, fieldsToDelete);
+                
+                if isfield(Data.Info,'EventRelatedPreprocessing')
+                    fieldsToDelete = {'EventRelatedPreprocessing'};
+                    % Delete fields
+                    Data.Info = rmfield(Data.Info, fieldsToDelete);
+                end
+
             end
         end
     end
@@ -248,8 +254,11 @@ if Whattosave(1) == 0 && Whattosave(2) == 1
                     % Delete fields
                     Data = rmfield(Data, fieldsToDelete);
             
-                    fieldsToDelete = {'EventRelatedPreprocessing'};
-                    Data.Info = rmfield(Data.Info, fieldsToDelete);
+                    if isfield(Data.Info,'EventRelatedPreprocessing')
+                        fieldsToDelete = {'EventRelatedPreprocessing'};
+                        % Delete fields
+                        Data.Info = rmfield(Data.Info, fieldsToDelete);
+                    end 
                 end
             end
         end
@@ -342,6 +351,12 @@ if Whattosave(5) == 0
             if isfield(Data.Info,'EventRelatedDataChannel')
                 fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
                 Data.Info = rmfield(Data.Info, fieldsToDelete);
+
+                if isfield(Data.Info,'EventRelatedPreprocessing')
+                    fieldsToDelete = {'EventRelatedPreprocessing'};
+                    % Delete fields
+                    Data.Info = rmfield(Data.Info, fieldsToDelete);
+                end 
             end
         end
     end
@@ -367,8 +382,41 @@ if Whattosave(6) == 0
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
 
-        fieldsToDelete = {'EventRelatedPreprocessing'};
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
+        if isfield(Data.Info,'EventRelatedPreprocessingType')
+            fieldsToDelete = {'EventRelatedPreprocessingType'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+
+        if isfield(Data.Info,'TrialRejectionChannel')
+            fieldsToDelete = {'TrialRejectionChannel'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+        if isfield(Data.Info,'TrialRejectionTrials')
+            fieldsToDelete = {'TrialRejectionTrials'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+
+        if isfield(Data.Info,'ArtefactRejectionChannel')
+            fieldsToDelete = {'ArtefactRejectionChannel'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+        if isfield(Data.Info,'ArtefactRejectionTrials')
+            fieldsToDelete = {'ArtefactRejectionTrials'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+        if isfield(Data.Info,'ArtefactRejectionTimeRange')
+            fieldsToDelete = {'ArtefactRejectionTimeRange'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+
+        if isfield(Data.Info,'ChannelRejectionChannel')
+            fieldsToDelete = {'ChannelRejectionChannel'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+        if isfield(Data.Info,'ChannelRejectionTrials')
+            fieldsToDelete = {'ChannelRejectionTrials'};
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
     end
 else
     if ~isfield(Data,'PreprocessedEventRelatedData')
