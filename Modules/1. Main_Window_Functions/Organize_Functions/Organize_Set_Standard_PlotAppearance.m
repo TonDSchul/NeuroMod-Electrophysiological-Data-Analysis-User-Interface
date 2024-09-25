@@ -173,3 +173,35 @@ if strcmp(Type,"LiveSpikeRatePlot") || strcmp(Type,"All")
     PlotAppearance.LiveSpikeRateWindow.BackgroundColor = [1,1,1]; % white
     PlotAppearance.LiveSpikeRateWindow.BarColor = [0,0,0]; % black
 end
+
+%% Internal Event Spike Analysis
+if strcmp(Type,"InternalEventSpikePlot") || strcmp(Type,"All") 
+    % Main plot
+    % Lables and Fontsize
+    PlotAppearance.InternalEventSpikePlot.MainPlotXLabel = "";
+    PlotAppearance.InternalEventSpikePlot.MainPlotYLabel = "Depth [µm]";
+    PlotAppearance.InternalEventSpikePlot.MainPlotFontSize = 10;
+    % Color
+    PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor = [1,1,1]; % white
+    PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor = [1,0,0]; % red
+    PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor = [0.9,0.9,0.9]; % grey
+    % LineWidth
+    PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth = 2; % 
+    PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth = 2.5; % 
+
+    % Spike rate over time
+    % Lables and Fontsize
+    PlotAppearance.InternalEventSpikePlot.SRTimePlotXLabel = "Time [s]";
+    PlotAppearance.InternalEventSpikePlot.SRTimePlotYLabel = "Spike Rate [Hz]";
+    PlotAppearance.InternalEventSpikePlot.SRTimePlotFontSize = 10;
+    % Color
+    PlotAppearance.InternalEventSpikePlot.SRTimePlotBarColor = [0,0,0]; % black
+    PlotAppearance.InternalEventSpikePlot.SRTimePlotBackgroundColor = [1,1,1]; % white
+    % Spike rate over channel
+    PlotAppearance.InternalEventSpikePlot.SRChannelPlotXLabel = "Spike Rate per";
+    PlotAppearance.InternalEventSpikePlot.SRChannelPlotYLabel = "";
+    PlotAppearance.InternalEventSpikePlot.SRChannelPlotFontSize = 10;
+    % Color
+    PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor = [0,0,0]; % black
+    PlotAppearance.InternalEventSpikePlot.SRChannelPlotBackgroundColor = [1,1,1]; % white
+end

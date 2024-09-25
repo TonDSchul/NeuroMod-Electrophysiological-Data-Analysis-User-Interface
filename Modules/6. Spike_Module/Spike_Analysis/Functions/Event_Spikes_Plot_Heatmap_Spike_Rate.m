@@ -1,4 +1,4 @@
-function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(SpikeTimes,SpikePositions,Figure,SR,time_bin_size,depth_edges,time_edges,nevents,eventtime,Normalize,NormWindow,Clustertoshow,ClusterIdentity,rgbMatrix,ChannelsToPlot,ChannelSpacing,appWindow,TwoORThreeD,CurrentPlotData)
+function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(SpikeTimes,SpikePositions,Figure,SR,time_bin_size,depth_edges,time_edges,nevents,eventtime,Normalize,NormWindow,Clustertoshow,ClusterIdentity,rgbMatrix,ChannelsToPlot,ChannelSpacing,appWindow,TwoORThreeD,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 
@@ -102,9 +102,9 @@ if strcmp(TwoORThreeD,"TwoD")
         delete(Event_handles(2:end));
     end
     if isempty(Event_handles)
-        eventLine = line(Figure,[eventtime,eventtime],[DepthToPlot(1),DepthToPlot(end)],'Color','k','LineWidth',2.5, 'Tag', 'Event');
+        eventLine = line(Figure,[eventtime,eventtime],[DepthToPlot(1),DepthToPlot(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Tag', 'Event');
     else
-        set(Event_handles(1),'XData',[eventtime,eventtime],'YData',[DepthToPlot(1),DepthToPlot(end)],'Color','k','LineWidth',2.5, 'Tag', 'Event');
+        set(Event_handles(1),'XData',[eventtime,eventtime],'YData',[DepthToPlot(1),DepthToPlot(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Tag', 'Event');
         eventLine = Event_handles(1);
     end
 elseif strcmp(TwoORThreeD,"ThreeD")
@@ -164,16 +164,18 @@ elseif strcmp(TwoORThreeD,"ThreeD")
     XGrid = zeros(size(YGrid));
     
     if isempty(Event_handles)
-        eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+        eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
     else
-        set(Event_handles(1),'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
+        set(Event_handles(1),'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none', 'Tag', 'Event');
         eventLine = Event_handles(1);
     end
 end
 
 ylim(Figure,[min(DepthToPlot), max(DepthToPlot)]);  % Ensure y-axis matches
 xlim(Figure,[time_edges(1),time_edges(end)]);
-ylabel(Figure,'Depth [µm]');
+ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel);
+xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel);
+
 set(Figure, 'YDir', 'reverse');
 set(Figure,'xticklabel',{[]});
 
@@ -221,7 +223,7 @@ if ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non")
         spikeTimes = SpikeTimes(IndiciesCurrentCluster==1);
         spikePositions = SpikePositions(IndiciesCurrentCluster==1);
     
-        Clusterline = line(Figure,spikeTimes,spikePositions,'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgbMatrix(Clustertoshow,:),'MarkerEdgeColor',rgbMatrix(Clustertoshow,:),'MarkerSize',5, 'Tag', 'SpikeRateCluster');
+        Clusterline = line(Figure,spikeTimes,spikePositions,'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgbMatrix(Clustertoshow,:),'MarkerEdgeColor',rgbMatrix(Clustertoshow,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Tag', 'SpikeRateCluster');
     
         % Bring the event line to the front
         uistack(Clusterline, 'top');

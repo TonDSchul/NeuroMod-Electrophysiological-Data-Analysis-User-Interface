@@ -1,4 +1,4 @@
-function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,ChannelSelection,appWindow,TextArea,TimeWindowSpiketriggredLFP,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData)
+function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,ChannelSelection,appWindow,TextArea,TimeWindowSpiketriggredLFP,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 %% Function to prepare and execute spike triggered average analysis
@@ -158,18 +158,18 @@ if strcmp(DatatoUse,'Preprocessed')
     if ~isempty(Data.Preprocessed)
         if Downsampled == 0
             winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : TimeWindowSpiketriggredLFP(2);
-            [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, Data.Time, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
+            [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, Data.Time, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance);
         else
             winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.DownsampledSampleRate) : TimeWindowSpiketriggredLFP(2);
-            [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.TimeDownsampled, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.DownsampledSampleRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
+            [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.TimeDownsampled, Data.Preprocessed(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.DownsampledSampleRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance);
         end
     else
         winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : TimeWindowSpiketriggredLFP(2);
-        [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
+        [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance);
     end
 else
     winAroundSpike = TimeWindowSpiketriggredLFP(1) : (1/Data.Info.NativeSamplingRate) : TimeWindowSpiketriggredLFP(2);
-    [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData);
+    [mnLFP,CurrentPlotData] = spikeTrigLFP(Data,Data.Time, Data.Raw(ChannelSelection(1):ChannelSelection(2),:), SpikeTimes, SpikePositions, ChannelSelection, winAroundSpike, Figure,Data.Info.NativeSamplingRate,TextArea,Data.Info.ChannelSpacing,appWindow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance);
 end
 
 %% Determine whether new prepro data is saved for main dataset

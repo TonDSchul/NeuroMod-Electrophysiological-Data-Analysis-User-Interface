@@ -1,4 +1,4 @@
-function [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData)
+function [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance)
 % function mnLFP = spikeTrigLFP(tLFP, lfpdat, theseST, winAroundSpike)
 %
 % returns nChannels x nTimePoints mean spike-triggered LFP. 
@@ -114,9 +114,9 @@ if Plot
         
         XGrid = zeros(size(YGrid));
         if isempty(Event_handles)
-            eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none','Tag', 'Event');
+            eventLine=surf(Figure,XGrid, YGrid, ZGrid, 'FaceColor', PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none','Tag', 'Event');
         else
-            set(Event_handles(1),'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', 'r', 'FaceAlpha', 0.6, 'EdgeColor', 'none','Tag', 'Event');
+            set(Event_handles(1),'XData',XGrid,'YData', YGrid,'ZData', ZGrid, 'FaceColor', PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor, 'FaceAlpha', 0.6, 'EdgeColor', 'none','Tag', 'Event');
             eventLine = Event_handles(1);
         end
 
@@ -142,14 +142,14 @@ if Plot
         end
         
         if isempty(Event_handles)
-            eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[ydata(1),ydata(end)],'Color','r','LineWidth',2, 'Parent', Figure,'Tag', 'Event');
+            eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[ydata(1),ydata(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure,'Tag', 'Event');
         else
-            set(Event_handles(1),'XData',[Time(Time==0),Time(Time==0)],'YData',[ydata(1),ydata(end)],'Color','r','LineWidth',2, 'Parent', Figure,'Tag', 'Event');
+            set(Event_handles(1),'XData',[Time(Time==0),Time(Time==0)],'YData',[ydata(1),ydata(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure,'Tag', 'Event');
             eventLine = Event_handles(1);
         end
         uistack(eventLine, 'top');
     end
-        
+     
     % Add legend only once
     if isempty(findobj(Figure, 'Type', 'legend'))
         % Create legend with imagesc and event line
@@ -162,12 +162,13 @@ if Plot
         title(Figure,strcat("Unit ",ClustertoShow," Spike Triggered LFP"));
     end
     
-    xlabel(Figure,'Time [ms]')
-    ylabel(Figure,'Depth [µm]')
+    xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel)
+    ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel)
     xlim(Figure,[min(Time) max(Time)]);
     if ydata(1)~=ydata(end)
         ylim(Figure,[ydata(1),ydata(end)])
     end
+    
     cbar_handle=colorbar('peer',Figure,'location','WestOutside');
     cbar_handle.Label.String = "LFP [mV]";
     set(Figure, 'YDir', 'reverse');

@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,TimeSpikeFigure,ChannelSpikeFigure,Type,rgb_matrix,ClustertoShow,numBins,ChannelSelection,ChannelSpacing,CurrentPlotData)
+function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,TimeSpikeFigure,ChannelSpikeFigure,Type,rgb_matrix,ClustertoShow,numBins,ChannelSelection,ChannelSpacing,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 
@@ -78,14 +78,14 @@ if strcmp(Type,"Initial") && ~strcmp(Type,"NewCluster") || strcmp(Type,"BinsizeC
     TotalRate_handles = findobj(TimeSpikeFigure, 'Tag', 'TotalRate');
 
     if isempty(TotalRate_handles)
-        bar(TimeSpikeFigure,SpikesInBins,'black', 'Tag', 'TotalRate');
+        bar(TimeSpikeFigure,SpikesInBins,'FaceColor',PlotAppearance.InternalEventSpikePlot.SRTimePlotBarColor,'EdgeColor',PlotAppearance.InternalEventSpikePlot.SRTimePlotBarColor,'Tag', 'TotalRate');
     elseif ~isempty(TotalRate_handles)
-        set(TotalRate_handles, 'YData', SpikesInBins,'Tag','TotalRate');
+        set(TotalRate_handles, 'YData', SpikesInBins,'FaceColor',PlotAppearance.InternalEventSpikePlot.SRTimePlotBarColor,'EdgeColor',PlotAppearance.InternalEventSpikePlot.SRTimePlotBarColor,'Tag','TotalRate');
     end
 
-    ylabel(TimeSpikeFigure,"Spike Rate [Hz]")
-    xlabel(TimeSpikeFigure,strcat("Time [s]; ",num2str(BinSizeTime),"s per bin"));
-    TimeSpikeFigure.FontSize = 10;
+    ylabel(TimeSpikeFigure,PlotAppearance.InternalEventSpikePlot.SRTimePlotYLabel)
+    xlabel(TimeSpikeFigure,strcat(PlotAppearance.InternalEventSpikePlot.SRTimePlotXLabel,"; ",num2str(BinSizeTime),"s per bin"));
+    TimeSpikeFigure.FontSize = PlotAppearance.InternalEventSpikePlot.SRTimePlotFontSize;
 
     % Set the x-tick labels to the correct time values
     % Calculate bin centers or edges
@@ -146,11 +146,12 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     if max(SpikesInBins) ~= 0
         xlim(ChannelSpikeFigure,[0 max(SpikesInBins)]);
     end
-    barh(ChannelSpikeFigure,SpikesInBins','black');
+    barh(ChannelSpikeFigure,SpikesInBins','FaceColor',PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor,'EdgeColor',PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor);
    
-    xlabel(ChannelSpikeFigure,strcat("Spike Rate per ",num2str(BinSize),"µm [Hz]"))
+    xlabel(ChannelSpikeFigure,strcat(PlotAppearance.InternalEventSpikePlot.SRChannelPlotXLabel," ",num2str(BinSize),"µm [Hz]"))
+    ylabel(ChannelSpikeFigure,PlotAppearance.InternalEventSpikePlot.SRChannelPlotYLabel)
     
-    ChannelSpikeFigure.FontSize = 10;
+    ChannelSpikeFigure.FontSize = PlotAppearance.InternalEventSpikePlot.SRChannelPlotFontSize;
     set(ChannelSpikeFigure,'yticklabel',{[]})
 
     %% save plotted data in case user wants to save 

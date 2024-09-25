@@ -1,7 +1,7 @@
 % Inputs: spikeTimes, spikeAmps, spikeYpos - names self explanatory
 %         opt - optional, empty by default; 'mark' - will mark detected drifts, 'show' - will generate a different plot, 
 %               where only large spikes are used, and the detection of drift locations is demonstrated
-function [Figure] = plotDriftmap(spikeTimes, spikeAmps, spikeYpos, Figure, opt, Segmentlength)
+function [Figure] = plotDriftmap(spikeTimes, spikeAmps, spikeYpos, Figure, opt, Segmentlength,PlotAppearance)
 if nargin < 4
   opt = '';
 end
@@ -23,16 +23,27 @@ if ~strcmpi(opt, 'show')
   ampRange = quantile(spikeAmps, [0.1 0.9]);
   colorBins = linspace(ampRange(1), ampRange(2), nColorBins);
   
-  colors = gray(nColorBins); colors = colors(end:-1:1, :); % first bin is smalles spikes, starts white
+  % Create colormap 
+  %-- standard:
+  % colors = gray(nColorBins); 
+  % colors = colors(end:-1:1, :); % first bin is smalles spikes, starts white
+
+  % Costum:
+  % Interpolate between the selected color and black [0, 0, 0]
+  colors = zeros(nColorBins, 3); % Initialize colormap matrix
+  for i = 1:3
+      colors(:, i) = linspace(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(i), 0, nColorBins); 
+  end
+
   for b = 1:nColorBins-1
     theseSpikes = spikeAmps>=colorBins(b) & spikeAmps<=colorBins(b+1);
 
-    line(Figure,spikeTimes(theseSpikes), spikeYpos(theseSpikes),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(b,:),'MarkerEdgeColor',colors(b,:),'MarkerSize',2.5, 'Parent', Figure,'Tag','SpikeAmps');
+    line(Figure,spikeTimes(theseSpikes), spikeYpos(theseSpikes),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(b,:),'MarkerEdgeColor',colors(b,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');
 
     %hold on;
   end  
-  %xlabel(Figure,'Time [s]')
-  ylabel(Figure,'Depth [µm]')
+  xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel)
+  ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel)
 end
 if isempty(opt)
   return
@@ -43,7 +54,7 @@ for d = 0:Segmentlength:max(spikeYpos) % break the recording into 800 um segment
   I = spikeAmps > mean(tmp) + 1.5*std(tmp) & spikeYpos >= d & spikeYpos < d+Segmentlength; % large spikes in current segment
   driftEvents = detectDriftEvents(spikeTimes(I), spikeYpos(I), strcmpi(opt, 'show'),Figure);
   if strcmpi(opt, 'mark') && ~isempty(driftEvents)
-    line(Figure,driftEvents(:,1), driftEvents(:,2),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', 'red','MarkerEdgeColor','red','MarkerSize',2.5, 'Parent', Figure,'Tag','SpikeAmps')
+    line(Figure,driftEvents(:,1), driftEvents(:,2),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', 'red','MarkerEdgeColor','red','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps')
     % text(driftEvents(:,1)+1, driftEvents(:,2), num2str(round(driftEvents(:,3))), 'Color', 'r') % the magnitude of the drift
   end
 end

@@ -38,7 +38,11 @@ normalizedCutoffFreq = (cutoffFreq / nyquistFreq);
 [b, a] = butter(filterOrder, normalizedCutoffFreq, 'low');
 
 % Apply filter with zero-phase distortion
-filteredSpikeRate = filtfilt(b, a, SpikeRate);
+if ~isnan(SpikeRate)
+    filteredSpikeRate = filtfilt(b, a, SpikeRate);
+else
+    filteredSpikeRate = SpikeRate;
+end
 
 filteredSpikeRate(filteredSpikeRate < 0) = 0;
 

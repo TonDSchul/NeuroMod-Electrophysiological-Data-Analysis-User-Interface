@@ -1,5 +1,10 @@
 function plotWFampCDFs(pdfs, cdfs, ampBins, depthBins,PDFCDF,Figure,Channeldepth,ChannelSpacing,SpikeType,TwoORThreeD,ClustertoShow)
 
+if isempty(ampBins)
+    msgbox("No Spike Data to Show.")
+    return;
+end
+
 depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
 ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
 

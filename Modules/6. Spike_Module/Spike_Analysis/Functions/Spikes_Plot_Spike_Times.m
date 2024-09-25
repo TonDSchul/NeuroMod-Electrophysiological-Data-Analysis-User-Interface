@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Spikes_Plot_Spike_Times(Data,Type,rgb_matrix,Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmps,ChannelPositions,Figure,numCluster,Clustertoshow,PlotEvents,EventIndicies,ChannelSelection,ChannelSpacing,CurrentPlotData)
+function [CurrentPlotData] = Spikes_Plot_Spike_Times(Data,Type,rgb_matrix,Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmps,ChannelPositions,Figure,numCluster,Clustertoshow,PlotEvents,EventIndicies,ChannelSelection,ChannelSpacing,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 %% Function to plot spike times with amplitude color coding
@@ -56,11 +56,12 @@ NumChannel = length(ChannelSelection(1):ChannelSelection(2));
 %% Plot Spikes
 xlim(Figure,[Time(1),Time(end)]);
 ylim(Figure,[0,((NumChannel-1)*ChannelSpacing)]);
-ylabel(Figure,'Depth (um)')
+ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel)
+xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel)
 
 title(Figure,strcat("Spike Positions Across Time and Depth Channel ", num2str(ChannelSelection)));
 
-Figure.FontSize = 10;
+Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
 
 Spikeline_handles = findobj(Figure,'Type', 'line', 'Tag', 'Spikes');
 
@@ -103,22 +104,22 @@ if strcmp(Clustertoshow,"All")
 
         if isempty(Spikeline_handles)
             if strcmp(Type,"Continous") 
-                line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',1.5, 'Parent', Figure, 'Tag', 'Spikes');
+                line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'Spikes');
             elseif strcmp(Type,"Eventrelated") 
-                line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',1.5, 'Parent', Figure, 'Tag', 'Spikes');
+                line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'Spikes');
             end
         elseif ~isempty(Spikeline_handles) 
             if i <= length(Spikeline_handles)
                 if strcmp(Type,"Continous") 
-                    set(Spikeline_handles(i), 'XData', SpikeTimes(IndiciesCurrentCluster), 'YData', SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',1.5, 'Parent', Figure, 'Tag', 'Spikes');
+                    set(Spikeline_handles(i), 'XData', SpikeTimes(IndiciesCurrentCluster), 'YData', SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'Spikes');
                 elseif strcmp(Type,"Eventrelated") 
-                    set(Spikeline_handles(i), 'XData', SpikeTimes(IndiciesCurrentCluster), 'YData', SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',1.5, 'Parent', Figure, 'Tag', 'Spikes');
+                    set(Spikeline_handles(i), 'XData', SpikeTimes(IndiciesCurrentCluster), 'YData', SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'Spikes');
                 end
             else
                 if strcmp(Type,"Continous") 
-                    line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',1.5, 'Parent', Figure, 'Tag', 'Spikes');
+                    line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'Spikes');
                 elseif strcmp(Type,"Eventrelated") 
-                    line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',1.5, 'Parent', Figure, 'Tag', 'Spikes');
+                    line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(i,:),'MarkerEdgeColor',rgb_matrix(i,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'Spikes');
                 end
             end
         end
@@ -129,9 +130,9 @@ elseif strcmp(Clustertoshow,"Non")
     opt = [];
     Segmentlength = 200;
     if strcmp(Type,"Continous") 
-        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength);  
+        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);  
     elseif strcmp(Type,"Eventrelated")
-        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength);   
+        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);   
     end
 
     SpikeCluster_handles = findobj(Figure,'Type', 'line', 'Tag', 'ClusterSpikes');
@@ -160,9 +161,9 @@ else %% If specific spike SpikeCluster selected
         opt = [];
         Segmentlength = 200;
         if strcmp(Type,"Continous")
-            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength);   
+            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);   
         elseif strcmp(Type,"Eventrelated")
-            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength);   
+            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);   
         end
     end
 
@@ -187,15 +188,16 @@ else %% If specific spike SpikeCluster selected
 
     if sum(IndiciesCurrentCluster) > 0
         if strcmp(Type,"Continous")
-            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow),:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow),:),'MarkerSize',3, 'Parent', Figure, 'Tag', 'ClusterSpikes');
+            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow),:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow),:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'ClusterSpikes');
         elseif strcmp(Type,"Eventrelated")
-            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow),:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow),:),'MarkerSize',3, 'Parent', Figure, 'Tag', 'ClusterSpikes');
+            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(str2double(Clustertoshow),:),'MarkerEdgeColor',rgb_matrix(str2double(Clustertoshow),:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'ClusterSpikes');
         end
     end
 end
-
+%% Plot Event lines
+% Event related windows
 if strcmp(Type,"Eventrelated")
-    %% Plot Event line
+    
     Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
     if length(Event_handles)>1
         delete(Event_handles(2:end));
@@ -203,9 +205,9 @@ if strcmp(Type,"Eventrelated")
     end
 
     if isempty(Event_handles)
-        eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,ChannelPositions(end,2)],'Color','r','LineWidth',2, 'Parent', Figure, 'Tag', 'Event');
+        eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,ChannelPositions(end,2)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure, 'Tag', 'Event');
     else
-        set(Event_handles(1), 'XData', [Time(Time==0),Time(Time==0)], 'YData', [0,ChannelPositions(end,2)], 'Parent', Figure, 'Tag', 'Event');
+        set(Event_handles(1), 'XData', [Time(Time==0),Time(Time==0)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'YData', [0,ChannelPositions(end,2)], 'Parent', Figure, 'Tag', 'Event');
         eventLine = Event_handles(1);
     end
     
@@ -218,16 +220,16 @@ if strcmp(Type,"Eventrelated")
         legendHandle = legend(eventLine, {'Trigger'});
         set(legendHandle, 'HandleVisibility', 'off');
     end
-    
+
+% Continous spikes windows    
 elseif strcmp(Type,"Continous")
     if PlotEvents
         legend(Figure, 'on');
-        %% Plot Event line
         Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
         delete(Event_handles(:));
 
         for i = 1:length(EventIndicies)
-            line(Figure,[EventIndicies(i),EventIndicies(i)],[0,ChannelPositions(end,2)],'Color','k','LineWidth',1.5, 'Tag', 'Event');
+            line(Figure,[EventIndicies(i),EventIndicies(i)],[0,ChannelPositions(end,2)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Tag', 'Event');
             Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
             eventLine = Event_handles(1);
         end

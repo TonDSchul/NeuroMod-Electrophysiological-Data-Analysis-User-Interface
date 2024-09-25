@@ -54,27 +54,15 @@ if app.PreprocDataPlotCheckBox.Value == 1 && isfield(app.Data.Info,'DownsampleFa
         StopIndex = size(app.Data.Preprocessed,2);
     end
 else % If not downsampled
-    if app.RawDataPlotCheckBox.Value == 1
+    if app.RawDataPlotCheckBox.Value == 1 || app.PreprocDataPlotCheckBox.Value == 1
         TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
         StartIndex = app.CurrentTimePoints;
         StopIndex = StartIndex+round(TimeDuration*app.Data.Info.NativeSamplingRate);
         if StopIndex > size(app.Data.Raw,2)
             StopIndex = size(app.Data.Raw,2);
-        end
-    elseif app.PreprocDataPlotCheckBox.Value == 1
-        TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
-        StartIndex = app.CurrentTimePoints;
-        StopIndex = StartIndex+round(TimeDuration*app.Data.Info.NativeSamplingRate);
-        if StopIndex > size(app.Data.Preprocessed,2)
-            StopIndex = size(app.Data.Preprocessed,2);
         end
     else
-        TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
-        StartIndex = app.CurrentTimePoints;
-        StopIndex = StartIndex+round(TimeDuration*app.Data.Info.NativeSamplingRate);
-        if StopIndex > size(app.Data.Raw,2)
-            StopIndex = size(app.Data.Raw,2);
-        end
+        return;
     end
 end
 
