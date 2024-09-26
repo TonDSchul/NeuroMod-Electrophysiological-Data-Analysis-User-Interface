@@ -207,7 +207,13 @@ if strcmp(TimeOfExecution,"Initial")
 
             tableText = [TemptableText,tableText];
             % Display the text in the Text Area
-            app.TextArea_2.Value = tableText;
+            if isfield(Data.Info,'startTimestamp')
+                app.TextArea_2.Value = [strcat("Start Time Stamp of event recording: ",num2str(Data.Info.startTimestamp));"";tableText];
+            else
+                app.TextArea_2.Value = ["No Aquisition Start time stamp found. Cannot correct event times if recording and aquistion start are different";"";tableText];
+            end
+
+            
         end
     end
 end

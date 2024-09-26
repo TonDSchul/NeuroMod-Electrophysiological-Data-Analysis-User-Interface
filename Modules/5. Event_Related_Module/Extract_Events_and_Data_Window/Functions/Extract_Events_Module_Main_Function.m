@@ -248,7 +248,25 @@ elseif strcmp(RecordingType,"Open Ephys")
 
     NoddeID = [];
     StateSelection = Threshold;
-    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection);
+
+    if isfield(Data.Info,'startTimestamp')
+        startTimestamp = round(Data.Info.startTimestamp*Data.Info.NativeSamplingRate);
+    else
+        startTimestamp = [];
+        msgbox("Warning: No Aquisition Start time stamp found. Cannot correct event times if recording and aquistion start are different.")
+    end
+    
+    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp);
+    
+    % Can be the case that sample number of events exceed data recording. 
+    % Search for those events and delete
+    for nevents = 1:length(Data.Events)
+        if sum(Data.Events{nevents}>length(Data.Time))
+            msgbox(strcat("Extracted event data contains ",num2str(sum(Data.Events{nevents}>length(Data.Time)))," samples outside of time range which are deleted."))
+            Data.Events{nevents}(Data.Events{nevents}>length(Data.Time)) = [];
+        end
+    end
+
 
 elseif strcmp(RecordingType,"Neuralynx")
 

@@ -23,7 +23,7 @@ function [Data] =  Manage_Dataset_Module_Apply_ChannelOrder (Data,ChannelOrder)
 
 %% Create Channel Order
 % If the user selcted a costum channel order
-if ~isempty(ChannelOrder) && length(ChannelOrder) == size(Data.Raw,1) && ~isnan(ChannelOrder(1))
+if ~isempty(ChannelOrder) && length(ChannelOrder) == size(Data.Raw,1) 
     % If first channel is designated with a 0, we cant loop
     % over it. So we add +1 to every channel number
     if find(ChannelOrder == 0)
@@ -36,6 +36,8 @@ if ~isempty(ChannelOrder) && length(ChannelOrder) == size(Data.Raw,1) && ~isnan(
     Data.Info.Channelorder = ChannelOrder;
 
     clear('tempMatrix');
+elseif isnan(ChannelOrder(1))
+    disp("No Channel Order selected.")
 else
     % If no channelorder selected, it is 1 to channel size
     % by default

@@ -126,7 +126,7 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     else
         MeanWaveForm(1,:,:) = squeeze(WaveFormSelection);
     end
-   
+    
     %% Just Some Channel Selected
     MeanWaveForm = MeanWaveForm(1,PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:);
     

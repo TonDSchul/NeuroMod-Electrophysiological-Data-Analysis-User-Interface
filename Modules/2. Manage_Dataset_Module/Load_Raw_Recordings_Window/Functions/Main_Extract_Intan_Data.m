@@ -65,6 +65,16 @@ if strcmp(Filetype,"Intan .dat")
             
             num_data_points = size(Data,2);
             
+            if size(Data,1) == 0 || isempty(Data)
+                msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
+                TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
+                Data = [];
+                HeaderInfo = [];
+                SampleRate = [];
+                RecordingType = [];
+                return;
+            end
+
             % Extract General Information about Digital Inputs
             HeaderInfo = frequency_parameters;
             
@@ -99,9 +109,13 @@ if strcmp(Filetype,"Intan .rhd")
     
     [amplifier_data,~,frequency_parameters,~,~,t_dig,~,~] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea);
     
-    if size(amplifier_data,1) == 0
-        texttoshow = "No Amplifier Channel Data found";
-        TextArea = texttoshow;
+    if size(amplifier_data,1) == 0 || isempty(Data)
+        msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
+        TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
+        Data = [];
+        HeaderInfo = [];
+        SampleRate = [];
+        RecordingType = [];
         return;
     end
     

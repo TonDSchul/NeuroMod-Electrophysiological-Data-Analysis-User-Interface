@@ -39,7 +39,7 @@ function [Data,Header,SampleRate] = Open_Ephys_Load_All_Formats(DATA_PATH,nRecor
 
 %________________________________________________________________________________________
 
-
+Data = [];
 SampleRate = [];
 
 % "Import" matlab-tools

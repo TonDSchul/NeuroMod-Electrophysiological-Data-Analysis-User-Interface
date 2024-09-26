@@ -67,7 +67,7 @@ for nchannel = 1:size(Datatoplot,2)
     end
 end
 
-if sum(Datatoplot,'all') > 0
+if min(Datatoplot,[],'all') ~= max(Datatoplot,[],'all')
     ylim(Figure,[min(Datatoplot,[],'all'),max(Datatoplot,[],'all')])
 end
 

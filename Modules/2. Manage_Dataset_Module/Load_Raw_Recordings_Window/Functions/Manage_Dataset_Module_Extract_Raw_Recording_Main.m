@@ -1,4 +1,4 @@
-function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder)
+function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder,AdditionalAmpFactor)
 
 %________________________________________________________________________________________
 
@@ -53,6 +53,11 @@ if strcmp(RecordingSystem,"Intan")
     % Output HeaderInfo = Whatever header info your
     % recording has. 
     [Data,HeaderInfo,SampleRate,RecordingType] = Main_Extract_Intan_Data(FileType,SelectedFolder,TextArea);
+    
+    if isempty(Data)
+        Time = [];
+        return;
+    end
 
 %% Open Ephys Matlab Tools to extract ephys recording data
 elseif strcmp(RecordingSystem,"Open Ephys")
@@ -78,8 +83,13 @@ elseif strcmp(RecordingSystem,"Open Ephys")
     SelectedFolderindicie = find(CorrectedContents == FileType);
     
     [Data,HeaderInfo,SampleRate] = Open_Ephys_Load_All_Formats(SelectedFolder,length(CorrectedContents),SelectedFolderindicie);
-
+    
     RecordingType = "Open Ephys";
+
+    if isempty(Data)
+        Time = [];
+        return;
+    end
 
 %% Use Fieldtrip functions to extract Neuralynx data formats. First load Header and then data
 elseif strcmp(RecordingSystem,"Neuralynx")
@@ -87,9 +97,26 @@ elseif strcmp(RecordingSystem,"Neuralynx")
     pause(0.2);
         
     [HeaderInfo] = ft_read_header(SelectedFolder);
+
+    if isempty(HeaderInfo)
+        Data = [];
+        SampleRate = [];
+        RecordingType = [];
+        Time = [];
+        return;
+    end
+
     SampleRate = HeaderInfo.Fs;    
 
     [Data] = ft_read_data(SelectedFolder,'headerinfo',HeaderInfo);
+
+    if isempty(Data)
+        Data = [];
+        SampleRate = [];
+        RecordingType = [];
+        Time = [];
+        return;
+    end
 
     Data = single(Data);
 
@@ -97,14 +124,14 @@ elseif strcmp(RecordingSystem,"Neuralynx")
     Data = Data ./1000;
 
     NaNIndicies = isnan(Data);
-    SUmNAN = sum(NaNIndicies);
-    SUmNAN = sum(SUmNAN);
+    SumNAN = sum(NaNIndicies);
+    SumNAN = sum(SumNAN);
 
     [~,b] = find(isnan(Data));
     NaNTimes = unique(b)./SampleRate;
 
-    if SUmNAN>0
-        msgbox(strcat("Warning: ",num2str(SUmNAN)," NaN found in data; TimeRange: ",num2str(NaNTimes(1)),"seconds to ",num2str(NaNTimes(end)),"seconds"));
+    if SumNAN>0
+        msgbox(strcat("Warning: ",num2str(SumNAN)," NaN found in data; TimeRange: ",num2str(NaNTimes(1)),"seconds to ",num2str(NaNTimes(end)),"seconds"));
     end
 
     % Apply Amplification 64 to translate signal in uV and
@@ -229,4 +256,11 @@ elseif strcmp(RecordingSystem,"Spike2")
 
 end
 
+% Create time vector
 Time = double(0:(1/SampleRate):(size(Data,2)-1)/SampleRate);
+
+% % Apply additional amplification
+if ~isempty(AdditionalAmpFactor)
+    disp("Additional Amplification was applied to data")
+    Data = Data.*str2double(AdditionalAmpFactor);
+end

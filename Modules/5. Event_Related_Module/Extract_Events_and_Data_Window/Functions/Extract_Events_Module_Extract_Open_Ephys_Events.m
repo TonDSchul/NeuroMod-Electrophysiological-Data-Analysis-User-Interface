@@ -1,4 +1,4 @@
-function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,WhatToDo,NodeNr,NoddeID,InputChannelSelection,StateSelection)
+function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,WhatToDo,NodeNr,NoddeID,InputChannelSelection,StateSelection,FirstTimeStampinSample)
 
 %________________________________________________________________________________________
 %% Function to extract events from open ephys data
@@ -99,9 +99,11 @@ if strcmp(WhatToDo,"Get Information")
     end
 end
 
+
 %% Extract actual events
 % -- here, not all nodes get analyzed but those that are selected by the
 % user
+
 if strcmp(WhatToDo,"All")
     node = session.recordNodes{NodeNr};
     Events = {};
@@ -188,7 +190,7 @@ if strcmp(WhatToDo,"All")
 
                 eventlines = events.line(NodeIdIndicies==1);
                 states = events.state(NodeIdIndicies==1);
-    
+                
                 for nevents = 1:length(InputChannelSelection) %% Loop over different event inputs
                     if ~isempty(eventlines)
                         
@@ -207,7 +209,15 @@ if strcmp(WhatToDo,"All")
                         end
 
                         Events{nevents} = allsamples';
+
+                        %% If data aquistion is started after recording start, the time stamp the recording starts with is unequal 0. 
+                        % Time vecor is created automatically starting with 0, so its not
+                        % influenced by this. Event times hoevwer have to be adjusted
                         
+                        if ~isempty(FirstTimeStampinSample)
+                            Events{nevents} = Events{nevents} - FirstTimeStampinSample;
+                        end
+
                         Info.NrEventChannel = recording.ttlEvents.Count;
                         Info.EventChannelName{nevents} = strcat("Event Input Line ",num2str(InputChannelSelection(nevents)));
                         Info.EventChannelType = strcat("Recording Node ", num2str(NodeNr)," TTL");
@@ -222,3 +232,5 @@ if strcmp(WhatToDo,"All")
         end  
     end % node.recordings
 end % WhatToDo == "All"
+
+

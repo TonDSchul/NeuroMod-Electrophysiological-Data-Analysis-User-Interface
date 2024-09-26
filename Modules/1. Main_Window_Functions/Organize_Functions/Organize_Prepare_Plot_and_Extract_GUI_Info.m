@@ -31,6 +31,7 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 % If events addon selected in main window (events added to plot) select
 % which input event channel to show
 % EventPlot = "no" when checkbox disabled, "Events" when checkbox activated
+
 if strcmp(EventPlot,"Events") && isfield(app.Data,'Events')
     EventData = app.Data.Events{app.CurrentEventChannel};
 % If no events: Pass empty variable in following functions
@@ -125,6 +126,7 @@ elseif app.RawDataPlotCheckBox.Value == 1
 end
 
 %% Plot Time
+
 if PlotTime == 1    
 % Those functions dont take the app object and are therefore plug and play
 % for other figure objects 
@@ -140,6 +142,7 @@ end
 % Enable Button clicks on Main Window Data Plot (does it for data plot, time plot and clicks on lines within these plots.)
 % Those fct. handle updating time and data plot when clicking a different
 % time window in time plot
+
 Utility_Initialize_Clicks_Plots(app);
 
 %% Plot Spike Rate if Window for that is open

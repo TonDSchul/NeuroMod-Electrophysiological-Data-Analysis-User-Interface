@@ -29,10 +29,19 @@ if ~strcmpi(opt, 'show')
   % colors = colors(end:-1:1, :); % first bin is smalles spikes, starts white
 
   % Costum:
-  % Interpolate between the selected color and black [0, 0, 0]
-  colors = zeros(nColorBins, 3); % Initialize colormap matrix
-  for i = 1:3
-      colors(:, i) = linspace(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(i), 0, nColorBins); 
+  % Interpolate between the selected color and black if grey, from white to
+  % color otherwise
+
+  % From white to selected color
+  if sum(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor == 0.9) < 3 % If no grey (standarad value), bc then its better to show color from white to black
+      colors = [linspace(1, PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(1), nColorBins)', ...
+                  linspace(1, PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(2), nColorBins)', ...
+                  linspace(1, PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(3), nColorBins)'];
+  else % if grey: from white to black
+      colors = zeros(nColorBins, 3); % Initialize colormap matrix
+      for i = 1:3
+          colors(:, i) = linspace(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(i), 0, nColorBins); 
+      end
   end
 
   for b = 1:nColorBins-1

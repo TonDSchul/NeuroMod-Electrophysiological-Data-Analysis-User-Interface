@@ -27,6 +27,7 @@ function [rectangleHandle] = Module_MainWindow_Plot_Time(UIAxis,Time,StartTimeIn
 % is updated
 
 if strcmp(PlotType,"Initial")
+    
     %% Plot Time axis
     ylim(UIAxis,[-0.5,0.5])
     set(UIAxis,'yticklabel',{[]});
