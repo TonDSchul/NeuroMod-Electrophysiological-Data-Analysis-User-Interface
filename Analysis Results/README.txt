@@ -1,0 +1,4 @@
+______________________________________________
+NeuroMod Toolbox; Analysis Results Folder README
+Author: Tony de Schultz
+______________________________________________

@@ -47,7 +47,7 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 cd(app.executableFolder);
 
 if strcmp(Type,"Initial")
-
+    
     % Replace and empty all plots
     app.UIAxes.NextPlot = "replace"; 
     plot(app.UIAxes,0,0);

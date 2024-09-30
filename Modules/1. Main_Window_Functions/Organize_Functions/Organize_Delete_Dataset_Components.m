@@ -57,6 +57,8 @@ if strcmp(ComponentToDelete,"Spikes")
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
+
+    Data.Info.SpikeType = "Non";
     
 elseif strcmp(ComponentToDelete,"EventRelatedSpikes")
     

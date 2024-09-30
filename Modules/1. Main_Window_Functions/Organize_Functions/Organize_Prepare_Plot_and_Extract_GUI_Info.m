@@ -27,7 +27,6 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 
 %________________________________________________________________________________________
 
-
 % If events addon selected in main window (events added to plot) select
 % which input event channel to show
 % EventPlot = "no" when checkbox disabled, "Events" when checkbox activated
@@ -80,7 +79,6 @@ colorMap = app.tempcolorMapset(app.Channelrange(1):app.Channelrange(2),:);
 
 if ~strcmp(Plotspikes,"Spikes") || ~isfield(app.Data,'Spikes')
     SpikeData = [];
-    Waveforms = [];
 elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
     SpikeData.Indicie = [];
     if isfield(app.Data.Info,'DownsampleFactor') && app.PreprocDataPlotCheckBox.Value == 1
@@ -101,11 +99,11 @@ end
 % for other figure objects 
 % If Preprocessed data shown (Input argument 8 in plot fct. = 1 (1 if preprocessed, 0 if not))
 
-if isfield(app,'LastPlot') 
-    if ~isempty(app.LastPlot)
-        tempLastPlot = app.LastPlot;
-    end
-end
+% if isfield(app,'LastPlot') 
+%     if ~isempty(app.LastPlot)
+%         tempLastPlot = app.LastPlot;
+%     end
+% end
 
 if app.PreprocDataPlotCheckBox.Value == 1 
     % If downsampled data to show: Input argument 11 in plot fct = 1 (1 if donwsampled, 0 if not)

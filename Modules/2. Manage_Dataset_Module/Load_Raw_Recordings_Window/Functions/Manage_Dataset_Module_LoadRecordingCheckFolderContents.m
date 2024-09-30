@@ -48,7 +48,6 @@ function [Formatsfound,TextAreaText,TextArea_3Text,RecordingSystemDropDownItems,
 
 %________________________________________________________________________________________
 
-
 TextAreaText = [];
 TextArea_3Text = [];
 RecordingSystemDropDownItems = [];
@@ -75,7 +74,7 @@ end
 
 %% Loop through files types supported and determine whether they are part of the folder
 % Use regular expression to extract filenames ending with '.smrx'
-AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'"];
+AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'";".plx'"];
 
 % Loop through all contents of dfolder and compare file endings
 % with prefedined endings. Save endings found as strings in Formatsfound
@@ -101,8 +100,9 @@ if isempty(Formatsfound)
     end
 
     if isempty(FolderIndicieWithEphysData) % if no open ephys data found
-        TextAreaText = strcat("Error: No supported file types or recording systems found. Make sure the folder contains .rhd, .dat, .ncs, .nse, .dma, .sdma or .smrx files.");
-        msgbox(TextAreaText);
+        TextAreaText = strcat("Error: No supported file types or recording systems found in ",SelectedFolder,".");
+        TextAreaText = [TextAreaText;"Make sure the folder contains any of the Intan recording formats (.dat and .rhd), Open Ephys recording formats (.dat, .nwb, .continous), .ncs Neualynx format, .plx Plexon format or .smrx Spike2 format."];
+        %msgbox(TextAreaText);
         TextArea_3Text = "";
         return;
     else % if open ephys data found
@@ -112,11 +112,14 @@ end
 
 % Check what file endings where found and set up window
 % according to that
-%% Intan
-if numel(Formatsfound) > 1 && sum(contains(Formatsfound,".dat")) == 0 && sum(contains(Formatsfound,".rhd")) == 0
-    stringtoshow = strcat("Error: more than one file format found."," (",Formatsfound,")");
-    msgbox(stringtoshow);
-    return;
+%% Intan 
+if numel(Formatsfound) > 1 
+    if numel(Formatsfound) == 2 && sum(contains(Formatsfound,".dat")) == 1 && sum(contains(Formatsfound,".rhd")) == 1
+    else
+        stringtoshow = strcat("Error: more than one file format found."," (",Formatsfound,")");
+        msgbox(stringtoshow);
+        return;
+    end
 end
 
 if sum(contains(Formatsfound,".dat")) >= 1 || sum(contains(Formatsfound,".rhd")) >= 1
@@ -157,6 +160,24 @@ if sum(contains(Formatsfound,".ncs")) >= 1 || sum(contains(Formatsfound,".nse"))
     FileTypeDropDownItems = FileTypeSelection;
 end
 
+%% Plexon
+% Loop through all file formats explicitely supported
+FileTypeSelection = {};
+currentit = 1;
+if sum(contains(Formatsfound,".plx")) >= 1 
+    
+    RecordingSystemDropDownItems = {};
+    RecordingSystemDropDownItems{1} = 'Plexon';
+
+    for i = 1:length(Formatsfound)
+        if sum(contains(Formatsfound(i),".plx")) >= 1
+            FileTypeSelection{currentit} = 'plexon_plx';
+        end
+        currentit = currentit+1;
+    end
+    FileTypeDropDownItems = FileTypeSelection;
+end
+
 %% Spike2
 if sum(contains(Formatsfound,".smrx")) >= 1 
     RecordingSystemDropDownItems = {};
@@ -179,8 +200,8 @@ if contains(Formatsfound,"Open Ephys")
 end
 
 %% Wrap up
-if isempty(ChannelOrder)
-    TextArea_3Text = ["Data Folder:";SelectedFolder];
+if isempty(ChannelOrder) || sum(isnan(ChannelOrder))>0
+    TextArea_3Text = ["Data Folder:";SelectedFolder;"";"ChannelOrder:";"";"not defined"];
 else
-    TextArea_3Text = ["Data Folder:";SelectedFolder;"";"ChannelOrder:";num2str(ChannelOrder)];
+    TextArea_3Text = ["Data Folder:";SelectedFolder;"";"ChannelOrder:";"";num2str(ChannelOrder)];
 end

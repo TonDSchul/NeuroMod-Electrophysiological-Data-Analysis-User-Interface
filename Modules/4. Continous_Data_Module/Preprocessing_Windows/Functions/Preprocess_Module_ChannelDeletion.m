@@ -28,6 +28,7 @@ end
 if isfield(Data,'Raw')
     Data.Raw(ChannelDeletion,:) = [];
 end
+
 %% Delete Event related data points
 if isfield(Data,'EventRelatedData')
     Data.EventRelatedData(ChannelDeletion,:,:) = [];
@@ -37,52 +38,90 @@ if isfield(Data,'PreprocessedEventRelatedData')
     Data.PreprocessedEventRelatedData(ChannelDeletion,:,:) = [];
 end
 
-%% Delete Spike indicies
+Data.Info.Channelorder(ChannelDeletion) = [];
 
-if Data.Spikes.SpikePositions(1,2) == 1
-    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2)*Data.Info.ChannelSpacing;
-end
+%% Delete Spike indicies
+% if strcmp(Data.Info.SpikeType,"Internal")
+% 
+% else
+%     if Data.Spikes.SpikePositions(1,2) == 1
+%         Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2)*Data.Info.ChannelSpacing;
+%     end
+% end
 
 if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
     if ~isempty(Data.Spikes.SpikeTimes)
         ChannelIndicies = zeros(length(Data.Spikes.SpikePositions(:,2)),1);
-        Channeltodelete = ChannelDeletion*Data.Info.ChannelSpacing;
 
         for nchannel = 1:length(ChannelDeletion)
-            TempChannelIndicies = Data.Spikes.SpikePositions(:,2) == Channeltodelete(nchannel);
+            TempChannelIndicies = Data.Spikes.SpikePositions(:,2) == ChannelDeletion(nchannel);
             ChannelIndicies = ChannelIndicies+TempChannelIndicies;
-            ChannelIndicies(ChannelIndicies>1) = 1;
         end
+
+        ChannelIndicies(ChannelIndicies>1) = 1;
 
         if sum(ChannelIndicies) == length(Data.Spikes.SpikeTimes)
             fieldsToDelete = {'Spikes'};
             % Delete fields
             Data = rmfield(Data, fieldsToDelete);
+            if isfield(Data,'EventRelatedSpikes')
+                fieldsToDelete = {'EventRelatedSpikes'};
+                % Delete fields
+                Data = rmfield(Data, fieldsToDelete);
+            end
             if isfield(Data.Info,'SpikeDetectionThreshold')
                 fieldsToDelete = {'SpikeDetectionThreshold'};
                 % Delete fields
                 Data.Info = rmfield(Data.Info, fieldsToDelete);
             end
+            if isfield(Data.Info,'KilosortScalingFactor')
+                fieldsToDelete = {'KilosortScalingFactor'};
+                % Delete fields
+                Data.Info = rmfield(Data.Info, fieldsToDelete);
+            end
+        
+            if isfield(Data.Info,'SpikeSorting')
+                fieldsToDelete = {'SpikeSorting'};
+                % Delete fields
+                Data.Info = rmfield(Data.Info, fieldsToDelete);
+            end
+        
+            if isfield(Data.Info,'SpikeDetectionNrStd')
+                fieldsToDelete = {'SpikeDetectionNrStd'};
+                % Delete fields
+                Data.Info = rmfield(Data.Info, fieldsToDelete);
+            end
+
             Data.Info.SpikeType = "Non";
+            msgbox("No spikes left after channel deletion. Spike data component is deleted!")
             return;
         end
 
         Data.Spikes.SpikeTimes(ChannelIndicies==1) = [];
         Data.Spikes.SpikePositions(ChannelIndicies==1,:) = [];
+        if ~isempty(Data.Spikes.SpikeCluster)
+            Data.Spikes.SpikeCluster(ChannelIndicies==1) = [];
+        end
         %Scale SpikePositions to Channel 1
-        Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - (length(Channeltodelete)*Data.Info.ChannelSpacing);
+        if ChannelDeletion(1)==1
+            Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - length(ChannelDeletion);
+        end
+
         Data.Spikes.SpikeAmps(ChannelIndicies==1) = [];
         Data.Spikes.SpikeChannel(ChannelIndicies==1) = [];
-        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel - length(Channeltodelete);
-        if Channeltodelete(1) == 1*Data.Info.ChannelSpacing
-            Data.Spikes.ChannelMap(1:Channeltodelete(end)/Data.Info.ChannelSpacing) = [];
-            Data.Spikes.ChannelMap = Data.Spikes.ChannelMap-(Channeltodelete(end)/Data.Info.ChannelSpacing);
+        if ChannelDeletion(1)==1
+            Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel - length(ChannelDeletion);
+        end
+       
+        if ChannelDeletion(1) == 1
+            Data.Spikes.ChannelMap(1:ChannelDeletion(end)) = [];
+            Data.Spikes.ChannelMap = Data.Spikes.ChannelMap-ChannelDeletion(end);
 
-            Data.Spikes.ChannelPosition(1:Channeltodelete(end)/Data.Info.ChannelSpacing,:) = [];
-            Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Channeltodelete(end);
+            Data.Spikes.ChannelPosition(1:ChannelDeletion(end),:) = [];
+            Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-ChannelDeletion(end);
         else
-            Data.Spikes.ChannelMap(Channeltodelete(1)/Data.Info.ChannelSpacing:end) = [];
-            Data.Spikes.ChannelPosition(Channeltodelete(1)/Data.Info.ChannelSpacing:end) = [];
+            Data.Spikes.ChannelMap(ChannelDeletion(1):end) = [];
+            Data.Spikes.ChannelPosition(ChannelDeletion(1):end) = [];
         end
     end
 
@@ -97,13 +136,35 @@ elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")
             % Delete fields
             Data = rmfield(Data, fieldsToDelete);
         end
+        if isfield(Data.Info,'SpikeDetectionThreshold')
+            fieldsToDelete = {'SpikeDetectionThreshold'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+        if isfield(Data.Info,'KilosortScalingFactor')
+            fieldsToDelete = {'KilosortScalingFactor'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+    
+        if isfield(Data.Info,'SpikeSorting')
+            fieldsToDelete = {'SpikeSorting'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+    
+        if isfield(Data.Info,'SpikeDetectionNrStd')
+            fieldsToDelete = {'SpikeDetectionNrStd'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
 end
 
 % NOTE: Nothing has to be done for EventRelatedSpikes, since evewnt related spikes are computed
 % everytime, a spike analysis is selcted
 
 % Adjust Info file
-Data.Info.NrChannel = length(Data.Raw);
+Data.Info.NrChannel = size(Data.Raw,1);
 
 
 

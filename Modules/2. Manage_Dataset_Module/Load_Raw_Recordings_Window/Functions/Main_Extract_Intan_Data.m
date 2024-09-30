@@ -82,7 +82,7 @@ if strcmp(Filetype,"Intan .dat")
             SampleRate = HeaderInfo.amplifier_sample_rate;
 
         else % if second to last channel just extract data
-            
+
             FileIdentifier = fopen(DatFilePaths{AmplifierDataIndex(nchan)},'r');
             Data(nchan,1:num_data_points) = fread(FileIdentifier, 'int16')';
             Data(nchan,1:num_data_points) = single(Data(nchan,1:num_data_points)).*0.000195;

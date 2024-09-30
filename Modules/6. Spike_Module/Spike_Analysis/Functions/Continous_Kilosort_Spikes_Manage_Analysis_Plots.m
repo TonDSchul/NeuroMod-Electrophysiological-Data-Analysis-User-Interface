@@ -164,7 +164,7 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
    
     depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
     ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
@@ -195,7 +195,7 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,Data.Spikes.ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
                     
     depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
     ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;

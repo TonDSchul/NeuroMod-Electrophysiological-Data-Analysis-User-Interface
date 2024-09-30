@@ -46,7 +46,8 @@ end
 cd(executablefolder);
 
 if Whattosave(1) == 0 && Whattosave(2) == 0
-    msgbox("Warning: When not saving raw and/or preprocessed data, the file cannot be loaded in the Toolbox! Just for external use.");
+    msgbox("Warning: When not saving raw and/or preprocessed data, the file cannot be loaded in the Toolbox! Use the 'Manage Dataset Window' export function to export dataset components other then raw and preprocessed data! Returning.");
+    return;
 elseif Whattosave(1) == 0 && Whattosave(2) == 1
     msgbox("Warning: Only preprocessed data is saved. When loading this dataset, GUI will copy preprocessed data and take it as raw data.");
 end
@@ -314,7 +315,6 @@ if Whattosave(4) == 0
         fieldsToDelete = {'Spikes'};
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
-        Data.Info.SpikeType = "Non";
         if isfield(Data.Info,'SpikeDetectionThreshold')
             fieldsToDelete = {'SpikeDetectionThreshold'};
             % Delete fields
@@ -330,6 +330,17 @@ if Whattosave(4) == 0
             % Delete fields
             Data = rmfield(Data, fieldsToDelete);
         end
+        if isfield(Data.Info,'SpikeSorting')
+            fieldsToDelete = {'SpikeSorting'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+        if isfield(Data.Info,'SpikeDetectionNrStd')
+            fieldsToDelete = {'SpikeDetectionNrStd'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+        end
+        Data.Info.SpikeType = "Non";
     end
 else
     if ~isfield(Data,'Spikes')

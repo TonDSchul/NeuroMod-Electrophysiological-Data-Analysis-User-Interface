@@ -87,12 +87,12 @@ if strcmp(TypeofAnalysis,"Spike Map")
         Plottype = "Initial";
     end
 
-    set(Figure, 'YDir','reverse');
-    CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",RGBMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,ChannelPosition,Figure,numCluster,ClustertoShow,PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
-    
     if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
         CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",RGBMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,ChannelPosition,Figure,numCluster,"Non",PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
     end
+
+    set(Figure, 'YDir','reverse');
+    CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",RGBMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,ChannelPosition,Figure,numCluster,ClustertoShow,PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
     
     CurrentPlotData = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,Plottype,RGBMatrix,ClustertoShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance); 
 end
@@ -184,7 +184,7 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     % add a little artificial depth of 0.5 um
     SpikePositions = SpikePositions+0.5;
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Internal",TwoORThreeD,ClustertoShowDropDown);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Internal",TwoORThreeD,ClustertoShowDropDown);
     
     depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
     ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
@@ -215,7 +215,7 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     % add a little artificial depth of 0.5 um
     SpikePositions = SpikePositions+0.5;
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,ChannelPosition(length(ChannelRange),2),Data.Info.ChannelSpacing,"Internal",TwoORThreeD,ClustertoShowDropDown);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Internal",TwoORThreeD,ClustertoShowDropDown);
                     
     depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
     ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;

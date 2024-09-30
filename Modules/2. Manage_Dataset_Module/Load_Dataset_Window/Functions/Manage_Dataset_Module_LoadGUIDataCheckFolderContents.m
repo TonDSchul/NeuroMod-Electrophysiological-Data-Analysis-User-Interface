@@ -45,7 +45,7 @@ cd(executableFolder);
 
 if isempty(NewFolderSelection) % If folder no manually set by user 
     % Autoset folder which contents should be checked 
-    SelectedFolder = [executableFolder,'\Example Data\Intan'];
+    SelectedFolder = [executableFolder,'\Example Data'];
 else
     SelectedFolder = NewFolderSelection;
 end
