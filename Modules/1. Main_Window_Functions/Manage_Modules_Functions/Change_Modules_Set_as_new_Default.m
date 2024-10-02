@@ -9,19 +9,19 @@ for i = 1:length(app.Module)
 end
 % Second Module Nr
 for i = 1:length(app.Module)
-    if strcmp(app.Panel_2.Title,app.Module{i}.Title)
+    if strcmp(app.Panel_1.Title,app.Module{i}.Title)
         ModuleOrder = [ModuleOrder,i];
     end
 end
 % Third Module Nr
 for i = 1:length(app.Module)
-    if strcmp(app.Panel_3.Title,app.Module{i}.Title)
+    if strcmp(app.Panel_2.Title,app.Module{i}.Title)
         ModuleOrder = [ModuleOrder,i];
     end
 end
 % Fourth Module Nr
 for i = 1:length(app.Module)
-    if strcmp(app.Panel_4.Title,app.Module{i}.Title)
+    if strcmp(app.Panel_3.Title,app.Module{i}.Title)
         ModuleOrder = [ModuleOrder,i];
     end
 end

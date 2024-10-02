@@ -16,9 +16,9 @@ if SumSelections==0
 end
 
 app.Titles{1} = app.Panel.Title;
-app.Titles{2} = app.Panel_2.Title;
-app.Titles{3} = app.Panel_3.Title;
-app.Titles{4} = app.Panel_4.Title;
+app.Titles{2} = app.Panel_1.Title;
+app.Titles{3} = app.Panel_2.Title;
+app.Titles{4} = app.Panel_3.Title;
 
 for ntitles = 1:length(app.Titles)
     if strcmp(app.SelectedModuleDropDown.Value,app.Titles{ntitles})
@@ -41,15 +41,15 @@ if app.SelectCheckBox_2.Value == 1
     ModuleOrder(1) = NewModuleNr;
 elseif app.SelectCheckBox_3.Value == 1
     app.ListBox_4.Items = app.Module{NewModuleNr}.Items;
-    app.Panel_2.Title = app.Module{NewModuleNr}.Title;
+    app.Panel_1.Title = app.Module{NewModuleNr}.Title;
     ModuleOrder(2) = NewModuleNr;
 elseif app.SelectCheckBox_4.Value == 1
     app.ListBox_2.Items = app.Module{NewModuleNr}.Items;
-    app.Panel_3.Title = app.Module{NewModuleNr}.Title;
+    app.Panel_2.Title = app.Module{NewModuleNr}.Title;
     ModuleOrder(3) = NewModuleNr;
 elseif app.SelectCheckBox_5.Value == 1
     app.ListBox.Items = app.Module{NewModuleNr}.Items;
-    app.Panel_4.Title = app.Module{NewModuleNr}.Title;
+    app.Panel_3.Title = app.Module{NewModuleNr}.Title;
     ModuleOrder(4) = NewModuleNr;
 end
 

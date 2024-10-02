@@ -96,7 +96,7 @@ if isfield(Data,'Events')
         
         spaceindicie = strfind(Data.Info.EventRelatedDataTimeRange," ");
         TimearoundEvent(1) = str2double(Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)-1));
-        TimearoundEvent(2) = str2double(Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
+        TimearoundEvent(2) = str2double(Data.Info.EventRelatedDataTimeRange(spaceindicie+1:end));
         
         if strcmp(Data.Info.EventRelatedDataType,"Preprocessed") && isfield(Data.Info,'DownsampledSampleRate')
             EventTime = 0-TimearoundEvent(1):1/Data.Info.DownsampledSampleRate:TimearoundEvent(2);

@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_TEMPLATE_Spike2_Analysis(DisplayOrder)
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -12,6 +12,7 @@ function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
 % 'Preprocess_Continous_Data'
 % 'Static_Power_Spectrum'
 % 'Continous_Spike_Analysis'
+% 'Continous_Unit_Analysis'
 %______________________
 %--- Event Module ---
 %______________________
@@ -22,18 +23,21 @@ function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
 % 'Event_Analysis_ERP'
 % 'Event_Analysis_CSD'
 % 'Event_Analysis_TimeFrequencyPower'
+% 'Event_Unit_Analysis'
 %______________________
 %--- Spike Module ---
 %______________________
+% 'Internal_Spike_Detection'
+% 'Create_Internal_Spike_Sorting'
+% 'Load_Internal_Spike_Sorting'
 % 'Internal_Spike_Detection'
 % 'Load_from_Kilosort'
 % 'Save_for_Kilosort'
 
 % What to execute
 
-%AutorunConfig.FunctionOrder = ["Load_Data","Static_Power_Spectrum","Preprocess_Continous_Data","Internal_Spike_Detection","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
-%AutorunConfig.FunctionOrder = ["Load_Data","Save_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Continous_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Event_Spike_Analysis"];
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum"];
+AutorunConfig.FunctionOrder = ["Load_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Continous_Spike_Analysis","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Continous_Unit_Analysis","Event_Spike_Analysis","Event_Unit_Analysis","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Save_Data"];
+
 % General Information
 AutorunConfig.AutorunConfigName = "Spike2 LFP and Spike Analysis";
 AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
@@ -44,6 +48,8 @@ AutorunConfig.SaveFigures = "on";
 AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
 AutorunConfig.DeleteFigureAfterSaving = "on";
 AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD"
+
+AutorunConfig.AdditionalAmpFactor = []; % Additional signal amplification factor; empty for non, otherwise factor raw data gets multiplied with
 
 % When Autorun window is openend, just the above information are taken to populate
 % the fields that can be changed in the autorun window 
@@ -119,9 +125,26 @@ AutorunConfig.ContSpikeAnalysis.EventChannelToPlot = "Non"; %Non for no event pl
 AutorunConfig.ContSpikeAnalysis.TimeWindowSpiketriggredLFP = '-0.005,0.25'; %as char
 AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate = "200"; % Number of bins for the spike rate plots as char
 AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,100'; %as char
-% For Kilosort Only:
-AutorunConfig.ContSpikeAnalysis.Clustertoshow = "All"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 0!) --- IMPORTANT: This is only for the "Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth" and "Spike Triggered LFP" Plottypes!!!! It shows the cluster in the main plots on the top left
-AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+% Control Single Units in the above plots:
+% Every plot specified above is plotted once with Clustertoshow as selected unit.
+% If UnitsToPlot is non empty, all of the above plots will be plotted for
+% each unit specified in UnitsToPlot and saved in a seperate folder calles
+% "units". If UnitsToPlot is empty, just plots for Clustertoshow are
+% created
+AutorunConfig.ContSpikeAnalysis.Clustertoshow = "All"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 1!)
+AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+%% 3.4 Unit Analysis
+%______________________________________________________________________________________________________
+AutorunConfig.ContinousUnitAnalysis.NumBins = "150";
+AutorunConfig.ContinousUnitAnalysis.MaxTImeISI = "0.15";
+
+AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1 = '20';
+AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2 = '20';
+AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3 = '20';
+
+AutorunConfig.ContinousUnitAnalysis.UnitsPlot1 = '1,2,3';
+AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
+AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4. Event Data Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,9 +159,21 @@ AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
 AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" OR "Preprocessed" as char
-% 4.2 Prepro event related data
+%% 4.2 Prepro event related data
 %______________________________________________________________________________________________________
-%AutorunConfig.PreproEventDataModule.Execute = false; % false if you dont want this step to be executed
+% Trial/Event Deletion
+AutorunConfig.PreproEventDataModule.TrialRejection = true; % false if you dont want this step to be executed
+AutorunConfig.PreproEventDataModule.TrialsToReject = '1,10'; % char, specify events/trials to be deleted, i.e. '1,10' for trials 1 to 10
+% Channel Deletion and Interpolation
+AutorunConfig.PreproEventDataModule.ChannelRejection = true;
+AutorunConfig.PreproEventDataModule.ChannelToReject = '1,10'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
+% Artefact Rejection
+AutorunConfig.PreproEventDataModule.ArtefactRejection = true;
+AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = []; % Empty for all Channel, otherwise char with two channel i.e. '1,10'
+AutorunConfig.PreproEventDataModule.EventsToReject = []; % Empty for all Events, otherwise char with two channel i.e. '1,10'
+AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent = '-0.1,0.2'; % char in seconds
+AutorunConfig.PreproEventDataModule.Method = 'Linear Interpolation';
+
 %% 4.3 Analyse event related signal
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.DataSource = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
@@ -157,7 +192,8 @@ AutorunConfig.AnalyseEventDataModule.TFPlotType = ["TF","ITPC"]; % 'Time Frequen
 AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonPhaseLocked"]; % 'Phase independent' OR 'Phase locked' OR 'Non-phase locked'; If just one: format is char!
 %% 4.4 Analyse event related spikes
 %______________________________________________________________________________________________________
-%AutorunConfig.AnalyseEventSpikesModule.Execute = true; % false if you dont want this step to be executed
+AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.depth_bin_size = []; %if empty: channelspacing is taken
+AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.time_bin_size = 0.006; % app.GeneralSettings.Time bin size in seconds; % false if you dont want this step to be executed
 AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map","Spike Rate Heatmap","Spike Triggered Average"]; %"Spike Map" OR "Spike Rate Heatmap"
 AutorunConfig.AnalyseEventSpikesModule.SelectedEvents = []; % Empty for all Events, otherwise format is char: 'Event1,Event2' like '1,20' for events 1 to 20
 AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot = []; % Empty for all Channel, otherwise format is char: 'Channel1,Channel2' like '1,20' for chnanel 1 to 20
@@ -165,8 +201,22 @@ AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins = '100'; % Number of bin
 AutorunConfig.AnalyseEventSpikesModule.Normalize = true; % Only for Heatmap and applicable if heatmap as plot type selected
 AutorunConfig.AnalyseEventSpikesModule.BaselineWindow = '-0.2,-0.05'; % Window of event related data used to normalize (Before the event trigger)
 AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage = '-0.005,0.1';
-% Kilosort Plots
-AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = 'All'; % CLuster/Unit to plot; 'All' OR 'Non' OR 'Clusternumber' as char i.e. '1' --> plots cluster/unit 1
+
+AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = "All"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 1!)
+AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+
+%% 4.5 Unit Analysis
+%______________________________________________________________________________________________________
+AutorunConfig.EventUnitAnalysis.NumBins = "150";
+AutorunConfig.EventUnitAnalysis.MaxTImeISI = "0.15";
+
+AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot1 = '20';
+AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot2 = '20';
+AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot3 = '20';
+
+AutorunConfig.EventUnitAnalysis.UnitsPlot1 = '1,2,3';
+AutorunConfig.EventUnitAnalysis.UnitsPlot2 = '4,5,6';
+AutorunConfig.EventUnitAnalysis.UnitsPlot3 = '5,6,8';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5. Spike Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -183,7 +233,8 @@ AutorunConfig.InternalSpikeDetection.FilterArtefactDepth = '200';
 AutorunConfig.SaveforKilosort.SaveFormat = 'int32'; % 'int32' or 'int16' as char
 %% 5.2 Load from Kilosort
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromKilosort.ScalingFactor = []; % This is the 'int32' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
+AutorunConfig.LoadfromKilosort.KilosortVersion = 'Kilosort4'; % which Kilosort version was used to analyze your data? Options: Kilosort4' OR Kilosort3'
+AutorunConfig.LoadfromKilosort.ScalingFactor = []; % char, This is the 'int32' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and aplied when you saved data for kilosort before.
 

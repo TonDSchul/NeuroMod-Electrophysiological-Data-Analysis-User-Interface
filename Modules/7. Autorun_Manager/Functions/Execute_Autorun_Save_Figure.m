@@ -45,9 +45,9 @@ if LoadedData == false
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,"\",Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes") || strcmp(PlotName,"ContWaveforms")
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,' ',Plottype);
-        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration") || strcmp(PlotName,"KilosortEventIteration") || strcmp(PlotName,"InternalEventIteration")
             Filename = strcat(LoadDataPath,'\Matlab\',OENodePath,'\Units','\',SaveName,' ',Plottype);
-            folderName = 'Matlab\Units';
+            folderName = strcat('\Matlab\',OENodePath,'\Units');
         elseif strcmp(PlotName,"KilosortContinous") 
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,' ',Plottype);
         else
@@ -59,7 +59,7 @@ if LoadedData == false
             Filename = strcat(LoadDataPath,"\Matlab\",Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes") || strcmp(PlotName,"ContWaveforms")
             Filename = strcat(LoadDataPath,"\Matlab\",Plottype,' ',SaveName);
-        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration") || strcmp(PlotName,"KilosortEventIteration") || strcmp(PlotName,"InternalEventIteration")
             Filename = strcat(LoadDataPath,'\Matlab\Units\',SaveName,' ',Plottype);
             folderName = 'Matlab\Units';
         elseif strcmp(PlotName,"KilosortContinous") 
@@ -82,7 +82,7 @@ elseif LoadedData == true
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,"\",Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes") || strcmp(PlotName,"ContWaveforms")
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\',SaveName,' ',Plottype);
-        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration") || strcmp(PlotName,"KilosortEventIteration") || strcmp(PlotName,"InternalEventIteration")
             Filename = strcat(LoadDataPath,"\Matlab\",OENodePath,'\Units\',SaveName,' ',Plottype);
             folderName = strcat('Matlab\',OENodePath,'\Units');
         elseif strcmp(PlotName,"KilosortContinous") 
@@ -102,7 +102,7 @@ elseif LoadedData == true
             Filename = strcat(LoadDataPath,'\Matlab\',Plottype," ",SaveName,PlotAddons);
         elseif strcmp(PlotName,"StaticPowerSpectrum") || strcmp(PlotName,"ContInternalSpikes") || strcmp(PlotName,"InternalEventSpikes") || strcmp(PlotName,"KilosortEventSpikes") || strcmp(PlotName,"KilosortContinous") || strcmp(PlotName,"ContWaveforms")
             Filename = strcat(LoadDataPath,'\Matlab\',Plottype," ",SaveName);
-        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration")
+        elseif strcmp(PlotName,"KilosortContinousIteration") || strcmp(PlotName,"InternalContinousIteration") || strcmp(PlotName,"KilosortEventIteration") || strcmp(PlotName,"InternalEventIteration")
             Filename = strcat(LoadDataPath,'\Matlab\Units\',SaveName,' ',Plottype);
             folderName = strcat('Matlab\Units');
         elseif strcmp(PlotName,"KilosortContinous") 
@@ -150,7 +150,7 @@ switch ImageFormat
         %disp(['Figure saved as ', filename, '.svg']);
 end
 
-disp('Figure succesfully saved');
+disp(strcat("Figure ",SaveName," succesfully saved."));
 
 if strcmp(deletefigure,"on")
     close(Figure);

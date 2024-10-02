@@ -67,19 +67,25 @@ end
 %______________________________________________________________________________________________________
 if strcmp(FunctionOrder,'Load_from_Kilosort')
 
-    SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
-
-    if strcmp(AutorunConfig.LoadfromKilosort.KilosortVersion,"Kilosort4")
-        SelectedFolder = strcat(SelectedFolder,"kilosort4");
+    if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
+        dashindex = find(AutorunConfig.selected_folder=='\');
+        SelectedFolder = strcat(AutorunConfig.selected_folder(dashindex(end)-1),"\",AutorunConfig.FolderContents{nRecordings},"\Kilosort\");
+        if strcmp(AutorunConfig.LoadfromKilosort.KilosortVersion,"Kilosort4")
+            SelectedFolder = strcat(SelectedFolder,"kilosort4");
+        else
+            SelectedFolder = strcat(SelectedFolder,"kilosort3");
+        end
+        if ~exist(SelectedFolder,'dir')
+            msgbox("Automatic detection of saved kilosort data failed, please select a folder manually");
+            AutorunSpikeDetection = "SingleFolder";
+            SelectedFolder = [];
+        else
+            AutorunSpikeDetection = "MultipleRecordings"; 
+        end
+        
     else
-        SelectedFolder = strcat(SelectedFolder,"kilosort3");
-    end
-    if ~exist(SelectedFolder,'dir')
-        msgbox("Automatic detection of saved kilosort data failed, please select a folder manually");
         AutorunSpikeDetection = "SingleFolder";
         SelectedFolder = [];
-    else
-        AutorunSpikeDetection = "MultipleRecordings"; 
     end
 
     if isfield(Data.Info,'CutStart')
@@ -111,7 +117,7 @@ if strcmp(FunctionOrder,'Load_from_Kilosort')
                 msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
                 return;  % Exit if the variable does not exist
             end
-            disp("Found Scalingfactor saved as .mat file.")
+    
             load(ScalingFactorPath32,'scalingFactor');
             ScalingFactor = scalingFactor;
             Data.Info.KilosortScalingFactor = scalingFactor;
@@ -130,13 +136,12 @@ if strcmp(FunctionOrder,'Load_from_Kilosort')
                 msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath16));
                 return;  % Exit if the variable does not exist
             end
-            
-            disp("Found Scalingfactor saved as .mat file.")
+    
             load(ScalingFactorPath16,'scalingFactor');
             ScalingFactor = scalingFactor;
             Data.Info.KilosortScalingFactor = scalingFactor;
         else
-            disp("Scaling factor to convert int format of the kilosort output to mV was not found as part of the dataset or as a .mat file in 'Original_Recording_Path/Kilosort'. Select a .mat file with a variable called scalingfactor, enter the scalingfactor manually or leave it empty (for no scaling)");      
+            msgbox("Scaling factor to convert int format of the kilosort output to mV was not found as part of the dataset or as a .mat file in 'Original_Recording_Path/Kilosort'. Select a .mat file with a variable called scalingfactor, enter the scalingfactor manually or leave it empty (for no scaling)");      
             ScalingFactor = [];
         end
     end
@@ -158,35 +163,29 @@ if strcmp(FunctionOrder,'Save_for_Kilosort')
     if Execute == 1
 
         if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
-            SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
-            Filename = strcat(AutorunConfig.FolderContents{nRecordings},".dat");
-        else
-            dashindex = find(Data.Info.Data_Path=='\');
-            Filename = strcat(Data.Info.Data_Path(dashindex(end)+1:end),".dat");
-            SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
-        end
-
-        if ~exist(SelectedFolder,'dir')
-            % Create a folder
-            % Create the folder
-            [status, msg, msgID] = mkdir(SelectedFolder);
-        
-            % Check the status and print an appropriate message
-            if status == 1
-                fprintf('The folder "%s" has been successfully created.\n', SelectedFolder);
-                AutorunDetection = "MultipleRecordings"; 
-            else
-                fprintf('Failed to create the folder "%s".\nError: %s\n', SelectedFolder, msg);
-                AutorunDetection = "SingleFolder"; 
-            end
+            FullPath = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings},"\Kilosort\");
+            SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
+            AutorunDetection = "MultipleFolder";
+            % Define the name of the folder you want to create
+            folderName = 'Kilosort';
             
-        else
-            AutorunDetection = "MultipleRecordings"; 
-        end
+            % Check if the folder already exists
+            if ~exist(FullPath,'dir')
+                % Create the folder if it does not exist
+                mkdir(FullPath);
+                %disp(['Folder "', folderName, '" created successfully.']);
+            else
+                disp(['Folder "', folderName, '" already exists.']);
+            end
 
-        FullPath = strcat(SelectedFolder,Filename);
+            SelectedFolder = convertStringsToChars(strcat(SelectedFolder,"\Kilosort"));
+
+        else
+            AutorunDetection = "SingleFolder";
+            SelectedFolder = [];
+        end
 
         % Function to Save Raw Data as int32 in a .dat file
-        [Data] = Spike_Module_Save_for_Kilosort(Data,AutorunDetection,FullPath,AutorunConfig.SaveforKilosort.SaveFormat);
+        [Data] = Spike_Module_Save_for_Kilosort(Data,AutorunDetection,SelectedFolder,AutorunConfig.SaveforKilosort.SaveFormat);
     end
 end

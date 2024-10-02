@@ -492,7 +492,7 @@ if ~isempty(Data)
                 filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-1)+1:dashindex(end)-1),".dat"));
             elseif Autorun == "MultipleFolder"
                 if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD") || strcmp(Data.Info.RecordingType,"Neuralynx") || strcmp(Data.Info.RecordingType,"Spike2")
-                    filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-1)+1:dashindex(end)-1),".dat"));
+                    filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
                 elseif strcmp(Data.Info.RecordingType,"Open Ephys")
                     filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
                 end

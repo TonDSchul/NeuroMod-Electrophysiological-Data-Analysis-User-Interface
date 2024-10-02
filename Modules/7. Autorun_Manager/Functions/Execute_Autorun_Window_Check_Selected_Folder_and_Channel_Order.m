@@ -83,6 +83,10 @@ else
         if strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Intan")
             if find(AutorunConfig.FunctionOrder == "Load_Data")
                 [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.dat');
+                if containsFiles == 0
+                    SecondSreachedDir = strcat(selected_folder,"\Matlab");
+                    [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(SecondSreachedDir,'.dat');
+                end
             else
                 if strcmp(AutorunConfig.ExtractRawRecording.FileType,"Intan .dat")
                     [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.dat');

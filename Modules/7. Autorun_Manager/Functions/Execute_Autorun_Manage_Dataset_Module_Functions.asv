@@ -231,11 +231,7 @@ if strcmp(FunctionOrder,'Save_Data')
         if strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Intan") || strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Neuralynx") || strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Spike2")
             FullPath = strcat(Data.Info.Data_Path,"\Matlab\");
         elseif strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Open Ephys")
-            if ~isempty(AutorunConfig.FolderContents) % multiple recordings
-                FullPath = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings},"\","Matlab\",AutorunConfig.ExtractRawRecording.FileType);
-            else % single recording
-                FullPath = strcat(AutorunConfig.selected_folder,"\Matlab\",AutorunConfig.ExtractRawRecording.FileType);
-            end
+            FullPath = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings},"\","Matlab\",AutorunConfig.ExtractRawRecording.FileType);
         end
 
         AutorunDetection = "MultipleFolder";

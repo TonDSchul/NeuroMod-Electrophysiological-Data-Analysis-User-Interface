@@ -48,8 +48,11 @@ YMinLimitsMultipeERP = min(Data,[],"all");
 xlim(UIAxis, [Time(1),Time(end)]);
 ylim(UIAxis, [YMinLimitsMultipeERP,YMaxLimitsMultipeERP]);
 
-set(UIAxis,'yticklabel',{[]});
-ylabel(UIAxis,PlotAppearance.MainWindow.Data.MainYLabel)
+if size(Data,1)>1
+    set(UIAxis,'yticklabel',{[]});
+    ylabel(UIAxis,PlotAppearance.MainWindow.Data.MainYLabel)
+end
+
 xlabel(UIAxis,PlotAppearance.MainWindow.Data.MainXLabel)
 
 if Preprocessed == 0

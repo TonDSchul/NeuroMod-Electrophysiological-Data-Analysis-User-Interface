@@ -17,6 +17,8 @@ function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module
 % 4. TextArea: Textarea object of Extract Raw Data window to show progress of
 % loading, empty when called outside of GUI
 % 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
+% 6. AdditionalAmpFactor: double, additional amplification raw data is
+% multiplied by
 
 % Output: 
 % 1. Data: nchannel x ntimepoints matrix as single 

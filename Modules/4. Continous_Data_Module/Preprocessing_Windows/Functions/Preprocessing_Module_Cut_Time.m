@@ -209,6 +209,8 @@ if isfield(Data,'Spikes')
             end
         else
             Data.Spikes.SpikeTimes(SpikeIndiciestoDelte==1) = [];
+            Data.Spikes.SpikeCluster(SpikeIndiciestoDelte==1) = [];
+            Data.Spikes.Waveforms(SpikeIndiciestoDelte==1,:) = [];
             Data.Spikes.SpikePositions(SpikeIndiciestoDelte==1,:) = [];
             Data.Spikes.SpikeAmps(SpikeIndiciestoDelte==1) = [];
             Data.Spikes.SpikeChannel(SpikeIndiciestoDelte==1) = [];

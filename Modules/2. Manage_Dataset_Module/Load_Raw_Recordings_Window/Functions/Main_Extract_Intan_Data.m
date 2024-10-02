@@ -109,7 +109,7 @@ if strcmp(Filetype,"Intan .rhd")
     
     [amplifier_data,~,frequency_parameters,~,~,t_dig,~,~] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea);
     
-    if size(amplifier_data,1) == 0 || isempty(Data)
+    if size(amplifier_data,1) == 0 || isempty(amplifier_data)
         msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
         TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
         Data = [];

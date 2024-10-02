@@ -28,13 +28,13 @@ app.ListBox_5.Items = app.Module{1}.Items;
 app.Panel.Title = app.Module{1}.Title;
 
 app.ListBox_4.Items = app.Module{2}.Items;
-app.Panel_2.Title = app.Module{2}.Title;
+app.Panel_1.Title = app.Module{2}.Title;
 
 app.ListBox_2.Items = app.Module{3}.Items;
-app.Panel_3.Title = app.Module{3}.Title;
+app.Panel_2.Title = app.Module{3}.Title;
 
 app.ListBox.Items = app.Module{4}.Items;
-app.Panel_4.Title = app.Module{4}.Title;
+app.Panel_3.Title = app.Module{4}.Title;
 
 for i = 1:length(app.Module)
     app.Mainapp.CurrentModules.Functions{i} = app.Module{i}.Function;

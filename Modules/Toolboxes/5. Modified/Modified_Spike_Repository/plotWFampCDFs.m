@@ -75,7 +75,7 @@ if strcmp(PDFCDF,"PDF")
     end
 
     cbar_handle=colorbar('peer',Figure,'location','WestOutside');
-    cbar_handle.Label.String = "firing rate (sp/s)";
+    cbar_handle.Label.String = "Firing Rate [Hz]";
     cbar_handle.Label.Rotation = 270;
     colormap(Figure,colormap_greyZero_blackred);
     xlim(Figure,[min(ampX) max(ampX)])
@@ -146,9 +146,13 @@ else % if CDF
     
     xlabel(Figure,'Spike Amplitude (mV)');
     ylabel(Figure,'Depth on Probe (µm)');
-    title(Figure,'Inverse Cumulative Distribution Function');
+    if strcmp(ClustertoShow,"All") || strcmp(ClustertoShow,"Non")
+        title(Figure,strcat("All Units Inverse Cumulative Distribution Function"));
+    else
+        title(Figure,strcat("Unit ",ClustertoShow," Inverse Cumulative Distribution Function"));
+    end
     cbar_handle=colorbar('peer',Figure,'location','WestOutside');
-    cbar_handle.Label.String = "firing rate (sp/s)";
+    cbar_handle.Label.String = "Firing Rate [Hz]";
     cbar_handle.Label.Rotation = 270;
     colormap(Figure,colormap_greyZero_blackred);
     xlim(Figure,[min(ampX) max(ampX)])
