@@ -18,8 +18,12 @@ function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figu
 % channel from Start Channel to Stop Channel
 % 6: ChannelText: String which channel is analyzed -- only if power
 % spectrum over individual channel
-% 7. CurrentPlotData: structure in which analysis results are saved in
+% 7. FrequencyRangeHzEditField: char, holding frequency range user
+% specified in Hz. Format: '1,100' for 1 to 100 Hz
+% 8. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 9. PlotAppearance: structure holding current default of plot appearances
+% like linewidth
 
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -77,7 +81,7 @@ DispIndicies = Freq>dispRange(1) & Freq<dispRange(2);
 if ~isempty(PWelch_handles)
     set(PWelch_handles(1), 'XData', Freq(DispIndicies), 'YData', 10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
 else
-    line(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
+    semilogy(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
 end
 
 xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);
@@ -87,6 +91,7 @@ ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(We
 xlim(Figure,[dispRange(1) dispRange(2)]);
 title(Figure,titlestring);
 Figure.FontSize = 10;
+grid(Figure, 'on');
 drawnow;
 hold(Figure, 'off' );
 

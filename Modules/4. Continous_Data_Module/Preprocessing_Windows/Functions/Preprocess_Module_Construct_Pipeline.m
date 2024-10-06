@@ -1,4 +1,4 @@
-function [Info,PreprocessingSteps,Texttoshow] = Preprocess_Module_Construct_Pipeline(type,Info,PreprocessingSteps,PlotExample,FilterMethod,FilterType,CuttoffFrequency,FilterDirection,FilterOrder,DownsampleFactor,SampleRate)
+function [Info,PreprocessingSteps,Texttoshow] = Preprocess_Module_Construct_Pipeline(type,Info,PreprocessingSteps,PlotExample,FilterMethod,FilterType,CuttoffFrequency,FilterDirection,FilterOrder,DownsampleFactor,SampleRate,ArtefactRejectionInfo)
 %________________________________________________________________________________________
 
 %% Function that adds a preprocessing option to the pipeline. 
@@ -21,6 +21,13 @@ function [Info,PreprocessingSteps,Texttoshow] = Preprocess_Module_Construct_Pipe
 % 9. FilterOrder: number as char specifying the filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
 % 10. DownsampleFactor: number as char, New downsampled sampling rate in Hz; input as char. This only is required when a filter is selected as the methods field.
 % 11. SampleRate: Sampling Rate in Hz as double
+% 12. ArtefactRejectionInfo: structure holding info about stimulation
+% artefact rejection. Required fields: TimeAroundEvents: 1x2 double with
+% time around event to reject in samples (both numbers positive, i.e.
+% 150,150) and SelectedEventChannelName: Name of the event channel to
+% take the artefact indicie from. Comes from Data.Info.EventChannelNames
+% IMPORTANT: if no artefact rejection, dont pass this variable or set it
+% empty
 
 % Output: 
 % 1. Info (app.Info, not part of the original main window dataset!). Holds
@@ -31,6 +38,11 @@ function [Info,PreprocessingSteps,Texttoshow] = Preprocess_Module_Construct_Pipe
 % Department systemsphysiology of learning, LIN Magdeburg.
 
 %________________________________________________________________________________________
+
+% if not stim artefact rejection: Variable not passed
+if nargin < 12
+    ArtefactRejectionInfo = []; % Set arg3 to an empty array if it wasn't provided
+end
 
 Texttoshow = [];
 
@@ -251,6 +263,42 @@ if strcmp(type,"GrandAverage")
         Info.GrandAverage = "GrandAverage On";
     end
 end
+
+%% If user seleceted Stim Artefact Rejection 
+% Check if it was already applied, If yes give a warning and overwrite
+% values, if not save new paramter
+if strcmp(type,"StimArtefactRejection")
+    if ~isempty(PreprocessingSteps)
+        AlreadyFound = 0;
+        for i = 1:length(PreprocessingSteps)
+            % If StimArtefactRejection was already applied
+            if strcmp(PreprocessingSteps(i),"Stimulation Artefact Rejection")
+                f = msgbox("Stim Artefact Rejection was already added.");
+                % function ends here, next lines only get executed when
+                % StimArtefactRejection was not already part of the pipeline
+                AlreadyFound = 1;
+            end
+        end
+    % If StimArtefactRejection gets added the first time: Save parameter and add to
+    % the pipeline vector PreprocessingSteps holding the steps for
+    % later execution  of the pipeline
+        if AlreadyFound == 0
+            PreprocessingSteps = [PreprocessingSteps;"Stimulation Artefact Rejection"];
+            % Info saved to identofy that GrandAverage was applied
+            Info.StimArtefactChannel = ArtefactRejectionInfo.SelectedEventChannelName;
+            Info.TimeAroundStimArtefact = ArtefactRejectionInfo.TimeAroundEvents./SampleRate; %convert to seconds;
+            Info.TimeAroundStimArtefact(1) = -Info.TimeAroundStimArtefact(1);
+        end
+
+    elseif isempty(PreprocessingSteps)
+        PreprocessingSteps = [PreprocessingSteps,"Stimulation Artefact Rejection"];
+        % Info saved to identofy that GrandAverage was applied
+        Info.StimArtefactChannel = ArtefactRejectionInfo.SelectedEventChannelName;
+        Info.TimeAroundStimArtefact = ArtefactRejectionInfo.TimeAroundEvents./SampleRate; %convert to seconds;
+        Info.TimeAroundStimArtefact(1) = -Info.TimeAroundStimArtefact(1);
+    end
+end
+
 %% If user seleceted ChannelDeletion 
 % Check if it was already applied, If yes give a warning and overwrite
 % values, if not save new paramter

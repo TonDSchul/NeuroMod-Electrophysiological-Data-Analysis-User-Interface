@@ -3,7 +3,9 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(EventRelat
 %________________________________________________________________________________________
 %% Main Function to call correct TF analysis and plotting functions with correct event related data portion based on input in app window
 
-% Called whenever a TF calculation is done 
+% Called whenever a TF calculation is done to select the right function
+% based on what analysis the user selected - first calls analysis function,
+% the plotting function
 
 % Inputs: 
 % 1. EventRelatedData: nchannel x nevents n ntimepoints single matrix with

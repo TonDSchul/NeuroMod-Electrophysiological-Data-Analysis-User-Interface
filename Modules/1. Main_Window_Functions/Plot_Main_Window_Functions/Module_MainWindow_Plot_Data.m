@@ -28,12 +28,16 @@ function Module_MainWindow_Plot_Data(Data,UIAxis,Time,Channel_Selection,PlotLine
 % 16. SpikeDatatype: Either "Internal" when plotting internal spike data or
 % "Kilosort" when plotting spikes analysed with kilosort
 % 17. ChannelSpacing: as double in um
+% 18. PlotAppearance: structure holding indo about the appearance of plots
+% the user selected
+% 19. SpikePlotType: string, either "Points" or "Waveforms" to specifiy how
+% spikes should be plotted when the user selected them 
+
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 
 %________________________________________________________________________________________
-
 
 %% Scale all channel lines so that they are as far apart as specified in main window
 % (Channelspacing)
@@ -105,7 +109,7 @@ if strcmp(Type,"Static")
     %% Plot Channel Data
     % lines = NaN(size,)
     if isempty(lineHandles) 
-        % Plot rfor the first time
+        % Plot for the first time
         lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
         % ColorMap
         for i = 1:size(Data,1)

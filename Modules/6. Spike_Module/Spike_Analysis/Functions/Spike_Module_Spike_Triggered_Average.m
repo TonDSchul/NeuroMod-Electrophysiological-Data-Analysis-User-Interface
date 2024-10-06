@@ -70,14 +70,16 @@ end
 
 %% if no low pass and/or not downsampled open window to ask user to do it automatically
 UserOptions = [];
+LowPassSettings = [];
 
 if LowPass == 0 || Downsampled == 0
     PreproSpikeAverageWindow = SpikeTrgAvgAskPrepro(DatatoUse,Downsampled,LowPass);
     
-    uiwait(PreproSpikeAverageWindow.SpikeTrgAvgPreproUIFigure);
+    uiwait(PreproSpikeAverageWindow.PreproSTAWindowUIFigure);
     
     if isvalid(PreproSpikeAverageWindow)
         UserOptions = PreproSpikeAverageWindow.SpiketrgAvgPrepro;
+        LowPassSettings = PreproSpikeAverageWindow.FilterSettings;
     else
         return;
     end
@@ -97,7 +99,7 @@ if LowPass == 0 || Downsampled == 0
         if UserOptions.LowPass == 1 && UserOptions.Downsample == 1 || UserOptions.LowPass == 0 && UserOptions.Downsample == 1
             Methods = ["Filter","Downsample"];
             for i = 1:2
-                [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods(i),PreproInfo,PreprocessingSteps,0,"Low-Pass","Butterworth IR","220","Zero-phase forward and reverse","3","1000",Data.Info.NativeSamplingRate);
+                [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods(i),PreproInfo,PreprocessingSteps,0,"Low-Pass","Butterworth IR",LowPassSettings.Cutoff,"Zero-phase forward and reverse",LowPassSettings.FilterOrder,"1000",Data.Info.NativeSamplingRate);
             end
         elseif UserOptions.LowPass == 1 && UserOptions.Downsample == 0
             Methods = "Filter";

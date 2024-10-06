@@ -80,7 +80,7 @@ for nplots = 1:length(Units)
         
         for nchannel = 1:size(Data.Raw,1)
             if strcmp(Data.Info.SpikeType,"Internal")
-                SpikeIndicies = SpikePositions ==nchannel;
+                SpikeIndicies = SpikePositions == nchannel;
             else
                 SpikeIndicies = SpikeChannel == nchannel;
             end
@@ -102,6 +102,7 @@ for nplots = 1:length(Units)
         
         if ~isempty(InterspikeIntervals)
             
+
             InterspikeIntervals = InterspikeIntervals./Data.Info.NativeSamplingRate;
             
             ISISmallerThanMax = InterspikeIntervals<=MaxISITime;
@@ -115,7 +116,7 @@ for nplots = 1:length(Units)
             [counts, ~] = histcounts(InterspikeIntervals, numBins);
 
             % Convert to probability
-            InterspikeIntervals = counts./sum(counts);          
+            InterspikeIntervals = counts./sum(counts);       
 
             Figurename.NextPlot = "add";
             % For waveform in ms

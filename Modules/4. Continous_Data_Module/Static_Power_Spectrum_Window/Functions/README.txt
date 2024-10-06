@@ -17,13 +17,17 @@ File: Analyse_Main_Window_Static_Power_Spectrum.m
 % 3: DataType: Char that specifies how data is processed before pwelch.
 % Options: "Channel Individually" OR "Mean over all Channel"
 % 4: DataSource: string which data to use to compute? Either "Raw Data" or "Preprocessed Data"
-% 5: SelectedChannel: 1X2 double with channel over which pwelch is computed
+% 5: SelectedChannel: 1x2 double with channel over which pwelch is computed
 % (when no mean over channel selected). [Start Channel, Stop Channel] = all
 % channel from Start Channel to Stop Channel
 % 6: ChannelText: String which channel is analyzed -- only if power
 % spectrum over individual channel
-% 7. CurrentPlotData: structure in which analysis results are saved in
+% 7. FrequencyRangeHzEditField: char, holding frequency range user
+% specified in Hz. Format: '1,100' for 1 to 100 Hz
+% 8. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 9. PlotAppearance: structure holding current default of plot appearances
+% like linewidth
 
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -61,8 +65,22 @@ File: Continous_Power_Spectrum_Over_Depth.m
 % 2: DataSource: string which data to use to compute? Either "Raw Data" or "Preprocessed Data"
 % 3: PowerSpecResults: structure, if already computed in current GUI instance: this is non empty and contains the results from the previous calculation.
 % So the lengthy computation does not have to happen again and results can be plotted immediately
-% 4: Bandpower saves the results from the computation if they should take
-% place 
+% 4: Bandpower: saves the current results from the computation for the
+% plotting function (is not saved globaly)
+% 5. FrequencyRangeHzEditField: char, holding frequency range user
+% specified in Hz, Format: '1,100' for 1 to 100Hz
+% 6. Figure: figure object to plot power over all frequencies
+% 7. Figure_2: figure object to plot bandpower over low frequency ranges on the
+% right
+% 8. TextArea: app text are to display info in (progress of computing power
+% over depth), can be empty if used outside of GUI
+% 9. WhattoPlot: string, specifies which of the both plots should be
+% plotted; "All" for power over all frequencies and bandpower of low frequency
+% parts OR "Just Bandpower" for just bandpower of low frequency
+% parts
+% 10. TwoORThreeD: string, "TwoD" to show 2D plots OR "ThreeD" to show 3
+% dimensional plots
+% 11. CurrentPlotData: structure saving results to export.
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed

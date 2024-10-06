@@ -1,5 +1,25 @@
 function [app] = Change_Modules_Apply_Module_Change_To_MainWindow(app)
 
+%________________________________________________________________________________________
+
+%% Function to apply the module changes the user selected in the manage modules window
+% This function is called when the user presses the button to switch the
+% module selected on the left with the module seleced in the
+% dropdown menu of the manage modules window. it applies this change the
+% the main window
+
+% Inputs:
+% 1. app: manage modules window app structure (Mainapp saved as app.Mainapp)
+
+% Outputs:
+% 1. app: manage modules window app structure (Mainapp saved as app.Mainapp)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 %% Apply switch in manage modlue window
 
 %% Check if Seelction was proper and operation can be done

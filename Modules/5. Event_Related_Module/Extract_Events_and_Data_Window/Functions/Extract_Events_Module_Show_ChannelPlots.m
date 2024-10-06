@@ -2,12 +2,13 @@ function Extract_Events_Module_Show_ChannelPlots(Data,Channel,Folder,app,RHDAllC
 
 %________________________________________________________________________________________
 %% Function to plot event data of a selected event channel 
-% this function searches on startup through possible events and polots data
+
+% This function searches on startup of the Show_Event_Channel_Window through possible events and plots data
 % for the first event channel found. Otherwise it plots/returns info that
 % no data found for specified channel
 
 % gets called when the user clicks on "Show Input Channel Plots" in the
-% extract data windiw and opens the Show_Event_Channel_Window app.
+% extract data window and opens the Show_Event_Channel_Window app.
 
 % Inputs: 
 % 1.Channel: type of event file to look for; for Intan: "Digital

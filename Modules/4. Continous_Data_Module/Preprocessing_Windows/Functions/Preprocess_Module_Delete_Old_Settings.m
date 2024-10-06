@@ -106,6 +106,11 @@ if isfield(Data, 'Preprocessed') && Delete_old_settings == 1
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
+    if isfield(Data.Info,'StimArtefactChannel')
+        fieldsToDelete = {'StimArtefactChannel','TimeAroundStimArtefact'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
 end
 
 %% Handle Channel Deletion and Cut start and end

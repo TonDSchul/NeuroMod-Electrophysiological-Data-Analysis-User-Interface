@@ -1,4 +1,4 @@
-function [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,U1,U2,U3,W1,W2,W3,F1,F2,F3,F4,F5,F6,F7,F8,F9,Type,SpikeWindow)
+function [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel,TimeLagField] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,U1,U2,U3,W1,W2,W3,F1,F2,F3,F4,F5,F6,F7,F8,F9,Type,SpikeWindow,TimeLagField)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot the selected number of waveforms to plot
@@ -20,6 +20,8 @@ function [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,Spike
 % second and so on
 % 4. SpikeWindow: "EventWindow" when started from the event module,
 % "ContinousWindow" when started from the continous module
+% 5. TimeLagField: App widnow field with user input of time lag range in ms -
+% single char, i.e. '20' for -20:20ms time lag
 
 % Outputs
 
@@ -67,6 +69,8 @@ else
     SpikeWaveforms = Data.Spikes.Waveforms;
     SpikeChannel = Data.Spikes.SpikeChannel;
 end
+
+[TimeLagField] = Utility_SimpleCheckInputs(TimeLagField,"One",'20',0,0);
 
 MaxNrUnits = length(unique(Data.Spikes.SpikeCluster));
 %% Prepare inputs
@@ -140,6 +144,8 @@ elseif strcmp(Type,"U3") || strcmp(Type,"W3")
 elseif strcmp(Type,"BinSize")
 
 elseif strcmp(Type,"ISIMaxTime")
+
+elseif strcmp(Type,"AutoTimeLag")
 
 end
 

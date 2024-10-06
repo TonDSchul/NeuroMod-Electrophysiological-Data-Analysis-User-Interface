@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_TEMPLATE_OPEN_EPHYS_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_RHD_Analysis(DisplayOrder)
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -39,7 +39,7 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_OPEN_EPHYS_Analysis(DisplayOr
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_Internal_Spike_Sorting","Continous_Spike_Analysis","Continous_Unit_Analysis","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Event_Unit_Analysis","Save_for_Kilosort","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Save_Data"];
 
 % General Information
-AutorunConfig.AutorunConfigName = "OE LFP and Spike Analysis";
+AutorunConfig.AutorunConfigName = "Intan .rhd LFP and Spike Analysis";
 AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
 AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
 AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
@@ -66,8 +66,8 @@ end
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
 AutorunConfig.ExtractRawRecording.ChannelSpacing = 50; % Some Standard value. Has to be manually specified in Autorun window
-AutorunConfig.ExtractRawRecording.RecordingsSystem = "Open Ephys"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
-AutorunConfig.ExtractRawRecording.FileType = "Record Node 101"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
+AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
+AutorunConfig.ExtractRawRecording.FileType = "Intan .rhd"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -93,19 +93,21 @@ AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 
 % string array to apply multiple processing methods in the same
 % preprocessing instance.
 
-AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter"]; % Preprocessing ethod to apply.Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR multiple Inputs like ["Filter","Downsample"]
-AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter","Downsample"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter"]; % Preprocessing ethod to apply.Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
 AutorunConfig.PreprocessCont.FilterMethod{1} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
-AutorunConfig.PreprocessCont.FilterMethod{2} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
+AutorunConfig.PreprocessCont.FilterMethod{2} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
 AutorunConfig.PreprocessCont.FilterType{1} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
 AutorunConfig.PreprocessCont.FilterType{2} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
 AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "300"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
-AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
+AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "300"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
 AutorunConfig.PreprocessCont.FilterDirection{1} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterDirection{2} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterOrder{1} = "3"; % Filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
 AutorunConfig.PreprocessCont.FilterOrder{2} = "3"; % Filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
 AutorunConfig.PreprocessCont.DownsampleRate = "1000"; % New downsampled sampling rate in Hz; input as char. This only is required when a filter is selected as the methods field.
+AutorunConfig.PreprocessCont.ArtefactRejetction.StimArtefactChannel = "DIN-04"; % Event channel which holds the time points of the stimulation. These are equal to the artefact time points
+AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact = "-0.1,0.1"; % Time around the artefact for which you want to correct (interpolate) data; in seconds
 %% 3.2 Static Power Spectrum
 %______________________________________________________________________________________________________
 AutorunConfig.StaticPowerSpectrum.PlotType = ["Band Power Individual Channel ","Band Power over Depth"]; % Analysis options for static power spectrum analysis. Input either string array or single strig. Options: "Band Power Individual Channel" OR "Band Power over Depth"
@@ -151,12 +153,12 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4.1 Extract Events and Data
 %______________________________________________________________________________________________________
-% Warning: ChannelOfInterest is the node in which you saved events.
-% EventChannelSelection is the line number holding events. Multiple are possible,seperated by a comma (see event extraction window info about events)
-% Threshold for open ephys is the state, either 1 or 0
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 113'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
+% Warning: ChannelOfInterest is the kind of event channel to extract from.
+% 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
+% -rhd files and DIN Inputs, use the "Digital Inputs" argument
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Digital Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
-AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % Threshold of event signal at which events are extracted as char
+AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.5'; % Threshold of event signal at which events are extracted as char
 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
@@ -227,8 +229,8 @@ AutorunConfig.EventUnitAnalysis.UnitsPlot3 = '5,6,8';
 %______________________________________________________________________________________________________
 AutorunConfig.InternalSpikeDetection.Detectionmethod = 'Quiroga Method'; % 'Quiroga Method' OR 'Threshold: Mean - Std' OR 'Threshold: Median - Std'
 AutorunConfig.InternalSpikeDetection.Type = 'Individual Ch.'; % 'All Channel' OR 'Individual Ch.'
-AutorunConfig.InternalSpikeDetection.STDThreshold = '4.5'; % Number of standard deviations from mean to set threshold.
-AutorunConfig.InternalSpikeDetection.Filterspikes = false;
+AutorunConfig.InternalSpikeDetection.STDThreshold = '5'; % Number of standard deviations from mean to set threshold.
+AutorunConfig.InternalSpikeDetection.Filterspikes = true;
 AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset = '3';
 AutorunConfig.InternalSpikeDetection.FilterArtefactDepth = '200';
 

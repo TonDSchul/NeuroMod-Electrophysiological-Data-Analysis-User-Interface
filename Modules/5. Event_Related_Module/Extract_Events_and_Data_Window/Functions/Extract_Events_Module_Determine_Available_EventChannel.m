@@ -13,7 +13,7 @@ function [EventInfo,FileEndingsExist,FilePaths,texttoshow,Info] = Extract_Events
 % 1.Data: Data structure with raw data, preprocessed data, event data and
 % the info structure with infos about extracted events.
 % 2. Path: char path to folder containing the recording (Data.Info.Data_Path)
-% 5. FileType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
+% 3. FileType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
 % Inputs"; For Open Ephys: "Record Node 101" --> This is what is selected
 % at standard in the GUI as File Type. -- not required anymore but prb
 % useful in future

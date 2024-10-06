@@ -28,6 +28,35 @@ File: Spike_Module_FilterSpikes.m
 
  ###################################################### 
 
+File: Spike_Module_Internal_Spike_Sorting.m
+%________________________________________________________________________________________
+
+%% Function to manage wave clus 3 toolbox to conduct spike sorting
+
+% This function is called when the user either creates a new spike sorting
+% with wave clus 3 or loads existing spike data. It takes the spike times
+% obtained from the internal spike detection, saves it as a .mat file and
+% passes that path into wave clus 3 to perform spike sorting. Standard
+% folder is 'Recording_Path/Wave_Clus'.
+
+% Input:
+% 1. Data: main window data structure
+% 2. SpikeSortingPath: char, folder to save spike times to / load spike sorting from; standard 'Recording_Path/Wave_Clus'
+% 3. WhatToDo: string, either "Clustering" to perform new spike sorting OR
+% "Loading" to only load spike cluserting results (actually the string doesnt matter, spike sorting results have to be loaded in any case. Only determines if wave clus 3 is executed)
+
+% Output: 
+% 1. Data structure with added field 'Spikes' (Data.Spikes); Now
+% Spike.SpikeCluster contains the unit identities of each spike. 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Spike_Module_Spike_Detection.m
 %________________________________________________________________________________________
 
@@ -44,12 +73,16 @@ File: Spike_Module_Spike_Detection.m
 % filtered (same spike times +/- tolerance time over more channel then
 % specified as ArtefactDepth are rejected) --> i.e. same spike time over 10
 % Channel are deleted
-% Tolerance: Tolerance of vertical spike artefacts in samples as double. For example 3 means: spike time +/- 3 samples to the left and right over specified depth are counted as artefacts 
-% ArtefactDepth: Depth over which same spike times have to occur to count
+% 6. Tolerance: Tolerance of vertical spike artefacts in samples as double. For example 3 means: spike time +/- 3 samples to the left and right over specified depth are counted as artefacts 
+% 7. ArtefactDepth: Depth over which same spike times have to occur to count
 % as a artefact, in um and as double
 
-% Output: Data structure with added field 'Spikes' (Data.Spikes), called
+% Output: 
+% 1. Data structure with added field 'Spikes' (Data.Spikes), called
 % using app.Data.Spikes in GUI
+% 2. ToKeep: strcuture saving information about spike filtering (when
+% enabled) with deleting indicies and so on. Not implemented yet, thought
+% of as a possibility for continous artefact rejection
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

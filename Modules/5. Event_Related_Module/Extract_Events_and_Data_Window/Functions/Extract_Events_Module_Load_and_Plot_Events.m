@@ -3,8 +3,8 @@ function Extract_Events_Module_Load_and_Plot_Events(EventInfo,FilePaths,Figure,S
 %________________________________________________________________________________________
 %% Function load and plot event data in the show event data window (opened in the extract events window)
 
-% This function gets called whenever the user wants to see an example plot
-% of event data.
+% This function gets called by Extract_Events_Module_Show_ChannelPlots.m
+% and gets event data from that function to plot it
 
 % Inputs: 
 % 1. EventInfo: comes from the 'Extract_Events_Module_Determine_Available_EventChannel' function.

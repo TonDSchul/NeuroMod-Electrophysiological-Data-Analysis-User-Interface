@@ -1,4 +1,4 @@
-function CurrentPlotData = Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,figs,Units,NumBins,CurrentPlotData)
+function CurrentPlotData = Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,figs,Units,NumBins,CurrentPlotData,TimeLag)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot the Autocorrelogram for all spikes
@@ -19,6 +19,7 @@ function CurrentPlotData = Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePo
 % 8. NumBins: nr bins for ISI, as double
 % 9. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 10. TimeLag: double, Time lag in ms. I.e. 20 for -20 to 20ms
 
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -50,13 +51,15 @@ for nplots = 1:length(Units)
     end
 end
 
-maxLag = 50;  % Maximum lag time to consider for the histogram
+maxLag = TimeLag;  % Maximum lag time to consider for the histogram
 binEdges = linspace(-maxLag,maxLag,NumBins);
 
 NRbarplots = 0;
 
 for nplots = 1:length(Units)
-    
+   
+    NRbarplots = 0;
+
     if isempty(Units{nplots})
         continue;
     end
@@ -66,12 +69,20 @@ for nplots = 1:length(Units)
     Figurename = figs.(na);
 
     Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');
+    delete(Barhandles(1:end)); 
+    Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');
+    % if length(Barhandles)>length(Units{nplots})
+    %     delete(Barhandles(length(Units{nplots})+1:end));
+    %     Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');
+    % end
+    
     
     for nUnit = 1:length(Units{nplots})
         
         SpikePlotIndex = 1;  % Keeps track of where to insert into preallocated array
         nspikes = sum(SpikeCluster == Units{nplots}(nUnit));
         interspikeIntervals = NaN(1,(nspikes^2)+1);
+        %interspikeIntervals = [];
         ZeroTimeDifference = 0;
         
         h = waitbar(0, 'Calculating Autocorrelogram...', 'Name','Calculating Autocorrelogram...');
@@ -96,11 +107,13 @@ for nplots = 1:length(Units)
                 % Compute interspike intervals (positive lags only)
                 for i = 1:nSpikes
                     for j = 1:nSpikes
-                        if spikeTimes_sec(i) - spikeTimes_sec(j) ~= 0
-                            interspikeIntervals(SpikePlotIndex) = spikeTimes_sec(i) - spikeTimes_sec(j);
-                            SpikePlotIndex = SpikePlotIndex + 1;
-                        else
-                            ZeroTimeDifference = ZeroTimeDifference+1;
+                        if i ~=j
+                            if spikeTimes_sec(i) - spikeTimes_sec(j) ~= 0
+                                interspikeIntervals(SpikePlotIndex) = spikeTimes_sec(i) - spikeTimes_sec(j);
+                                SpikePlotIndex = SpikePlotIndex + 1;
+                            else
+                                ZeroTimeDifference = ZeroTimeDifference+1;
+                            end
                         end
                     end
                 end
@@ -120,13 +133,21 @@ for nplots = 1:length(Units)
 
         interspikeIntervals(isnan(interspikeIntervals)) = [];
         
+        smaller = abs(interspikeIntervals)<maxLag;
+        
+        interspikeIntervals = interspikeIntervals(smaller);
+
+        bigger = abs(interspikeIntervals)>0.5;
+
+        interspikeIntervals = interspikeIntervals(bigger);
+
         if ~isempty(interspikeIntervals)
             % Create the histogram for the autocorrelogram
-            [counts, ~] = histcounts(interspikeIntervals, binEdges);
+            [counts, edges] = histcounts(interspikeIntervals, binEdges);
     
             % ssttd = std(counts);
             % counts(counts>ssttd*10) = 0;
-    
+
             NRbarplots = NRbarplots+1;
     
             if isempty(Barhandles)
@@ -152,14 +173,9 @@ for nplots = 1:length(Units)
             
             CurrentPlotData.UnitAnalyisAutoXTicks{nplots,nUnit} = Figurename.XTickLabel;
 
+            
         end %~isempty(interspikeIntervals)
     end%nunits
-
-    Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');
-
-    if length(Barhandles)>NRbarplots
-        delete(Barhandles(NRbarplots+1:end));
-    end
 
     drawnow;
 end%nplots

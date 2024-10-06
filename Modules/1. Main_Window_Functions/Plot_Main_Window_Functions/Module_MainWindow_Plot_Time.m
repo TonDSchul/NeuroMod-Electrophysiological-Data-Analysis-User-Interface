@@ -15,6 +15,8 @@ function [rectangleHandle] = Module_MainWindow_Plot_Time(UIAxis,Time,StartTimeIn
 % string like "Non" leads to no events being plotted
 % 8. EventData: vector of time points (in s as double) of the event selected
 % on the bottom right of the main window. Only needed if EventPlot = "Events"
+% 9. PlotAppearance: structure holding indo about the appearance of plots
+% the user selected
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

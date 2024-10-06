@@ -1,5 +1,9 @@
 function RUN_Continous_Data_Module(app,ModuleFunctionName)
 
+%% This function is executed when the user pressed the RUN button of the Continous Data Module
+% It opens the windows of this module depending on the selection the user
+% made in the module field to the right of the RUN button
+
 if strcmp(ModuleFunctionName,"Preprocessing")
 
     Preprocessing_Window(app);

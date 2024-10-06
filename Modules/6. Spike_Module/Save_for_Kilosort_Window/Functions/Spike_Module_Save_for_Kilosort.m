@@ -2,6 +2,9 @@ function [Data] = Spike_Module_Save_for_Kilosort(Data,Autorun,SelectedFolder,For
 %________________________________________________________________________________________
 
 %% Function to save Raw Data in int format as a .dat file to load in Kilosort
+
+% standard folder to save in is 'Recording_Path/Kilosort
+
 % Input:
 % 1. Data: Data structure of toolbox. Required fields:
 % 1.1. Data.Raw with Channel x Time data matrix (Preprocessing happens in Kilosort!)

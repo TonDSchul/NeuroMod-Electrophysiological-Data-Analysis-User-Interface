@@ -14,12 +14,16 @@ function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,
 % filtered (same spike times +/- tolerance time over more channel then
 % specified as ArtefactDepth are rejected) --> i.e. same spike time over 10
 % Channel are deleted
-% Tolerance: Tolerance of vertical spike artefacts in samples as double. For example 3 means: spike time +/- 3 samples to the left and right over specified depth are counted as artefacts 
-% ArtefactDepth: Depth over which same spike times have to occur to count
+% 6. Tolerance: Tolerance of vertical spike artefacts in samples as double. For example 3 means: spike time +/- 3 samples to the left and right over specified depth are counted as artefacts 
+% 7. ArtefactDepth: Depth over which same spike times have to occur to count
 % as a artefact, in um and as double
 
-% Output: Data structure with added field 'Spikes' (Data.Spikes), called
+% Output: 
+% 1. Data structure with added field 'Spikes' (Data.Spikes), called
 % using app.Data.Spikes in GUI
+% 2. ToKeep: strcuture saving information about spike filtering (when
+% enabled) with deleting indicies and so on. Not implemented yet, thought
+% of as a possibility for continous artefact rejection
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -216,7 +220,7 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
 
 elseif strcmp(Detectionmethod,"Quiroga Method")
-
+    tic
     if strcmp(Type,"All Channel")
         medianAbsSignal = median(abs(Data.Preprocessed),'all');
     end
@@ -232,7 +236,6 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
             % Compute the threshold using the Quian Quiroga method
             Threshold = (medianAbsSignal / 0.6745) * STDThreshold;
             indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
-    
         elseif strcmp(Type,"Individual Ch.")
             medianAbsSignal = median(abs(Data.Preprocessed(nchannel,:)));
             % Compute the threshold using the Quian Quiroga method
@@ -282,6 +285,7 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
         end
     end
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
+    toc
 end
 
 

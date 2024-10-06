@@ -1,6 +1,23 @@
 function Change_Modules_Restore_Default(app)
 
-%% Currently Active Modules
+%________________________________________________________________________________________
+
+%% Function to restore the standard modules in the manage modules window 
+% This function loads the standard template for modules saved in
+% GUI_Path/Modules/MISC/Variables/Template_ModuleOrder.mat and saves it as
+% the new default variable in GUI_Path/Modules/MISC/Variables/ModuleOrder.mat
+
+% Inputs:
+% 1. app: app object of the manage mdoules window holding the module data
+% currently set in it and save.
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+%% Save standard template
 FileToSearchFor = strcat(app.Mainapp.executableFolder,"\Modules\MISC\Variables (do not edit)\Template_ModuleOrder.mat");
 load(FileToSearchFor,'ModuleOrder');
 
@@ -12,6 +29,7 @@ if isfile(FileToSearchFor)
     save(FileToSearchFor,'ModuleOrder');
 end
 
+%% set GUI values and fields again accordingly
 texttoshow = ["To add a new module click the button above directing you in the All_Module_Items.m function. There you have to add a new cell to the existing structure, entering title and items to show in your new module. Lastly add the function that should be executed when the user clicks the RUN button of your module.";"";"All module titles found in All_Module_Items.m function:";""];
 
 for i = 1:length(app.Module)

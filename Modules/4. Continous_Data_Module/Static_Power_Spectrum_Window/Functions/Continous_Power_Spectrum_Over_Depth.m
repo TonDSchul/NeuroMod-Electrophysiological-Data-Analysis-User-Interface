@@ -22,8 +22,22 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum
 % 2: DataSource: string which data to use to compute? Either "Raw Data" or "Preprocessed Data"
 % 3: PowerSpecResults: structure, if already computed in current GUI instance: this is non empty and contains the results from the previous calculation.
 % So the lengthy computation does not have to happen again and results can be plotted immediately
-% 4: Bandpower saves the results from the computation if they should take
-% place 
+% 4: Bandpower: saves the current results from the computation for the
+% plotting function (is not saved globaly)
+% 5. FrequencyRangeHzEditField: char, holding frequency range user
+% specified in Hz, Format: '1,100' for 1 to 100Hz
+% 6. Figure: figure object to plot power over all frequencies
+% 7. Figure_2: figure object to plot bandpower over low frequency ranges on the
+% right
+% 8. TextArea: app text are to display info in (progress of computing power
+% over depth), can be empty if used outside of GUI
+% 9. WhattoPlot: string, specifies which of the both plots should be
+% plotted; "All" for power over all frequencies and bandpower of low frequency
+% parts OR "Just Bandpower" for just bandpower of low frequency
+% parts
+% 10. TwoORThreeD: string, "TwoD" to show 2D plots OR "ThreeD" to show 3
+% dimensional plots
+% 11. CurrentPlotData: structure saving results to export.
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed
@@ -75,7 +89,7 @@ elseif strcmp(DataSource,"Preprocessed Data") && isfield(PowerSpecResults,'Prepr
     BandPower.marginalChans = PowerSpecResults.Preprocessed.marginalChans;
     BandPower.freqBands = PowerSpecResults.Preprocessed.freqBands;
 end
-     
+
 %% Save Check point for Main GUI
 
 if strcmp(DataSource,"Raw Data") && ~isfield(PowerSpecResults,'Raw')

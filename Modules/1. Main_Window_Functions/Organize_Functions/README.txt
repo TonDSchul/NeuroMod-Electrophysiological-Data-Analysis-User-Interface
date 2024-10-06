@@ -18,7 +18,8 @@ File: Organize_Delete_Dataset_Components.m
 %"Spikes" OR "EventRelatedSpikes" OR "EventRelatedData" OR "Events" OR "Preprocessed" OR "Raw" Or "PreprocessedEventRelatedData"
 
 % Output:
-% Error: 1 if no data would be left after deleting, 0 if otherwise; If 1,
+% 1. Data: main window data structure
+% 2. Error: 1 if no data would be left after deleting, 0 if otherwise; If 1,
 % deletion is not executed
 
 % Author: Tony de Schultz
@@ -64,9 +65,8 @@ File: Organize_Initialize_GUI.m
 % 7. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
 % 8. ChannelSpacing: in um as double
 
-
 % Output:
-% app object with initialized values
+% 1. app: object with initialized values
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -162,6 +162,31 @@ File: Organize_Set_MainWindow_TimeRange.m
 % Output:
 % app object with updated app.CurrentTimePoints value capturing the first time
 % point of the main window plot that is shown (in samples)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Organize_Set_Standard_PlotAppearance.m
+%________________________________________________________________________________________
+
+%% Function to set the standrad appearance settings of each plot.  
+% This function hard codes standard plot appearances. It is called when no
+% .m file is saved in GUI_Path/Modules/MISC/Variables (do not edit!) to
+% create a new Template_PlotAppearance.m file
+
+% Inputs
+% 1. Type: string, Specifies what settings to reset to standard. "All" to
+% reset all appearances OR "MainDataPlot" OR "MainTimePlot" OR
+% "SpectrumPlot" to reet window specific plot settings.
+% 2. PlotAppearance: strcuture holding all appearances.
+
+% Outputs
+% 1. PlotAppearance: strcuture holding all appearances.
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

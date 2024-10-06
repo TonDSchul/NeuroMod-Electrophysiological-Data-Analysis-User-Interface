@@ -31,6 +31,11 @@ File: Module_MainWindow_Plot_Data.m
 % 16. SpikeDatatype: Either "Internal" when plotting internal spike data or
 % "Kilosort" when plotting spikes analysed with kilosort
 % 17. ChannelSpacing: as double in um
+% 18. PlotAppearance: structure holding indo about the appearance of plots
+% the user selected
+% 19. SpikePlotType: string, either "Points" or "Waveforms" to specifiy how
+% spikes should be plotted when the user selected them 
+
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -57,6 +62,8 @@ File: Module_MainWindow_Plot_Time.m
 % string like "Non" leads to no events being plotted
 % 8. EventData: vector of time points (in s as double) of the event selected
 % on the bottom right of the main window. Only needed if EventPlot = "Events"
+% 9. PlotAppearance: structure holding indo about the appearance of plots
+% the user selected
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

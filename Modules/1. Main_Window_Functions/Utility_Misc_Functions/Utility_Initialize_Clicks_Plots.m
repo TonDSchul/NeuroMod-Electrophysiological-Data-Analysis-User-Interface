@@ -19,24 +19,37 @@ function Utility_Initialize_Clicks_Plots(app)
 
 %% Set the ButtonDownFcn for UIAxes to register clicks in the plot outside of plotted lines (clicks in epmty plot regions)
 % Intialize function
-app.UIAxes.ButtonDownFcn = @(src1, event1) UIAxesButtonDown(app, event1);
-% Add ButtonDownFcn to each line object in UIAxis
+
+%% Data Plot
+if isempty(app.UIAxes.ButtonDownFcn)
+    app.UIAxes.ButtonDownFcn = @(src1, event1) UIAxesButtonDown(app, event1);
+end   
+% Add ButtonDownFcn to each line object in UIAxis    
 lines = findobj(app.UIAxes, 'Type', 'line');
 
 %% Set the ButtonDownFcn for UIAxes to register clicks on a plotted line directly
-for i = 1:numel(lines)
-    % Call Lineclicked function if that happens
-    lines(i).ButtonDownFcn = @(src1, event1) LineClicked(app, event1);
-end
+%if ~isprop(lines,"ButtonDownFcn")
+    for i = 1:numel(lines)
+        % Call Lineclicked function if that happens
+        lines(i).ButtonDownFcn = @(src1, event1) LineClicked(app, event1);
+    end
+%end
 
-%% Set the ButtonDownFcn for UIAxes:2 to register clicks in the Time plot
-% Intialize function
-app.UIAxes_2.ButtonDownFcn = @(src1, event1) UIAxes_2ButtonDown(app, event1);
+%% Time Plot
+if isempty(app.UIAxes_2.ButtonDownFcn)
+    %% Set the ButtonDownFcn for UIAxes:2 to register clicks in the Time plot
+    % Intialize function
+    app.UIAxes_2.ButtonDownFcn = @(src1, event1) UIAxes_2ButtonDown(app, event1);
+    
+end
 % Add ButtonDownFcn to each line object in UIAxis
 lines = findobj(app.UIAxes_2, 'Type', 'line');
 
 %% Set the ButtonDownFcn for UIAxes to register clicks on a plotted line directly
-for i = 1:numel(lines)
-    % Call Lineclicked function if that happens
-    lines(i).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
-end
+%if ~isprop(lines(1),"ButtonDownFcn")
+    for i = 1:numel(lines)
+        % Call Lineclicked function if that happens
+        lines(i).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
+    end
+%end
+

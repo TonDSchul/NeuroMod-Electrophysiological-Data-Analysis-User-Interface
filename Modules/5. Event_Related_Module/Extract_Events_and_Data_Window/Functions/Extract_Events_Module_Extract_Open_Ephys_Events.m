@@ -13,12 +13,12 @@ function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,Wh
 % folder
 % functions used: 1. Session; 2. eventProcessors
 
-% NOTE: depending on the node and prb. version of Open EPhys recording GUI,
-% particular field names were event indicies are saved can vary. The code
-% downbelow checks for all known to me, but can be uncomplete. It only
-% cheks events for the node selected in the event extraction window
+% NOTE: depending on the node and prb. version of Open Ephys recording GUI,
+% particular field names where event indicies are saved can vary. The code
+% down below checks for all known to me, but can be uncomplete. It only
+% checks events for the node selected in the event extraction window
 % NOTE: This code has two modi: first just retriving infomation, like the
-% dataframe saving event indicies and second to actually extract event data
+% dataframe and second to actually extract and save event data
 
 % This gets called when the user clicks on event extraction in the event
 % extraction window and open ephys is recording format

@@ -1,5 +1,30 @@
 function [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,WhatToDo)
 
+%________________________________________________________________________________________
+
+%% Function to manage wave clus 3 toolbox to conduct spike sorting
+
+% This function is called when the user either creates a new spike sorting
+% with wave clus 3 or loads existing spike data. It takes the spike times
+% obtained from the internal spike detection, saves it as a .mat file and
+% passes that path into wave clus 3 to perform spike sorting. Standard
+% folder is 'Recording_Path/Wave_Clus'.
+
+% Input:
+% 1. Data: main window data structure
+% 2. SpikeSortingPath: char, folder to save spike times to / load spike sorting from; standard 'Recording_Path/Wave_Clus'
+% 3. WhatToDo: string, either "Clustering" to perform new spike sorting OR
+% "Loading" to only load spike cluserting results (actually the string doesnt matter, spike sorting results have to be loaded in any case. Only determines if wave clus 3 is executed)
+
+% Output: 
+% 1. Data structure with added field 'Spikes' (Data.Spikes); Now
+% Spike.SpikeCluster contains the unit identities of each spike. 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if strcmp(WhatToDo,"Clustering")
     
     spikes = Data.Spikes.Waveforms;

@@ -1,6 +1,19 @@
 function [Module,app] = All_Module_Items(app,ChangeApp,ModuleOrder)
 
 %%__________________________________________________________________________________________
+%% This functions holds information about all modules added to the toolbox. If you want to add your own module,
+%% add a new cell to the Module variable below and enter the necessary info. 
+% Module{i}.Title holds the title of the Module shown in the main window
+% Module{i}.Items holds the name of each function the user can select in
+% module selection field of the main window (to the left of the RUN button)
+% Module{i}.Function is the function name of the function executed when the
+% User presses the RUN button of that module. It starts the app windows you
+% can build yourself depending on what option the user selected in the
+% module selection field.
+% To get started, use the fifth cell array below containing the example
+% module. Just add your own code to the module app window and your own
+% functions to that folder to get your onw analysis running with the rest of
+% the Toolbox.
 
 %% Main Plot Analysis Module
 Module{1}.Title = 'Main Plot Analysis Module';

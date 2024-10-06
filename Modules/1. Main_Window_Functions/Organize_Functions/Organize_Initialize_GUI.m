@@ -33,9 +33,8 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 % 7. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
 % 8. ChannelSpacing: in um as double
 
-
 % Output:
-% app object with initialized values
+% 1. app: object with initialized values
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -48,6 +47,8 @@ cd(app.executableFolder);
 
 if strcmp(Type,"Initial")
     
+    warning('off', 'MATLAB:modes:mode:InvalidPropertySet'); % warning that buttondown on data plot doesnt work when the user selected an interactive option within the plot (like zoom or moving the plot)
+
     % Replace and empty all plots
     app.UIAxes.NextPlot = "replace"; 
     plot(app.UIAxes,0,0);

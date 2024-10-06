@@ -1,6 +1,8 @@
 function RUN_Spike_Module(app,ModuleFunctionName)
 
-% Check which option was selected when the user clicked "RUN"
+%% This function is executed when the user pressed the RUN button of the Spike Module
+% It opens the windows of this module depending on the selection the user
+% made in the module field to the right of the RUN button
 
 if strcmp(ModuleFunctionName,"Internal Spike Detection")
     % Open app window for Internal Spike Detection

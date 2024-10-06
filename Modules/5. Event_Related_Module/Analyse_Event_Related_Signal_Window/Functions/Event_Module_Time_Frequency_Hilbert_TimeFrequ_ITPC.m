@@ -1,7 +1,12 @@
 function [tf,frex] = Event_Module_Time_Frequency_Hilbert_TimeFrequ_ITPC (Data,srate,time,FreqRange,FilterRange,FilterOrder,TrialsofInterest,Channel,BaselineNormalize)
-%% Attention: Not fully working/tested for GUI
+
 %________________________________________________________________________________________
 %% Function to calculate time frequency power and intertrial phase clustering using a filter hilbert.
+
+%***********************
+%% work in progress, not implemented yet!!!!!!!!!!!!
+%***********************
+
 % This function is based on the "Complete neural
 % signal processing and analysis: Zero to hero" workshop by Michael Cohen
 % on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP

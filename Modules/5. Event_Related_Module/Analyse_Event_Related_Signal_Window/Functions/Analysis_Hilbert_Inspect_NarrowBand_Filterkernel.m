@@ -2,6 +2,10 @@ function Analysis_Hilbert_Inspect_NarrowBand_Filterkernel (srate,costumfrex,orde
 %________________________________________________________________________________________
 %% Function to show the frequency response and filter gains of narrowband filter used for the hilbert filter.
 
+%***********************
+%% work in progress, not implemented yet!!!!!!!!!!!!
+%***********************
+
 % Inputs: 1.srate: Sampling rate of your signal in Hz as double
 %         2.costumfrex: Frequency range of narrowband filter [min freq, max
 %         frequ, steps from min to max freq] in Hz double

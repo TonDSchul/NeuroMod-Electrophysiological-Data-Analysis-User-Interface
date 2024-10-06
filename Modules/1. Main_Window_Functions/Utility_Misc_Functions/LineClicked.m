@@ -33,6 +33,9 @@ CommaIndex = strfind(app.ChannelSelectionEditField.Value,",");
 Channelrange(1) = str2double(app.ChannelSelectionEditField.Value(1:CommaIndex-1));
 Channelrange(2) = str2double(app.ChannelSelectionEditField.Value(CommaIndex+1:end));
 
+VectorToDisplay = VectorNames(closestLine+(Channelrange(1)-1));
+VectorToDisplay{1} = convertStringsToChars(strcat(VectorToDisplay{1},"; Time: ",num2str(clickPoint(1)),"s"));
+
 if ~isempty(closestLine)
-    app.ChannelTextHandle = text(app.UIAxes, clickPoint(1), clickPoint(2), VectorNames(closestLine+(Channelrange(1)-1)), 'FontSize', 16, 'Color', 'k');
+    app.ChannelTextHandle = text(app.UIAxes, clickPoint(1), clickPoint(2), VectorToDisplay, 'FontSize', 13, 'Color', 'k');
 end

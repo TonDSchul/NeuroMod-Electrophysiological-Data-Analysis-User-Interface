@@ -7,29 +7,34 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % analysis window 
 
 % Inputs: 
-% 1.Figure: axis handle to figure you want to plot in -- CSD plot or ERP
+% 1. Data: data strcuture of main window, to simplfy inputs later on?!
+% 2.Figure: axis handle to figure you want to plot in -- CSD plot or ERP
 % all trials plot with mean as black line
-% 2.Figure2: axis handle to figure you want to plot in -- ERP
+% 3.Figure2: axis handle to figure you want to plot in -- ERP
 % all channel plot with mean for each channel
-% 3. EventRelatedData: nchannel x nevents x ntimepoints single matrix
+% 4. EventRelatedData: nchannel x nevents x ntimepoints single matrix
 % containing event related data
-% 4. EventTime: double time vector of events with one time in seconds for
+% 5. EventTime: double time vector of events with one time in seconds for
 % each time point of the EventRelatedData variable (with negativ pre event time)
-% 5. DataChannelSelected: 1 x 2 double with channelrange to be plotted;
+% 6. DataChannelSelected: 1 x 2 double with channelrange to be plotted;
 % [1,10] means channel 1 to 10 
-% 6. CSD: structure containing infos for csd: CSD.ChannelSpacing;
+% 7. CSD: structure containing infos for csd: CSD.ChannelSpacing;
 % CSD.HammWindow --> IMPORTANT: When empty: ERP plotted, when plopulated: CSD is
 % plotted!!! this structure comes from the
 % 'Event_Module_Organize_TF_Window_Inputs' function
-% 7. rgbcolormap: nplots x 3 double matrix with rgb values for each line
+% 8. rgbcolormap: nplots x 3 double matrix with rgb values for each line
 % plotted (only for plotting multiple channel erp's with consistent colors)
-% 8. PlotLineSpacing: factor as double that determines the spacing between
+% 9. PlotLineSpacing: factor as double that determines the spacing between
 % plotted erp lines of different channel
-% 9. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
+% 10. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
 % erp plots of one channel over all events OR 'MultipleERPOnly' for just
 % erp plot of each channel OR 'All' for both plots
-% 10. CurrentPlotData: structure in which analysis results are saved in
+% 11. TwoORThreeD: string, either "TwoD" or "ThreeD" to show plot in 2 or 3
+% dimensions
+% 12. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 13. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
 
 % Outputs:
 % 1. CSDClim

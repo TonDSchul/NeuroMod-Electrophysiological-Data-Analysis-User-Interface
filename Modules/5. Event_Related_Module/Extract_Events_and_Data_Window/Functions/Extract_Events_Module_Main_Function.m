@@ -388,7 +388,7 @@ elseif strcmp(RecordingType,"Spike2")
         % Extract channel wise data. Loops until all channel analyzed
         for nchannel = 1:length(InputChannelSelection)
             
-            texttoshow = strcat("Extracting Event Channel ",num2str(InputChannelSelection));
+            texttoshow = strcat("Extracting Event Channel ",num2str(InputChannelSelection(nchannel)));
             TextArea2Object.Value = [TextArea2Object.Value;texttoshow];
             pause(0.2);
             
@@ -463,12 +463,17 @@ if isfield(Data,'Events')
                     Data.Info.EventChannelType = ".nev";
                     EventChannelDropDown{i} = Data.Info.EventChannelNames{i};
                 elseif strcmp(RecordingType,"Spike2")
+                    Data.Info.Spike2EventChannelToTake = convertStringsToChars(Data.Info.Spike2EventChannelToTake);
+                    commaindicie = find(Data.Info.Spike2EventChannelToTake==',');
+                    Spike2EventChannelToTake(1) = str2double(Data.Info.Spike2EventChannelToTake(1:commaindicie(1)-1));
+                    Spike2EventChannelToTake(2) = str2double(Data.Info.Spike2EventChannelToTake(commaindicie(1)+1:end));
+
                     EventChannelDropDown = {};
                     for nevents = 1:length(Data.Events)
-                        Data.Info.EventChannelNames{nevents} = strcat("Data Channel ",num2str(Data.Info.Spike2EventChannelToTake(nevents)));
-                        Data.Info.EventChannelType = strcat("Event Channel ",num2str(nevents));
+                        Data.Info.EventChannelNames{nevents} = strcat("Data Channel ",num2str(Spike2EventChannelToTake(nevents)));
                         EventChannelDropDown{nevents} = convertStringsToChars(Data.Info.EventChannelNames{nevents});
                     end
+                    Data.Info.EventChannelType = strcat("Event Channel ",num2str(nevents));
                 end
                 
                 if i == 1

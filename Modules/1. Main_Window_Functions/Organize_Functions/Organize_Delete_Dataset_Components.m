@@ -14,7 +14,8 @@ function [Data,Error] = Organize_Delete_Dataset_Components(Data,ComponentToDelet
 %"Spikes" OR "EventRelatedSpikes" OR "EventRelatedData" OR "Events" OR "Preprocessed" OR "Raw" Or "PreprocessedEventRelatedData"
 
 % Output:
-% Error: 1 if no data would be left after deleting, 0 if otherwise; If 1,
+% 1. Data: main window data structure
+% 2. Error: 1 if no data would be left after deleting, 0 if otherwise; If 1,
 % deletion is not executed
 
 % Author: Tony de Schultz
@@ -163,7 +164,7 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
     if isfield(Data.Info,'CutStart')
         TempCutStart = Data.Info.CutStart;
     end
-
+    
     if isfield(Data.Info,'Spike2EventChannelToTake')
         TempSpike2EventChannelToTake = Data.Info.Spike2EventChannelToTake;
     end

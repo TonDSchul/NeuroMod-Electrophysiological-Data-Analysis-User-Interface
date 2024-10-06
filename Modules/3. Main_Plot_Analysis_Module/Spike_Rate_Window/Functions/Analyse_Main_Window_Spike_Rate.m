@@ -41,6 +41,8 @@ function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoin
 % 15. FilterOrder: Low Pass filter order as doublee
 % 16. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 17. PlotAppearance: structure holding information about plot appearances
+% the user can select
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in

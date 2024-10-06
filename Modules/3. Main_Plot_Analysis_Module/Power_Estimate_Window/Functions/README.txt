@@ -27,6 +27,8 @@ File: Analyse_Main_Window_Spectral_Density_Estimate.m
 % exceeds global ylim from Spectral_Power_Estimate_Window
 % 7. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 8. PlotAppearance: structure holding information about plot appearances
+% the user can select
 
 % Output:
 % 1. currentYlim: global ylim - either unchanged from previous power estimate plot if

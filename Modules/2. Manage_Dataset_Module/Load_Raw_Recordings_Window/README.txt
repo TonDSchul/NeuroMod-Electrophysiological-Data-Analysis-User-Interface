@@ -9,5 +9,6 @@ Probe_Layout_Window.mlapp and Probe_Layout_Window.mlapp are called within this w
 The Main Function to manage dataset extraction from all file formats is called 'Manage_Dataset_Module_Extract_Raw_Recording_Main.m' (in the Functions folder)
 From there, functions for the specific file format detected are called.
 
-NOTE: The extract recordings main window always checks the selected folder for the a supported recording file format. So if you select a
-folder and see the proper content in the app window text area, it was succesfully detected as one of the supported formats.
+NOTE: The extract recordings main window always checks the selected folder for the a supported recording file format using the Manage_Dataset_Module_LoadRecordingCheckFolderContents.m function. 
+
+Low level functions to extract Neuralynx and Plexon files are located in GUI_Path/Modules/Toolboxes/1. FieldTrip

@@ -48,7 +48,7 @@ File: Extract_Events_Module_Determine_Available_EventChannel.m
 % 1.Data: Data structure with raw data, preprocessed data, event data and
 % the info structure with infos about extracted events.
 % 2. Path: char path to folder containing the recording (Data.Info.Data_Path)
-% 5. FileType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
+% 3. FileType: type of event to look for; for Intan: "Digital Inputs" or "Analog Input" or "AUX
 % Inputs"; For Open Ephys: "Record Node 101" --> This is what is selected
 % at standard in the GUI as File Type. -- not required anymore but prb
 % useful in future
@@ -209,12 +209,12 @@ File: Extract_Events_Module_Extract_Open_Ephys_Events.m
 % folder
 % functions used: 1. Session; 2. eventProcessors
 
-% NOTE: depending on the node and prb. version of Open EPhys recording GUI,
-% particular field names were event indicies are saved can vary. The code
-% downbelow checks for all known to me, but can be uncomplete. It only
-% cheks events for the node selected in the event extraction window
+% NOTE: depending on the node and prb. version of Open Ephys recording GUI,
+% particular field names where event indicies are saved can vary. The code
+% down below checks for all known to me, but can be uncomplete. It only
+% checks events for the node selected in the event extraction window
 % NOTE: This code has two modi: first just retriving infomation, like the
-% dataframe saving event indicies and second to actually extract event data
+% dataframe and second to actually extract and save event data
 
 % This gets called when the user clicks on event extraction in the event
 % extraction window and open ephys is recording format
@@ -254,8 +254,8 @@ File: Extract_Events_Module_Load_and_Plot_Events.m
 %________________________________________________________________________________________
 %% Function load and plot event data in the show event data window (opened in the extract events window)
 
-% This function gets called whenever the user wants to see an example plot
-% of event data.
+% This function gets called by Extract_Events_Module_Show_ChannelPlots.m
+% and gets event data from that function to plot it
 
 % Inputs: 
 % 1. EventInfo: comes from the 'Extract_Events_Module_Determine_Available_EventChannel' function.
@@ -425,12 +425,13 @@ File: Extract_Events_Module_Set_Up_Window.m
 File: Extract_Events_Module_Show_ChannelPlots.m
 %________________________________________________________________________________________
 %% Function to plot event data of a selected event channel 
-% this function searches on startup through possible events and polots data
+
+% This function searches on startup of the Show_Event_Channel_Window through possible events and plots data
 % for the first event channel found. Otherwise it plots/returns info that
 % no data found for specified channel
 
 % gets called when the user clicks on "Show Input Channel Plots" in the
-% extract data windiw and opens the Show_Event_Channel_Window app.
+% extract data window and opens the Show_Event_Channel_Window app.
 
 % Inputs: 
 % 1.Channel: type of event file to look for; for Intan: "Digital

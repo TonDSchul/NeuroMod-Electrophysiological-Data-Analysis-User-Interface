@@ -6,6 +6,10 @@ File: Analysis_Hilbert_Inspect_NarrowBand_Filterkernel.m
 %________________________________________________________________________________________
 %% Function to show the frequency response and filter gains of narrowband filter used for the hilbert filter.
 
+%***********************
+%% work in progress, not implemented yet!!!!!!!!!!!!
+%***********************
+
 % Inputs: 1.srate: Sampling rate of your signal in Hz as double
 %         2.costumfrex: Frequency range of narrowband filter [min freq, max
 %         frequ, steps from min to max freq] in Hz double
@@ -27,29 +31,34 @@ File: Event_Module_Compute_and_Plot_ERP_CSD.m
 % analysis window 
 
 % Inputs: 
-% 1.Figure: axis handle to figure you want to plot in -- CSD plot or ERP
+% 1. Data: data strcuture of main window, to simplfy inputs later on?!
+% 2.Figure: axis handle to figure you want to plot in -- CSD plot or ERP
 % all trials plot with mean as black line
-% 2.Figure2: axis handle to figure you want to plot in -- ERP
+% 3.Figure2: axis handle to figure you want to plot in -- ERP
 % all channel plot with mean for each channel
-% 3. EventRelatedData: nchannel x nevents x ntimepoints single matrix
+% 4. EventRelatedData: nchannel x nevents x ntimepoints single matrix
 % containing event related data
-% 4. EventTime: double time vector of events with one time in seconds for
+% 5. EventTime: double time vector of events with one time in seconds for
 % each time point of the EventRelatedData variable (with negativ pre event time)
-% 5. DataChannelSelected: 1 x 2 double with channelrange to be plotted;
+% 6. DataChannelSelected: 1 x 2 double with channelrange to be plotted;
 % [1,10] means channel 1 to 10 
-% 6. CSD: structure containing infos for csd: CSD.ChannelSpacing;
+% 7. CSD: structure containing infos for csd: CSD.ChannelSpacing;
 % CSD.HammWindow --> IMPORTANT: When empty: ERP plotted, when plopulated: CSD is
 % plotted!!! this structure comes from the
 % 'Event_Module_Organize_TF_Window_Inputs' function
-% 7. rgbcolormap: nplots x 3 double matrix with rgb values for each line
+% 8. rgbcolormap: nplots x 3 double matrix with rgb values for each line
 % plotted (only for plotting multiple channel erp's with consistent colors)
-% 8. PlotLineSpacing: factor as double that determines the spacing between
+% 9. PlotLineSpacing: factor as double that determines the spacing between
 % plotted erp lines of different channel
-% 9. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
+% 10. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
 % erp plots of one channel over all events OR 'MultipleERPOnly' for just
 % erp plot of each channel OR 'All' for both plots
-% 10. CurrentPlotData: structure in which analysis results are saved in
+% 11. TwoORThreeD: string, either "TwoD" or "ThreeD" to show plot in 2 or 3
+% dimensions
+% 12. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 13. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
 
 % Outputs:
 % 1. CSDClim
@@ -68,7 +77,7 @@ File: Event_Module_Compute_and_Plot_ERP_CSD.m
 
 File: Event_Module_Organize_TF_Window_Inputs.m
 %________________________________________________________________________________________
-%% Function to capture all inputs for the time frequency power calculations and organize them to calculate and plot
+%% Function to capture all inputs for the time frequency power calculations and organize them to calculate and plot later
 
 % Called when clicking on Time Frequency Power button in event related signal
 % analysis window 
@@ -110,10 +119,10 @@ File: Event_Module_Organize_TF_Window_Inputs.m
 % 4. CSD: structure holding parameters for CSD. Of course it is set to
 % empty bc here ionly TF is computed. 
 % 5. TF: structure holding parameters for TF analysis. With fields:
-%TF.Range_cycles
-%TF.FreqRange
-%TF.FilterRange
-%TF.FilterOrder -- all as double
+%TF.Range_cycles: 1x2 double [from,to]
+%TF.FreqRange: 1x3 double [from,steps,to]
+%TF.FilterRange: 1x2 double [from,to]
+%TF.FilterOrder 1x1 double
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -125,6 +134,11 @@ File: Event_Module_Organize_TF_Window_Inputs.m
 File: Event_Module_Time_Frequency_Hilbert_TimeFrequ_ITPC.m
 %________________________________________________________________________________________
 %% Function to calculate time frequency power and intertrial phase clustering using a filter hilbert.
+
+%***********************
+%% work in progress, not implemented yet!!!!!!!!!!!!
+%***********************
+
 % This function is based on the "Complete neural
 % signal processing and analysis: Zero to hero" workshop by Michael Cohen
 % on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
@@ -163,7 +177,9 @@ File: Event_Module_Time_Frequency_Main.m
 %________________________________________________________________________________________
 %% Main Function to call correct TF analysis and plotting functions with correct event related data portion based on input in app window
 
-% Called whenever a TF calculation is done 
+% Called whenever a TF calculation is done to select the right function
+% based on what analysis the user selected - first calls analysis function,
+% the plotting function
 
 % Inputs: 
 % 1. EventRelatedData: nchannel x nevents n ntimepoints single matrix with
@@ -208,6 +224,10 @@ File: Event_Module_Time_Frequency_Plot_Hilbert_TF.m
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using filter hilbert transformation
 
+%***********************
+%% work in progress, not implemented yet!!!!!!!!!!!!
+%***********************
+
 % Inputs: 
 % 1. tf: 4D matrix with result of wavelet TF analysis (from Event_Module_Time_Frequency_Wavelet_ITPC_Cycles function)
 % 2. frex: Frequency range used for analysis as a 1 x nrfrequencies double  (from Event_Module_Time_Frequency_Wavelet_ITPC_Cycles function)
@@ -233,6 +253,8 @@ File: Event_Module_Time_Frequency_Plot_Hilbert_TF.m
 File: Event_Module_Time_Frequency_Plot_WaveletTF.m
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths 
+
+% gets inputs from Event_Module_Time_Frequency_Wavelet_ITPC_Cycles.m
 
 % Inputs: 
 % 1. Figure: axes handle to figure to plot in
@@ -271,6 +293,7 @@ File: Event_Module_Time_Frequency_Wavelet_ITPC_Cycles.m
 %________________________________________________________________________________________
 %% Function to calculate time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths to 
 % tackle the time/frequency tradeoff.
+
 % This function is based on the "Complete neural
 % signal processing and analysis: Zero to hero" workshop by Michael Cohen
 % on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
@@ -278,7 +301,7 @@ File: Event_Module_Time_Frequency_Wavelet_ITPC_Cycles.m
 % Note: If multiple Channels in input data. mean is calculated. All selected trials are concatonated to a supertrial. Every calculation is done with this
 % supertrial and converted back to the original data format afterwards
 
-% Inputs: 1. data: Format: 3D Matrix with Channel x Trials x Time Points as
+% Inputs: 1. Data: Format: 3D Matrix with Channel x Trials x Time Points as
 %                  dimensions. (Mean over channel when multiple channels) 
 %         3. time: Vector containing time points (in seconds)
 %         4. FreqRange: Frequency range of narrwoband filter [min frequ, max frequ, steps from min to max freq] in Hz

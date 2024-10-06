@@ -30,14 +30,30 @@ function [Data] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig
 if strcmp(FunctionOrder,'Preprocess_Continous_Data')
     PreproInfo = [];
     PreprocessingSteps = [];
-    
+       
     if ~isfield(Data,'Raw') && isfield(Data, 'Preprocessed')
         msgbox("Warning! No raw data found. Current preprocessed data is used as raw data, new preprocessing steps will be applied to it and be save as preprocessed data!");
         Data.Raw = Data.Preprocessed;
     end
     
+    % When artefact rejection: populate necessary strucutre accordingly,
+    % otherwise set empty
     for i = 1:length(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr})
-        [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),PreproInfo,PreprocessingSteps,0,AutorunConfig.PreprocessCont.FilterMethod{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterType{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.CuttoffFrequency{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterDirection{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterOrder{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.DownsampleRate,Data.Info.NativeSamplingRate);
+        if ~strcmp(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr},"StimArtefactRejection")
+            ArtefactRejectionInfo = [];
+        else
+            ArtefactRejectionInfo.SelectedEventChannelName = AutorunConfig.PreprocessCont.ArtefactRejetction.StimArtefactChannel;
+
+            AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact = convertStringsToChars(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact);
+            commaindicie = find(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact==',');
+            ArtefactRejectionInfo.TimeAroundEvents(1) = str2double(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact(1:commaindicie(1)-1));
+            ArtefactRejectionInfo.TimeAroundEvents(2) = str2double(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact(commaindicie(1)+1:end));
+            % Conver to samples
+            ArtefactRejectionInfo.TimeAroundEvents = round(ArtefactRejectionInfo.TimeAroundEvents.*Data.Info.NativeSamplingRate);
+        end
+
+        [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),PreproInfo,PreprocessingSteps,0,AutorunConfig.PreprocessCont.FilterMethod{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterType{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.CuttoffFrequency{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterDirection{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterOrder{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.DownsampleRate,Data.Info.NativeSamplingRate,ArtefactRejectionInfo);
+    
     end
 
     if isempty(PreprocessingSteps)
@@ -512,7 +528,7 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
         UIAxes_8.NextPlot = "add";
         UIAxes_9.NextPlot = "add";
         
-        [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.ContinousUnitAnalysis.UnitsPlot1,AutorunConfig.ContinousUnitAnalysis.UnitsPlot2,AutorunConfig.ContinousUnitAnalysis.UnitsPlot3,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,UIAxes_7,UIAxes_8,UIAxes_9,"StartUp","ContinousWindow");
+        [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel,AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.ContinousUnitAnalysis.UnitsPlot1,AutorunConfig.ContinousUnitAnalysis.UnitsPlot2,AutorunConfig.ContinousUnitAnalysis.UnitsPlot3,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,UIAxes_7,UIAxes_8,UIAxes_9,"StartUp","ContinousWindow",AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram);
 
         %% Plot Waveforms
         
@@ -524,7 +540,7 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
   
         %% Plot Autocorrelogramme
 
-        Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins));
+        Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
 
         %% Plot Results if turned on
         if strcmp(AutorunConfig.SaveFigures,"on")

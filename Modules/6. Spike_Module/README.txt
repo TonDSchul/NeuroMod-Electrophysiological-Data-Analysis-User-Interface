@@ -3,44 +3,80 @@ NeuroMod Toolbox; Spike Module README
 Author: Tony de Schultz
 ______________________________________________
 
-IMPORTANT: All functions are desinged in a way that you can also use them outside the GUI. You just have to specify the parameters of the app window manually. See AutorunConfig variable in the Autonrun_Config files.
-The following workflows stem from the GUI. What is used outisde the GUI is specified. Also see Atourun Module to see use outside of GUI-
+This Module contains app windows and functions for:
+1. Internal spike detection using thresholding. 
+2. Apply or load spike sorting of this internal spike detection with the Wave_Clus 3 MATLAB Toolbox from https://github.com/csn-le/wave_clus.
+3. Save Raw data for Kilosort and load Kilosort results.
+4. All spike analysis functions and windows (also for event spike analysis). 
 
-IMPORTANT: All spike data is represented as a 1xnspikes vector. There is a vector for spike time points, spike positions, spike cluster and so on.
+Internal spike detection and Kilosort spike data are mutually exclusive - you can only have one at a time. The representation in the Data.Spikes field are the same for Kilosort and internal spikes (same field names, same variable dimensions...). Kilosort and internal spike analysis (for event and continuous data) have different app windows - this is a left over from earlier versions and will be addressed in future by only having a single window.
+Functions of Wave_Clus 3 remain unchanged. Only a compatiblity function is used called Spike_Module_Internal_Spike_Sorting.m
+
+IMPORTANT: 
+When loading Kilosort or Wave_Clus spike sorting data, always make sure, that the current dataset of the GUI is the same one as Kilosort or Wave_Clus analysed!
+
+*****************
+
+All about Kilosort data save folder structure:
+
+Kilosort output data is loaded through a costume function calling the ksDriftmap.m function from the spike repository of the Cortex Lab on Github at https://github.com/cortex-lab/spikes. 
+
+When saving data for Kilosort, the 'Save for Kilosort' window will automatically suggest a folder and name to save it as. This is the standard file structure the autorun config functions use too and creates a .dat file in 'Path_to_your_recording/Kilosort'
+
+When you load this previously saved file into Kilosort and analyse the data, at standard, Kilosort output data is saved in a folder called kilosort4 within the Kilosort folder created before (Kilosort/kilosort4, or in other words in the folder of the file you loaded into Kilosort). Don't change this name and structure, otherwise auto detections of Kilosort data can have trouble and you have to select a folders manually and the workflow wont be as smooth.
+ 
+This means, all your Kilosort data is (supposed to be) saved in a file named Kilosort/kilosort4, that is located in the path of the recording you are analysing. When opening the 'Load from Kilosort' window, Kilosort data is auto searched in that location too, so you just have to click on load (and in the autorun functions, so you dont have to do any additional steps there). 
+
+When saving data for Kilosort, along with the .dat file a .mat file is saved that holds the scaling factor used to convert your recoding data into int16 or int32 which Kilosort requires. When you load Kilosort output files, this scaling factor is auto searched in the directory 'Path_to_your_recording/Kilosort' and applied to your data, so that spikes amplitudes are converted back from integers into mV.
+
+IMPORTANT: If you use Kilosort 3, this same things hold true, except that the folder the kilosort output is saved in has to be named 'kilosort3', making the directory 'Path_to_your_recording/Kilosort/kilosort3'
+
+*****************
+
+All about Internal spike data save folder structure:
+
+For internal spike detection and spike sorting with Wave_clus 3 no additional software is required and it can all be done in Neuromod. 
+
+To create a new spike sorting, you first have to extract spike data with one of the thresholding techniques. Then spike times are saved in a .mat file for Wave_clus to take over, load that file and perform the actual spike sorting. Spike times and spike sorting results are saved in the standard directory: 'Path_to_your_recording/Wave_Clus'. For smooth operation of auto detection functions and autorun functions that  load results without requiring you to manually select a folder, keep that folder structure!
+
+When you extract the same raw data again in the GUI, you dont have to perform spike detection again to get your spike data. All you have to do is click on 'Load Existing Spike Sorting' and spike data along with spike sorting data is loaded! It auto-searches the directory 'Path_to_your_recording/Wave_Clus' for data!
+
+Or save the GUI data with the spike data as part of the dataset and load it again, then you dont have to do anything.
+
+
+*****************
+
+General Remarks:
+
+Each folder in this module contains one (or more) app windows for the respective functionality as well as a folder called "Functions" with all main functions necessary for this module.
+Each analysis the user can pick in this module is made out of an app window that is called in the main window when the user clicks in RUN of this module. 
+NOTE: Some functionalities for running the app windows require utility and organize functions from the "1. Main_Window_Functions" folder.
+
+All necessary functions for preprocessing and computing/plotting the static spectrum are designed in a way that you can also use them outside the GUI. You just have to specify the parameters of the app window manually. See AutorunConfig variable in the Autonrun_Config files.
+The following workflows stem from the GUI. What is used outside the GUI is specified. The autorun functionality involves all aspects of the Toolbox possible and feasible to do outside of the GUI. Refer to those functions to get into more detail.
+
+TIP:
+All spike data is represented as a 1 x nspikes vector. There is a vector for spike time points, spike positions, spike cluster and so on.
 Selecting parts of the spike data (i.e. just of a specific cluster) can be easily achieved with logical indexing -- i.e. ClusterSpikes = Spikes.CluserPosition == 1 
 Waveforms for each spike in a nspike x ntimewaveform matrix is extracted when spike indicies are loaded/extracted.
 (When computing average waveforms over channel, a nchannel x nspikes x ntimewaveform is extracted. No perma-save or instan computation since it takes longer and takes a lot of memory) 
 
-*Important*: This code currently only works for Kilosort 4 and 3! It takes the results in the oupput data folder Kilosort creates after finishing spike sorting.
-*Important*: app.Data.KilososortData and app.Data.Spikes have to be always part of the dataset, but empty when not loaded
-*Important* : Only one spike dataset is allowed to exist at once. So if internal spikes are loaded, app.Data.KilosortData has to set to be empty and vise versa.
 
 Note: Some functions are used across all windows. They dont have continous or event in their name.
 
-This Module contains app windows and functions for:
-1. Internal spike detection using thresholding, 
-2. Apply or load spike sorting of this internal spike detection with the Wave_Clus Toolbox
-3. Save Raw data for Kilosort and load Kilsoort results.
-4. All spike analysis functions and windows. 
-
-Internally found spike data can be clustered/sorted with the Wave_Clus Toolbox from https://github.com/csn-le/wave_clus
-Functions of this toolbox remain unchanged. Only a compatiblity function is used called Spike_Module_Internal_Spike_Sorting.m
-
-Data structure (app.Data) contains two fields that handle spike data, dependent on whether the data comes from the internal thresholding spike detection or from Kilosort. The field handling internal spike data is saved as app.Data.Spikes.
-Since Kilosort analysis yields more data than the internal thresholding, like spike clustering, it is handled in a different field calles app.Data.KilosortData.
-Both fields (app.Data.Spikes and app.Data.KilosortData) contain different fields, like soike times and spike channel. 
-Internal spike detection consists of simple thresholding methods (mean-std and median-std) in a channelwise fashion. 
+*****************
 
 Workflow for all spike extraction, spike loading or saving only contains a single function without necessary support functions.
+
 Workflow for Spike Analysis:
 
-Continous and Event Spike Analysis have seperate app windows. Each window uses the Spike_Module_Set_Up_Spike_Analysis_Windows to set up app window components.
+Continous and Event Spike Analysis have separate app windows. Each window uses the Spike_Module_Set_Up_Spike_Analysis_Windows to set up app window components.
 
 Workflow for Continous Spike Analysis: 
 1. Continous_Spikes_Prepare_Plots
-2. Either Continous_Kilosort_Spikes_Manage_Analysis_Plots OR Continous_Internal_Spikes_Manage_Analysis_Plots, depending on whether spike data is from kilosort or intnernal spike detection
+2. Either Continous_Kilosort_Spikes_Manage_Analysis_Plots OR Continous_Internal_Spikes_Manage_Analysis_Plots, depending on whether spike data is from kilosort or internal spike detection
 
 Workflow for Event Spike Analysis: 
 1. Event_Spikes_Prepare_Plots
-2. Either Events_Internal_Spikes_Manage_Analysis_Plots OR Events_Kilosort_Spikes_Manage_Analysis_Plots, depending on whether spike data is from kilosort or intnernal spike detection
+2. Either Events_Internal_Spikes_Manage_Analysis_Plots OR Events_Kilosort_Spikes_Manage_Analysis_Plots, depending on whether spike data is from kilosort or internal spike detection
 

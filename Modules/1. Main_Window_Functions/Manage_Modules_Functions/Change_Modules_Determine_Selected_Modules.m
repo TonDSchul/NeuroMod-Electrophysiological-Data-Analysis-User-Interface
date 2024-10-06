@@ -1,5 +1,31 @@
 function [app,Module] = Change_Modules_Determine_Selected_Modules(app,ChangeApp,ModuleOrder,Module)
 
+%________________________________________________________________________________________
+
+%% Function to only select the modules selected in the manage modules window from all module infos saved in All_Module_Items
+% This function is called in the All_Module_Items.m function, takes the
+% structure defined there holding all possible modules and deletes the
+% fields not selected in the manage modules window
+% 
+% loads the standard template for modules saved in
+% GUI_Path/Modules/MISC/Variables/Template_ModuleOrder.mat and saves it as
+% the new default variable in GUI_Path/Modules/MISC/Variables/ModuleOrder.mat
+
+% Inputs:
+% 1. app: app object of the manage mdoules window holding the module data
+% currently set in it and save.
+% 2. ChangeApp: double, 1 to execute, 0 if not
+% 3. ModuleOrder: vector with 4 numbers. Order of modules to use in respect
+% to the original strcuture size with all modules, coming from the
+% All_Module_Items.m function (saved in GUI_Path/Modules/MISC/Variables/ModuleOrder.mat)
+% 4. Module: strcuture holding all module infos 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 if ChangeApp
     
     if isempty(ModuleOrder)

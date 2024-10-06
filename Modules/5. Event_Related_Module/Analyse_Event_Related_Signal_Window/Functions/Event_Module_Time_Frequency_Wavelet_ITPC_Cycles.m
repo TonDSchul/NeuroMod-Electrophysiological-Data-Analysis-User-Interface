@@ -1,8 +1,9 @@
-function [tf,frex] = Event_Module_Time_Frequency_Wavelet_ITPC_Cycles(data,time,BaselineNorm,FreqRange,Range_cycles)
+function [tf,frex] = Event_Module_Time_Frequency_Wavelet_ITPC_Cycles(Data,time,BaselineNorm,FreqRange,Range_cycles)
 
 %________________________________________________________________________________________
 %% Function to calculate time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths to 
 % tackle the time/frequency tradeoff.
+
 % This function is based on the "Complete neural
 % signal processing and analysis: Zero to hero" workshop by Michael Cohen
 % on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
@@ -10,7 +11,7 @@ function [tf,frex] = Event_Module_Time_Frequency_Wavelet_ITPC_Cycles(data,time,B
 % Note: If multiple Channels in input data. mean is calculated. All selected trials are concatonated to a supertrial. Every calculation is done with this
 % supertrial and converted back to the original data format afterwards
 
-% Inputs: 1. data: Format: 3D Matrix with Channel x Trials x Time Points as
+% Inputs: 1. Data: Format: 3D Matrix with Channel x Trials x Time Points as
 %                  dimensions. (Mean over channel when multiple channels) 
 %         3. time: Vector containing time points (in seconds)
 %         4. FreqRange: Frequency range of narrwoband filter [min frequ, max frequ, steps from min to max freq] in Hz
@@ -34,26 +35,30 @@ function [tf,frex] = Event_Module_Time_Frequency_Wavelet_ITPC_Cycles(data,time,B
 
 %% Transform Data in Correct Format and Initiate Variables
 
-h = waitbar(0, 'Calculating Time Frequency Power...', 'Name','Calculating Time Frequency Power...');
-
-if size(data,1)>1
-    data = mean(data,1);
+if ~isa(Data, 'double')
+    Data = double(Data);
 end
 
-data = squeeze(data);
+h = waitbar(0, 'Calculating Time Frequency Power...', 'Name','Calculating Time Frequency Power...');
 
-if size(data,2) > 1
-    data = permute(data, [2 1]);
+if size(Data,1)>1
+    Data = mean(Data,1);
+end
+
+Data = squeeze(Data);
+
+if size(Data,2) > 1
+    Data = permute(Data, [2 1]);
 end
 
 % baseline time window
 baseline_time = [ -0.05 0];
 
 %% ERP
-erp = mean(data,2);
+erp = mean(Data,2);
 
 %% Non Phase Locked Signal (Signal-ERP)
-nonphaselocked = data - repmat(erp,1,size(data,2)); %% Substract ERP from Signal to get non-ERP residual
+nonphaselocked = Data - repmat(erp,1,size(Data,2)); %% Substract ERP from Signal to get non-ERP residual
 
 %% Initializing
 min_freqcycle =  FreqRange(1);
@@ -70,7 +75,7 @@ dataXcycle = {};
 
 % initialize output time-frequency data
 %First 2 = Total and non phase locked; Second 2 = Power and ITPC
-tf = zeros(2,length(frex),size(data,1),2);
+tf = zeros(2,length(frex),size(Data,1),2);
 
 % notice: defining cycles as a vector for all frequencies
 scycle = logspace(log10(Range_cycles(1)),log10(Range_cycles(end)),num_frexcycle) ./ (2*pi*frex);
@@ -79,12 +84,12 @@ half_wavecycle = floor(length(wavtimecycle)/2);
   
 % FFT parameters
 nWavecycle = length(wavtimecycle);
-nDatacycle = size(data,1) * size(data,2);
+nDatacycle = size(Data,1) * size(Data,2);
 nConvcycle = nWavecycle + nDatacycle - 1;
 
 %% now compute the FFT of all trials concatenated (Supertrial)
 
-dataXcycle{1} = fft(reshape(data,1,[]),nConvcycle); % total 
+dataXcycle{1} = fft(reshape(Data,1,[]),nConvcycle); % total 
 dataXcycle{2} = fft(reshape(nonphaselocked,1,[]),nConvcycle); % induced (non-phase locked)
 
 fraction = 0.05;
@@ -108,12 +113,12 @@ for fi=1:length(frex)
         ascycle = ascycle(half_wavecycle+1:end-half_wavecycle);
         
         % and reshape back to time X trials
-        ascycle = reshape( ascycle, size(data,1), size(data,2) );
+        ascycle = reshape( ascycle, size(Data,1), size(Data,2) );
         
         % compute power and average over trials
-        if size(data,2) > 1
+        if size(Data,2) > 1
             tf(i,fi,:,1) = mean( abs(ascycle).^2 ,2);
-        elseif size(data,2) == 1
+        elseif size(Data,2) == 1
             tf(i,fi,:,1) = abs(ascycle).^2;
         end
 

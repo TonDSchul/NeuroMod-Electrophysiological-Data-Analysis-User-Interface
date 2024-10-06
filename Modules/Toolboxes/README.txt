@@ -4,11 +4,17 @@ Author: Tony de Schultz
 ______________________________________________
 
 This folder contains the files used from other toolboxes. This includes the 'fileio', 'perproc' and 'private' folder from fieldtrip, the complete spike repository from the cortex lab GitHub page and the complete Open Ephys analysis tool.
-Additionally it contains the Wave_clus toolbox from Github
+Additionally it contains the Wave_clus 3 toolbox from Github
 
 Original files from fieldtrip, Wave_clus and the Open Ephys tools are unmodified. However there are functions calling and managing these toolboxes, which might not be compatible with future versions of these toolboxes. 
 
-(Note: They are save in the respective module, not here)
+License files of thos toolboxes are saved in 'GUI_Path/Modules/MISC/LICENSES'.
+
+(Note: Functions are save in their respective module folder, not here)
+
+*****************
+
+General Remarks:
 
 Some functions of the spike repository from the cortex lab GitHub page are modified to fit the purpose of this GUI and are save in 4. Modified.
 

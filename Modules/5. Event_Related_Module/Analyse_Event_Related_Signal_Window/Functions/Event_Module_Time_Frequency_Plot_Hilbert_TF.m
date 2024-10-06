@@ -1,7 +1,10 @@
 function Event_Module_Time_Frequency_Plot_Hilbert_TF (tf,frex,time,costumfrex,OneTrial,Figure,BaselineNormalize,TFType,Type)
-%% ATTENTION: Not working fully yet!
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using filter hilbert transformation
+
+%***********************
+%% work in progress, not implemented yet!!!!!!!!!!!!
+%***********************
 
 % Inputs: 
 % 1. tf: 4D matrix with result of wavelet TF analysis (from Event_Module_Time_Frequency_Wavelet_ITPC_Cycles function)

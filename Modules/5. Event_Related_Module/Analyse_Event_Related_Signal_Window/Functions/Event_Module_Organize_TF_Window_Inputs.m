@@ -1,7 +1,7 @@
 function [DataChannelRange,DataChannelSelected,EventNrRange,CSD,TF] = Event_Module_Organize_TF_Window_Inputs(Data,Type,ChannelSelectionDropDown,EventNumberSelectionEditField,FrequencyRangeminmaxstepsEditField,CycleWidthfromto23EditField,FilterWidthHzminmaxstepsEditField,FactorFilterOrderChangesforeachFrequEditField)
 
 %________________________________________________________________________________________
-%% Function to capture all inputs for the time frequency power calculations and organize them to calculate and plot
+%% Function to capture all inputs for the time frequency power calculations and organize them to calculate and plot later
 
 % Called when clicking on Time Frequency Power button in event related signal
 % analysis window 
@@ -43,10 +43,10 @@ function [DataChannelRange,DataChannelSelected,EventNrRange,CSD,TF] = Event_Modu
 % 4. CSD: structure holding parameters for CSD. Of course it is set to
 % empty bc here ionly TF is computed. 
 % 5. TF: structure holding parameters for TF analysis. With fields:
-%TF.Range_cycles
-%TF.FreqRange
-%TF.FilterRange
-%TF.FilterOrder -- all as double
+%TF.Range_cycles: 1x2 double [from,to]
+%TF.FreqRange: 1x3 double [from,steps,to]
+%TF.FilterRange: 1x2 double [from,to]
+%TF.FilterOrder 1x1 double
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -1,5 +1,9 @@
 function RUN_Event_Data_Module(app,ModuleFunctionName)
 
+%% This function is executed when the user pressed the RUN button of the Event Data Module
+% It opens the windows of this module depending on the selection the user
+% made in the module field to the right of the RUN button
+
 if strcmp(ModuleFunctionName,"Extract Events and Data")
     Extract_Events_Window(app);
 elseif strcmp(ModuleFunctionName,"Preprocessing")

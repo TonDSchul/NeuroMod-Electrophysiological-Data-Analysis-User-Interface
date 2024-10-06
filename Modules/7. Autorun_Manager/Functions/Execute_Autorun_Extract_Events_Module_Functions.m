@@ -655,7 +655,7 @@ if strcmp(FunctionOrder,'Event_Unit_Analysis')
         end
         
         if Error == 0
-            [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.EventUnitAnalysis.UnitsPlot1,AutorunConfig.EventUnitAnalysis.UnitsPlot2,AutorunConfig.EventUnitAnalysis.UnitsPlot3,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot2,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot3,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,UIAxes_7,UIAxes_8,UIAxes_9,"StartUp","EventWindow");
+            [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel,AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.EventUnitAnalysis.UnitsPlot1,AutorunConfig.EventUnitAnalysis.UnitsPlot2,AutorunConfig.EventUnitAnalysis.UnitsPlot3,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot2,AutorunConfig.EventUnitAnalysis.NumberWaveformsPlot3,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,UIAxes_7,UIAxes_8,UIAxes_9,"StartUp","EventWindow",AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram);
     
             %% Plot Waveforms
             
@@ -667,7 +667,7 @@ if strcmp(FunctionOrder,'Event_Unit_Analysis')
       
             %% Plot Autocorrelogramme
     
-            Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.EventUnitAnalysis.NumBins));
+            Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.EventUnitAnalysis.NumBins),str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
     
             %% Plot Results if turned on
             if strcmp(AutorunConfig.SaveFigures,"on")

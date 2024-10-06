@@ -2,10 +2,77 @@ This folder contains the following functions with respective Header:
 
  ###################################################### 
 
+File: Preprocess_ApplyStimArtefactRejection.m
+%________________________________________________________________________________________
+
+%% Function apply stimulation artefact rejection (interpolation) to the dataset
+% This function is called in the Preprocess_Module_Apply_Pipeline.m
+% function when the user added artefact rejection to the preprocessing
+% pipeline and executes the pipeline. It interpolates all data points
+% around event indicie of a selected input event channel holding time
+% points of the stimulation
+
+% Input:
+% 1. Data: Either Data.Raw or Data.Preprocessed data, depending on whether its the
+% fist preprocessing step or not. If yes, pass raw data, otherwise
+% preprocessed data
+% 2. Info: Data.Info structure of main dataset
+% 3. Events: Data.Events field of main dataset; 1 x number events cell array with each cell containing the
+% indicies of extracted events. 
+% 4. PreproInfo: strcuture holding the infos about added preprocessing
+% steps (paramater to apply), comes from
+% Preprocess_Module_Construct_Pipeline.m when adding a step to the pipeline
+
+% Output: 
+% 1. Data: Either corrected Data.Raw or correctr Data.Preprocessed data from the main dataset, depending on whether its the first preprocessing step . 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Preprocess_Extract_and_Plot_Stimulation_Artefact.m
+%________________________________________________________________________________________
+
+%% Function to plot artefact time range around the event selected for the Stimulation Artefact Rejection window
+% This function is called in the Stimulation Artefact Rejection window
+% started when the Stimulation Artefact Rejection button is pressed in the
+% preprocessing window. It takes the eventchannel selected in the window,
+% extracts data around events saved for this channel and plots them.
+
+% Input:
+% 1. Data: main window data structure
+% 2. TimeAroundEventsEditField: char, time around events to extract data from. Two numbers split by a comma, i.e. -0.005,0005
+% 3. EventChannelforStimulationDropDown: Name of the event channel from
+% which event indicies are taken. Identical to names in Data.Info.EventChannelNames
+% 4. EventstoPlotDropDown: char, which event ttl's to plot from the selected
+% event channel. Either 'Mean over all Events' OR the number of the
+% event,i.e. '1' for the first ttl
+% 5. SpacingSlider: double, spacing between channel for plotting
+% 6. Figure: figure object handle to plot data (in seconds)
+
+% Output: 
+% 1. ArtefactRelatedData: nchannel x ntime x nevents matrix containg the data that is plotted. 
+% 2. StimArtefactInfo: strcuture holding info necessray to apply artefact
+% rejection to the dataset when the user adds it to the preprocessing
+% pipeline. Fields are: StimArtefactInfo.SelectedEventChannelName (char)
+% and StimArtefactInfo.TimeAroundEvents (1 x 2 double in )
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Preprocess_Module_Apply_Pipeline.m
 %________________________________________________________________________________________
 
-%% Function to Preprocess Raw Data 
+%% Function to Preprocess Data 
 % This function uses the fieldtrip tool box for the preprocessing steps
 % involving filtering data (lowpass,highpass,bandstop,narrowband and median filter)
 % Fieldtrip offical website: https://www.fieldtriptoolbox.org/
@@ -98,6 +165,13 @@ File: Preprocess_Module_Construct_Pipeline.m
 % 9. FilterOrder: number as char specifying the filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
 % 10. DownsampleFactor: number as char, New downsampled sampling rate in Hz; input as char. This only is required when a filter is selected as the methods field.
 % 11. SampleRate: Sampling Rate in Hz as double
+% 12. ArtefactRejectionInfo: structure holding info about stimulation
+% artefact rejection. Required fields: TimeAroundEvents: 1x2 double with
+% time around event to reject in samples (both numbers positive, i.e.
+% 150,150) and SelectedEventChannelName: Name of the event channel to
+% take the artefact indicie from. Comes from Data.Info.EventChannelNames
+% IMPORTANT: if no artefact rejection, dont pass this variable or set it
+% empty
 
 % Output: 
 % 1. Info (app.Info, not part of the original main window dataset!). Holds
@@ -132,6 +206,38 @@ File: Preprocess_Module_Delete_Old_Settings.m
 % 4. ChannelDeletion: double array of channels to be deleted
 % 5. TextArea: app object of textarea to show info. Can be empty variable
 % when execute outside of GUI
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Preprocess_Module_Inspect_Filter.m
+%________________________________________________________________________________________
+
+%% Function to inspect filter kernel properties in the preprocessing window
+% This function is called in the preprocessing window when the user presses
+% the Inspect Filter button. It gets called in the
+% Preprocess_Module_Apply_Pipeline.m function
+
+% Input:
+% 1. Data: data structure from main window dataset
+% 2. PreProInfo: structure holding parameter for preprocessing steps
+% applied to pipeline, comes from Preprocess_Module_Construct_Pipeline.m
+% 3. PreprocessingSteps: string array holding steps added to the pipeline,
+% comes from Preprocess_Module_Inspect_Filter
+% 4. PPSteps: Current preprocessing step executed (comes from Preprocess_Module_Apply_Pipeline)
+% 5. SampleRate: double in Hz
+% 6. A: First coefficient from selected filter, double, comes from the fieldtrip
+% filtering functions
+% 7. B: Second coefficient from selected filter, double, comes from the fieldtrip
+% filtering funcitons
+% 8. Cutoff: double, cutoff frequency for filter in Hz
+% 9. filterorder: double, selected filter order for filter
+% 10. NonNan: Indicies where data is not nan (neurlynx can have nan in dataset)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -34,6 +34,8 @@ File: Analyse_Main_Window_CSD.m
 % dimensions of plot
 % 10. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 11. PlotAppearance: structure holding information about plot appearances
+% the user can select
 
 % Output:
 % 1. currentClim: global clim - either unchanged from previous csd plot if

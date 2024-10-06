@@ -6,16 +6,13 @@ File: Spike_Module_Load_Kilosort_Data.m
 %________________________________________________________________________________________
 
 %% Function to load .npy and .mat files Kilosort ouputs after finishing the analysis
-% This functions includes and uses function from the npy-matlab github
-% repository available at https://github.com/kwikteam/npy-matlab
-% This functions includes and uses function from the Spike repository on
-% Github from Nick Steinmetz available at https://github.com/cortex-lab/spikes
 
-% Note: Matlab NPY Toolbox and spike-master github project have to be in path (saved within folder Toolboxes of GUI files)
-% Functions used from the Spike repository: 
+% This functions includes and uses function from the Spike repository on
+% Github from Cortex Lab available at https://github.com/cortex-lab/spikes
+
+% Note: NPY files are read using the respective readNPY function from the Open Ephys Analysis Tools from Github. 
+% Functions from the spike-master github page from Cortex Lab where used:
 % ksDriftmap (modified for the purpose of this GUI)
-% Functions used from the npy-matlab repository: 
-% readNPY (original)
 
 % Input:
 % 1. Data = structure containing all data. After loading, field Data.Spikes is added with

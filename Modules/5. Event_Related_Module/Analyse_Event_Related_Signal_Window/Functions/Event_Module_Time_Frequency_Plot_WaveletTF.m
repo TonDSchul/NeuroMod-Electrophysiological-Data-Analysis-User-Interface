@@ -3,6 +3,8 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF 
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths 
 
+% gets inputs from Event_Module_Time_Frequency_Wavelet_ITPC_Cycles.m
+
 % Inputs: 
 % 1. Figure: axes handle to figure to plot in
 % 2. time: time vector as double in seconds
