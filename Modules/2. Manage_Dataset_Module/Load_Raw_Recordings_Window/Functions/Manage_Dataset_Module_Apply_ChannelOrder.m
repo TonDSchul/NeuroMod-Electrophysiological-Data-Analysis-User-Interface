@@ -34,8 +34,11 @@ if ~isempty(ChannelOrder) && length(ChannelOrder) == size(Data.Raw,1)
     Data.Raw = Data.Raw(ChannelOrder, :); % reorder 
    
     Data.Info.Channelorder = ChannelOrder;
+    
+    disp("Costum Channel Order loaded.")
 
     clear('tempMatrix');
+    
 elseif isnan(ChannelOrder(1))
     disp("No Channel Order selected.")
 else

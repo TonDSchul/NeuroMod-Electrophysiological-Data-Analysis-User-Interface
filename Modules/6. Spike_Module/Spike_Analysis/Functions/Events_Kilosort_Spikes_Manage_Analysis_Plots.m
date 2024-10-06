@@ -152,9 +152,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
         CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr(1):PlotInfo.EventNr(2)),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
     end
 
-    if isempty(TempData) % if not preprocessed
-       Data = [];
-    else
+    if ~isempty(TempData) % if not preprocessed
         Data = TempData; % if preprocessed
     end
 

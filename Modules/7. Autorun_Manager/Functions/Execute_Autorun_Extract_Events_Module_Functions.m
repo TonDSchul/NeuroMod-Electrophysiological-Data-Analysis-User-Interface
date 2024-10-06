@@ -67,6 +67,12 @@ if isfield(Data,'Events')
                 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = Data.Info.EventChannelNames{1};
             end
         
+            if strcmp(AutorunConfig.ExtractEventRelatedDataModule.DataSource,"Preprocessed") && isempty(Data.Preprocessed)
+                msgbox("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extrac event related from raw data. Skipping step.")
+                disp("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extrac event related from raw data. Skipping step.")
+                return;
+            end
+
             [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse,AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent,AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent,AutorunConfig.ExtractEventRelatedDataModule.DataSource);
             
             if isfield(Data,'EventRelatedData') 
@@ -464,6 +470,13 @@ if isfield(Data,'Events')
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
                             
+                            % Dont know why thats necessary, but it is,
+                            % just when units plotted 
+                            if UnitIterations > 1
+                                yyaxis(UIAxes_3, 'left');
+                                UIAxes_3.YDir = 'reverse';
+                            end
+
                             if UnitIterations > 1
                                 %% Plot Results if turned on
                                 if strcmp(AutorunConfig.SaveFigures,"on")
