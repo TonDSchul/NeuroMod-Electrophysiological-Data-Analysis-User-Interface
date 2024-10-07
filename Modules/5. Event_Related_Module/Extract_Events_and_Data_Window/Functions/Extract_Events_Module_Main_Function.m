@@ -262,11 +262,10 @@ elseif strcmp(RecordingType,"Open Ephys")
     % Search for those events and delete
     for nevents = 1:length(Data.Events)
         if sum(Data.Events{nevents}>length(Data.Time))
-            msgbox(strcat("Extracted event data contains ",num2str(sum(Data.Events{nevents}>length(Data.Time)))," samples outside of time range which are deleted."))
+            msgbox(strcat("Extracted event data for selected channel ", num2str(nevents)," contains ",num2str(sum(Data.Events{nevents}>length(Data.Time)))," samples outside of time range which are deleted."))
             Data.Events{nevents}(Data.Events{nevents}>length(Data.Time)) = [];
         end
     end
-
 
 elseif strcmp(RecordingType,"Neuralynx")
 
@@ -296,19 +295,31 @@ elseif strcmp(RecordingType,"Neuralynx")
     Eventsamples(selectedfielytypeindicies==0) = [];
 
     if ~isempty(Eventsamples) 
-        for i = 1:length(Eventsamples)
-            Data.Events{1}(i) = double(Eventsamples(i));
+        
+        if sum(Eventsamples>length(Data.Time))>0
+            msgbox("Warning: Events outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
+            Eventsamples(Eventsamples>length(Data.Time)) = [];
+            if isempty(Eventsamples)
+                msgbox("Warning: All event indicies had to be deleted.");
+                Data.Events = [];
+            end
         end
-        % Event 1 always sample 1
-        if Data.Events{1}(1) == 1
-            Data.Events{1}(1) = [];
-            msgbox("Warning: First sample is always 1 and gets deleted.");
-        end
-        Zerosamples = Data.Events{1} == 0;
 
-        if sum(Zerosamples) > 0
-            Data.Events{1}(Zerosamples==1) = [];
-            msgbox("Warning: Indice of zero detected and deleted.")
+        if ~isempty(Eventsamples)
+            for i = 1:length(Eventsamples)
+                Data.Events{1}(i) = double(Eventsamples(i));
+            end
+            % Event 1 always sample 1
+            if Data.Events{1}(1) == 1
+                Data.Events{1}(1) = [];
+                msgbox("Warning: First sample is always 1 and gets deleted.");
+            end
+            Zerosamples = Data.Events{1} == 0;
+    
+            if sum(Zerosamples) > 0
+                Data.Events{1}(Zerosamples==1) = [];
+                msgbox("Warning: Indice of zero detected and deleted.")
+            end
         end
     else
         Data.Events = [];

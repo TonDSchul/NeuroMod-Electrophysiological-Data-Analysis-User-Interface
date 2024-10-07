@@ -95,7 +95,11 @@ if strcmp(WhatToDo,"Get Information")
     end
     if ~isempty(EventstoDeltete)
         Events(EventstoDeltete) = [];
-        Info.AvailabelNodes(EventstoDeltete) = [];
+        if isfield(Info,'AvailabelNodes')
+            Info.AvailabelNodes(EventstoDeltete) = [];
+        else
+            disp("No Events found");
+        end
     end
 end
 

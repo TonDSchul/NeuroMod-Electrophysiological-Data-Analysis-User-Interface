@@ -222,21 +222,34 @@ end
 % Analyse how many input event channel exist
 if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")  
     % get strings of channel 
-    for i = 1:length(app.EventInfo)
-        if isfield(app.EventInfo,'DIChannel')
-            EventChannelName = 'Digital Inputs';
-            NumChannel = length(app.EventInfo.DIChannel);
-        elseif isfield(app.EventInfo,'ADCChannel')
-            EventChannelName = 'Analog Input';
-            NumChannel = length(app.EventInfo.ADCChannel);
-        elseif isfield(app.EventInfo,'AUXChannel')
-            EventChannelName = 'AUX Inputs';
-            NumChannel = length(app.EventInfo.AUXChannel);
-        elseif isfield(app.EventInfo,'DINChannel')
-            EventChannelName = 'DIN Inputs';
-            NumChannel = length(app.EventInfo.DINChannel);
-        end
+    app.FileTypeDropDown.Items = {}; 
+    NumIter = 1;
+    % for i = 1:length(app.EventInfo)
+    if isfield(app.EventInfo,'DIChannel')
+        EventChannelName = 'Digital Inputs';
+        NumChannel = length(app.EventInfo.DIChannel);
+        app.FileTypeDropDown.Items{NumIter} = EventChannelName;
+        NumIter = NumIter+1;
     end
+    if isfield(app.EventInfo,'ADCChannel')
+        EventChannelName = 'Analog Input';
+        NumChannel = length(app.EventInfo.ADCChannel);
+        app.FileTypeDropDown.Items{NumIter} = EventChannelName;
+        NumIter = NumIter+1;
+    end
+    if isfield(app.EventInfo,'AUXChannel')
+        EventChannelName = 'AUX Inputs';
+        NumChannel = length(app.EventInfo.AUXChannel);
+        app.FileTypeDropDown.Items{NumIter} = EventChannelName;
+        NumIter = NumIter+1;
+    end
+    if isfield(app.EventInfo,'DINChannel')
+        EventChannelName = 'DIN Inputs';
+        NumChannel = length(app.EventInfo.DINChannel);
+        app.FileTypeDropDown.Items{NumIter} = EventChannelName;
+        NumIter = NumIter+1;
+    end
+    % end
 
     ChannelSelctionToShow = [];
     for i = 1:NumChannel
@@ -246,6 +259,7 @@ if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,
             ChannelSelctionToShow = num2str(i);
         end
     end
+
 elseif strcmp(Data.Info.RecordingType,"Open Ephys")
     if ~isempty(EventInfo)
         NumChannel = length(unique(EventInfo{1}.line));
