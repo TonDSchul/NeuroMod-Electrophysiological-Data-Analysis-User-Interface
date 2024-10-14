@@ -29,25 +29,25 @@ function [app] = Organize_Jump_in_Time(app,Direction,TimeLimit,TimeRange,SampleR
 if strcmp(Direction,"Forward")
    
     %% Add Sample Number from Timespan showm to update what data plot shows
-    if app.sCheckBox_4.Value == 1 
+    if strcmp(app.TimeSpanControlDropDown.Value,'0.01s') 
         if app.CurrentTimePoints+(round(0.01*SampleRate))+TimeRange <= TimeLimit
             app.CurrentTimePoints = app.CurrentTimePoints+round(0.01*SampleRate);
         elseif app.CurrentTimePoints+(round(0.01*SampleRate))+TimeRange > TimeLimit
             app.CurrentTimePoints = TimeLimit-(round(0.01*SampleRate));
         end
-    elseif app.sCheckBox.Value == 1
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'0.1s') 
         if app.CurrentTimePoints+(round(0.1*SampleRate))+TimeRange <= TimeLimit
             app.CurrentTimePoints = app.CurrentTimePoints+round(0.1*SampleRate);
         elseif app.CurrentTimePoints+(round(0.1*SampleRate))+TimeRange > TimeLimit
             app.CurrentTimePoints = TimeLimit-(round(0.1*SampleRate));
         end
-    elseif app.sCheckBox_2.Value == 1
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'0.5s') 
         if app.CurrentTimePoints+(round(0.5*SampleRate))+TimeRange <= TimeLimit
             app.CurrentTimePoints = app.CurrentTimePoints+round(0.5*SampleRate);
         elseif app.CurrentTimePoints+(round(0.5*SampleRate))+TimeRange > TimeLimit
             app.CurrentTimePoints = TimeLimit-(round(0.5*SampleRate));
         end
-    elseif app.sCheckBox_3.Value == 1
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'1s') 
         if app.CurrentTimePoints+(round(1*SampleRate))+TimeRange <= TimeLimit
             app.CurrentTimePoints = app.CurrentTimePoints+round(1*SampleRate);
         elseif app.CurrentTimePoints+(round(1*SampleRate))+TimeRange > TimeLimit
@@ -56,26 +56,26 @@ if strcmp(Direction,"Forward")
     end
 
 elseif strcmp(Direction,"Backwards")
-    if app.sCheckBox_4.Value == 1
+    if strcmp(app.TimeSpanControlDropDown.Value,'0.01s') 
         if app.CurrentTimePoints-round(0.01*SampleRate) >= 1
             app.CurrentTimePoints = app.CurrentTimePoints-round(0.01*SampleRate);
         elseif app.CurrentTimePoints-round(0.01*SampleRate) < 1
             app.CurrentTimePoints = 1;
         end
 
-    elseif app.sCheckBox.Value == 1
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'0.1s') 
         if app.CurrentTimePoints-round(0.1*SampleRate) >= 1
             app.CurrentTimePoints = app.CurrentTimePoints-round(0.1*SampleRate);
         elseif app.CurrentTimePoints-round(0.1*SampleRate) < 1
             app.CurrentTimePoints = 1;
         end
-    elseif app.sCheckBox_2.Value == 1
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'0.5s') 
         if app.CurrentTimePoints-round(0.5*SampleRate) >= 1
             app.CurrentTimePoints = app.CurrentTimePoints-round(0.5*SampleRate);
         elseif app.CurrentTimePoints-round(0.5*SampleRate) < 1
             app.CurrentTimePoints = 1;
         end
-    elseif app.sCheckBox_3.Value == 1
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'1s') 
         if app.CurrentTimePoints-round(1*SampleRate) >= 1
             app.CurrentTimePoints = app.CurrentTimePoints-round(1*SampleRate);
         elseif app.CurrentTimePoints-round(1*SampleRate) < 1

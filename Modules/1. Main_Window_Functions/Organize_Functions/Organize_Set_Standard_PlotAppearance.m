@@ -28,7 +28,7 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     PlotAppearance.MainWindow.Data.Title.Preprocessed = "Preprocessed Data";
     PlotAppearance.MainWindow.Data.MainXLabel = "";
     PlotAppearance.MainWindow.Data.MainYLabel = "";
-    PlotAppearance.MainWindow.Data.MainFontSize = 10;
+    PlotAppearance.MainWindow.Data.MainFontSize = 12;
     % Colors
     PlotAppearance.MainWindow.Data.Color.MainSpikes = [1,0,0]; % red
     PlotAppearance.MainWindow.Data.Color.MainEvents = [0,0,0]; % black
@@ -46,7 +46,7 @@ if strcmp(Type,"MainTimePlot") || strcmp(Type,"All")
     PlotAppearance.MainWindow.Data.TimeTitle = "";
     PlotAppearance.MainWindow.Data.TimeXLabel = "Time [s]";
     PlotAppearance.MainWindow.Data.TimeYLabel = "";
-    PlotAppearance.MainWindow.Data.TimeFontSize = 10;
+    PlotAppearance.MainWindow.Data.TimeFontSize = 12;
     
     % Colors
     PlotAppearance.MainWindow.Data.Color.TimeEvents = [0,0,0]; % black
@@ -64,7 +64,7 @@ if strcmp(Type,"SpectrumPlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.SpectrumWindow.Data.TimeXLabel = "Frequency [Hz]";
     PlotAppearance.SpectrumWindow.Data.TimeYLabel = "Power/Frequency (dB/Hz)";
-    PlotAppearance.SpectrumWindow.Data.TimeFontSize = 10;
+    PlotAppearance.SpectrumWindow.Data.TimeFontSize = 11;
     
     % LineWidth
     PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth = 1.5; % blue
@@ -79,7 +79,7 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.ERPWindow.SingleERP.XLabel = "Time [s]";
     PlotAppearance.ERPWindow.SingleERP.YLabel = "Signal [mV]";
-    PlotAppearance.ERPWindow.SingleERP.FontSize = 10;
+    PlotAppearance.ERPWindow.SingleERP.FontSize = 11;
     
     % LineWidth
     PlotAppearance.ERPWindow.SingleERP.EventLineWidth = 1; % 
@@ -96,11 +96,11 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.ERPWindow.MultipleERP.XLabel = "Time [s]";
     PlotAppearance.ERPWindow.MultipleERP.YLabel = "";
-    PlotAppearance.ERPWindow.MultipleERP.FontSize = 10;
+    PlotAppearance.ERPWindow.MultipleERP.FontSize = 11;
     
     % LineWidth
-    PlotAppearance.ERPWindow.MultipleERP.MeanLineWidth = 2; % 
-    PlotAppearance.ERPWindow.MultipleERP.TriggerLineWidth = 2; % 
+    PlotAppearance.ERPWindow.MultipleERP.MeanLineWidth = 1; % 
+    PlotAppearance.ERPWindow.MultipleERP.TriggerLineWidth = 1; % 
 
     % Color
     PlotAppearance.ERPWindow.MultipleERP.TriggerColor = [1,0,0]; % red
@@ -113,7 +113,7 @@ if strcmp(Type,"CSDPlot") || strcmp(Type,"All")
     PlotAppearance.CSDWindow.XLabel = "Time [s]";
     PlotAppearance.CSDWindow.YLabel = "Depth [µm]";
     PlotAppearance.CSDWindow.CLabel = "Signal [mV/mm^2]";
-    PlotAppearance.CSDWindow.FontSize = 10;
+    PlotAppearance.CSDWindow.FontSize = 11;
     
     % LineWidth
     PlotAppearance.CSDWindow.TriggerLineWidth = 2; % 
@@ -130,7 +130,7 @@ if strcmp(Type,"TFPlot") || strcmp(Type,"All")
     PlotAppearance.TFWindow.XLabel = "Time [s]";
     PlotAppearance.TFWindow.YLabel = "Frequency [Hz]";
     PlotAppearance.TFWindow.CLabel = "dB Power";
-    PlotAppearance.TFWindow.FontSize = 10;
+    PlotAppearance.TFWindow.FontSize = 11;
     
     % LineWidth
     PlotAppearance.TFWindow.TriggerLineWidth = 2; % 
@@ -147,7 +147,7 @@ if strcmp(Type,"LiveCSDPlot") || strcmp(Type,"All")
     PlotAppearance.LiveCSDWindow.XLabel = "Time [s]";
     PlotAppearance.LiveCSDWindow.YLabel = "Depth [µm]";
     PlotAppearance.LiveCSDWindow.CLabel = "Signal [mV/mm^2]";
-    PlotAppearance.LiveCSDWindow.FontSize = 10;
+    PlotAppearance.LiveCSDWindow.FontSize = 11;
 
     PlotAppearance.LiveCSDWindow.BackgroundColor = [1,1,1]; % white
 end
@@ -157,7 +157,7 @@ if strcmp(Type,"PowerEstimatePlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.LivePowerEstimateWindow.XLabel = "";
     PlotAppearance.LivePowerEstimateWindow.YLabel = "Power Estimate";
-    PlotAppearance.LivePowerEstimateWindow.FontSize = 10;
+    PlotAppearance.LivePowerEstimateWindow.FontSize = 11;
 
     PlotAppearance.LivePowerEstimateWindow.BackgroundColor = [1,1,1]; % white
     PlotAppearance.LivePowerEstimateWindow.BarColor = [0,0,0]; % black
@@ -168,7 +168,7 @@ if strcmp(Type,"LiveSpikeRatePlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.LiveSpikeRateWindow.XLabel = "Time [s]";
     PlotAppearance.LiveSpikeRateWindow.YLabel = "Spike Rate [Hz]";
-    PlotAppearance.LiveSpikeRateWindow.FontSize = 10;
+    PlotAppearance.LiveSpikeRateWindow.FontSize = 11;
 
     PlotAppearance.LiveSpikeRateWindow.BackgroundColor = [1,1,1]; % white
     PlotAppearance.LiveSpikeRateWindow.BarColor = [0,0,0]; % black
@@ -180,7 +180,7 @@ if strcmp(Type,"InternalEventSpikePlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.InternalEventSpikePlot.MainPlotXLabel = "";
     PlotAppearance.InternalEventSpikePlot.MainPlotYLabel = "Depth [µm]";
-    PlotAppearance.InternalEventSpikePlot.MainPlotFontSize = 10;
+    PlotAppearance.InternalEventSpikePlot.MainPlotFontSize = 11;
     % Color
     PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor = [1,1,1]; % white
     PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor = [1,0,0]; % red
@@ -193,14 +193,14 @@ if strcmp(Type,"InternalEventSpikePlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.InternalEventSpikePlot.SRTimePlotXLabel = "Time [s]";
     PlotAppearance.InternalEventSpikePlot.SRTimePlotYLabel = "Spike Rate [Hz]";
-    PlotAppearance.InternalEventSpikePlot.SRTimePlotFontSize = 10;
+    PlotAppearance.InternalEventSpikePlot.SRTimePlotFontSize = 11;
     % Color
     PlotAppearance.InternalEventSpikePlot.SRTimePlotBarColor = [0,0,0]; % black
     PlotAppearance.InternalEventSpikePlot.SRTimePlotBackgroundColor = [1,1,1]; % white
     % Spike rate over channel
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotXLabel = "Spike Rate per";
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotYLabel = "";
-    PlotAppearance.InternalEventSpikePlot.SRChannelPlotFontSize = 10;
+    PlotAppearance.InternalEventSpikePlot.SRChannelPlotFontSize = 11;
     % Color
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor = [0,0,0]; % black
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotBackgroundColor = [1,1,1]; % white

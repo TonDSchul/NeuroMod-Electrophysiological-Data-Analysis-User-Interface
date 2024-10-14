@@ -1,7 +1,7 @@
 function par = set_parameters() 
  
 % LOAD PARAMS 
-par.segments_length = 5;             % length (in minutes) of segments in which the data is cutted (default 5min). 
+par.segments_length = 1;             % length (in minutes) of segments in which the data is cutted (default 5min). 
 par.sr = 35000;                      % sampling rate (in Hz). This parameter will be only used if the data file don't have a sr. 
  
  
@@ -84,5 +84,6 @@ par.permut = 'y';                   % for selection of random 'par.max_spk' spik
 % HISTOGRAM PARAMETERS 
 par.nbins = 100;                    % # of bins for the ISI histograms 
 par.bin_step = 1;                   % percentage number of bins to plot 
+ 
  
  

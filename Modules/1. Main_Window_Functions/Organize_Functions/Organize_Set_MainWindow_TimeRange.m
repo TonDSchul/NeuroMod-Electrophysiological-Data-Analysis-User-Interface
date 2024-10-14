@@ -8,7 +8,7 @@ function Organize_Set_MainWindow_TimeRange(app,CurrentTimeRange,TimeLimit,Operat
 % The amount the time range is changed by is based on the checkboxes of the
 % time control panel
 
-%NOTE: app.sCheckBox are the check box fields in the GUI time control
+%NOTE: app.TimeSpanControlDropDown are the check box fields in the GUI time control
 %specifying the amount of data to plot
 
 % Inputs: 
@@ -31,7 +31,7 @@ function Organize_Set_MainWindow_TimeRange(app,CurrentTimeRange,TimeLimit,Operat
 
 NewTimeRange = [];
 
-if app.sCheckBox.Value == 1
+if strcmp(app.TimeSpanControlDropDown.Value,'0.1s')
     if strcmp(Operation,"Plus")
         if CurrentTimeRange + 0.1 <= TimeLimit(2)
             NewTimeRange = CurrentTimeRange + 0.1;
@@ -41,7 +41,7 @@ if app.sCheckBox.Value == 1
             NewTimeRange = CurrentTimeRange - 0.1;
         end
     end
-elseif app.sCheckBox_2.Value == 1
+elseif strcmp(app.TimeSpanControlDropDown.Value,'0.5s')
     if strcmp(Operation,"Plus")
         if CurrentTimeRange + 0.5 <= TimeLimit(2)
             NewTimeRange = CurrentTimeRange + 0.5;
@@ -51,7 +51,7 @@ elseif app.sCheckBox_2.Value == 1
             NewTimeRange = CurrentTimeRange - 0.5;
         end
     end
-elseif app.sCheckBox_3.Value == 1
+elseif strcmp(app.TimeSpanControlDropDown.Value,'1s')
     if strcmp(Operation,"Plus")
         if CurrentTimeRange + 1 <= TimeLimit(2)
             NewTimeRange = CurrentTimeRange + 1;
@@ -61,7 +61,7 @@ elseif app.sCheckBox_3.Value == 1
             NewTimeRange = CurrentTimeRange - 1;
         end
     end
-elseif app.sCheckBox_4.Value == 1
+elseif strcmp(app.TimeSpanControlDropDown.Value,'0.01s')
     if strcmp(Operation,"Plus")
         if CurrentTimeRange + 0.01 <= TimeLimit(2)
             NewTimeRange = CurrentTimeRange + 0.01;

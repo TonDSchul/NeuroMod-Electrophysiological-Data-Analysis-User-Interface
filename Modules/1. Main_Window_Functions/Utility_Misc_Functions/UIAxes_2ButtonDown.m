@@ -21,7 +21,7 @@ function [app] = UIAxes_2ButtonDown(app, event)
 clickPoint = event.IntersectionPoint;
 
 % Calculate absolute differences between time_value and each element of time_vector
-if isfield(app.Data.Info,'DownsampleFactor') && app.PreprocDataPlotCheckBox.Value == 1
+if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,"Preprocessed Data")
     differences = abs(clickPoint(1) - app.Data.TimeDownsampled);
 else
     differences = abs(clickPoint(1) - app.Data.Time);

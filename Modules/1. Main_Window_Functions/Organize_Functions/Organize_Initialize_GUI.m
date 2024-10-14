@@ -90,10 +90,7 @@ if strcmp(Type,"Initial")
        
     % Disable 0.1 and 1s checkboxes to control time window and activate 0.5s
     % checkbox
-    app.sCheckBox.Value = 0;
-    app.sCheckBox_2.Value = 1;
-    app.sCheckBox_3.Value = 0;
-    app.sCheckBox_4.Value = 0;
+    app.TimeSpanControlDropDown.Value = '0.1s';
     
     % Predefine Variable holding app.Data
     app.Data = [];
@@ -120,15 +117,13 @@ if strcmp(Type,"Initial")
     app.FlagPlotRawData = 1;
     
     % Plot Cheboxes
-    app.RawDataPlotCheckBox.Value = 0;
-    app.PreprocDataPlotCheckBox.Value = 0;
-    app.EventDataCheckBox.Value = 0;
-    app.SpikeDataCheckBox_2.Value = 0;
-    
-    app.RawDataPlotCheckBox.Enable = "off";
-    app.PreprocDataPlotCheckBox.Enable = "off";
-    app.EventDataCheckBox.Enable = "off";
-    app.SpikeDataCheckBox_2.Enable = "off";
+    Placeholder = {};
+    app.DropDown.Items = Placeholder;
+    app.DropDown.Items{1} = 'Raw Data';
+
+    Placeholder = {};
+    app.DropDown_2.Items = Placeholder;
+    app.DropDown_2.Items{1} = 'Non';
 
     app.CurrentPlotData.XData = [];
     app.CurrentPlotData.YData = [];
@@ -147,64 +142,45 @@ elseif strcmp(Type,"Loading")
     % Setting defalut app values after loading
     % Update Time window shown in the top right corner
     
-    if isfield(app.Data,'Raw')
-        app.RawDataPlotCheckBox.Enable = "on";
-        app.RawDataPlotCheckBox.Value = 1;
-        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
-    elseif ~isfield(app.Data,'Raw') && isfield(app.Data,'Preprocessed')
-        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Preprocessed,1)));
-        app.RawDataPlotCheckBox.Enable = "off";
-        app.RawDataPlotCheckBox.Value = 0;
+    if isfield(app.Data,'Raw') && ~isfield(app.Data,'Preprocessed')
+        Placeholder = {};
+        app.DropDown.Items = Placeholder;
+        app.DropDown.Items{1} = 'Raw Data';
+    elseif isfield(app.Data,'Raw') && isfield(app.Data,'Preprocessed')
+        Placeholder = {};
+        app.DropDown.Items = Placeholder;
+        app.DropDown.Items{1} = 'Raw Data';
+        app.DropDown.Items{2} = 'Preprocessed Data';
     end
 
-    if isfield(app.Data,'Preprocessed') && isfield(app.Data.Info,'FilterMethod') 
-        if strcmp(app.Data.Info.FilterMethod,"Low-Pass")
-            app.PreprocDataPlotCheckBox.Enable = "on";
-            app.PreprocDataPlotCheckBox.Value = 0;
-            app.RUNButton_3.Enable = "on";
-        end
+    if isfield(app.Data,'Events')
+        Placeholder = {};
+        app.DropDown_2.Items = Placeholder;
+        app.DropDown_2.Items{1} = 'Non';
+        app.DropDown_2.Items{2} = 'Events';
 
-        if strcmp(app.Data.Info.FilterMethod,"High-Pass")
-            app.PreprocDataPlotCheckBox.Enable = "on";
-            app.PreprocDataPlotCheckBox.Value = 0;
-        end
-    elseif isfield(app.Data,'Preprocessed') && ~isfield(app.Data.Info,'FilterMethod') 
-        app.PreprocDataPlotCheckBox.Enable = "on";
-        app.PreprocDataPlotCheckBox.Value = 0;
-    end    
-
-    if isfield(app.Data, 'Events')
-        app.EventDataCheckBox.Enable = "on";
-        texttoshow = {};
         app.EventChannelDropDown.Enable = "on";
         app.EventChannelDropDown.Items = app.Data.Info.EventChannelNames;
         app.CurrentEventChannel = 1; 
     else
+        Placeholder = {};
+        app.DropDown_2.Items = Placeholder;
+        app.DropDown_2.Items{1} = 'Non';
+
         app.EventChannelDropDown.Enable = "off";
         app.EventChannelDropDown.Items = {};
     end
     if isfield(app.Data, 'Spikes') 
-        app.SpikeDataCheckBox_2.Enable = "on";
-        app.RUNButton_3.Enable = "on";
+        app.DropDown_2.Items{end+1} = 'Spikes';
     end
     
-    if isfield(app.Data,'Raw')
-        channelnr = size(app.Data.Raw,1);
-        app.RawDataPlotCheckBox.Value = 1;
-    elseif ~isfield(app.Data,'Raw') && isfield(app.Data,'Preprocessed')
-        channelnr = size(app.Data.Preprocessed,1);
-        app.PreprocDataPlotCheckBox.Value = 1;
-    end
+    datapointsforstd = round(str2double(app.TimeRangeViewBox.Value(1:end-1)) * app.Data.Info.NativeSamplingRate);
 
-    stdrawdata = double(std(app.Data.Raw,[],'all','omitnan'));
-    if stdrawdata-stdrawdata*2 < 0
-        lowerlimit = 0;
-    else
-        lowerlimit = stdrawdata-stdrawdata*2;
-    end
+    stdrawdata = double(std(app.Data.Raw(:,1:datapointsforstd),[],'all','omitnan'));
+    lowerlimit = 0;
 
-    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*10];
-    app.Slider.Value = stdrawdata*2;
+    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*5];
+    app.Slider.Value = stdrawdata;
 
     app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
     
@@ -214,9 +190,13 @@ elseif strcmp(Type,"Loading")
     ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));
     app.ChannelSelectionEditField.Value = ChannelString;
 
+    channelnr = size(app.Data.Raw,1);
+
     % Pick Colormap based on what the user selected (default = parula)
     app.tempcolorMapset = eval(strcat(app.tempcolorMap,"(channelnr)")); 
     Utility_Show_Info_Loaded_Data(app);
+
+    app.UIAxes.Box = "off";
 
 elseif strcmp(Type,"Extracting")
 
@@ -231,23 +211,23 @@ elseif strcmp(Type,"Extracting")
     app.RUNButton.Enable = "on";
 
     app.CheckSuccesful_Extraction = 0;
-    app.PreprocDataPlotCheckBox.Value = 0;
-    app.EventDataCheckBox.Value = 0;
-    app.SpikeDataCheckBox_2.Value = 0;
-    
-    app.RawDataPlotCheckBox.Enable = "on";
-    app.RawDataPlotCheckBox.Value = 1;
-    
+
+    Placeholder = {};
+    app.DropDown.Items = Placeholder;
+    app.DropDown.Items{1} = 'Raw Data';
+
+    Placeholder = {};
+    app.DropDown_2.Items = Placeholder;
+    app.DropDown_2.Items{1} = 'Non';
+
     app.PowerSpecResults = [];
     
-    app.EventDataCheckBox.Enable = "off";
-    app.SpikeDataCheckBox_2.Enable = "off";
-    app.PreprocDataPlotCheckBox.Enable = "off";
-
     % Pick Colormap based on what the user selected (default = parula)
     app.tempcolorMapset = eval(strcat(app.tempcolorMap,"(size(app.Data.Raw,1))")); % Example colormap: You can use any other colormap
 
     Utility_Show_Info_Loaded_Data(app);
+
+    app.UIAxes.Box = "off";
 
 elseif strcmp(Type,"VariableDefinition")
 
@@ -291,12 +271,11 @@ elseif strcmp(Type,"VariableDefinition")
         app.CheckSuccesful_Extraction = 1;
     end
 
-    stdrawdata = double(std(app.Data.Raw,[],'all','omitnan'));
-    if stdrawdata-stdrawdata*2 < 0
-        lowerlimit = 0;
-    else
-        lowerlimit = stdrawdata-stdrawdata*2;
-    end
+    datapointsforstd = round(str2double(app.TimeRangeViewBox.Value(1:end-1)) * app.Data.Info.NativeSamplingRate);
+
+    stdrawdata = double(std(app.Data.Raw(:,1:datapointsforstd),[],'all','omitnan'));
+    lowerlimit = 0;
+
     app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*10];
     app.Slider.Value = stdrawdata*2;
 
@@ -316,43 +295,65 @@ elseif strcmp(Type,"Preprocessing")
     end
 
     if isfield(app.Data,'Preprocessed')
-        if~isempty(app.Data.Preprocessed)
-            app.PreprocDataPlotCheckBox.Enable = "on";
+        if ~isempty(app.Data.Preprocessed)
+            app.DropDown.Items{2} = 'Preprocessed Data';
+            app.DropDown.Value = 'Raw Data';
         else
-            app.PreprocDataPlotCheckBox.Enable = "off";
-            app.PreprocDataPlotCheckBox.Value = 0;
+            if length(app.DropDown.Items) == 2
+                app.DropDown.Items(2) = [];
+                app.DropDown.Value = 'Raw Data';
+            else
+                app.DropDown.Value = 'Raw Data';
+            end
         end
     else
-        app.PreprocDataPlotCheckBox.Enable = "off";
-        app.PreprocDataPlotCheckBox.Value = 0;
+        if length(app.DropDown.Items) == 2
+            app.DropDown.Items(2) = [];
+            app.DropDown.Value = 'Raw Data';
+        else
+            app.DropDown.Value = 'Raw Data';
+        end
     end
 
     if ~isfield(app.Data,'Events')
-        app.EventDataCheckBox.Enable = "off";
-        app.EventDataCheckBox.Value = 0;
-        Placeholder{1} = ' '; 
-        app.EventChannelDropDown.Items = Placeholder;
-        app.EventChannelDropDown.Enable = "off";
-        app.PlotEvents = "Non";
+        Placeholder = {};
+        app.DropDown_2.Items = Placeholder;
+        app.DropDown_2.Items{1} = 'Non';
+        if isfield(app.Data,'Spikes')
+            app.DropDown_2.Items{2} = 'Spikes';
+        end
     else
-        app.EventDataCheckBox.Value = 0;
-        app.EventChannelDropDown.Enable = "on";
-        app.PlotEvents = "Non";
+        Placeholder = {};
+        app.DropDown_2.Items = Placeholder;
+        app.DropDown_2.Items{1} = 'Non';
+        app.DropDown_2.Items{2} = 'Events';
+        if isfield(app.Data,'Spikes')
+            app.DropDown_2.Items{3} = 'Spikes';
+        end
     end
 
     if ~isfield(app.Data,'Spikes')
-        app.SpikeDataCheckBox_2.Value = 0;
-        app.SpikeDataCheckBox_2.Enable = "off";
-        app.Plotspikes = "Non";
+        Placeholder = {};
+        app.DropDown_2.Items = Placeholder;
+        app.DropDown_2.Items{1} = 'Non';
+        if isfield(app.Data,'Events')
+            app.DropDown_2.Items{2} = 'Events';
+        end
     else
-        app.SpikeDataCheckBox_2.Value = 0;
-        app.SpikeDataCheckBox_2.Enable = "on";
-        app.Plotspikes = "Non";
+        app.DropDown_2.Items = Placeholder;
+        app.DropDown_2.Items{1} = 'Non';
+        if isfield(app.Data,'Events')
+            app.DropDown_2.Items{2} = 'Events';
+            app.DropDown_2.Items{3} = 'Spikes';
+        else
+            app.DropDown_2.Items{2} = 'Spikes';
+        end
+        
     end
 
-    if app.RawDataPlotCheckBox.Value == 1
+    if strcmp(app.DropDown.Value,'Raw Data')
         app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
-    elseif app.PreprocDataPlotCheckBox.Value == 1
+    elseif strcmp(app.DropDown.Value,'Preprocessed Data')
         app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Preprocessed,1)));
     end
 
@@ -362,6 +363,8 @@ elseif strcmp(Type,"Preprocessing")
     app.UIAxes_2.NextPlot = "replace"; 
     plot(app.UIAxes_2,0,0);
     app.UIAxes_2.NextPlot = "add"; 
+
+    app.UIAxes.Box = "off";
 
     %Take care of potentially changed backgroundcolor
     app.UIAxes.Color = app.PlotAppearance.MainWindow.Data.Color.MainBackground;

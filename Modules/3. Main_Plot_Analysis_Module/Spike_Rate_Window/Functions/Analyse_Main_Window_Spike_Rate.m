@@ -126,14 +126,14 @@ xlim(Figure,[1,length(Timeofbins)])
 
 Figure.FontSize = PlotAppearance.LiveSpikeRateWindow.FontSize;
 
-if~isempty(hBar)
-    %previousYLim = max(hBar.YData);
-    previousYLim = ylim(Figure);
-end
-
 if length(hBar)>numbins && ~isempty(hBar) 
     delete(hBar(numbins+1:end));
     hBar = findobj(Figure, 'Type', 'bar', 'Tag', 'Barobject');
+end
+
+if~isempty(hBar)
+    %SpikeYLim = max(hBar.YData);
+    SpikeYLim = ylim(Figure);
 end
 
 if isempty(hBar)
@@ -141,21 +141,29 @@ if isempty(hBar)
     ylabel(Figure,PlotAppearance.LiveSpikeRateWindow.YLabel);
 else
     set(hBar, 'YData', filteredSpikeRate,'FaceColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'EdgeColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'Tag', 'Barobject');
-    if LockYLim == 1
-        % Get the current y-axis limits
-        if previousYLim(2)<max(filteredSpikeRate)
-            ylim(Figure,[0 max(filteredSpikeRate)]);
-        elseif previousYLim(2)>=max(filteredSpikeRate)
-            ylim(Figure,previousYLim);
+    %% Ylim
+    currentYlim(1) = 0;
+    currentYlim(2) = max(filteredSpikeRate);
+    
+    if LockYLim== 1
+        if ~isempty(SpikeYLim)
+            if abs(currentYlim(2)) > abs(SpikeYLim(2))
+                Figure.YLim = currentYlim;
+            else
+                Figure.YLim = SpikeYLim;
+            end
+        else
+            Figure.YLim = currentYlim;
         end
     else
-        ylim(Figure,[0 max(filteredSpikeRate)]);
+        Figure.YLim = currentYlim;
     end
 end
 
 xticks(Figure, 1:length(Timeofbins));
 % Set the x-axis tick labels to the time vector
 xticklabels(Figure, cellstr(num2str(Timeofbins(:), '%.2f')));
+
 
 %% save plotted data in case user wants to save 
 CurrentPlotData.XData = 1:length(filteredSpikeRate);

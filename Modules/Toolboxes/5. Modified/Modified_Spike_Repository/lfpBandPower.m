@@ -53,7 +53,7 @@ for n = 1:nClips
     end
     allPowerEst(n,:,:) = Pxx;
         
-    for f = 1:nF
+    for f = 1:nF %% Always zero here, so its not computed. Its instead computed on the fly in plotLFPpower 
         
         inclF = F>freqBand{f}(1) & F<=freqBand{f}(2);
         allPowerEstByBand(n,:, f) = mean(Pxx(inclF,:));

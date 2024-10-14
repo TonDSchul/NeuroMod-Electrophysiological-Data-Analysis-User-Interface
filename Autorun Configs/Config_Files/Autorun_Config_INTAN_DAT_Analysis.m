@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrder)
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -36,9 +36,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_from_Kilosort","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis"];
-
-%AutorunConfig.FunctionOrder = ["Load_Data","Load_Internal_Spike_Sorting","Continous_Spike_Analysis","Continous_Unit_Analysis","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Event_Unit_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Continous_Unit_Analysis","Event_Spike_Analysis","Event_Unit_Analysis","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Save_Data"];
+AutorunConfig.FunctionOrder = ["Load_Data","Load_Internal_Spike_Sorting","Continous_Spike_Analysis","Continous_Unit_Analysis","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Event_Unit_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Continous_Unit_Analysis","Event_Spike_Analysis","Event_Unit_Analysis","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Save_Data"];
 
 % General Information
 AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";

@@ -65,6 +65,8 @@ if strcmp(WhatToDo,"Clustering")
     disp('Starting Spike Sorting.');
     cd(SpikeSortingPath);
 
+    %% Call wave clus
+
     Do_clustering(strcat(SpikeSortingPath,'\spikes.mat'),'parallel',true,'make_plots',false)
 
     msgbox("Spike Sorting was succesfull.");

@@ -9,7 +9,7 @@ function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands, BandP
 % See companion function lfpBandPower that produces the first two inputs for this.
 
 %%
-dispF = F>dispRange(1) & F<=dispRange(2);
+dispF = F>=dispRange(1) & F<=dispRange(2);
 nC = size(allPowerEst,1); 
 
 if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
@@ -97,11 +97,12 @@ if strcmp(WhattoPlot,"Just Frequency Bands") || strcmp(WhattoPlot,"All")
     for q = 1:length(freqBands)
         inclF = F>freqBands{q}(1) & F<=freqBands{q}(2);
         thisPow = mean(10*log10(allPowerEst(:,inclF)),2);
-        plot(FrequencyBandsFigure,thisPow, (0:nC-1)*10,'LineWidth',2);
+        plot(FrequencyBandsFigure,thisPow, (0:nC-1)*ChannelSpacing,'LineWidth',2);
     end
     set(FrequencyBandsFigure, 'YTick', []);
     set(FrequencyBandsFigure, 'YDir', 'reverse');
-    ylim(FrequencyBandsFigure,[0 nC-1*10])
+    ylim(FrequencyBandsFigure,[0 (nC-1)*ChannelSpacing])
+    xlim(BandPowerFigure,dispRange);
     if strcmp(WhattoPlot,"Just Frequency Bands")
         xlabel(FrequencyBandsFigure,'Depth [µm]')
     else

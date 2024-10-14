@@ -24,7 +24,7 @@ function [ArtefactRelatedData,StimArtefactInfo] = Preprocess_Extract_and_Plot_St
 % 2. StimArtefactInfo: strcuture holding info necessray to apply artefact
 % rejection to the dataset when the user adds it to the preprocessing
 % pipeline. Fields are: StimArtefactInfo.SelectedEventChannelName (char)
-% and SamplesToPlot (1 x 2 double in )
+% and StimArtefactInfo.TimeAroundEvents (1 x 2 double in )
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -40,16 +40,11 @@ commaindicie = find(TimeToPlot == ',');
 TimeToPlotDouble(1) = str2double(TimeToPlot(1:commaindicie(1)-1));
 TimeToPlotDouble(2) = str2double(TimeToPlot(commaindicie(1)+1:end));
 
-ArtefactTimeRange = str2double(strsplit(ArtefactTimeEditField,','))';
-
-StimArtefactInfo.TimeAroundEvents(1) = round(abs(ArtefactTimeRange(1))*Data.Info.NativeSamplingRate);
-StimArtefactInfo.TimeAroundEvents(2) = round(abs(ArtefactTimeRange(2))*Data.Info.NativeSamplingRate);
-
-ArtefactTimeRange = ArtefactTimeRange*1000; % convert in ms -- just to plot here
+Arte(1) = str2double(TimeToPlot(1:commaindicie(1)-1));
 
 %convert to samples
-SamplesToPlot(1) = round(abs(TimeToPlotDouble(1))*Data.Info.NativeSamplingRate);
-SamplesToPlot(2) = round(abs(TimeToPlotDouble(2))*Data.Info.NativeSamplingRate);
+StimArtefactInfo.TimeAroundEvents(1) = round(abs(TimeToPlotDouble(1))*Data.Info.NativeSamplingRate);
+StimArtefactInfo.TimeAroundEvents(2) = round(abs(TimeToPlotDouble(2))*Data.Info.NativeSamplingRate);
 
 PlotTimeVector = (TimeToPlotDouble(1):1/Data.Info.NativeSamplingRate:TimeToPlotDouble(2))*1000; % in ms
 
@@ -71,8 +66,8 @@ ArtefactRelatedData = NaN(size(Data.Raw,1),numtimepoints,length(Data.Events{Sele
 
 Eventsoutside = [];
 for nevents = 1:length(Data.Events{SelectedEventIndicie})
-    if Data.Events{SelectedEventIndicie}(nevents)-SamplesToPlot(1) > 0 && Data.Events{SelectedEventIndicie}(nevents)+SamplesToPlot(2) < size(Data.Raw,2)
-        ArtefactRelatedData(1:size(Data.Raw,1),1:numtimepoints,nevents) = Data.Raw(:,Data.Events{SelectedEventIndicie}(nevents)-SamplesToPlot(1):Data.Events{SelectedEventIndicie}(nevents)+SamplesToPlot(2));;
+    if Data.Events{SelectedEventIndicie}(nevents)-StimArtefactInfo.TimeAroundEvents(1) > 0 && Data.Events{SelectedEventIndicie}(nevents)+StimArtefactInfo.TimeAroundEvents(2) < size(Data.Raw,2)
+        ArtefactRelatedData(1:size(Data.Raw,1),1:numtimepoints,nevents) = Data.Raw(:,Data.Events{SelectedEventIndicie}(nevents)-StimArtefactInfo.TimeAroundEvents(1):Data.Events{SelectedEventIndicie}(nevents)+StimArtefactInfo.TimeAroundEvents(2));;
     else
         Eventsoutside = [Eventsoutside,nevents];
     end
@@ -100,7 +95,6 @@ end
 
 ArtefactData_handles = findobj(Figure, 'Tag', 'TracesAroundArtefacts');
 EventData_handles = findobj(Figure, 'Tag', 'EventLine');
-ArtefactLine_handles = findobj(Figure, 'Tag', 'ArtefactLine');
 
 Figure.FontSize = 10;
 xlabel(Figure,"Time [ms]")
@@ -110,18 +104,7 @@ ylim(Figure,[min(PlotData,[],'all') max(PlotData,[],'all')]);
 
 if isempty(ArtefactData_handles)
     line(Figure,PlotTimeVector,PlotData,'LineWidth',1,'Tag',"TracesAroundArtefacts")
-    % Red event line in middle
-    line(Figure,[0,0],[min(PlotData,[],'all') max(PlotData,[],'all')],'Tag','EventLine','LineWidth',2,'Color','r');
-    % Artefact time range
-    line(Figure,[ArtefactTimeRange(1),ArtefactTimeRange(1)],[min(PlotData,[],'all') max(PlotData,[],'all')],'Tag','ArtefactLine','LineWidth',2,'Color','k');
-    line(Figure,[ArtefactTimeRange(2),ArtefactTimeRange(2)],[min(PlotData,[],'all') max(PlotData,[],'all')],'Tag','ArtefactLine','LineWidth',2,'Color','k');
-    
-    ArtefactData_handles = findobj(Figure, 'Tag', 'TracesAroundArtefacts');
-    EventData_handles = findobj(Figure, 'Tag', 'EventLine');
-    ArtefactLine_handles = findobj(Figure, 'Tag', 'ArtefactLine');
-
-    legend(Figure,[EventData_handles, ArtefactLine_handles(1), ArtefactLine_handles(2)], {'Event Line', 'Artefact Start', 'Artefact End'}, 'Location', 'northeast');
-
+    line(Figure,[0,0],[min(PlotData,[],'all') max(PlotData,[],'all')],'Tag','EventLine','LineWidth',2);
 else
     if length(ArtefactData_handles)>size(PlotData,1)
         delete(ArtefactData_handles(size(PlotData,1)+1:end));
@@ -132,23 +115,8 @@ else
     for i = 1:length(ArtefactData_handles)
         set(ArtefactData_handles(i), 'XData', PlotTimeVector, 'YData', PlotData(i,:), 'Tag', 'TracesAroundArtefacts','LineWidth',1);
     end
-
-    set(EventData_handles(1), 'XData', [0,0], 'YData', [min(PlotData,[],'all') max(PlotData,[],'all')], 'Tag', 'EventLine','LineWidth',2,'Color','r');
+    set(EventData_handles(1), 'XData', [0,0], 'YData', [min(PlotData,[],'all') max(PlotData,[],'all')], 'Tag', 'EventLine','LineWidth',2);
     eventline = EventData_handles(1);
-
-    if length(ArtefactLine_handles)>2
-        delete(ArtefactLine_handles(3:end));
-    end
-    % Artefact time range
-    set(ArtefactLine_handles(1), 'XData', [ArtefactTimeRange(1),ArtefactTimeRange(1)], 'YData', [min(PlotData,[],'all') max(PlotData,[],'all')], 'Tag', 'ArtefactLine','LineWidth',2,'Color','k');
-    set(ArtefactLine_handles(2), 'XData', [ArtefactTimeRange(2),ArtefactTimeRange(2)], 'YData', [min(PlotData,[],'all') max(PlotData,[],'all')], 'Tag', 'ArtefactLine','LineWidth',2,'Color','k');
-    Artefactline1 = ArtefactLine_handles(1);
-    Artefactline2 = ArtefactLine_handles(2);
-
     % Bring Event Line to the front
     uistack(eventline, 'top');
-    uistack(Artefactline1, 'top');
-    uistack(Artefactline2, 'top');
-    % Add legend for the three specific lines
-    legend(Figure,[eventline, Artefactline1, Artefactline2], {'Event', 'Artefact Start', 'Artefact End'}, 'Location', 'northeast');
 end

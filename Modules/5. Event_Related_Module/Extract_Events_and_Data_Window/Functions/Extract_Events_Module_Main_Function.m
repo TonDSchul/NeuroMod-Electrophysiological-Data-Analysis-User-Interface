@@ -208,7 +208,7 @@ if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
     end
     %% Extract Costum Channel Names and extract data if .dat file format
     if strcmp(RecordingType,"IntanDat")
-        [~,~,~,~,InfoRhd,~] = CheckIntanDatFiles(Data.Info.Data_Path);
+        [~,~,~,~,InfoRhd,~] = CheckIntanDatFiles(Path);
         % Load Rhd Info file
         if strcmp(FileTypeDropDown,"Digital Inputs")
             EventInfoField = EventInfo.DIChannel;

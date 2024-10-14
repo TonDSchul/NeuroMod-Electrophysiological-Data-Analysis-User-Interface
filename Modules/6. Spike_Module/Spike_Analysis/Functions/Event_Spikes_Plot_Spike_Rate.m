@@ -158,7 +158,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
 
     barh(SpikeRateChannelFigure,SpikesInBins,'FaceColor',PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor,'EdgeColor',PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor);
     
-    xlabel(SpikeRateChannelFigure,strcat(PlotAppearance.InternalEventSpikePlot.SRChannelPlotXLabel," ",num2str(BinSize),"µm [Hz]"));
+    xlabel(SpikeRateChannelFigure,strcat(PlotAppearance.InternalEventSpikePlot.SRChannelPlotXLabel," per ",num2str(BinSize),"µm"));
     ylabel(SpikeRateChannelFigure,PlotAppearance.InternalEventSpikePlot.SRChannelPlotYLabel);
 
     SpikeRateChannelFigure.FontSize = PlotAppearance.InternalEventSpikePlot.SRChannelPlotFontSize;

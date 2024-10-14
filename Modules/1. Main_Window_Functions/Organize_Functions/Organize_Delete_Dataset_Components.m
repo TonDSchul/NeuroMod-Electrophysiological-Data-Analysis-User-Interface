@@ -136,10 +136,11 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
     % They all come after the field "ChannelOrder
     % Find the index of the specific field
     if isfield(Data.Info,'DownsampleFactor')
-        fieldsToDelete = {'TimeDownsampled','DownsampledSampleRate'};
+        fieldsToDelete = {'TimeDownsampled'};
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
-        fieldsToDelete = {'DownsampleFactor'};
+
+        fieldsToDelete = {'DownsampleFactor','DownsampledSampleRate'};
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end

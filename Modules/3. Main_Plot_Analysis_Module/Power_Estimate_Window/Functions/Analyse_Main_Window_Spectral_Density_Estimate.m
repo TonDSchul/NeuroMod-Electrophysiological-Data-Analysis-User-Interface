@@ -108,32 +108,24 @@ else
     set(PowerEstimatesHandles, 'YData', [Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],'FaceColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'EdgeColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'Tag', 'Barobject');
 end
 
+%% Ylim
+
+currentYlim(1) = 0;
+currentYlim(2) = max([Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma]);
+
 if LockYLim== 1
-
-    currentYlim(1) = min([Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],[],'all');
-    currentYlim(2) = max([Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],[],'all');
-
-    if isempty(PDLim)
-        PDLim = currentYlim;
-    else
-        if currentYlim(1) < PDLim(1) && currentYlim(2) < PDLim(2)
-            ylim(Figure,[currentYlim(1) PDLim(2)]);
-            currentYlim(2) = PDLim(2);
-        elseif currentYlim(1) < PDLim(1) && currentYlim(2) > PDLim(2)
-            ylim(Figure,[currentYlim(1) currentYlim(2)]);
-        elseif currentYlim(1) > PDLim(1) && currentYlim(2) > PDLim(2)
-            ylim(Figure,[PDLim(1) currentYlim(2)]);
-            currentYlim(1) = PDLim(1);
-        elseif currentYlim(1) > PDLim(1) && currentYlim(2) < PDLim(2)
-            ylim(Figure,PDLim);
+    if ~isempty(PDLim)
+        if abs(currentYlim(2)) > abs(PDLim(2))
+            Figure.YLim = currentYlim;
+        else
+            Figure.YLim = PDLim;
             currentYlim = PDLim;
         end
-                
+    else
+        Figure.YLim = currentYlim;
     end
 else
-     currentYlim(1) = min([Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],[],'all');
-     currentYlim(2) = max([Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],[],'all');
-     ylim(Figure,currentYlim);
+    Figure.YLim = currentYlim;
 end
 
 %% save plotted data in case user wants to save 

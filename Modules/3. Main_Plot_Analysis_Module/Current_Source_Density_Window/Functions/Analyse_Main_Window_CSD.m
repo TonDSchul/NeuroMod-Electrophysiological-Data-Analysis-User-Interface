@@ -48,7 +48,7 @@ function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,Channe
 nChan = size(DatatoPlot,1);
 ds = (0:nChan)*ChannelSpacing; %depth in micrometers given 50 µm spacing
 
-[csd] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth);
+[csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth);
 
 %% Plot 
 
@@ -125,29 +125,25 @@ elseif strcmp(TwoORThreeD,"ThreeD")
 end
 
 %% Clim 
-if LockCLim== 1
-    currentClim(1) = min(csd,[],'all');
-    currentClim(2) = max(csd,[],'all');
 
-    if isempty(CSDClim)
-        CSDClim = currentClim;
-    else
-        if currentClim(1) < CSDClim(1) && currentClim(2) < CSDClim(2)
-            Figure.CLim = [currentClim(1) CSDClim(2)];
-            currentClim(2) = CSDClim(2);
-        elseif currentClim(1) < CSDClim(1) && currentClim(2) > CSDClim(2)
-            Figure.CLim = [currentClim(1) currentClim(2)];
-        elseif currentClim(1) > CSDClim(1) && currentClim(2) > CSDClim(2)
-            Figure.CLim = [CSDClim(1) currentClim(2)];
-            currentClim(1) = CSDClim(1);
-        elseif currentClim(1) > CSDClim(1) && currentClim(2) < CSDClim(2)
+cmlimscsd = abs([min(csd,[],'all') max(csd,[],'all')]);
+[~,cmlimscsdmax] = max(cmlimscsd);
+
+currentClim(1) = -cmlimscsd(cmlimscsdmax);
+currentClim(2) = cmlimscsd(cmlimscsdmax);
+
+if LockCLim== 1
+    if ~isempty(CSDClim)
+        if abs(currentClim(1)) > abs(CSDClim(1))
+            Figure.CLim = currentClim;
+        else
             Figure.CLim = CSDClim;
             currentClim = CSDClim;
-        end     
+        end
+    else
+        Figure.CLim = currentClim;
     end
 else
-    currentClim(1) = min(csd,[],'all');
-    currentClim(2) = max(csd,[],'all');
     Figure.CLim = currentClim;
 end
 

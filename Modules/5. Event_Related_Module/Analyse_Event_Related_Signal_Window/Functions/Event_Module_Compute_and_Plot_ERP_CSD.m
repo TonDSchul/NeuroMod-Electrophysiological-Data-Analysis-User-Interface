@@ -265,19 +265,26 @@ else
         msgbox("No Events for this Channel found");
         return;
     end
+
+    if length(CSD.SelectedChannel(1):CSD.SelectedChannel(2)) < 3
+        msgbox("Error: At least 3 channel required to compute CSD! Returning.")
+        return;
+    end
     
-    DatatoPlot = squeeze(mean(EventRelatedData(CSD.SurfaceChannel:end,:,:),2,'omitnan'));
+    DatatoPlot = squeeze(mean(EventRelatedData(CSD.SelectedChannel(1):CSD.SelectedChannel(2),:,:),2,'omitnan'));
     
-    [csd,~]=Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow);
+    [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow);
 
     nChan = size(csd,2);
     
     ds = (0:nChan-1)*CSD.ChannelSpacing; %depth in micrometers given 50 µm spacing
 
     %% Plot 
+    cmlimscsd = abs([min(csd,[],'all') max(csd,[],'all')]);
+    [~,cmlimscsdmax] = max(cmlimscsd);
 
-    CSDClim(1) = min(min(csd));
-    CSDClim(2) = max(max(csd));
+    CSDClim(1) = -cmlimscsd(cmlimscsdmax);
+    CSDClim(2) = cmlimscsd(cmlimscsdmax);
 
     if strcmp(TwoORThreeD,"ThreeD")
         PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
@@ -348,9 +355,9 @@ else
 
     if strcmp(TwoORThreeD,"TwoD")
         if isempty(Event_handles)
-            eventLine = line(Figure,[0, 0],ylim(Figure),'Color',PlotAppearance.CSDWindow.TriggerColor,'LineWidth',PlotAppearance.CSDWindow.TriggerLineWidth, 'Parent', Figure, 'Tag', 'Event');
+            eventLine = line(Figure,[0, 0],[ds(1),ds(end)],'Color',PlotAppearance.CSDWindow.TriggerColor,'LineWidth',PlotAppearance.CSDWindow.TriggerLineWidth, 'Parent', Figure, 'Tag', 'Event');
         else
-            set(Event_handles(1), 'XData', [0, 0], 'YData', ylim(Figure), 'Parent', Figure,'LineWidth',PlotAppearance.CSDWindow.TriggerLineWidth,'Color',PlotAppearance.CSDWindow.TriggerColor, 'Tag', 'Event');
+            set(Event_handles(1), 'XData', [0, 0], 'YData', [ds(1),ds(end)], 'Parent', Figure,'LineWidth',PlotAppearance.CSDWindow.TriggerLineWidth,'Color',PlotAppearance.CSDWindow.TriggerColor, 'Tag', 'Event');
             eventLine = Event_handles(1);
         end
     elseif strcmp(TwoORThreeD,"ThreeD")
@@ -382,6 +389,7 @@ else
 
     xlim(Figure,[EventTime(1),EventTime(end)]);
     ylim(Figure,[ds(1),ds(end)]);
+    clim(Figure,CSDClim);
     set(Figure,'YDir','reverse');
     title(Figure,"Event Related Current Source Density Analysis")
     xlabel(Figure,PlotAppearance.CSDWindow.XLabel)

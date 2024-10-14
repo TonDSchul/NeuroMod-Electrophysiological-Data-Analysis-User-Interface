@@ -69,10 +69,10 @@ if PlotExample == 1 || Inspectfilter == 1
             Data.Preprocessed = Data.Preprocessed(round(size(Data.Raw,1)/2),:);
         end
     else
-        Data.Raw = Data.Raw(:,1:round(size(Data.Raw,2)/2));
+        Data.Raw = Data.Raw(:,1:round(length(Data.Raw/2)));
         Data.Time = Data.Time(1:Data.Info.NativeSamplingRate*10);
         if isfield(Data,'Preprocessed')
-            Data.Preprocessed = Data.Preprocessed(:,1:round(size(Data.Raw,2)/2));
+            Data.Preprocessed = Data.Preprocessed(:,1:round(length(Data.Raw/2)));
         end
     end
 end
@@ -341,8 +341,6 @@ if PlotExample == 1 && Inspectfilter == 0
     ylabel('Signal [mV]');
     titlestring = strcat("Channel ",num2str(ChannelToPlot)," Original vs. filtered Signal");
     title(titlestring);
-    ax = gca;              % Get current axes
-    ax.FontSize = 9;      % Set font size for the tick labels
     drawnow;
     hold( 'off' );
     return;

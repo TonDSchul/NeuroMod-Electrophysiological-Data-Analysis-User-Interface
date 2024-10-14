@@ -52,6 +52,12 @@ end
 
 EventTime = 0-TimearoundEvent(1):1/SampleRate:TimearoundEvent(2);
 
+% Check if max frequ is bigger than nyquist
+if TF.FreqRange(3) > SampleRate/2
+    msgbox("Warning: Entered max frequency exceeds nyqusit. Max frequency autoset to nyquist!")
+    TF.FreqRange(3) = SampleRate/2;
+end
+
 if strcmp(WaveletType,"Moorlet Wavelets")
     [tf,frex] = Event_Module_Time_Frequency_Wavelet_ITPC_Cycles(EventRelatedData,EventTime,[],TF.FreqRange,TF.Range_cycles);
     [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,EventTime,TF.FreqRange,tf,frex,0,Plottype,Type,DataChannelSelected,EventNrRange,TwoORThreeD,CurrentPlotData,PlotAppearance);

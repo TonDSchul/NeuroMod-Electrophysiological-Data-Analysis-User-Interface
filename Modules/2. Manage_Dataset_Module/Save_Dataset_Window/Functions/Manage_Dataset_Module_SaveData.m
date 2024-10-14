@@ -58,10 +58,11 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
     % They all come after the field "ChannelOrder
     % Find the index of the specific field
     if isfield(Data.Info,'DownsampleFactor')
-        fieldsToDelete = {'TimeDownsampled','DownsampledSampleRate'};
+        fieldsToDelete = {'TimeDownsampled'};
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
-        fieldsToDelete = {'DownsampleFactor'};
+
+        fieldsToDelete = {'DownsampleFactor','DownsampledSampleRate'};
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end

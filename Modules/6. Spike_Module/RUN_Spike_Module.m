@@ -41,17 +41,23 @@ elseif strcmp(ModuleFunctionName,"Load from Kilosort")
             % data can still be shown and has to be replaced with new
             % spike data
 
-            app.SpikeDataCheckBox_2.Enable = "on";
-            
             % app.Plotspikes = Flag indicating that spikes are supposed
             % to be plotted. If show spike data was already selected,
             % plot spikes again
-            if app.SpikeDataCheckBox_2.Value == 1
-                app.Plotspikes = "Spikes";
-            else
+            if strcmp(app.Plotspikes,"Spikes")
+                SpikeHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Spikes');
+                if ~isempty(SpikeHandles)
+                    delete(SpikeHandles(:));
+                end
+                if strcmp(app.PlotEvents,"Events")
+                    app.DropDown_2.Value = "Events";
+                else
+                    app.DropDown_2.Value = "Non";
+                end
+                
                 app.Plotspikes = "No";
             end
-            
+
             % Main function to plot data in main window after resetting plots
             Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Initial","Static",app.PlotEvents,app.Plotspikes);
 

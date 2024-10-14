@@ -1,7 +1,7 @@
-function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData,PlotAppearance)
+function [CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData,PlotAppearance,SelectedEvents)
 %________________________________________________________________________________________
 
-%% Function to compute static power spectrum of a signal using pwelch method
+%% Function to compute static power spectrum of event related data using pwelch method
 % This function organizes data based on GUI inputs, puts them into the
 % matlab pwelch function and plots the results. This is plotted at standard
 % whenever the power spectrum analysis window is opened
@@ -24,6 +24,8 @@ function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figu
 % case user wants to export them
 % 9. PlotAppearance: structure holding current default of plot appearances
 % like linewidth
+% 10. SelectedEvents: 1 x 2 double holding events user seleted, i.e. [1,10]
+% for events 1 to 10 
 
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -34,34 +36,59 @@ function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figu
 
 %________________________________________________________________________________________
 
+%% First calculate ERP over events when multiple events selected
+if SelectedEvents(1) ~= SelectedEvents(2) %--> mean over events if multiple selected
+    if strcmp(DataSource,"Raw Event Related Data")
+        DataToAnalyse = squeeze(mean(Data.EventRelatedData(:,SelectedEvents(1):SelectedEvents(2),:),2));
+        
+        if strcmp(DataType,"Channel Individually")
+            DataToAnalyse = DataToAnalyse(SelectedChannel,:);
+        else
+            DataToAnalyse = mean(DataToAnalyse,1);
+        end
+    else
+        DataToAnalyse = squeeze(mean(Data.PreprocessedEventRelatedData(:,SelectedEvents(1):SelectedEvents(2),:),2));
+
+        if strcmp(DataType,"Channel Individually")
+            DataToAnalyse = DataToAnalyse(SelectedChannel,:);
+        else
+            DataToAnalyse = mean(DataToAnalyse,1);
+        end
+    end
+else % If same event --> no mean
+    if strcmp(DataSource,"Raw Event Related Data")
+        DataToAnalyse = squeeze(Data.EventRelatedData(:,SelectedEvents(1),:));
+        
+        if strcmp(DataType,"Channel Individually")
+            DataToAnalyse = DataToAnalyse(SelectedChannel,:);
+        else
+            DataToAnalyse = mean(DataToAnalyse,1);
+        end
+    else
+        DataToAnalyse = squeeze(Data.PreprocessedEventRelatedData(:,SelectedEvents(1),:));
+
+        if strcmp(DataType,"Channel Individually")
+            DataToAnalyse = DataToAnalyse(SelectedChannel,:);
+        else
+            DataToAnalyse = mean(DataToAnalyse,1);
+        end
+    end
+end
+
 %% Compute Spectrum using pwelch
+
+if strcmp(DataSource,"Raw Event Related Data")
+    NonNaN = ~isnan(DataToAnalyse);
+     if isfield(Data.Info, 'DownsampleFactor')
+        [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.DownsampledSampleRate);
+    else
+        [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);
+     end
+end
+
 if strcmp(DataType,"Channel Individually")
-    if strcmp(DataSource,"Raw Data")
-        NonNaN = ~isnan(Data.Raw);
-        [Welchpowspect,Freq] = pwelch(double(Data.Raw(SelectedChannel,NonNaN(SelectedChannel,:))),[],[],[],Data.Info.NativeSamplingRate);
-    elseif strcmp(DataSource,"Preprocessed Data")
-        NonNaN = ~isnan(Data.Preprocessed);
-        if isfield(Data.Info, 'DownsampleFactor')
-            [Welchpowspect,Freq] = pwelch(double(Data.Preprocessed(SelectedChannel,NonNaN(SelectedChannel,:))),[],[],[],Data.Info.DownsampledSampleRate);
-        else
-            [Welchpowspect,Freq] = pwelch(double(Data.Preprocessed(SelectedChannel,NonNaN(SelectedChannel,:))),[],[],[],Data.Info.NativeSamplingRate);
-        end
-    end
     titlestring = strcat("Power Spectral Density Channel ",ChannelText);
-elseif strcmp(DataType,"Mean over all Channel")  
-    if strcmp(DataSource,"Raw Data")
-        MeanOverChannel = mean(Data.Raw,1,'omitnan');
-        NonNaN = ~isnan(MeanOverChannel);
-        [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);
-    elseif strcmp(DataSource,"Preprocessed Data")
-        MeanOverChannel = mean(Data.Preprocessed,1,'omitnan');
-        NonNaN = ~isnan(MeanOverChannel);
-        if isfield(Data.Info, 'DownsampleFactor')
-            [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),[],[],[],Data.Info.DownsampledSampleRate);
-        else
-            [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);
-        end
-    end
+else
     titlestring = strcat("Power Spectral Density Mean over Channel");
 end
 

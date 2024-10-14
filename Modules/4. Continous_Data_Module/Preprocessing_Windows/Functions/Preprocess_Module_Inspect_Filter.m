@@ -88,26 +88,26 @@ if isfield(PreProInfo,'FilterKernel')
             set(gca,"FontSize",7)
         end
 
-        figure(2)
+        % figure(2)
+        % 
+        % if strcmp(PreprocessingSteps(PPSteps),"Low-Pass")
+        %     d = designfilt("lowpassfir",'FilterOrder',filterorder, ...
+        %     'CutoffFrequency',Cutoff,'SampleRate',SampleRate);
+        % elseif strcmp(PreprocessingSteps(PPSteps),"High-Pass")
+        %     d = designfilt("highpassfir",'FilterOrder',filterorder, ...
+        %     'CutoffFrequency',Cutoff,'SampleRate',SampleRate);
+        % elseif strcmp(PreprocessingSteps(PPSteps),"Narrowband")
+        %     d = designfilt("bandpassiir",'FilterOrder',filterorder, ...
+        %     'HalfPowerFrequency1',Cutoff(1),'HalfPowerFrequency2',Cutoff(2),'SampleRate',SampleRate);
+        % elseif strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
+        %     d = designfilt('bandstopiir', ...
+        %     'FilterOrder', filterorder, ...              % Filter order
+        %     'HalfPowerFrequency1', Cutoff(1), ... % Lower half-power frequency
+        %     'HalfPowerFrequency2', Cutoff(2), ... % Upper half-power frequency
+        %     'SampleRate', SampleRate);                 % Sampling frequency
+        % end
 
-        if strcmp(PreprocessingSteps(PPSteps),"Low-Pass")
-            d = designfilt("lowpassfir",'FilterOrder',filterorder, ...
-            'CutoffFrequency',Cutoff,'SampleRate',SampleRate);
-        elseif strcmp(PreprocessingSteps(PPSteps),"High-Pass")
-            d = designfilt("highpassfir",'FilterOrder',filterorder, ...
-            'CutoffFrequency',Cutoff,'SampleRate',SampleRate);
-        elseif strcmp(PreprocessingSteps(PPSteps),"Narrowband")
-            d = designfilt("bandpassiir",'FilterOrder',filterorder, ...
-            'HalfPowerFrequency1',Cutoff(1),'HalfPowerFrequency2',Cutoff(2),'SampleRate',SampleRate);
-        elseif strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
-            d = designfilt('bandstopiir', ...
-            'FilterOrder', filterorder, ...              % Filter order
-            'HalfPowerFrequency1', Cutoff(1), ... % Lower half-power frequency
-            'HalfPowerFrequency2', Cutoff(2), ... % Upper half-power frequency
-            'SampleRate', SampleRate);                 % Sampling frequency
-        end
-
-        freqz(d);
+        %freqz(d);
 
     end
 end
