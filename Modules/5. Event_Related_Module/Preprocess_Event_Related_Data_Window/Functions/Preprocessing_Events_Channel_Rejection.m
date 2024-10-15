@@ -117,6 +117,8 @@ end
 if strcmp(Type,'PlotOnly') || strcmp(Type,'All')
     %% Plotting
     
+    colorMap = eval(strcat("parula","(size(EventRelatedData,1))")); % Example colormap: You can use any other colormap
+
     % Calculate ERP for each channel (across trials)
     ERPs = squeeze(mean(EventRelatedData, 2)); % Collapse trials dimension to calculate average
     ERPs = flip(ERPs,1);
@@ -136,16 +138,25 @@ if strcmp(Type,'PlotOnly') || strcmp(Type,'All')
     
     for i = 1:NumChannels
         if i <= length(ERPHandle)
-            set(ERPHandle(i), 'XData', Time, 'YData',ERPs(i, :) + (i - 1) * row_height, 'Tag', 'ERP','LineWidth',1.2);
+            set(ERPHandle(i), 'XData', Time, 'YData',ERPs(i, :) + (i - 1) * row_height, 'Color', colorMap(i, :), 'Tag', 'ERP','LineWidth',1);
+            Dataplot(1) = ERPHandle(1);
         else
-            line(Figure,Time,ERPs(i, :) + (i - 1) * row_height, 'Tag', 'ERP','LineWidth',1.2);
+            Dataplot = line(Figure,Time,ERPs(i, :) + (i - 1) * row_height, 'Color', colorMap(i, :), 'Tag', 'ERP','LineWidth',1);
         end
         YMaxLimitsMultipeERP(i) = max(ERPs(i, :) + (i - 1) * row_height);
         YMinLimitsMultipeERP(i) = min(ERPs(i, :) + (i - 1) * row_height);
     end
     
+    eventline = xline(Figure,0,'Color','k','LineStyle','--','LineWidth',2);
     titlestring = strcat("ERPs for each Channel without Rejection");
     title(Figure, titlestring);
     xlim(Figure, [Time(1),Time(end)]);
     ylim(Figure, [min(YMinLimitsMultipeERP),max(YMaxLimitsMultipeERP)]);
+    
+    % Add legend only once
+    if isempty(findobj(Figure, 'Type', 'legend'))
+        % Create legend and then set its 'HandleVisibility' to 'off'
+        legendHandle = legend([Dataplot(1), eventline], {'ERP per Channel','Trials/Events'});
+        set(legendHandle, 'HandleVisibility', 'off');
+    end
 end

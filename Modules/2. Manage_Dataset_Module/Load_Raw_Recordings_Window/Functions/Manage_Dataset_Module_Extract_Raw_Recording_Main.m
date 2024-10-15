@@ -88,6 +88,10 @@ elseif strcmp(RecordingSystem,"Open Ephys")
     
     RecordingType = "Open Ephys";
 
+    HeaderInfo.RecordingType = "Open Ephys";
+
+    HeaderInfo.NrChannel = size(Data,1);
+
     if isempty(Data)
         Time = [];
         return;

@@ -98,6 +98,8 @@ end
 
 %% Plot Data
 
+colorMap = eval(strcat("parula","(size(PlotData,1))")); % Example colormap: You can use any other colormap
+
 ArtefactData_handles = findobj(Figure, 'Tag', 'TracesAroundArtefacts');
 EventData_handles = findobj(Figure, 'Tag', 'EventLine');
 ArtefactLine_handles = findobj(Figure, 'Tag', 'ArtefactLine');
@@ -109,7 +111,9 @@ xlim(Figure,[PlotTimeVector(1),PlotTimeVector(end)])
 ylim(Figure,[min(PlotData,[],'all') max(PlotData,[],'all')]);
 
 if isempty(ArtefactData_handles)
-    line(Figure,PlotTimeVector,PlotData,'LineWidth',1,'Tag',"TracesAroundArtefacts")
+    for i = 1:size(PlotData,1) % over channel for costum color
+        line(Figure,PlotTimeVector,PlotData(i,:),'Color',colorMap(i,:),'LineWidth',1,'Tag',"TracesAroundArtefacts")
+    end
     % Red event line in middle
     line(Figure,[0,0],[min(PlotData,[],'all') max(PlotData,[],'all')],'Tag','EventLine','LineWidth',2,'Color','r');
     % Artefact time range
@@ -120,7 +124,7 @@ if isempty(ArtefactData_handles)
     EventData_handles = findobj(Figure, 'Tag', 'EventLine');
     ArtefactLine_handles = findobj(Figure, 'Tag', 'ArtefactLine');
 
-    legend(Figure,[EventData_handles, ArtefactLine_handles(1), ArtefactLine_handles(2)], {'Event Line', 'Artefact Start', 'Artefact End'}, 'Location', 'northeast');
+    legend(Figure,[EventData_handles, ArtefactLine_handles(1), ArtefactLine_handles(2)], {'Event', 'Artefact Start', 'Artefact End'}, 'Location', 'northeast');
 
 else
     if length(ArtefactData_handles)>size(PlotData,1)
@@ -130,7 +134,7 @@ else
         delete(EventData_handles(2:end));
     end
     for i = 1:length(ArtefactData_handles)
-        set(ArtefactData_handles(i), 'XData', PlotTimeVector, 'YData', PlotData(i,:), 'Tag', 'TracesAroundArtefacts','LineWidth',1);
+        set(ArtefactData_handles(i), 'XData', PlotTimeVector, 'YData', PlotData(i,:),'Color',colorMap(i,:), 'Tag', 'TracesAroundArtefacts','LineWidth',1);
     end
 
     set(EventData_handles(1), 'XData', [0,0], 'YData', [min(PlotData,[],'all') max(PlotData,[],'all')], 'Tag', 'EventLine','LineWidth',2,'Color','r');

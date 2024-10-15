@@ -45,7 +45,6 @@ if strcmp(Data.Info.RecordingType,"IntanDat")
     % for rhd was already extracted (to not load data every time this
     % function is called) -- eaier to load at start ups
 elseif strcmp(Data.Info.RecordingType,"IntanRHD")
-
     InputChannelData = single(RHDAllChannelData(InputChannelSelection,:));
     clear("RHDAllChannelData");
 elseif strcmp(Data.Info.RecordingType,"Open Ephys") || strcmp(Data.Info.RecordingType,"Neuralynx")
@@ -57,6 +56,21 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
     end
 end
 
+%% If cutstart or cutend:
+if ~strcmp(Data.Info.RecordingType,"Open Ephys") % for open ephys done in Show_ChannelPlots function
+    if isfield(Data.Info,'CutStart')
+        index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
+        InputChannelData(1:index) = [];
+        % EventsToDelete = InputChannelData <= index;
+        % InputChannelData(EventsToDelete) = []; % Delete indicies smaller than start
+        % InputChannelData = InputChannelData - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
+    end
+    
+    if isfield(Data.Info,'CutEnd')
+        index = round(sum(Data.Info.CutEnd) * Data.Info.NativeSamplingRate); % convert in samples
+        InputChannelData(end-index:end) = []; % Delete indicies smaller than start
+    end
+end
 %% Downsample if not empty
 if ~isempty(DownsampleRate)
     DownsampleRate = str2double(DownsampleRate);

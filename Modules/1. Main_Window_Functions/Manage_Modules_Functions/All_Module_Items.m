@@ -43,7 +43,7 @@ Module{4}.Items{1} = 'Internal Spike Detection';
 Module{4}.Items{2} = 'Save for Kilosort';
 Module{4}.Items{3} = 'Load from Kilosort';
 %% Example Module -- this could be yours!
-Module{5}.Title = 'Example Module';
+Module{5}.Title = 'Example Module - this could be yours!';
 Module{5}.Function = 'RUN_Example';
 Module{5}.Items{1} = 'Example App 1';
 

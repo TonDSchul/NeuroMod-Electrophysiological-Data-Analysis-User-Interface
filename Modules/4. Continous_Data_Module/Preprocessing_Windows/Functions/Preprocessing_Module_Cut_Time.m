@@ -111,6 +111,8 @@ end
 
 Data.Info.num_data_points = length(Data.Time);
 
+EventsCellsToDelete = [];
+
 %% Cut Events
 if isfield(Data,'Events')
     for i = 1:length(Data.Events)
@@ -165,10 +167,16 @@ if isfield(Data,'Events')
                 Data.Events{i} = Data.Events{i}-index;
             end
         else
-            Data.Events(i) = [];
-            Data.Info.EventChannelNames(i) = [];
+            EventsCellsToDelete = [EventsCellsToDelete,i];
+            
         end
     end % Lopp over all events
+    
+    if ~isempty(EventsCellsToDelete)
+        Data.Events(EventsCellsToDelete) = [];
+        Data.Info.EventChannelNames(EventsCellsToDelete) = [];
+    end
+
     if isempty(Data.Events)
         fieldsToDelete = {'Events'};
         % Delete fields

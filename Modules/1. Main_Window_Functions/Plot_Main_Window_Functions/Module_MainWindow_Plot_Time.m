@@ -37,39 +37,36 @@ if strcmp(PlotType,"Initial")
     xlabel(UIAxis,PlotAppearance.MainWindow.Data.TimeXLabel)
     ylabel(UIAxis,PlotAppearance.MainWindow.Data.TimeYLabel)
     title(UIAxis,PlotAppearance.MainWindow.Data.TimeTitle)
-    TimeHandles = findobj(UIAxis,'Tag', 'Timelines');
-    
+
     UIAxis.Color = PlotAppearance.MainWindow.Data.Color.TimeBackground;
 
-    if isempty(TimeHandles)
-        % line(UIAxis,[Time(1),Time(end)],[0,0],'Color','k','LineWidth',3,'Tag','Timelines');
-    end
-       
+    
     %% Plot Events
     if strcmp(EventPlot,"Events") 
-        % Replicate y values to match the length of x_values
-        y_start = repmat(-0.5, size(EventData));
-        y_end = repmat(0.5, size(EventData));
-
+       
         EventHandles = findobj(UIAxis,'Tag', 'Eventlines');
+        if length(EventHandles)>length(EventData)
+            delete(EventHandles(length(EventData)+1:end));
+        end
         
         if isempty(EventHandles)
+            % Replicate y values to match the length of x_values
+            y_start = repmat(-0.5, size(EventData));
+            y_end = repmat(0.5, size(EventData));
             line(UIAxis,[Time(EventData); Time(EventData)], [y_start; y_end],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines'); % Adjust color as needed
         else
-            if length(EventHandles) >= length(EventData)
-                for i = 1:length(EventData)
-                    set(EventHandles(i), 'XData', [Time(EventData(i)); Time(EventData(i))], 'YData', [y_start(i); y_end(i)],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines');
+            y_start = -0.5;
+            y_end = 0.5;
+            for i = 1:length(EventData)
+                if length(EventHandles) >= i
+                    set(EventHandles(i), 'XData', [Time(EventData(i)); Time(EventData(i))], 'YData', [y_start; y_end],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines');
+                else
+                    line(UIAxis,[Time(EventData(i)); Time(EventData(i))], [y_start; y_end],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines'); % Adjust color as needed
                 end
-                delete(EventHandles(i+1:end));
-            elseif length(EventHandles) < length(EventData)
-                for i = 1:length(EventHandles)
-                    set(EventHandles(i), 'XData', [Time(EventData(i)); Time(EventData(i))], 'YData', [y_start(i); y_end(i)],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines');
-                end
-                line(UIAxis,[Time(EventData(i+1:end)); Time(EventData(i+1:end))], [y_start(i+1:end); y_end(i+1:end)],'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.TimeEvents, 'Color', PlotAppearance.MainWindow.Data.Color.TimeEvents,'Tag','Eventlines'); % Adjust color as needed
             end
         end
     end
-
+   
     %% Plot rectangle indicating selected time
     % Define rectangle properties
 

@@ -180,15 +180,15 @@ if isempty(CSD)
     if strcmp(Type,'MultipleERPOnly') || strcmp(Type,'All')
         %% Plot ERP for all Channel
         adjustedcolormap = rgbcolormap;
-    
+        
         [nc,ntr,nti] = size(EventRelatedData);
-
+        
         EventRelatedData = squeeze(mean(EventRelatedData(:,:,:),2,'omitnan'));
-
+        
         for nchannel = 1:nc   
             EventRelatedData(nchannel,:) = EventRelatedData(nchannel,:) - (nchannel - 1) * PlotLineSpacing;
         end
-    
+        
         YMaxLimitsMultipeERP = max(EventRelatedData,[],"all");
         YMinLimitsMultipeERP = min(EventRelatedData,[],"all");
         xlim(Figure2, [EventTime(1),EventTime(end)]);
@@ -196,9 +196,9 @@ if isempty(CSD)
         xlabel(Figure2,PlotAppearance.ERPWindow.MultipleERP.XLabel)
         ylabel(Figure2,PlotAppearance.ERPWindow.MultipleERP.YLabel)
         title(Figure2,"Event Related Potential for all Channel");
-    
+        
         ChannelERPHandles = findobj(Figure2, 'Type', 'line', 'Tag', 'ChannelERP');
-    
+        
         if ~isempty(ChannelERPHandles)
             if length(ChannelERPHandles) > 1
                 delete(ChannelERPHandles(2:end));

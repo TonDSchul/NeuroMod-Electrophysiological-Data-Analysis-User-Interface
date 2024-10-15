@@ -121,6 +121,7 @@ if strcmp(Type,'DeleteandPlot')
             for nTrials = 1:size(DeletedData,2)
                 if nTrials <= length(TrialsHandle)
                     set(TrialsHandle(nTrials), 'XData', Time, 'YData',squeeze(DeletedData(ChannelofInterest,nTrials,:)), 'Tag', 'Trials');
+                    h(1) = TrialsHandle(1);
                 else
                     h = line(Figure1,Time,squeeze(DeletedData(ChannelofInterest,nTrials,:)), 'Tag', 'Trials');
                     set(h,'color',[1 1 1]*.75);
@@ -131,15 +132,17 @@ if strcmp(Type,'DeleteandPlot')
         %% Plot ERP
         if isempty(ERPHandle)
             if ChannelSelection(1)==ChannelSelection(2)
-                line(Figure1,Time,squeeze(ERP),'Color','k','LineWidth',1.5, 'Tag', 'ERP');
+                MeanERP = line(Figure1,Time,squeeze(ERP),'Color','k','LineWidth',1.5, 'Tag', 'ERP');
             else
-                line(Figure1,Time,squeeze(ERP(ChannelofInterest,:,:)),'Color','k','LineWidth',1.5, 'Tag', 'ERP');
+                MeanERP = line(Figure1,Time,squeeze(ERP(ChannelofInterest,:,:)),'Color','k','LineWidth',1.5, 'Tag', 'ERP');
             end
         else
             if ChannelSelection(1)==ChannelSelection(2)
                 set(ERPHandle(:), 'XData', Time, 'YData',squeeze(ERP), 'Tag', 'ERP');
+                MeanERP = ERPHandle(1);
             else
                 set(ERPHandle(:), 'XData', Time, 'YData',squeeze(ERP(ChannelofInterest,:,:)), 'Tag', 'ERP');
+                MeanERP = ERPHandle(1);
             end
         end
         
@@ -148,12 +151,22 @@ if strcmp(Type,'DeleteandPlot')
 
         %% Plot cutting window
         if isempty(RjectWindHandle)
-            line(Figure1,[TimeWindin(1),TimeWindin(1)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','k','LineWidth',1, 'Tag', 'RjectWind');
-            line(Figure1,[TimeWindin(2),TimeWindin(2)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','k','LineWidth',1, 'Tag', 'RjectWind');
+            Artestart = line(Figure1,[TimeWindin(1),TimeWindin(1)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','r','LineWidth',1, 'Tag', 'RjectWind');
+            Artestop = line(Figure1,[TimeWindin(2),TimeWindin(2)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','r','LineWidth',1, 'Tag', 'RjectWind');
         else
             set(RjectWindHandle(1), 'XData', [TimeWindin(1),TimeWindin(1)], 'YData',[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')] ,'Tag','RjectWind');
+            Artestart = RjectWindHandle(1);
             set(RjectWindHandle(2), 'XData', [TimeWindin(2),TimeWindin(2)], 'YData',[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')] ,'Tag','RjectWind');
+            Artestop = RjectWindHandle(2);
         end
+
+        % Add legend only once
+        if isempty(findobj(Figure1, 'Type', 'legend'))
+            % Create legend and then set its 'HandleVisibility' to 'off'
+            legendHandle = legend([h(1), MeanERP, Artestart,Artestop], {'Trials/Events', 'ERP', 'Artefact Start', 'Artefact End'});
+            set(legendHandle, 'HandleVisibility', 'off');
+        end
+    
     end
 
     if strcmp(WhattoPlot,'ERPAllChannel') || strcmp(WhattoPlot,'All')
@@ -308,6 +321,7 @@ if strcmp(Type,'Interpolating')
             for nTrials = 1:size(DeletedData,2)
                 if nTrials <= length(TrialsHandle)
                     set(TrialsHandle(nTrials), 'XData', Time, 'YData',squeeze(DeletedData(ChannelofInterest,nTrials,:)), 'Tag', 'Trials');
+                    h(1) = TrialsHandle(1);
                 else
                     h = line(Figure2,Time,squeeze(DeletedData(ChannelofInterest,nTrials,:)), 'Tag', 'Trials');
                     set(h,'color',[1 1 1]*.75);
@@ -317,9 +331,10 @@ if strcmp(Type,'Interpolating')
         
         %% Plot ERP
         if isempty(ERPHandle)
-            line(Figure2,Time,ERP,'Color','k','LineWidth',1.5, 'Tag', 'ERP');
+            MeanERP = line(Figure2,Time,ERP,'Color','k','LineWidth',1.5, 'Tag', 'ERP');
         else
             set(ERPHandle(:), 'XData', Time, 'YData',ERP, 'Tag', 'ERP');
+            MeanERP = ERPHandle(1);
         end
     
         titlestring = strcat("Interpolated ERP Channel ",ChanneltoPlot);
@@ -327,11 +342,20 @@ if strcmp(Type,'Interpolating')
        
         %% Plot cutting window
         if isempty(RjectWindHandle)
-            line(Figure2,[TimeWindin(1),TimeWindin(1)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','k','LineWidth',1, 'Tag', 'RjectWind');
-            line(Figure2,[TimeWindin(2),TimeWindin(2)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','k','LineWidth',1, 'Tag', 'RjectWind');
+            Artestart = line(Figure2,[TimeWindin(1),TimeWindin(1)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','r','LineWidth',1, 'Tag', 'RjectWind');
+            Artestop = line(Figure2,[TimeWindin(2),TimeWindin(2)],[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')],'Color','r','LineWidth',1, 'Tag', 'RjectWind');
         else
             set(RjectWindHandle(1), 'XData', [TimeWindin(1),TimeWindin(1)], 'YData',[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')] ,'Tag','RjectWind');
+            Artestart = RjectWindHandle(1);
             set(RjectWindHandle(2), 'XData', [TimeWindin(2),TimeWindin(2)], 'YData',[min(DeletedData(ChannelofInterest,:,:),[],'all'), max(DeletedData(ChannelofInterest,:,:),[],'all')] ,'Tag','RjectWind');
+            Artestop = RjectWindHandle(2);
+        end
+
+        % Add legend only once
+        if isempty(findobj(Figure1, 'Type', 'legend'))
+            % Create legend and then set its 'HandleVisibility' to 'off'
+            legendHandle = legend([h(1), MeanERP, Artestart,Artestop], {'Trials/Events', 'ERP', 'Artefact Start', 'Artefact End'});
+            set(legendHandle, 'HandleVisibility', 'off');
         end
     
         fraction = (nChannel+2)/(nChannel+3);

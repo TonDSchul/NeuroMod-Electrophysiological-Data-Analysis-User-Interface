@@ -258,12 +258,34 @@ elseif strcmp(RecordingType,"Open Ephys")
     
     [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp);
     
-    % Can be the case that sample number of events exceed data recording. 
-    % Search for those events and delete
-    for nevents = 1:length(Data.Events)
-        if sum(Data.Events{nevents}>length(Data.Time))
-            msgbox(strcat("Extracted event data for selected channel ", num2str(nevents)," contains ",num2str(sum(Data.Events{nevents}>length(Data.Time)))," samples outside of time range which are deleted."))
-            Data.Events{nevents}(Data.Events{nevents}>length(Data.Time)) = [];
+    % account for time being cut (cut start and cut end)
+    for i = 1:length(Data.Events)
+        if isfield(Data.Info,'CutStart')
+            index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
+            EventsToDelete = Data.Events{i} <= index;
+            if sum(EventsToDelete)>0
+                Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
+                Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
+                disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," events are deleted!"));
+            end
+        end
+        if isfield(Data.Info,'CutEnd')
+            EventsToDelete = Data.Events{i} > length(Data.Time);
+            if sum(EventsToDelete)>0
+                Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
+                disp(strcat("Event Nr. ",num2str(i),": Stop time of dataset was cut. Last ",num2str(sum(EventsToDelete))," events are deleted!"));
+            end
+        end
+    end
+
+    if ~isfield(Data.Info,'CutEnd') && ~ isfield(Data.Info,'CutStart')
+        % Can be the case that sample number of events exceed data recording. 
+        % Search for those events and delete
+        for nevents = 1:length(Data.Events)
+            if sum(Data.Events{nevents}>length(Data.Time))>0
+                msgbox(strcat("Extracted event data for selected channel ", num2str(nevents)," contains ",num2str(sum(Data.Events{nevents}>length(Data.Time)))," samples outside of time range which are deleted. This can be due to an incorrect start timestamp of your recording."))
+                Data.Events{nevents}(Data.Events{nevents}>length(Data.Time)) = [];
+            end
         end
     end
 
@@ -423,20 +445,28 @@ if isfield(Data,'Events')
         Eventstodelete = [];
         for i = 1:length(Data.Events)
             if ~isempty(Data.Events{i})
-                % account for time being cut (cut start and cut end)
-                if isfield(Data.Info,'CutStart')
-                    index = round(Data.Info.CutStart * Data.Info.NativeSamplingRate);
-    
-                    EventsToDelete = Data.Events{i} <= index;
-                    Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
-                    Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
-                end
+                if ~strcmp(RecordingType,"Open Ephys")% Done above
+                    % account for time being cut (cut start and cut end)
+                    if isfield(Data.Info,'CutStart')
+                        index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
         
-                if isfield(Data.Info,'CutEnd')
-                    EventsToDelete = Data.Events{i} >= length(Data.Time);
-                    Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
+                        EventsToDelete = Data.Events{i} <= index;
+                        if sum(EventsToDelete)>0
+                            Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
+                            Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
+                            disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," events are deleted!"));
+                        end
+                    end
+            
+                    if isfield(Data.Info,'CutEnd')
+                        EventsToDelete = Data.Events{i} >= length(Data.Time);
+                        if sum(EventsToDelete)>0
+                            Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
+                            disp(strcat("Stop time of dataset was cut. First ",num2str(sum(EventsToDelete))," events are deleted!"));
+                        end
+                    end
                 end
-        
+
                 Data.Info.EventChannelNames = {};
                 Data.Info.EventChannelType = [];
                 

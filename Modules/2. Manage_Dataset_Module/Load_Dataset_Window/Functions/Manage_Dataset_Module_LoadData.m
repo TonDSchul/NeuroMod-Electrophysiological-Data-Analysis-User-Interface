@@ -37,19 +37,22 @@ if strcmp(Format,".dat")
     
     Header = load(FullPathInfo);
 
-    h = waitbar(0, 'Loading Header and General Infos...', 'Name','Loading Header and General Infos...');
-    msg = sprintf('Loading Data... (%d%% done)', 50);
-    waitbar(50, h, msg);
+    h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
+    msg = sprintf('Preparing Data to Save... (%d%% done)', 25);
+    waitbar(25, h, msg);
     
     nchan = Header.Info.NrChannel;
     ntime = Header.Info.num_data_points;
-
+    
     Datatoload = [];
     FileIdentifier = fopen(FullPath,'r');
 
     if FileIdentifier == -1
         error('Failed to open the file.');
     end
+
+    msg = sprintf('Loading Data... (%d%% done)', 50);
+    waitbar(50, h, msg);
 
     if isfield(Header,'Whattosave')
         if Header.Whattosave(1) == 1 && Header.Whattosave(2) == 0
@@ -95,6 +98,9 @@ if strcmp(Format,".dat")
             Datatoload.Preprocessed = single(Datatoload.Preprocessed) / Header.Info.scalingFactor(2);
         end
     end
+
+    msg = sprintf('Loading Header Info... (%d%% done)', 75);
+    waitbar(75, h, msg);
 
     Textbox.Value = [Textbox.Value;"Loading Channel Data finished"];
 
@@ -165,6 +171,6 @@ if strcmp(Format,".dat")
 
 end
 
-msg = sprintf('Loading Data... (%d%% done)', 100);
+msg = sprintf('Loading Header Info... (%d%% done)', 100);
 waitbar(100, h, msg);
 close(h);

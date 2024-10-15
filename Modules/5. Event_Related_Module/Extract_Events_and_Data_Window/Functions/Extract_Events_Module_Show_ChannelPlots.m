@@ -1,4 +1,4 @@
-function Extract_Events_Module_Show_ChannelPlots(Data,Channel,Folder,app,RHDAllChannelData,Type,DownsampleRate,executablefolder)
+function Extract_Events_Module_Show_ChannelPlots(Data,Channel,Folder,app,RHDAllChannelData,Type,DownsampleRate,executablefolder,StateOption)
 
 %________________________________________________________________________________________
 %% Function to plot event data of a selected event channel 
@@ -139,16 +139,15 @@ if strcmp(Data.Info.RecordingType,"Open Ephys")
         msgbox("Selected Node contains no events!");
         return;
     end
-    
+    % get event number seelctec
     LineIndex = [];
     for i = 1:length(app.FileTypeDropDown_2.Items)
         if strcmp(app.FileTypeDropDown_2.Items{i},app.FileTypeDropDown_2.Value) 
             LineIndex = i;
         end
     end
-
-    SelectedLineIndicies = EventInfotoShow.line == Channel.LineNumbers(LineIndex);
-
+    
+    % Extract samples
     if isprop(EventInfotoShow,'sample_number')
         sampleNumber = EventInfotoShow.sample_number;
     elseif isprop(EventInfotoShow,'sampleNumber')
@@ -161,8 +160,42 @@ if strcmp(Data.Info.RecordingType,"Open Ephys")
             end
         end
     end
+    
+    %% Only select events according to user inputs --> event line and state 
+    % Select event channel and state equals (1)
+    SelectedLineIndicies = EventInfotoShow.line == Channel.LineNumbers(LineIndex);
+    
+    if strcmp(StateOption,"State = 1")
+        SelectedLineIndicies = SelectedLineIndicies+(EventInfotoShow.state == 1);
+        SelectedLineIndicies(SelectedLineIndicies==1)=0;
+        SelectedLineIndicies(SelectedLineIndicies==2)=1;
+        SampleNumber = double(sampleNumber(SelectedLineIndicies==1));
+    elseif strcmp(StateOption,"State = 0")
+        SelectedLineIndicies = SelectedLineIndicies+(EventInfotoShow.state == 0);
+        SelectedLineIndicies(SelectedLineIndicies==1)=0;
+        SelectedLineIndicies(SelectedLineIndicies==2)=1;
+        SampleNumber = double(sampleNumber(SelectedLineIndicies==1));
+    end
+    
+    if isfield(Data.Info,'CutStart') %% Normalize to new zero timestamp
+        SampleNumber = SampleNumber - (sum(Data.Info.CutStart)*Data.Info.NativeSamplingRate);
+        SampleNumber(SampleNumber<=0) = [];
+    end
+    % Include a specific duration of the event to make it clearly visible
+    % -- 1ms standard
+    
+    Numsamplesevent = round(Data.Info.NativeSamplingRate*0.001);
 
-    SampleNumber = sampleNumber(SelectedLineIndicies==1);
+    SampleEndNumber = SampleNumber+Numsamplesevent;
+    EventData = zeros(1,length(Data.Time));
+    
+    % Just one sample would be visibly different to others. This can be
+    % hard to see so I add 1ms to the right of the trigger 
+    for i = 1:length(SampleNumber)
+        if SampleEndNumber(i)<length(EventData)
+            EventData(SampleNumber(i):SampleEndNumber(i)) = 1;
+        end
+    end
     
     zerosample = SampleNumber == 0;
 
@@ -171,22 +204,7 @@ if strcmp(Data.Info.RecordingType,"Open Ephys")
         SampleNumber(zerosample==1) = [];
     end
 
-    % Include a specific duration of the event to make it clearly visible
-    % -- 2ms standard
-    Numsamplesevent = Data.Info.NativeSamplingRate*0.002;
-
-    EventData = zeros(1,length(Data.Time));
-
-    % Just one sample would be visibly different to others. This can be
-    % hard to see so I add 1ms to the right of the trigger 
-    for i = 1:length(SampleNumber)
-        if SampleNumber(i)+Numsamplesevent<=length(EventData)
-            EventData(SampleNumber(i):SampleNumber(i)+Numsamplesevent) = 1;
-        elseif SampleNumber(i)+Numsamplesevent>length(EventData)
-            EventData(1:end) = 1;
-        end
-    end
-
+   
     Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate)
     
 end

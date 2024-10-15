@@ -45,7 +45,16 @@ if strcmp(Type,"Two")
             if ~Negative
                 if number >= 0
                     % Set the Input to 'number,number'
-                    Input = sprintf('%d,%d', number, number);
+                    if CompareToStandard
+                        biggestallowedValue = str2double(strsplit(StandardValues,','))';
+                        if number<biggestallowedValue(2)
+                            Input = sprintf('%d,%d', number, number);
+                        else
+                            Input = sprintf('%d,%d', biggestallowedValue(2), biggestallowedValue(2));
+                        end
+                    else
+                        Input = sprintf('%d,%d', number, number);
+                    end
                 else
                     % The number is not above 0, replace with standard value
                     Input = StandardValues;
