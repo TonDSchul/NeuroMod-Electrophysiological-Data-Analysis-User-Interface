@@ -51,6 +51,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
             return;
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort')
             %% Start GUI
+
             [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0);
 
             if Error == 0

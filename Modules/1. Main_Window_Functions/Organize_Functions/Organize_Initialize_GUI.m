@@ -30,8 +30,8 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 % 8. PreviousChannelDeletetion: 1 if channel were deleted, 0 if not. Not
 % inplemented yet, but prb necesary in future to delete channel in the
 % middle of the probe (not beginning with first or ending with last channel)
-% 7. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
-% 8. ChannelSpacing: in um as double
+% 9. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
+% 10. ChannelSpacing: in um as double
 
 % Output:
 % 1. app: object with initialized values
@@ -256,7 +256,12 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.Data_Path = SelectedFolder;
     app.Data.Info.NativeSamplingRate = SampleRate;
     app.Data.Info.RecordingType = RecordingType;
-    app.Data.Info.ChannelSpacing = ChannelSpacing;
+    if ischar(ChannelSpacing) || isstring(ChannelSpacing)
+        app.Data.Info.ChannelSpacing = str2double(ChannelSpacing);
+    else
+        app.Data.Info.ChannelSpacing = ChannelSpacing;
+    end
+
     app.Data.Info.SpikeType = "Non";
     % Get Channel Selection when new app.Data loadaed
     ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));
@@ -316,28 +321,25 @@ elseif strcmp(Type,"Preprocessing")
     end
 
     if ~isfield(app.Data,'Events')
+        if strcmp(app.PlotEvents,"Events")
+            app.PlotEvents = "No";
+        end
         Placeholder = {};
         app.DropDown_2.Items = Placeholder;
         app.DropDown_2.Items{1} = 'Non';
-        if isfield(app.Data,'Spikes')
-            app.DropDown_2.Items{2} = 'Spikes';
-        end
     else
         Placeholder = {};
         app.DropDown_2.Items = Placeholder;
         app.DropDown_2.Items{1} = 'Non';
         app.DropDown_2.Items{2} = 'Events';
-        if isfield(app.Data,'Spikes')
-            app.DropDown_2.Items{3} = 'Spikes';
+        if strcmp(app.PlotEvents,"Events")
+            app.DropDown_2.Value = 'Events';
         end
     end
 
     if ~isfield(app.Data,'Spikes')
-        Placeholder = {};
-        app.DropDown_2.Items = Placeholder;
-        app.DropDown_2.Items{1} = 'Non';
-        if isfield(app.Data,'Events')
-            app.DropDown_2.Items{2} = 'Events';
+        if strcmp(app.Plotspikes,"Spikes")
+            app.Plotspikes = "No";
         end
     else
         app.DropDown_2.Items = Placeholder;
@@ -349,6 +351,12 @@ elseif strcmp(Type,"Preprocessing")
             app.DropDown_2.Items{2} = 'Spikes';
         end
         
+        if strcmp(app.PlotEvents,"Events")
+            app.DropDown_2.Value = 'Events';
+        end
+        if strcmp(app.Plotspikes,"Spikes")
+            app.DropDown_2.Value = 'Spikes';
+        end
     end
 
     if strcmp(app.DropDown.Value,'Raw Data')

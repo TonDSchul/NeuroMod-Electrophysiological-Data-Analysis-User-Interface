@@ -58,8 +58,8 @@ stringArray = [];
 %% Show Info what file type the loaded folder should contain 
 % If Intan selected as recording system
 
-stringtoshow = "Please select a folder containing data files of your recording.";
-msgbox(stringtoshow);
+% stringtoshow = "Please select a folder containing data files of your recording.";
+% msgbox(stringtoshow);
 
 %% Get user selcted folder and save as SelectedFolder
 % Prompt the user to select a folder

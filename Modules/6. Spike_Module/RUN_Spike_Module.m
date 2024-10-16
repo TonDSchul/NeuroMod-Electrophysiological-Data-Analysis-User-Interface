@@ -11,7 +11,7 @@ if strcmp(ModuleFunctionName,"Internal Spike Detection")
 elseif strcmp(ModuleFunctionName,"Save for Kilosort")
     
     if ~isfield(app.Data,'Raw')
-        msgbox("Error: No Raw Data found. Data to be exported has to not be preprocessed! Returning.");
+        msgbox("Error: No raw data found! Preprocessing will be done in kilosort and can not be saved. Returning.");
         return;
     end
 

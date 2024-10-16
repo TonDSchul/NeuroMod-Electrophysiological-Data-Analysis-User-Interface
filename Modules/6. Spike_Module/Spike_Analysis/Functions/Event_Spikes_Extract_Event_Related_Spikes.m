@@ -29,6 +29,8 @@ function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType
 
 %________________________________________________________________________________________
 
+h = waitbar(0, 'Extract Event Related Spikes...', 'Name','Extract Event Related Spikes...');
+
 Error = 0;
 
 if isempty(Data.Spikes)
@@ -68,8 +70,14 @@ Data.EventRelatedSpikes.SpikeWaveforms = [];
 Events = Data.Events{EventtoShow};
 SpikeTimes = Data.Spikes.SpikeTimes;
 
+cN = size(Data.EventRelatedData,2);
+
 % Loop over event indicies (trials)
 for nevents = 1:size(Data.EventRelatedData,2)
+
+    msg = sprintf('Extract Event Related Spikes... (%d%% done)', round(100*(nevents/cN)));
+    waitbar(nevents/cN, h, msg);
+
     % Extracts Spike Times from Kilosort Spike
     % positions within event range
     SpikeIndicieWithinCurrentEvent = SpikeTimes > Events(nevents)-NumSamplesBefore & SpikeTimes <= Events(nevents)+NumSamplesAfter;
@@ -101,7 +109,10 @@ for nevents = 1:size(Data.EventRelatedData,2)
     if sum(Data.EventRelatedSpikes.SpikeTimes(Data.EventRelatedSpikes.SpikeTimes<=0)) > 0
         Data.EventRelatedSpikes.SpikeTimes(Data.EventRelatedSpikes.SpikeTimes<=0) = 1;
     end
- 
+end
+
+if ~isempty(h)
+    close(h);
 end
 
 
