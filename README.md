@@ -19,9 +19,9 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
   
 - [How to use the GUI](#how-to-use-the-gui)
   
-  - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
-
   - [Get Started With Example Data](#get-started-with-example-data)
+  
+  - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
  
@@ -42,7 +42,7 @@ In addition to raw data, the GUI also supports event data (e.g., TTL signals to 
 
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
 Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save recording data for Kilosort, create channel maps, and load Kilosort result files for interactive spike data (and unit analysis) visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3. Since every analysis is shown and editable in a seperate window, spike and lfp analysis results can be easily compared and correlated. 
+If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3 (which does not has to be installed). Since every analysis is shown and editable in a seperate window, spike and lfp analysis results can be easily compared and correlated. 
 
 __NOTE:__ Currently only Kilosort 3 and Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
@@ -60,9 +60,7 @@ To download Kilsort 3 visit:
 
 https://github.com/MouseLand/Kilosort/releases/tag/v3.0.2
 
-For more information about Wave_clus 3 visit:
-
-[https://github.com/MouseLand/Kilosort/releases/tag/v3.0.2](https://github.com/csn-le/wave_clus)
+More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
 
 <table>
   <tr>
@@ -81,8 +79,13 @@ For more information about Wave_clus 3 visit:
 ```matlab
 Neuromod_Toolbox_GUI
 ```
+> ### **Get Started With Example Data**
 
-- Along with Matlab you need the following Matlab Toolboxes for unrestricted functionality:
+<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
+
+In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
+The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in the corresponding folder of the toolbox. Following along the descriptions in the window that opens, specify the folder and channelspacing or read the manual to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing or selecting a folder without a supported recording file), you will get a message what the issue is.
 
 > ### **Overview of required Matlab toolboxes**
 
@@ -133,14 +136,6 @@ If you want to extract .smrx files from Spike2, you additionally need to install
 https://ced.co.uk/upgrades/spike2matson
 
 When you extract .smrx for the first time, you are asked to select the folder in which you installed the Spike2 MATLAB SON Interface to be able to use the library. The path is saved permanently, so you only have to do this once.
-
-> ### **Get Started With Example Data**
-
-<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
-
-In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
-The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in the corresponding folder of the toolbox. Following along the descriptions in the window that opens, specify the folder and channelspacing or read the manual to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing or selecting a folder without a supported recording file), you will get a message what the issue is.
 
 > ### **Overview of Other Toolboxes Used**
 
