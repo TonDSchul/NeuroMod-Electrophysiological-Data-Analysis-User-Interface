@@ -3,11 +3,9 @@
 <img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
 
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
-It seamlessly integrates established toolboxes such as Kilosort and Fieldtrip, to offer a wide range of analyses methods and support for various data formats. 
+It seamlessly integrates established toolboxes such as Kilosort and Fieldtrip, to bring together a wide range of analyses methods and support for various data formats in a code free user interface.
 
-First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
-
-The aim is to offer a comfortable and user-friendly experience with support for many of the most popular recording formats, while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
+The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance while still having full control over the analysis.
 
 Since the requirements for analysis and visualization can be wastly different and should be editable, the modular design philosophy of the user interface enables you to easily integrate your own analysis module into the GUI. All you have to do is to open the Matlab App Designer and copy a few lines of code from the manual, giving real time access to the whole dataset. When your app window is ready, it can be activated with a few clicks in the GUI, integrating it into the rest of the analysis ecosystem. 
@@ -39,12 +37,12 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="70%" />
 
-The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
-In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
+The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx) and Neuralynx (.ncs).
+In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
 Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save recording data for Kilosort, create channel maps, and load Kilosort result files for interactive spike data (and unit analysis) visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3. 
+If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3. Since every analysis is shown and editable in a seperate window, spike and lfp analysis results can be easily compared and correlated. 
 
 __NOTE:__ Currently only Kilosort 3 and Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
@@ -125,9 +123,6 @@ Wavelet Toolbox
 Signal Processing Toolbox
 Statistics and Machine Learning Toolbox
 ```
-
-**Note:**
-Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
 
 For more information how to install Matlab toolboxes:
 
