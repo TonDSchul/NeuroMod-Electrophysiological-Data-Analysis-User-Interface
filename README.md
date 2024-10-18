@@ -35,12 +35,15 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
 
 > ## **Data Formats and Capabilities**
 
+
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="70%" />
 
 The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx) and Neuralynx (.ncs).
 In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
-
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
+
+<img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
+
 Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save recording data for Kilosort, create channel maps, and load Kilosort result files for interactive spike data (and unit analysis) visualization within the GUI.
 If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3 (which does not has to be installed). Since every analysis is shown and editable in a seperate window, spike and lfp analysis results can be easily compared and correlated. 
 
@@ -61,13 +64,6 @@ To download Kilsort 3 visit:
 https://github.com/MouseLand/Kilosort/releases/tag/v3.0.2
 
 More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
-
-<table>
-  <tr>
-    <td><img src="Modules/MISC/Images/Example_Image_3.jpg" style="max-width:100%; height:auto;"/></td>
-    <td><img src="Modules/MISC/Images/Example_Image_2.jpg" style="max-width:100%; height:auto;"/></td>
-  </tr>
-</table>
 
 > ## **How to use the GUI** ##
 
