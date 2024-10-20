@@ -1,10 +1,17 @@
 # Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab 
 
 <img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
-  
+
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
-It seamlessly integrates established methods and toolboxes, such as Kilosort and Fieldtrip, to offer a wide range of analyses and support for various data formats, all with prooven methods and without reinventing the wheel. 
-The aim is to offer a comfortable and user-friendly experience with support for many of the most popular recording formats, while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes that leave users uncertain about what was done to their data.
+It seamlessly integrates established toolboxes such as Kilosort and Fieldtrip, to bring together a wide range of analyses methods and support for various data formats in a code free user interface.
+
+The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
+This design ensures a smooth, code-free user experience, offering helpful guidance while still having full control over the analysis.
+
+Since the requirements for analysis and visualization can be wastly different and should be editable, the modular design philosophy of the user interface enables you to easily integrate your own analysis module into the GUI. All you have to do is to open the Matlab App Designer and copy a few lines of code from the manual, giving real time access to the whole dataset. When your app window is ready, it can be activated with a few clicks in the GUI, integrating it into the rest of the analysis ecosystem. 
+Lastly an autorun functionality can be used to apply all analysis and visulatzation methods available in the GUI to multiple recordings in a folder and save analysis plots and results independent of the GUI.   
+
+As a result of this design, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings with your own pipeline. 
 
 > ## **Table of Contents**
 > 
@@ -12,9 +19,9 @@ The aim is to offer a comfortable and user-friendly experience with support for 
   
 - [How to use the GUI](#how-to-use-the-gui)
   
-  - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
-
   - [Get Started With Example Data](#get-started-with-example-data)
+  
+  - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
  
@@ -28,14 +35,17 @@ The aim is to offer a comfortable and user-friendly experience with support for 
 
 > ## **Data Formats and Capabilities**
 
+
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="70%" />
 
-The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx), Neuralynx (.ncs), and Plexon (.plx) files.
-In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data using a variety of methods.
-
+The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx) and Neuralynx (.ncs).
+In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
-Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save data, create channel maps, and load Kilosort result files for interactive spike data (and unit analysis) visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3. 
+
+<img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
+
+Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save recording data for Kilosort, create channel maps, and load Kilosort result files for interactive spike data (and unit analysis) visualization within the GUI.
+If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3 (which does not has to be installed). Since every analysis is shown and editable in a seperate window, spike and lfp analysis results can be easily compared and correlated. 
 
 __NOTE:__ Currently only Kilosort 3 and Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
@@ -53,21 +63,7 @@ To download Kilsort 3 visit:
 
 https://github.com/MouseLand/Kilosort/releases/tag/v3.0.2
 
-Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
-This design ensures a smooth, code-free user experience, offering helpful guidance while still having full control over the analysis.
-Besides the analysis of a single recording with the user interface, an autorun functionality can be used, desgined to apply selected methods to all recordings in a folder, automatically saving all possible analysis visualizations based on a single Config file with a few options to specify (see below).
-As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings. 
-
-Another feature of this user intrerface is the ability to easily add your own data analysis to integrate it into the rest of your analyiss pipeline. 
-All you have to do is to follow this link and watch a short tuorial how to create your own app window and integrate it into the rest of the GUI, giving fully real time control over all data components:
-LINK TO YOUTUBE TUTORIAL
-
-<table>
-  <tr>
-    <td><img src="Modules/MISC/Images/Example_Image_3.jpg" style="max-width:100%; height:auto;"/></td>
-    <td><img src="Modules/MISC/Images/Example_Image_2.jpg" style="max-width:100%; height:auto;"/></td>
-  </tr>
-</table>
+More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
 
 > ## **How to use the GUI** ##
 
@@ -79,11 +75,13 @@ LINK TO YOUTUBE TUTORIAL
 ```matlab
 Neuromod_Toolbox_GUI
 ```
+> ### **Get Started With Example Data**
 
-- Along with Matlab you need the following Matlab Toolboxes for unrestricted functionality:
-**Note:**
-Some of those Matlab toolboxes are required for fieldtrip, the open ephys analysis tool or some other Github repositories used and are therefore not necessary in every circumstance.
-Additionally, only portions of the respective tools and repositories are used, which might make some Matlab toolboxes unnecessary. 
+<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
+
+In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
+The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in the corresponding folder of the toolbox. Following along the descriptions in the window that opens, specify the folder and channelspacing or read the manual to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing or selecting a folder without a supported recording file), you will get a message what the issue is.
 
 > ### **Overview of required Matlab toolboxes**
 
@@ -129,25 +127,17 @@ For more information how to install Matlab toolboxes:
 
 https://de.mathworks.com/help/matlab/matlab_env/get-add-ons.html
 
-If you want to extract .smrx files from Spike2, you need to install the Spike2 MATLAB SON Interface from:
+If you want to extract .smrx files from Spike2, you additionally need to install the Spike2 MATLAB SON Interface from:
 
 https://ced.co.uk/upgrades/spike2matson
 
 When you extract .smrx for the first time, you are asked to select the folder in which you installed the Spike2 MATLAB SON Interface to be able to use the library. The path is saved permanently, so you only have to do this once.
 
-> ### **Get Started With Example Data**
-
-<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
-
-In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides. 
-The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example Datasets are saved in the corresponding folder of the toolbox. Following along the descriptions in the window that opens, specify the folder and channelspacing or read/watch the tutorial to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing or selecting a folder without a supported recording file), you will get a message what was going wrong and what the issue is.
-
 > ### **Overview of Other Toolboxes Used**
 
-Some aspects of data extraction and analysis are handled by other Toolboxes, which dont have to be installed since the required functions are included in the source code (Data Path\Modules\Toolboxes).
+Some aspects of data extraction and analysis are handled by other toolboxes than the native Matlab ones, which dont have to be installed since the required functions are included in the source code (Data Path\Modules\Toolboxes).
 
-Specifically, the data and event extraction of Neuralynx and Plexon file formats (.ncs, .nve and .plx) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to for filtering data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
+Specifically, the data and event extraction of Neuralynx file formats (.ncs, .nve) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to for filtering data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
 
 Check out **Fieldtrip**: 
 
@@ -183,7 +173,7 @@ If you want to update fieldtrip or one of the other tools available on Github, t
 > ### **Autorun Functionality**
 
 - If you have multiple recordings and want to apply a fixed analysis pipeline using the GUI, you can automate the process with the Autorun function. This feature eliminates the need to manually navigate the GUI for each recording. Instead, it automatically processes each recording, applying all the data extraction, processing, and analysis steps offered by the GUI while being independent from it. All visualizations and analysis specified are then saved automatically in the respective recording folder.
-- You can modify the specific processing steps and parameters using the configuration file located in GUI_Path\Autorun_Configs\Config_Files(do not edit!). However, there’s no need to navigate to this directory or make manual changes, as everything is managed through the Autorun Manager Window. You can access this window from the menu in the top left corner of the GUI’s main window. Simply start the GUI and open the Autorun Manager—no additional steps are required.
+- You can modify the specific processing steps and parameters using the configuration file located in GUI_Path\Autorun_Configs\Config_Files(do not edit!). However, there’s no need to navigate to this directory or make manual changes, as everything is managed through the 'Autorun Manager Window'. You can access this window from the menu in the top left corner of the GUI’s main window. Simply start the GUI and open the Autorun Manager—no additional steps are required.
 - In the Autorun Manager, you can select a configuration file to open directly within the GUI or in MATLAB for editing. To help you get started, a template configuration file is available for each recording system.
 - Once you are satisfied with the configuration file, select a folder containing your recording(s), specify your probe properties (channel spacing and optionally channel order) and start the pipeline. The pipeline will run through and give messages about the progress in the matlab command window.
 - For more information, see the documentation:

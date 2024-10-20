@@ -45,6 +45,52 @@ File: LineClickedTime.m
 
  ###################################################### 
 
+File: Menu_Extract_Data_Callback.m
+%________________________________________________________________________________________
+
+%% This is the callback function executed when the user clicks on a saved probe information in the 'Load Save Probe Information menu on top of the 'Extract Data Window'
+
+% This fucntion is executed for every possible menu option shown and initiated in the Extract Data Window. The name of the selected menu is
+% saved in the 'fileNames' variable.
+
+% Input:
+% 1. app: app object of the extract data window to access the
+% Load_Data_Window_Info variable which holds the loaded channel order and
+% channelspacing 
+% 2. fileNames: string, name of the menu point the user clicked on (with a -mat at the end, equals savefilename)
+% 3. DefaultFolder: char, default folder saving costume probe information:
+% GUI_Path/Channel Maps/Saved Probe Information
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Menu_Extract_Data_Load_Manually_Callback.m
+%________________________________________________________________________________________
+
+%% This is the callback function executed when the user clicks on laoding a probe design manually (selecting folder themselves)
+
+% This fucntion is executed when the user clicks on the Manually Select
+% File menu option in the Extract Data Window
+
+% Input:
+% 1. app: app object of the extract data window to access the
+% Load_Data_Window_Info variable which holds the loaded channel order and
+% channelspacing 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: UIAxesButtonDown.m
 %________________________________________________________________________________________
 %% Callback Function that handles a click on the data plot and displays a corresponding channel
@@ -312,6 +358,38 @@ File: Utility_Save_Data_as_TXT_CSV.m
 
 % Output Arguments: 
 % 1. Error: 1 if an error occured, 0 if not. gets checked in Utility_Get_Plot_Data function
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Save_Load_Delete_Plot_Appearance.m
+%________________________________________________________________________________________
+
+%% Function to Manage savinf, loading and deleting then plot appearance variable
+% This function is called in any window the user can modify the plot
+% appearance and saves the costum appearance or deletes previosuly saved
+% costum appearances. It is also called in the Organize_Initialize_GUI.m
+% function on startup of the GUI to load the costum/standard appearance (depending on whether user saved costum)
+
+% Appearances saved in GUI_Path/Modules/MISC/Variables (do not edit!)
+% PlotAppearance.m holds the costum appearance saved by the user
+% Template_PlotAppearance.m holds the standard settings.
+% If non was found (also no template), new template is created by calling
+% Organize_Set_Standard_PlotAppearance. which hard codes all standrad
+% appearances
+
+% Inputs:
+% 1. PlotAppearance: structure holding plot appearance
+% 2. executableFolder: string, path to gui currently executed (created on GUI startup)
+% 3. Type: string, specifies what do do here, Either "Save" OR "Load" OR "Delete"
+
+% Output:
+% app object with initialized values
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

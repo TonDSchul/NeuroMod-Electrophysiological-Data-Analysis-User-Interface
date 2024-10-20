@@ -1,4 +1,4 @@
-function [Data,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Internal_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,ClustertoshowDropDown,numCluster,CurrentPlotData,SpikeBinSettings,PlotAppearance)
+function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Internal_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,ClustertoshowDropDown,numCluster,CurrentPlotData,SpikeBinSettings,PlotAppearance)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for event internal spikes based on user input
@@ -59,15 +59,7 @@ function [Data,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRat
 %________________________________________________________________________________________
 
 %% Bc of Spike triggered avg this has to be computed again (to get spike time stamps not normalized to event time)
-if strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
-    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',1);
-else
-    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',0);
-end
-
-if Error == 1
-    return;
-end
+TempData = [];
 
 %% Prepare Plots
 if strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
@@ -124,11 +116,11 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
         SpikeTimes = SpikeTimes(SpikesinCluster==1);
         SpikePositions = SpikePositions(SpikesinCluster==1);
     end
-
+    
     [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Events",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoshowDropDown,CurrentPlotData,PlotAppearance);
     
     % Spike Rate -- extract events again with last input being 0
-     [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',0);
+    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',0);
 
     if Error == 1
         return;
@@ -141,10 +133,6 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     if ~strcmp(ClustertoshowDropDown,'Non') && ~strcmp(ClustertoshowDropDown,'All')
         CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr(1):PlotInfo.EventNr(2)),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
     end
-
-    if ~isempty(TempData) % if not preprocessed
-        Data = TempData; % if preprocessed
-    end  
 
 elseif strcmp(AnalysisTypeDropDown,"Spike Field Coherence")
 

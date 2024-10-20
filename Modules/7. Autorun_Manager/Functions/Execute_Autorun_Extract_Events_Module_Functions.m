@@ -22,7 +22,6 @@ function [Data] = Execute_Autorun_Extract_Events_Module_Functions(AutorunConfig,
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-
 %______________________________________________________________________________________________________
 %% 4. Event Data Module
 %______________________________________________________________________________________________________
@@ -44,8 +43,17 @@ if strcmp(FunctionOrder,'Extract_Events')
     TextArea = [];
     RHDAllChannelData = [];
 
+    SelectedNode = []; % in case of OE data this is filled
+
     %% Start Event Extraction
-    [Data,~,~,~] = Extract_Events_Module_Main_Function(Data,EventInfo,DataPath,Data.Info.RecordingType,AutorunConfig.ExtractEventDataModule.ChannelOfInterest,AutorunConfig.ExtractEventDataModule.EventSignalThreshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea,RHDAllChannelData,executableFolder);
+    if strcmp(Data.Info.RecordingType,"Open Ephys")
+        SelectedNode = 1;
+        startTimestamp = Info.startTimestamp{SelectedNode};
+        [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = Extract_Events_Module_Main_Function(Data,EventInfo,DataPath,Data.Info.RecordingType,AutorunConfig.ExtractEventDataModule.ChannelOfInterest,AutorunConfig.ExtractEventDataModule.EventSignalThreshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea,RHDAllChannelData,executableFolder,startTimestamp);
+    else
+        startTimestamp = [];
+        [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = Extract_Events_Module_Main_Function(Data,EventInfo,DataPath,Data.Info.RecordingType,AutorunConfig.ExtractEventDataModule.ChannelOfInterest,AutorunConfig.ExtractEventDataModule.EventSignalThreshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea,RHDAllChannelData,executableFolder,startTimestamp);
+    end
 
     if isfield(Data,'Events')
         if ~isempty(Data.Events)
@@ -190,7 +198,7 @@ if isfield(Data,'Events')
                     [~,DataChannelSelected,EventNrRange,~,TF] = Event_Module_Organize_TF_Window_Inputs(Data,"Moorlet Wavelets",ChannelSelection,EventSelection,AutorunConfig.AnalyseEventDataModule.TFFrequencyRange,AutorunConfig.AnalyseEventDataModule.TFCycleWidth,[],[]);
             
                     if strcmp(Data.Info.EventRelatedDataType,'Raw')
-                        [~,~,~,~,~,DataChannelSelected,EventNrRange,~,TF] = Event_Module_Organize_TF_Window_Inputs(app,"TF",Data.Info.NativeSamplingRate,TimearoundEvent);
+                        [~,~,~,~,~,DataChannelSelected,EventNrRange,~,TF] = Event_Module_Organize_TF_Window_Inputs(Data,"TF",Data.Info.NativeSamplingRate,TimearoundEvent);
                         if strcmp(AutorunConfig.AnalyseEventDataModule.DataSource,"Raw Event Data")
                             Event_Module_Time_Frequency_Main(Data.EventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance)
                         elseif strcmp(AutorunConfig.AnalyseEventDataModule.DataSource,"Preprocessed Event Data")
@@ -230,7 +238,7 @@ end
 % 4.2 Prepro event related data
 %______________________________________________________________________________________________________
 if strcmp(FunctionOrder,'PreproEventDataModule')
-    % First Trial Rejection
+    %% Trial Rejection
     if AutorunConfig.PreproEventDataModule.TrialRejection == true
     
         EventRelatedDataTimeRange = [];
@@ -277,7 +285,8 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
            disp("Trial Rejection was not possible. No valid event time window.");
         end
     end
-    % Channel Rejection
+
+    %% Channel Rejection
     if AutorunConfig.PreproEventDataModule.ChannelRejection == true
         indicesep = find(AutorunConfig.PreproEventDataModule.ChannelToReject == ',');
         RejectChannel(1,1) = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject(1:indicesep(1)-1));
@@ -305,7 +314,8 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
         [Data] = Preprocessing_Events_Add_Preprocessing_Info(Data,'Channel Rejection',RejectChannel,Trials,[]);
     
     end
-    % Artefact Rejection
+
+    %% Artefact Rejection
     if AutorunConfig.PreproEventDataModule.ArtefactRejection == true
         if isempty(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject)
             if isfield(Data,'PreprocessedEventRelatedData')
@@ -324,6 +334,7 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
         end
 
         EventTime = [];
+        
         if strcmp(Data.Info.EventRelatedDataType,'Raw')
             EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
         else
@@ -334,17 +345,10 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
             end
         end
     
-        % Apply rejection
-        %% Get Timewindow and trial information from GUI
-        if isempty(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent)
-            TimeWindin(1,1) = app.EventTime(floor(length(app.EventTime)/3));
-            TimeWindin(1,2) = app.EventTime(floor(length(app.EventTime)/3)*2);
-        else
-            indicesep = find(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent == ',');
-            TimeWindin(1,1) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(1:indicesep(1)-1));
-            TimeWindin(1,2) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(indicesep+1:end));
-        end
-    
+        indicesep = find(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent == ',');
+        TimeWindin(1,1) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(1:indicesep(1)-1));
+        TimeWindin(1,2) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(indicesep+1:end));
+        
         %Channel
         indicesep = find(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject == ',');
         Channel(1,1) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1:indicesep(1)-1));
@@ -385,7 +389,7 @@ if isfield(Data,'Events')
         
         elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")
             
-            [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0);         
+            %[Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0);         
         
             if Error == 0 
                 % Handle Events to show
@@ -413,7 +417,11 @@ if isfield(Data,'Events')
                 else
                     TotalIterations = 2;
                 end
-    
+
+                SpkTrgSpikes = 2;
+
+                [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0);
+
                 for TotalIts = 1:TotalIterations % 2 if unit plots
 
                     if TotalIts == 1 % if no unit plot
@@ -425,6 +433,15 @@ if isfield(Data,'Events')
                     end
                     % loop over analysis types
                     for i = 1:length(AutorunConfig.AnalyseEventSpikesModule.Plottype)
+                        
+                        if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 0
+                            [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',1);
+                            SpkTrgSpikes = 1;
+                        elseif ~strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 1
+                            [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0);
+                            SpkTrgSpikes = 0;
+                        end
+                        
                         % loop over units
                         for nunits = 1:UnitIterations
                             if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
@@ -494,8 +511,6 @@ if isfield(Data,'Events')
             end
         
         elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
-        
-            [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Internal",0);
            
             if Error == 0
                 % Handle Events to show
@@ -543,6 +558,10 @@ if isfield(Data,'Events')
                     end
                 end
 
+                SpkTrgSpikes = 2;
+
+                [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',0);
+                
                 for TotalIts = 1:TotalIterations % 2 if unit plots
 
                     if TotalIts == 1 % if no unit plot
@@ -555,6 +574,14 @@ if isfield(Data,'Events')
 
                     % Loop over multiple analysis plots
                     for i = 1:length(AutorunConfig.AnalyseEventSpikesModule.Plottype)
+
+                        if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 0
+                            [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',1);
+                            SpkTrgSpikes = 1;
+                        elseif ~strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 1
+                            [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Internal',0);
+                            SpkTrgSpikes = 0;
+                        end
 
                         for nunits = 1:UnitIterations
                             if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
@@ -599,7 +626,6 @@ if isfield(Data,'Events')
                             %% Properly set up plot for saving (x axis ticks/labels and stuff like that)
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
-                            
                             
                             if UnitIterations > 1
                                 %% Plot Results if turned on

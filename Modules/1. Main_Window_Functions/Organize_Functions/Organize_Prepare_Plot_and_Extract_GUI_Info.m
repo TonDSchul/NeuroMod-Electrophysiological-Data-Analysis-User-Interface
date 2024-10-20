@@ -180,7 +180,7 @@ if isprop(app.CSDApp,'ExistflagCSD')
     % in main window user can select raw data. the csd however always
     % analyses preprocessed data. Since the DatatoPlot and TimeRangetoPlot are set above based on raw data when checkbox active, timerange and data have to be extracted again for preprocessed data and/or downsampled! 
     
-    if strcmp(app.DropDown.Value,'Raw Data') && isfield(app.Data.Info,'DownsampleFactor')  
+    if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')  
         TimeDurationTemp = str2double(app.TimeRangeViewBox.Value(1:end-1));
         StartTimeTemp = app.Data.Time(app.CurrentTimePoints);
         % Compute absolute differences

@@ -89,8 +89,6 @@ end
 %% Check if data wa high pass filtered - if not do it here, otherwise waveforms will look weird. (recommended is also top take the grand average)
 %if ~isfield(Data.)
 
-
-
 %% First detect KS version -- only 3 has rez.mat file and params.py
 [stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
 KSversion = [];
@@ -312,12 +310,12 @@ if HigPassFiltered == 0
     
     if strcmp(SaveFilter,"No")
         [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-        [~] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+        [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
         
         %% Now extract Waveforms
         [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
         
-        clear TempData;
+        TempData = [];
 
     else
         [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);

@@ -1,5 +1,22 @@
 function Menu_Extract_Data_Load_Manually_Callback (app)
 
+%________________________________________________________________________________________
+
+%% This is the callback function executed when the user clicks on laoding a probe design manually (selecting folder themselves)
+
+% This fucntion is executed when the user clicks on the Manually Select
+% File menu option in the Extract Data Window
+
+% Input:
+% 1. app: app object of the extract data window to access the
+% Load_Data_Window_Info variable which holds the loaded channel order and
+% channelspacing 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 [file, path] = uigetfile('*.mat', 'Select a .mat file');
             
 % Check if the user cancels the operation

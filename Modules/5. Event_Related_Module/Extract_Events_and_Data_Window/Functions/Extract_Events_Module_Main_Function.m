@@ -1,4 +1,4 @@
-function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = Extract_Events_Module_Main_Function(Data,EventInfo,Path,RecordingType,FileTypeDropDown,Threshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea2Object,RHDAllChannelData,executablefolder)
+function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = Extract_Events_Module_Main_Function(Data,EventInfo,Path,RecordingType,FileTypeDropDown,Threshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea2Object,RHDAllChannelData,executablefolder,startTimestamp)
 
 %________________________________________________________________________________________
 %% Function to coordinate Intan Event Extraction
@@ -36,6 +36,9 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = 
 % event
 % 11. executablefolder: char with the path to the currently execute GUI
 % instance, comes from public property in main window
+% 12. startTimestamp: Only for open ephys!! start time of recording in
+% seconds to substract from event times which are present in respect to
+% aquisition start, not recording start
 
 % Outputs:
 % 1. Data: Data structure with added field:
@@ -248,15 +251,14 @@ elseif strcmp(RecordingType,"Open Ephys")
 
     NoddeID = [];
     StateSelection = Threshold;
-
-    if isfield(Data.Info,'startTimestamp')
+ 
+    if ~isempty(startTimestamp)
         startTimestamp = round(Data.Info.startTimestamp*Data.Info.NativeSamplingRate);
     else
-        startTimestamp = [];
-        msgbox("Warning: No Aquisition Start time stamp found. Cannot correct event times if recording and aquistion start are different.")
+        msgbox("Warning: No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different.")
     end
     
-    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp);
+    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp,Data.Info.AllRecordingIndicies);
     
     % account for time being cut (cut start and cut end)
     for i = 1:length(Data.Events)

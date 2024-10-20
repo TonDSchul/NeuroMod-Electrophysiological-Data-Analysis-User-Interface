@@ -36,7 +36,7 @@ function [AutorunConfig] = Autorun_Config_OPEN_EPHYS_Analysis(DisplayOrder)
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_Internal_Spike_Sorting","Continous_Spike_Analysis","Continous_Unit_Analysis","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Event_Unit_Analysis","Save_for_Kilosort","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Save_Data"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Internal_Spike_Detection","Continous_Spike_Analysis","Event_Spike_Analysis"];
 
 % General Information
 AutorunConfig.AutorunConfigName = "OE LFP and Spike Analysis";
@@ -67,7 +67,7 @@ end
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
 AutorunConfig.ExtractRawRecording.ChannelSpacing = 50; % Some Standard value. Has to be manually specified in Autorun window
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Open Ephys"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
-AutorunConfig.ExtractRawRecording.FileType = "Record Node 101"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
+AutorunConfig.ExtractRawRecording.FileType = "Record Node 105"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -156,8 +156,8 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
 % Warning: ChannelOfInterest is the node in which you saved events.
 % EventChannelSelection is the line number holding events. Multiple are possible,seperated by a comma (see event extraction window info about events)
 % Threshold for open ephys is the state, either 1 or 0
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 113'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
-AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 105'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
+AutorunConfig.ExtractEventDataModule.EventChannelSelection = '2,3'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % Threshold of event signal at which events are extracted as char
 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
@@ -181,8 +181,8 @@ AutorunConfig.PreproEventDataModule.Method = 'Linear Interpolation';
 %% 4.3 Analyse event related signal
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.DataSource = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
-AutorunConfig.AnalyseEventDataModule.EventSelection = []; % Empty for all Events, otherwise format is char: 'Event1,Event2' like '1,20' for events 1 to 20 
-AutorunConfig.AnalyseEventDataModule.ChannelSelection = []; % Empty for all channel, otherwise format is char: 'Channel1,Channel2' like '1,20' for channel 1 to 20
+AutorunConfig.AnalyseEventDataModule.EventSelection = []; % Empty for all Events, otherwise format is char: '1,20' for events 1 to 20 
+AutorunConfig.AnalyseEventDataModule.ChannelSelection = []; % Empty for all channel, otherwise format is char: '1,20' for channel 1 to 20
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
 % CSD Settings
 AutorunConfig.AnalyseEventDataModule.CSDChannelSpacing = AutorunConfig.ExtractRawRecording.ChannelSpacing; % ChannelSpacing in um - autopopulated

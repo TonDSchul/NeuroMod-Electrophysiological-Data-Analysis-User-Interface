@@ -30,7 +30,9 @@ Data = [];
 texttoshow = "Extracting Data for Intan Recording System";
 
 %% Extract .dat Files
-   
+
+disp(strcat("Extracting ", Filetype," files"));
+
 if strcmp(Filetype,"Intan .dat")
     % Load dat file locations
     [DatFilePaths,AmplifierDataIndex,~,~,InfoRhd,~] = CheckIntanDatFiles(SelectedFolder);

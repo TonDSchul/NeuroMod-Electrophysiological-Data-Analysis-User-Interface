@@ -2,7 +2,7 @@ function [Data,Header,SampleRate] = Open_Ephys_Load_All_Formats(DATA_PATH,nRecor
 
 %________________________________________________________________________________________
 
-%% This is the main function to extract Open Ephys Data 
+%% This is the main function to extract Open Ephys TempData 
 % This function utilizes functions and some analysis workflows as well as
 % example data from the analysis-tools Github project from jsiegle
 % available at https://github.com/open-ephys/analysis-tools as well as the open-ephys-matlab-tools
@@ -30,8 +30,8 @@ function [Data,Header,SampleRate] = Open_Ephys_Load_All_Formats(DATA_PATH,nRecor
 % data app window, SelectedRecordNode = 2
 
 % Output: 
-% 1. Data: nchannel x ntimespoints single matrix with extracted raw data
-% 2. Header: structure containing header infos of recording. This get Data.Info later
+% 1. TempData: nchannel x ntimespoints single matrix with extracted raw data
+% 2. TempHeader: structure containing header infos of recording. This get TempData.Info later
 % 3. SampleRate: Sample Rate as double in Hz
 
 % Author: Tony de Schultz
@@ -40,6 +40,13 @@ function [Data,Header,SampleRate] = Open_Ephys_Load_All_Formats(DATA_PATH,nRecor
 %________________________________________________________________________________________
 
 Data = [];
+Header = [];
+TempData = [];
+ContinousStream = [];
+TempHeader = [];
+
+Header.startTimestamp = [];
+
 SampleRate = [];
 
 % "Import" matlab-tools
@@ -61,180 +68,244 @@ node = session.recordNodes{SelectedRecordNode};
 
 % Starting and stopped recording (but not acquisition) in the GUI will initiate a new "recording."
 % --> check wheter aquisition was started
-if length(node.recordings)>1
-    disp("Error: Only one recording at a time supported. Selecting just the first one! If you want to change it, go to function Open_Ephys_Load_All_Formats, line 64 and change the NodeIndex variable")
-    NodeIndex = 1;
-else
-    NodeIndex = 1;
-end
 
-% Get the first recording 
-recording = node.recordings{1,NodeIndex};
+NumRecordingIndex = length(node.recordings);
 
-% Iterate over all data streams in the recording 
-streamNames = recording.continuous.keys();
+if NumRecordingIndex>1
 
-if isempty(streamNames)
-    disp("Error: No stream names found. Please select a different Recording Node!");
-    return;
-end
+    disp(strcat("Found ",num2str(NumRecordingIndex)," recordings. Please select whether to extract them seperately or together!"));
 
-if isempty(recording.continuous)
-    disp("Error: No continous data found. Please select a different Recording Node!");
-    return;
-end
-
-disp("Num of Processor ID's: ",num2str(length(streamNames)));
-
-if length(streamNames)>1 %% Not yet implemented but importantn for neuropixels
-    disp("Can not handle multiple Processor ID's yet!! Skipping Node.")
-end
-
-for k = 1:length(streamNames) % if node contains continous data. It can have multiple processor streams
-
-    streamName = streamNames{k};
+    OERecordings = OE_Multiple_Recording_Selection(NumRecordingIndex);
     
-    % 1. Get the continuous data from the current stream/recording
-    TempData = recording.continuous(streamName);
-
-    if strcmp(node.format,'Binary')
-
-        Header = TempData.metadata;
-        
-        % Delete Info fields saved as cells that can not be displayed
-        % as information 
-        % Get all field names of the structure
-        fields = fieldnames(Header);
-
-        % Loop through each field
-        for o = 1:numel(fields)
-            fieldName = fields{o};
-
-            % Check if the field contains a cell
-            if iscell(Header.(fieldName))
-                % Delete the field
-                Header = rmfield(Header, fieldName);
-            end
-        end
-
-        %% Differentiate Data and peripheral (ADC) channel
-        DataChannel = [];
-        NoDataChannel = [];
-        for i = 1:length(TempData.metadata.names)
-            if contains(TempData.metadata.names{i},'CH')
-                DataChannel = [DataChannel,i];
-            else
-                NoDataChannel = [NoDataChannel,i];
-            end
-        end
-
-        
-        disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel"));
-        Data = single(TempData.samples(DataChannel,:));
-
-        %% Convert int16 to mV
-        Temp = node.recordings{1, 1};
-        if isprop(Temp,'info')
-            if isfield(Temp.info.continuous.channels,'bit_volts')
-                Bits = Temp.info.continuous.channels.bit_volts;
-                Data = (Data.*Bits)./1000; % convert uV in mV
-                Header.Bit_Volts = Bits;
-                disp(strcat("Bit_Volts Property for AD conversion to mV found."));
-            else
-                disp(strcat("Bit_Volts Property for AD conversion to mV not found. Data can only be shown as integers"));
-            end
-        end
-
-        %% Define Header
-        Header.startTimestamp = TempData.metadata.startTimestamp;
-        Header.NrChannel = size(Data,1);
-        Header.num_data_points = size(Data,2);
-        Header.Format = node.format;
-        Header.RecordingNode = node.name;
-        SampleRate = TempData.metadata.sampleRate;% Gets added to info in main function
-
-    elseif strcmp(node.format,'NWB')
+    uiwait(OERecordings.SelectRecordingWindowUIFigure);
     
-        Header = TempData.metadata;
-
-        DataChannelIndicie = Header.conversion==Header.conversion(1);
-
-        Data = single(TempData.samples(DataChannelIndicie,:));
-
-        BitConversions = Header.conversion(DataChannelIndicie); % Convert Volt in mV
-        
-        % Dont get info which channel are adc. Therefore, bit conversion is
-        % used -- different for data and adc. Assumption: first conversion
-        % is for first data channel.
-        % Alternativly: data channel conversion has more elements, but prb.
-        % even less robust
-        
-        %% Convert int16 to mV
-        if isfield(Header,'conversion')
-            disp(strcat("Bit_Volts Property for AD conversion to mV found in conversion field of header info. Field is renamed into 'Bit_Volts'"));
-            for i = 1:length(BitConversions)
-                Data(i,:) = (Data(i,:).*BitConversions(i)).*1000; % Convert Volt in mV
-            end
-            Header.Bit_Volts = Header.conversion;
-            % Delete 'field2' from the structure
-            Header = rmfield(Header, 'conversion');
-        else
-            disp(strcat("Bit_Volts Property for AD conversion to mV not found. Data can only be shown as integers"));
-        end
-
-        %% Define Header
-        Header.Format = node.format;
-        Header.RecordingNode = node.name;
-        Header.NrChannel = size(Data,1);
-        Header.num_data_points = size(Data,2);
-        
-        TimeInRecording = TempData.timestamps(end)-TempData.timestamps(1);
-        SampleRate = round(length(TempData.timestamps)/TimeInRecording); % Gets added to info in main function
-
-    elseif strcmp(node.format,'OpenEphys')
-        %% This contains relevant header infos (samplerate and bit_volts) for this format
-        TempHeader = recording.streams((streamName));
-
-        % Differentiate Data and peripheral (ADC) channel
-        DataChannel = [];
-        NoDataChannel = [];
-        for i = 1:length(TempHeader.channels)
-            if contains(TempHeader.channels{1,i}.name,"CH")
-                DataChannel = [DataChannel,i];
-            else
-                NoDataChannel = [NoDataChannel,i];
-            end
-        end
-        
-        disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel"));
-        %% Get Data
-        Data = single(TempData.samples(DataChannel,:));
-        %% Convert int16 to mV
-        for i = 1:length(DataChannel)
-            Data(i,:) = (Data(i,:).*TempHeader.channels{1,DataChannel(i)}.bitVolts)./1000; % Convert uV in mV
-        end
-        %% Define Header
-        Header.Format = node.format;
-        Header.RecordingNode = node.name;
-        Header.startTimestamp = TempData.metadata.startTimestamp;
-        Header.Bit_Volts = TempHeader.channels{1,DataChannel(1)}.bitVolts;
-        Header.NrChannel = size(Data,1);
-        Header.num_data_points = size(Data,2);
-        SampleRate = TempHeader.sampleRate;
-
+    if isvalid(OERecordings)
+        NumRecordingIndex = length(OERecordings.SelectedRecordings);
+        AllRecordingIndicies = OERecordings.SelectedRecordings;
+        delete(OERecordings);
+    else
+        disp("Error: No valid recording selection found. Proceeding with analysing all recordings.")
+        AllRecordingIndicies = 1:NumRecordingIndex;
     end
-           
-    count = count + 1;
+    
+else
+    NumRecordingIndex = 1;
+    AllRecordingIndicies = 1;
+    disp("One recording found and extracted.");
+end
 
-    msg = sprintf('Extracting Data... (%d%% done)', 50);
-    waitbar(0.5, h, msg);
+for RecordingIndex = 1:NumRecordingIndex
 
-end % Stream name
+    disp(strcat("Extracting Recording ",num2str(AllRecordingIndicies(RecordingIndex))))
+
+    % Get the first recording 
+    recording = node.recordings{1,AllRecordingIndicies(RecordingIndex)};
+    
+    % Iterate over all data streams in the recording 
+    streamNames = recording.continuous.keys();
+    
+    if isempty(streamNames)
+        if NumRecordingIndex>1
+            disp("Error: No stream names found. Skipping Recording!");
+            continue;
+        else
+            disp("Error: No stream names found. Please select a different Recording Node!");
+            return;
+        end
+    end
+    
+    if isempty(recording.continuous)
+        if NumRecordingIndex>1
+            disp("Error: No continous data found. Skipping Recording!");
+            continue;
+        else
+            disp("Error: No continous data found. Please select a different Recording Node!");
+            return;
+        end
+    end
+    
+    disp(strcat("Num of Processor ID's: ",num2str(length(streamNames))));
+    
+    if length(streamNames)>1 %% Not yet implemented but importantn for neuropixels
+        disp("Can not handle multiple Processor ID's yet!! Taking first processor ID only.")
+        streamIndex = 1;
+    else
+        streamIndex = 1;
+    end
+    
+    for k = 1:1 % --- To Do: for neuropixels necesary to support multiple streams
+        streamName = streamNames{streamIndex};
+        
+        % 1. Get the continuous data from the current stream/recording
+        ContinousStream = recording.continuous(streamName);
+    
+        if strcmp(node.format,'Binary')
+    
+            TempHeader = ContinousStream.metadata;
+            
+            % Delete Info fields saved as cells that can not be displayed
+            % as information 
+            % Get all field names of the structure
+            fields = fieldnames(TempHeader);
+    
+            % Loop through each field
+            for o = 1:numel(fields)
+                fieldName = fields{o};
+    
+                % Check if the field contains a cell
+                if iscell(TempHeader.(fieldName))
+                    % Delete the field
+                    TempHeader = rmfield(TempHeader, fieldName);
+                end
+            end
+    
+            %% Differentiate TempData and peripheral (ADC) channel
+            DataChannel = [];
+            NoDataChannel = [];
+            for i = 1:length(ContinousStream.metadata.names)
+                if contains(ContinousStream.metadata.names{i},'CH')
+                    DataChannel = [DataChannel,i];
+                else
+                    NoDataChannel = [NoDataChannel,i];
+                end
+            end
+  
+            disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel"));
+            TempData = single(ContinousStream.samples(DataChannel,:));
+    
+            %% Convert int16 to mV
+            Temp = node.recordings{1, 1};
+            if isprop(Temp,'info')
+                if isfield(Temp.info.continuous.channels,'bit_volts')
+                    Bits = Temp.info.continuous.channels.bit_volts;
+                    TempData = (TempData.*Bits)./1000; % convert uV in mV
+                    TempHeader.Bit_Volts = Bits;
+                    disp(strcat("Bit_Volts Property for AD conversion to mV found."));
+                else
+                    disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
+                end
+            end
+    
+            %% Define TempHeader
+            TempHeader.startTimestamp = ContinousStream.metadata.startTimestamp;
+            TempHeader.NrChannel = size(TempData,1);
+            TempHeader.num_data_points = size(TempData,2);
+            TempHeader.Format = node.format;
+            TempHeader.RecordingNode = node.name;
+            TempHeader.AllRecordingIndicies = AllRecordingIndicies;
+            SampleRate = ContinousStream.metadata.sampleRate;% Gets added to info in main function
+    
+        elseif strcmp(node.format,'NWB')
+        
+            TempHeader = ContinousStream.metadata;
+    
+            DataChannelIndicie = TempHeader.conversion==TempHeader.conversion(1);
+    
+            TempData = single(ContinousStream.samples(DataChannelIndicie,:));
+    
+            BitConversions = TempHeader.conversion(DataChannelIndicie); % Convert Volt in mV
+            
+            % Dont get info which channel are adc. Therefore, bit conversion is
+            % used -- different for data and adc. Assumption: first conversion
+            % is for first data channel.
+            % Alternativly: data channel conversion has more elements, but prb.
+            % even less robust
+            
+            %% Convert int16 to mV
+            if isfield(TempHeader,'conversion')
+                disp(strcat("Bit_Volts Property for AD conversion to mV found in conversion field of header info. Field is renamed into 'Bit_Volts'"));
+                for i = 1:length(BitConversions)
+                    TempData(i,:) = (TempData(i,:).*BitConversions(i)).*1000; % Convert Volt in mV
+                end
+                TempHeader.Bit_Volts = TempHeader.conversion;
+                % Delete 'field2' from the structure
+                TempHeader = rmfield(TempHeader, 'conversion');
+            else
+                disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
+            end
+    
+            %% Define TempHeader
+            TempHeader.Format = node.format;
+            TempHeader.RecordingNode = node.name;
+            TempHeader.NrChannel = size(TempData,1);
+            TempHeader.num_data_points = size(TempData,2);
+            TempHeader.AllRecordingIndicies = AllRecordingIndicies;
+
+            % Cant find SR in header info, therefore its calculated
+            % Sample number for one second rec. length
+            TimetoGetSample = ContinousStream.timestamps(1)+1; %one second
+            [~,MinIndicie] = min(abs(ContinousStream.timestamps-TimetoGetSample));
+            
+            if ContinousStream.timestamps(end)-ContinousStream.timestamps(1) > 1
+                SampleRate = (MinIndicie-1)/1;
+                SampleRate = round(SampleRate/10000) * 10000;
+            else
+                msgbox("Error: Recording has to be longer than one second!")
+            end
+    
+        elseif strcmp(node.format,'OpenEphys')
+            %% This contains relevant header infos (samplerate and bit_volts) for this format
+            TempHeader = recording.streams((streamName));
+    
+            % Differentiate TempData and peripheral (ADC) channel
+            DataChannel = [];
+            NoDataChannel = [];
+            for i = 1:length(TempHeader.channels)
+                if contains(TempHeader.channels{1,i}.name,"CH")
+                    DataChannel = [DataChannel,i];
+                else
+                    NoDataChannel = [NoDataChannel,i];
+                end
+            end
+            
+            disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel"));
+            %% Get TempData
+            TempData = single(ContinousStream.samples(DataChannel,:));
+            %% Convert int16 to mV
+            for i = 1:length(DataChannel)
+                TempData(i,:) = (TempData(i,:).*TempHeader.channels{1,DataChannel(i)}.bitVolts)./1000; % Convert uV in mV
+            end
+            %% Define TempHeader
+            TempHeader.Format = node.format;
+            TempHeader.RecordingNode = node.name;
+            TempHeader.startTimestamp = ContinousStream.metadata.startTimestamp;
+            TempHeader.Bit_Volts = TempHeader.channels{1,DataChannel(1)}.bitVolts;
+            TempHeader.NrChannel = size(TempData,1);
+            TempHeader.num_data_points = size(TempData,2);
+            TempHeader.AllRecordingIndicies = AllRecordingIndicies;
+            SampleRate = TempHeader.sampleRate;
+    
+        end
+               
+        count = count + 1;
+    
+        msg = sprintf('Extracting Data... (%d%% done)', 50);
+        waitbar(0.5, h, msg);
+    
+    end % Stream name
+    
+    %% Combine multiple recordings
+    % Header only once
+    if RecordingIndex == 1
+        Header.NumRecordings = 1;
+        Header = TempHeader;
+    else
+        Header.startTimestamp = [Header.startTimestamp,TempHeader.startTimestamp];
+        Header.NumRecordings = RecordingIndex;
+    end
+
+    Data = [Data,TempData];
+
+    TempHeader = [];
+    TempData = [];
+    ContinousStream = [];
+
+end % Nr Recordings
 
 %% if conversion not yet found: prb just nwb recording node. Then bitvolts is saves as conversion in conversion field
 
 if ~isfield(Header,'Bit_Volts')
-    disp(strcat("Bit_Volts Property for AD conversion to mV not found. Data can only be shown as integers"));
+    disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
 end
 
 msg = sprintf('Extracting Data... (%d%% done)', 100);

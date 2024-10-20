@@ -1,4 +1,4 @@
-function [Data,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance)
+function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for event kilosort spikes based on user input
@@ -61,17 +61,7 @@ function [Data,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRat
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-%% Bc of Spike triggered avg this has to be computed again (to get spike time stamps not normalized to event time)
-
-if strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
-    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',1);
-else
-    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0);
-end
-
-if Error == 1
-    return;
-end
+TempData = [];
 
 %% Prepare Plots
 if strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
@@ -151,9 +141,4 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     if ~strcmp(ClustertoshowDropDown,'Non') && ~strcmp(ClustertoshowDropDown,'All')
         CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr(1):PlotInfo.EventNr(2)),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
     end
-
-    if ~isempty(TempData) % if not preprocessed
-        Data = TempData; % if preprocessed
-    end
-
 end  

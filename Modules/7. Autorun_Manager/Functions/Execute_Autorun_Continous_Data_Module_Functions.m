@@ -220,11 +220,29 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             %%% if it has to be high pass filtered --> save as TempData, extract
                             %%% waveforms and delete temp variable
                             if HigPassFiltered == 0
+
+                                HighPassFilterSettings = [];
+                                Spike_Extraction_HighPassWindow = Spike_Extraction_AskforHighPass(HighPassFilterSettings);
+                                
+                                uiwait(Spike_Extraction_HighPassWindow.PreproSTAWindowUIFigure);
+                                
+                                if isvalid(Spike_Extraction_HighPassWindow)
+                                    Cutoff = Spike_Extraction_HighPassWindow.HighPassFilterSettings.Cutoff;
+                                    FilterOrder = Spike_Extraction_HighPassWindow.HighPassFilterSettings.FilterOrder;
+                                    SaveFilter = Spike_Extraction_HighPassWindow.HighPassFilterSettings.SaveFilter;
+                                    delete(Spike_Extraction_HighPassWindow);
+                                else
+                                    disp("High pass filter settings window closed before manual config was saved. Using standad high pass filter settings (300Hz cutoff, filterorder 6)")
+                                    Cutoff = "300";
+                                    FilterOrder = "6";
+                                    SaveFilter = "No";
+                                end
+
                                 PreproInfo = [];
                                 PreprocessingSteps = [];
                             
                                 Methods = ["Filter"];
-                                [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR","300","Zero-phase forward and reverse","3",[],Data.Info.NativeSamplingRate);
+                                [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR",Cutoff,"Zero-phase forward and reverse",FilterOrder,[],Data.Info.NativeSamplingRate);
                                     
                                 if isfield(PreproInfo,'ChannelDeletion')
                                     ChannelDeletion = PreproInfo.ChannelDeletion;
@@ -233,17 +251,28 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                 end
                                 
                                 TextArea = [];
+
+                                if strcmp(SaveFilter,"No")
+                                    [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+                                    [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
+                                    %% Now extract Waveforms
+                                    % For Kilosort we dont have channel information to extract from raw or
+                                    % preprocessed data --> Therefor we take channel closest to position
+                                    SpikePositions = (TempData.Spikes.SpikePositions(:,2)./TempData.Info.ChannelSpacing)+1;
+                                    SpikePositions = round(SpikePositions);
+                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+                                    clear TempData;
+                                else
+                                    [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+                                    [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
+                                    %% Now extract Waveforms
+                                    % For Kilosort we dont have channel information to extract from raw or
+                                    % preprocessed data --> Therefor we take channel closest to position
+                                    SpikePositions = (Data.Spikes.SpikePositions(:,2)./Data.Info.ChannelSpacing)+1;
+                                    SpikePositions = round(SpikePositions);
+                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+                                end
                                 
-                                [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-                                
-                                [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
-                                %% Now extract Waveforms
-                                % For Kilosort we dont have channel information to extract from raw or
-                                % preprocessed data --> Therefor we take channel closest to position
-                                SpikePositions = (TempData.Spikes.SpikePositions(:,2)./TempData.Info.ChannelSpacing)+1;
-                                SpikePositions = round(SpikePositions);
-                                [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
-                                clear TempData;
                             else % If high pass was already applied
                                 % For Kilosort we dont have channel information to extract from raw or
                                 % preprocessed data --> Therefor we take channel closest to position
@@ -411,11 +440,29 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             %%% if it has to be high pass filtered --> save as TempData, extract
                             %%% waveforms and delete temp variable
                             if HigPassFiltered == 0
+
+                                HighPassFilterSettings = [];
+                                Spike_Extraction_HighPassWindow = Spike_Extraction_AskforHighPass(HighPassFilterSettings);
+                                
+                                uiwait(Spike_Extraction_HighPassWindow.PreproSTAWindowUIFigure);
+                                
+                                if isvalid(Spike_Extraction_HighPassWindow)
+                                    Cutoff = Spike_Extraction_HighPassWindow.HighPassFilterSettings.Cutoff;
+                                    FilterOrder = Spike_Extraction_HighPassWindow.HighPassFilterSettings.FilterOrder;
+                                    SaveFilter = Spike_Extraction_HighPassWindow.HighPassFilterSettings.SaveFilter;
+                                    delete(Spike_Extraction_HighPassWindow);
+                                else
+                                    disp("High pass filter settings window closed before manual config was saved. Using standad high pass filter settings (300Hz cutoff, filterorder 6)")
+                                    Cutoff = "300";
+                                    FilterOrder = "6";
+                                    SaveFilter = "No";
+                                end
+
                                 PreproInfo = [];
                                 PreprocessingSteps = [];
                             
                                 Methods = ["Filter"];
-                                [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR","300","Zero-phase forward and reverse","3",[],Data.Info.NativeSamplingRate);
+                                [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR",Cutoff,"Zero-phase forward and reverse",FilterOrder,[],Data.Info.NativeSamplingRate);
                                     
                                 if isfield(PreproInfo,'ChannelDeletion')
                                     ChannelDeletion = PreproInfo.ChannelDeletion;
@@ -425,14 +472,23 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                 
                                 TextArea = [];
                                 
-                                [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+                                if strcmp(SaveFilter,"No")
+                                    [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+                                    [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
+                                    %% Now extract Waveforms
+                                    % For Kilosort we dont have channel information to extract from raw or
+                                    % preprocessed data --> Therefor we take channel closest to position
+                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,TempData.Spikes.SpikePositions(:,2),"AverageWaveforms");
+                                    clear TempData;
+                                else
+                                    [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+                                    [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
+                                    %% Now extract Waveforms
+                                    % For Kilosort we dont have channel information to extract from raw or
+                                    % preprocessed data --> Therefor we take channel closest to position
+                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikePositions(:,2),"AverageWaveforms");
+                                end
                                 
-                                [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
-                                %% Now extract Waveforms
-                                % For Kilosort we dont have channel information to extract from raw or
-                                % preprocessed data --> Therefor we take channel closest to position
-                                [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,TempData.Spikes.SpikePositions(:,2),"AverageWaveforms");
-                                clear TempData;
                             else % If high pass was already applied
                                 % For Kilosort we dont have channel information to extract from raw or
                                 % preprocessed data --> Therefor we take channel closest to position

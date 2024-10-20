@@ -45,11 +45,16 @@ end
 % Add ButtonDownFcn to each line object in UIAxis
 lines = findobj(app.UIAxes_2, 'Type', 'line');
 
+% Add ButtonDownFcn to each line object in UIAxis
+rectangle = findobj(app.UIAxes_2, 'Type', 'rectangle');
+
 %% Set the ButtonDownFcn for UIAxes to register clicks on a plotted line directly
-%if ~isprop(lines(1),"ButtonDownFcn")
-    for i = 1:numel(lines)
-        % Call Lineclicked function if that happens
-        lines(i).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
-    end
-%end
+
+for i = 1:numel(lines)
+    % Call Lineclicked function if that happens
+    lines(i).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
+end
+
+rectangle(1).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
+
 

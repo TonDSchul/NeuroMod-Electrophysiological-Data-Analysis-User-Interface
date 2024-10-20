@@ -1,5 +1,26 @@
 function Menu_Extract_Data_Callback (app, fileNames, DefaultFolder)
 
+%________________________________________________________________________________________
+
+%% This is the callback function executed when the user clicks on a saved probe information in the 'Load Save Probe Information menu on top of the 'Extract Data Window'
+
+% This fucntion is executed for every possible menu option shown and initiated in the Extract Data Window. The name of the selected menu is
+% saved in the 'fileNames' variable.
+
+% Input:
+% 1. app: app object of the extract data window to access the
+% Load_Data_Window_Info variable which holds the loaded channel order and
+% channelspacing 
+% 2. fileNames: string, name of the menu point the user clicked on (with a -mat at the end, equals savefilename)
+% 3. DefaultFolder: char, default folder saving costume probe information:
+% GUI_Path/Channel Maps/Saved Probe Information
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 app.Load_Data_Window_Info.ChannelSpacing = [];
 app.Load_Data_Window_Info.Channelorder = [];
 

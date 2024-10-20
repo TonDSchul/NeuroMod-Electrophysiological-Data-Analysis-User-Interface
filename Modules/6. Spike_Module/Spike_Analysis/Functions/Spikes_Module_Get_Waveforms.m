@@ -44,18 +44,18 @@ LengthWaveform = TimePoints*2+1;
 h = waitbar(0, 'Extracting Spike Waveforms...', 'Name', 'Extracting Spike Waveforms...');
 
 % Determine datatype
-usePreprocessed = isfield(Data, 'Preprocessed') && ~isfield(Data.Info, 'DownsampleFactor');
-DataField = 'Raw';
-if usePreprocessed
-    DataField = 'Preprocessed';
-end
+% usePreprocessed = isfield(Data, 'Preprocessed') && ~isfield(Data.Info, 'DownsampleFactor');
+% DataField = 'Raw';
+% if usePreprocessed
+DataField = 'Preprocessed';
+% end
 
 if strcmp(WaveFormType,"AverageWaveforms")
     % Extract Waveforms over all channel from each spike indice
     % for average waveform over depth. For normal waveform plots, only the
     % spike indicies and waveforms of the channel it was found in are computed
 
-    Waveforms = single(NaN(size(Data.Raw,1),length(SpikeTimes),LengthWaveform));
+    Waveforms = single(NaN(size(Data.Preprocessed,1),length(SpikeTimes),LengthWaveform));
     BiggestSpikeIndicies = zeros(length(SpikeTimes),1);
 
     for nwaves = 1:length(SpikeTimes)
@@ -64,8 +64,8 @@ if strcmp(WaveFormType,"AverageWaveforms")
         endIdx = SpikeTimes(nwaves) + TimePoints;
         
         % Extract data of time points, mark non-NaN waveform with 1 in BiggestSpikeIndicies
-        if startIdx > 0 && endIdx <= size(Data.(DataField), 2)
-            Waveforms(:, nwaves, :) = Data.(DataField)(:, startIdx:endIdx);
+        if startIdx > 0 && endIdx <= size(Data.Preprocessed, 2)
+            Waveforms(:, nwaves, :) = Data.Preprocessed(:, startIdx:endIdx);
             BiggestSpikeIndicies(nwaves) = 1;
         else
             Waveforms(:, nwaves, :) = NaN;
