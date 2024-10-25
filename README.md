@@ -38,8 +38,10 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="70%" />
 
-The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx) and Neuralynx (.ncs).
-In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
+The toolbox currently supports binary, NWB and Open Ephys files recorded with the Open Ephys GUI and Neuropixels 1.0 and 2.0 probes as well as Intan acquisition boards through the 'Rythm Plugin', .dat and .rhd files from the Intan USB Interface Board software, .smrx files recorded with Spike2 and .ncs Neuralynx files recorded with Cheetah.  
+(Open Ephys GUI recordings were tested with the National Instruments PXIe-1083 chassis and Neuropixel basestations acquisition board)
+
+In addition to channel data, the GUI can also extract event data from all recording formats mentioned (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
 
 <img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
