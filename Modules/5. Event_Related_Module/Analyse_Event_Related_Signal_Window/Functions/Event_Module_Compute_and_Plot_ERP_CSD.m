@@ -309,18 +309,18 @@ else
             %3D
             surf(Figure,EventTime,ds,csd','EdgeColor', 'none', 'Tag','PowerDepth3D')
             %2D
-            % 2D Plot
-            min_z = min(csd,[],'all');
-            surface(Figure,EventTime,ds, min_z * ones(size(csd')), ...
-            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+            % % 2D Plot
+            % min_z = min(csd,[],'all');
+            % surface(Figure,EventTime,ds, min_z * ones(size(csd')), ...
+            % 'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         else
             %3D
             set(PowerDepth3D_handles(1),'XData',EventTime,'YData',ds,'CData',csd','ZData',csd','EdgeColor', 'none', 'Tag', 'PowerDepth3D')
             %2D
             % 2D Plot
-            min_z = min(csd,[],'all');
-            set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds,'ZData', min_z * ones(size(csd')), ...
-            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+            % min_z = min(csd,[],'all');
+            % set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds,'ZData', min_z * ones(size(csd')), ...
+            % 'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         end
     
         %imagesc(Figure,Time,ydata,mnLFP)
@@ -337,12 +337,11 @@ else
         if isempty(PowerDepth2D_handles)
             % 2D Plot
             min_z = 0;
-            surface(Figure,EventTime,ds, min_z * ones(size(csd')), ...
-            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+            imagesc(Figure,EventTime,ds, csd', 'Tag', 'PowerDepth2D');
         else
             min_z = 0;
-            set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds,'ZData', min_z * ones(size(csd')), ...
-            'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+            set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds, ...
+            'CData', csd', 'Tag', 'PowerDepth2D');
         end
     end
    

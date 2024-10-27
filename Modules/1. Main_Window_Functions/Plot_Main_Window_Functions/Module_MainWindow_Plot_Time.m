@@ -65,6 +65,11 @@ if strcmp(PlotType,"Initial")
                 end
             end
         end
+    else
+        EventHandles = findobj(UIAxis,'Tag', 'Eventlines');
+        if length(EventHandles)>length(EventData)
+            delete(EventHandles(1:end));
+        end
     end
    
     %% Plot rectangle indicating selected time

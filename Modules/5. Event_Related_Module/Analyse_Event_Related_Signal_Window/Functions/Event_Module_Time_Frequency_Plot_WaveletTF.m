@@ -54,7 +54,7 @@ end
 
 climsTF = [];
 
-if strcmp(TwoORThreeD,"TwoD")
+if strcmp(TwoORThreeD,"TwoD") 
     % 2D Plot
     PowerDepth2D_handles = findobj(Figure, 'Tag', '2DSpectrum');
     if length(PowerDepth2D_handles)>1
@@ -63,14 +63,16 @@ if strcmp(TwoORThreeD,"TwoD")
     
     if isempty(PowerDepth2D_handles)
         min_z = 0;
-        surface(Figure,time,frexcycle, min_z * ones(size(Datatouse)), ...
-        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+        imagesc(Figure,time,frexcycle, Datatouse,'Tag','2DSpectrum');
     else
         min_z = 0;
-        set(PowerDepth2D_handles(1),'XData',time,'YData',frexcycle,'ZData', min_z * ones(size(Datatouse)), ...
-        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+        set(PowerDepth2D_handles(1),'XData',time,'YData',frexcycle, ...
+        'CData', Datatouse,'Tag','2DSpectrum');
     end
+    xlim(Figure,[time(1) time(end)]);
+    Figure.YDir = 'normal';
 else
+    Figure.YDir = 'normal';
     PowerDepth2D_handles = findobj(Figure, 'Tag', '2DSpectrum');
     PowerDepth3D_handles = findobj(Figure, 'Tag', '3DSpectrum');
 
@@ -94,17 +96,17 @@ else
         surf(Figure,time,frexcycle,Datatouse,'EdgeColor', 'none','Tag','3DSpectrum')
         %2D
         % 2D Plot
-        min_z = min(Datatouse(~isinf(Datatouse)),[],'all');
-        surface(Figure,time,frexcycle, min_z * ones(size(Datatouse)), ...
-        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+        % min_z = min(Datatouse(~isinf(Datatouse)),[],'all');
+        % surface(Figure,time,frexcycle, min_z * ones(size(Datatouse)), ...
+        % 'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
     else
         %3D
         set(PowerDepth3D_handles(1),'XData',time,'YData',frexcycle,'ZData',Datatouse,'CData',Datatouse,'EdgeColor', 'none','Tag','3DSpectrum')
         %2D
         % 2D Plot
-        min_z = min(Datatouse(~isinf(Datatouse)),[],'all');
-        set(PowerDepth2D_handles(1),'XData',time,'YData',frexcycle,'ZData', min_z * ones(size(Datatouse)), ...
-        'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
+        % min_z = min(Datatouse(~isinf(Datatouse)),[],'all');
+        % set(PowerDepth2D_handles(1),'XData',time,'YData',frexcycle,'ZData', min_z * ones(size(Datatouse)), ...
+        % 'CData', Datatouse, 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','2DSpectrum');
     end
 
     %imagesc(Figure,Time,ydata,mnLFP)

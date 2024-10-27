@@ -8,6 +8,55 @@ if strcmp(ModuleFunctionName,"Internal Spike Detection")
     % Open app window for Internal Spike Detection
     Spike_Detection_Window(app);
 
+    if isfield(app.Data,'Spikes')
+        if ~isempty(app.Data.Spikes)
+            % This resets the main window plots. This is bc. old spike
+            % data can still be shown and has to be replaced with new
+            % spike data
+
+            % app.Plotspikes = Flag indicating that spikes are supposed
+            % to be plotted. If show spike data was already selected,
+            % plot spikes again
+            if strcmp(app.Plotspikes,"Spikes")
+                SpikeHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Spikes');
+                if ~isempty(SpikeHandles)
+                    delete(SpikeHandles(:));
+                end
+                if strcmp(app.PlotEvents,"Events")
+                    app.DropDown_2.Value = "Events";
+                else
+                    app.DropDown_2.Value = "Non";
+                end
+                
+                app.Plotspikes = "No";
+            end
+
+            % Main function to plot data in main window after resetting plots
+            Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Initial","Static",app.PlotEvents,app.Plotspikes);
+
+        else
+            fieldsToDelete = {'Spikes'};
+            % Delete fields
+            app.Data = rmfield(app.Data, fieldsToDelete);
+            app.Data.Info.SpikeType = "Non";
+        end
+        % Check if the Y-axis is reversed
+        if strcmp(app.UIAxes.YDir, 'reverse')
+            if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+            else
+                app.UIAxes.YDir = 'normal';
+            end
+        else
+            if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+                app.UIAxes.YDir = 'reverse';
+            end
+        end
+    else
+        app.Data.Info.SpikeType = "Non";
+    end
+
+    Utility_Show_Info_Loaded_Data(app)
+
 elseif strcmp(ModuleFunctionName,"Save for Kilosort")
     
     if ~isfield(app.Data,'Raw')
@@ -67,10 +116,20 @@ elseif strcmp(ModuleFunctionName,"Load from Kilosort")
             app.Data = rmfield(app.Data, fieldsToDelete);
             app.Data.Info.SpikeType = "Non";
         end
+        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+            app.UIAxes.YDir = 'reverse';
+        else
+            app.UIAxes.YDir = 'normal';
+        end
     else
+        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+            app.UIAxes.YDir = 'reverse';
+        else
+            app.UIAxes.YDir = 'normal';
+        end
         app.Data.Info.SpikeType = "Non";
     end
 
     Utility_Show_Info_Loaded_Data(app)
-                  
+           
 end

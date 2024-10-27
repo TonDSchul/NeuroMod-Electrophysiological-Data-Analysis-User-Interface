@@ -86,8 +86,10 @@ end
 
 xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);
 ylabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeYLabel);
-ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(Welchpowspect(DispIndicies)),[],'all')])
-
+if min(10*log10(Welchpowspect(DispIndicies)),[],'all') ~= max(10*log10(Welchpowspect(DispIndicies)),[],'all')
+    ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(Welchpowspect(DispIndicies)),[],'all')])
+end
+view(Figure,0,90);
 xlim(Figure,[dispRange(1) dispRange(2)]);
 title(Figure,titlestring);
 Figure.FontSize = 10;

@@ -133,13 +133,15 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),MeanWaveForm,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD,CurrentPlotData);
 end
 
-if strcmp(TypeofAnalysis,"Waveforms from Raw Data")
+if strcmp(TypeofAnalysis,"Spike Waveforms")
     CurrentPlotData = Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,PlotInfo,ClusterToShow,Figure,CurrentPlotData);
 end
 
-if strcmp(TypeofAnalysis,"Waveforms Templates")
+if strcmp(TypeofAnalysis,"Waveform Templates")
     if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         CurrentPlotData = Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units,rgbMatrix,CurrentPlotData);
+    else
+        msgbox("Warning: Waveform templates only available for units. Please select a unit first!")
     end
 end
 

@@ -1,4 +1,4 @@
-function Extract_Events_Module_Load_and_Plot_Events(EventInfo,FilePaths,Figure,SelectedEventChannelNames,AllChannelNames,Data,RHDAllChannelData,DownsampleRate)
+function [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventInfo,FilePaths,Figure,SelectedEventChannelNames,AllChannelNames,Data,RHDAllChannelData,DownsampleRate)
 
 %________________________________________________________________________________________
 %% Function load and plot event data in the show event data window (opened in the extract events window)
@@ -74,7 +74,16 @@ end
 %% Downsample if not empty
 if ~isempty(DownsampleRate)
     DownsampleRate = str2double(DownsampleRate);
-    DownsampleFactor = round(Data.Info.NativeSamplingRate/DownsampleRate);
+
+    if mod(Data.Info.NativeSamplingRate/DownsampleRate,1) ~=0
+        DownsampleFactor = round(Data.Info.NativeSamplingRate/DownsampleRate);
+        DownsampleRate = Data.Info.NativeSamplingRate/DownsampleFactor;
+        DownsampleFactor = Data.Info.NativeSamplingRate/DownsampleRate;
+        disp("Warning: Downsamplefactor resulting from entered sample rate is not an integer. Downsampled samplerate is adjusted accordingly!")
+    else
+        DownsampleFactor = Data.Info.NativeSamplingRate/DownsampleRate;
+    end
+
     InputChannelData = downsample(InputChannelData,DownsampleFactor);
     Time = downsample(Data.Time,DownsampleFactor);
 else

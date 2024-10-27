@@ -96,7 +96,7 @@ end
 
 for RecordingIndex = 1:NumRecordingIndex
 
-    disp(strcat("Extracting Recording ",num2str(AllRecordingIndicies(RecordingIndex))))
+    disp(strcat("Extracting Recording ",num2str(AllRecordingIndicies(RecordingIndex))," of ",num2str(NumRecordingIndex)));
 
     % Get the first recording 
     recording = node.recordings{1,AllRecordingIndicies(RecordingIndex)};
@@ -125,21 +125,68 @@ for RecordingIndex = 1:NumRecordingIndex
     end
     
     disp(strcat("Num of Processor ID's: ",num2str(length(streamNames))));
+
+    Neuropixrecording = []; % == 1 if LFP data selected, == 2 if AP data selected
+    %% if neuropixels probes
+    if contains(streamNames{1},"Neuropix") || contains(streamNames{1},"PXI")
+        disp("Neuropixels recording detected")
+        APIndex = [];
+        LFPIndex = [];
+        for i = 1:length(streamNames)
+            if contains(streamNames{i},"AP")
+                APIndex = i;
+            elseif contains(streamNames{i},"LFP")
+                LFPIndex =  i;
+            end
+        end
+
+        if isempty(APIndex) && isempty(LFPIndex)
+            error('No AP or LFP data found. At this point only Neuropixels 1.0 is supported.');
+        else
+            Neuropixrecording = 1;
+            % ask if AP or LFP data has to be extracted
+            NPRecordings = Neuropixels1_LFP_or_AP(Neuropixrecording);
     
-    if length(streamNames)>1 %% Not yet implemented but importantn for neuropixels
+            uiwait(NPRecordings.SelectRecordingWindowUIFigure);
+            
+            if isvalid(NPRecordings)
+                streamIndex = NPRecordings.SelectedRecordings; % == 1 if LFP data selected, == 2 if AP data selected
+                delete(NPRecordings);
+            else
+                disp("Error: Selection of either AP or LFP data failed. LFP data is exctracted by default. Rename 'SelectedStream' variable in Open_Ephys_Load_All_Formats.m")
+                streamIndex = 1; % == 1 if LFP data selected, == 2 if AP data selected
+            end
+
+        end
+    end
+
+    % just if no NP recordig
+    if length(streamNames)>1 && isempty(Neuropixrecording)
         disp("Can not handle multiple Processor ID's yet!! Taking first processor ID only.")
         streamIndex = 1;
     else
-        streamIndex = 1;
+        if isempty(Neuropixrecording)
+            streamIndex = 1;
+        end
     end
     
-    for k = 1:1 % --- To Do: for neuropixels necesary to support multiple streams
-        streamName = streamNames{streamIndex};
+    for k = 1:1 % over streams
+        if Neuropixrecording == 1
+            if streamIndex == 1
+                streamName = streamNames{LFPIndex};
+            elseif streamIndex == 2
+                streamName = streamNames{APIndex};
+            end
+        else
+            streamName = streamNames{streamIndex};
+        end
         
-        % 1. Get the continuous data from the current stream/recording
+        disp(strcat("Selected data stream: ", streamName))
+
+        % 1. Get continuous data from the current stream/recording
         ContinousStream = recording.continuous(streamName);
-    
-        if strcmp(node.format,'Binary')
+
+        if strcmp(node.format,'Binary') %% NP so far can only be saved as binary
     
             TempHeader = ContinousStream.metadata;
             
@@ -163,27 +210,63 @@ for RecordingIndex = 1:NumRecordingIndex
             DataChannel = [];
             NoDataChannel = [];
             for i = 1:length(ContinousStream.metadata.names)
-                if contains(ContinousStream.metadata.names{i},'CH')
-                    DataChannel = [DataChannel,i];
-                else
-                    NoDataChannel = [NoDataChannel,i];
+                %% NP recording
+                if Neuropixrecording == 1
+
+                    TempHeader.NeuropixelProbe = "Neuropixels 1.0";
+
+                    if streamIndex == 1 % LFP stream selected
+                        if contains(ContinousStream.metadata.names{i},'LFP')
+                            DataChannel = [DataChannel,i];
+                        end
+                    elseif streamIndex == 2 % AP stream selected
+                        if contains(ContinousStream.metadata.names{i},'AP')
+                            DataChannel = [DataChannel,i];
+                        end
+                    end
+                %% Non NP recording
+                elseif isempty(Neuropixrecording)
+                    if contains(ContinousStream.metadata.names{i},'CH')
+                        DataChannel = [DataChannel,i];
+                    else
+                        NoDataChannel = [NoDataChannel,i];
+                    end
                 end
             end
   
-            disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel"));
+            disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel and ",num2str(length(DataChannel))," data channel"));
             TempData = single(ContinousStream.samples(DataChannel,:));
     
-            %% Convert int16 to mV
-            Temp = node.recordings{1, 1};
+            %% Get recording data
+            Temp = node.recordings{1, RecordingIndex};
+
             if isprop(Temp,'info')
-                if isfield(Temp.info.continuous.channels,'bit_volts')
-                    Bits = Temp.info.continuous.channels.bit_volts;
-                    TempData = (TempData.*Bits)./1000; % convert uV in mV
-                    TempHeader.Bit_Volts = Bits;
-                    disp(strcat("Bit_Volts Property for AD conversion to mV found."));
-                else
-                    disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
+                %% NP recording
+                if Neuropixrecording == 1
+                    if isfield(Temp.info.continuous(RecordingIndex).channels,'bit_volts')
+                        disp(strcat("Bit_Volts Property for AD conversion to mV found."));
+                        for nchannel = 1:length(DataChannel)
+                            Bits = Temp.info.continuous(RecordingIndex).channels(DataChannel(nchannel)).bit_volts;
+                            TempData(nchannel,:) = (TempData(nchannel,:).*Bits)./1000; % convert uV in mV
+                            TempHeader.Bit_Volts(nchannel) = Bits;
+                        end
+                        TempHeader.Bit_Volts = unique(TempHeader.Bit_Volts);
+                    else
+                        disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
+                    end
+                %% Non NP recording
+                else 
+                    if isfield(Temp.info.continuous.channels,'bit_volts')
+                        Bits = Temp.info.continuous.channels.bit_volts;
+                        TempData = (TempData.*Bits)./1000; % convert uV in mV
+                        TempHeader.Bit_Volts = Bits;
+                        disp(strcat("Bit_Volts Property for AD conversion to mV found."));
+                    else
+                        disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
+                    end
                 end
+            else
+                error('No info filed in recording data structure found in Open_Ephys_Load_All_Formats.m')
             end
     
             %% Define TempHeader
@@ -286,16 +369,18 @@ for RecordingIndex = 1:NumRecordingIndex
     
     %% Combine multiple recordings
     % Header only once
-    if RecordingIndex == 1
-        Header.NumRecordings = 1;
+    if RecordingIndex == 1 
         Header = TempHeader;
+        Header.NumRecordings = 1;
+        Header.RecordingTime = size(TempData,2)/SampleRate;
     else
         Header.startTimestamp = [Header.startTimestamp,TempHeader.startTimestamp];
         Header.NumRecordings = RecordingIndex;
+        Header.RecordingTime = [Header.RecordingTime,size(TempData,2)/SampleRate];
     end
 
     Data = [Data,TempData];
-
+    
     TempHeader = [];
     TempData = [];
     ContinousStream = [];

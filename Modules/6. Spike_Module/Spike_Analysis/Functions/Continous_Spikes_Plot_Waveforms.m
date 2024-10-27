@@ -74,24 +74,24 @@ NrPlots = 0;
 for nwaves = 1:size(WaveformsInCluster,1)
     NrPlots = NrPlots+1;
     if isempty(Waveform_handles) || NrPlots > length(Waveform_handles) 
-        line(Figure,Time,WaveformsInCluster(nwaves,:),'LineWidth',1, 'Tag', 'Waveforms','Color','c');
+        line(Figure,Time,WaveformsInCluster(nwaves,:),'LineWidth',0.01, 'Tag', 'Waveforms','Color','c');
     else
-        set(Waveform_handles(NrPlots), 'XData', Time, 'YData', WaveformsInCluster(nwaves,:),'LineWidth',1, 'Tag', 'Waveforms','Color','c');
+        set(Waveform_handles(NrPlots), 'XData', Time, 'YData', WaveformsInCluster(nwaves,:),'LineWidth',0.01, 'Tag', 'Waveforms','Color','c');
     end
 end
 
 if isempty(Waveform_handles) || NrPlots+1 > length(Waveform_handles) 
     if size(WaveformsInCluster,1)>1
-        MeanPlot = line(Figure,Time,mean(WaveformsInCluster,1),'LineWidth',2, 'Tag', 'Waveforms','Color','k');
+        MeanPlot = line(Figure,Time,mean(WaveformsInCluster,1),'LineWidth',1, 'Tag', 'Waveforms','Color','k');
     else
-        MeanPlot = line(Figure,Time,WaveformsInCluster,'LineWidth',2, 'Tag', 'Waveforms','Color','k');
+        MeanPlot = line(Figure,Time,WaveformsInCluster,'LineWidth',1, 'Tag', 'Waveforms','Color','k');
     end
 else
     if size(WaveformsInCluster,1)>1
-        set(Waveform_handles(NrPlots+1), 'XData', Time, 'YData', mean(WaveformsInCluster,1),'LineWidth',2, 'Tag', 'Waveforms','Color','k');
+        set(Waveform_handles(NrPlots+1), 'XData', Time, 'YData', mean(WaveformsInCluster,1),'LineWidth',1, 'Tag', 'Waveforms','Color','k');
         MeanPlot = Waveform_handles(NrPlots+1);
     else
-        set(Waveform_handles(NrPlots+1), 'XData', Time, 'YData', WaveformsInCluster,'LineWidth',2, 'Tag', 'Waveforms','Color','k');
+        set(Waveform_handles(NrPlots+1), 'XData', Time, 'YData', WaveformsInCluster,'LineWidth',1, 'Tag', 'Waveforms','Color','k');
         MeanPlot = Waveform_handles(NrPlots+1);
     end
 end

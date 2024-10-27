@@ -67,16 +67,14 @@ if strcmp(TwoORThreeD,"TwoD")
         PowerDepth_handles = findobj(Figure, 'Tag', 'PowerDepth');
     end
     % 2D Plot
-    min_z = 0;
     if isempty(PowerDepth_handles)
-        surface(Figure,TimeRangetoPlot, ds(1:size(csd,2)), min_z * ones(size(csd')), ...
-        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth');
+        imagesc(Figure,TimeRangetoPlot, ds(1:size(csd,2)),csd','Tag','PowerDepth');
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
         cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;
     else
-        set(PowerDepth_handles(1),'XData', TimeRangetoPlot, 'YData', ds(1:size(csd,2)), 'ZData', min_z * ones(size(csd')), ...
-        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth');
+        set(PowerDepth_handles(1),'XData', TimeRangetoPlot, 'YData', ds(1:size(csd,2)), ...
+        'CData', csd','Tag','PowerDepth');
     end
 
 elseif strcmp(TwoORThreeD,"ThreeD")
@@ -105,17 +103,17 @@ elseif strcmp(TwoORThreeD,"ThreeD")
         cbar_handle.Label.Rotation = 270;
         % 3D Plot
         surf(Figure,TimeRangetoPlot,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')
-        % 2D Plot
-        min_z = min(csd,[],'all');
-        surface(Figure,TimeRangetoPlot, ds(1:size(csd,2)), min_z * ones(size(csd')), ...
-        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth2D');
+        % % 2D Plot
+        % min_z = min(csd,[],'all');
+        % imagesc(Figure,TimeRangetoPlot, ds(1:size(csd,2)), ...
+        % 'CData', csd', 'Tag','PowerDepth2D');
     else
         % 3D Plot
         set(PowerDepth3D_handles(1),'XData', TimeRangetoPlot,'YData', ds(1:size(csd,2)),'CData',csd','ZData',csd','EdgeColor', 'none','Tag','PowerDepth3D')
-        % 2D Plot
-        min_z = min(csd,[],'all');
-        set(PowerDepth2D_handles(1),'XData',TimeRangetoPlot,'YData', ds(1:size(csd,2)), 'ZData', min_z * ones(size(csd')), ...
-        'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth2D');
+        % % 2D Plot
+        % min_z = min(csd,[],'all');
+        % set(PowerDepth2D_handles(1),'XData',TimeRangetoPlot,'YData', ds(1:size(csd,2)),  ...
+        % 'CData', csd','Tag','PowerDepth2D');
     end
 
     view(Figure,45,45);

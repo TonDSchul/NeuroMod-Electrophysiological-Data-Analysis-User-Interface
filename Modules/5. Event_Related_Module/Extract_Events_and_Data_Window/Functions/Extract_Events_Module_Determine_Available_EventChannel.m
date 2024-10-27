@@ -190,7 +190,13 @@ elseif strcmp(Data.Info.RecordingType,"Neuralynx")
     
 elseif strcmp(Data.Info.RecordingType,"Open Ephys") 
 
-    [EventInfo,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"Get Information",[],[],[],[],[],Data.Info.AllRecordingIndicies);
+    if isfield(Data.Info,'startTimestamp')
+        startTimestamp = round(Data.Info.startTimestamp*Data.Info.NativeSamplingRate);
+    else
+        msgbox("Warning: No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different.")
+    end
+
+    [EventInfo,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Data,Path,"Get Information",[],[],[],[],startTimestamp,Data.Info.AllRecordingIndicies);
 
     [FilePaths] = Utility_Extract_Contents_of_Folder(Path);
 

@@ -1,4 +1,4 @@
-function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,WhatToDo,NodeNr,NoddeID,InputChannelSelection,StateSelection,FirstTimeStampinSample,AllRecordingIndicies)
+function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Data,Path,WhatToDo,NodeNr,NoddeID,InputChannelSelection,StateSelection,FirstTimeStampinSample,AllRecordingIndicies)
 
 %________________________________________________________________________________________
 %% Function to extract events from open ephys data
@@ -24,23 +24,25 @@ function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,Wh
 % extraction window and open ephys is recording format
 
 % Input:
-% 1. Path: path as char to folder containing the recording
-% 2: WhatToDo: as string detetmines mode, see above, Otions: "Get
+% 1. Data: Data structure from main dataset
+% 2. Path: path as char to folder containing the recording
+% 3: WhatToDo: as string detetmines mode, see above, Otions: "Get
 % Information" OR "All" (also extract events)
-% 3. NodeNr: Indicie of recording node the user selects; indicie = position in
+% 4. NodeNr: Indicie of recording node the user selects; indicie = position in
 % folder --> with three nodes, content of folder has 3 string elements.
 % Indicie is the indice of these 3 elements that was seleceted
-% 4. NoddeID: Not used yet, maybe necessary in future (saves node nr as double, i.e. 101)
-% 5. InputChannelSelection: 1 x n double with indicie of which events that
+% 5. NoddeID: Not used yet, maybe necessary in future (saves node nr as double, i.e. 101)
+% 6. InputChannelSelection: 1 x n double with indicie of which events that
 % were identified should be analyzed. if 3 event lines saved (3 events),
 % this would be [1,2,3] to extract indicies of all 3 of them
-% 6. StateSelection: char with a number (either '1' or '0', events can have state of 0 or 1).
+% 7. StateSelection: char with a number (either '1' or '0', events can have state of 0 or 1).
 % User can specify this in the event extraction window
-% 7. FirstTimeStampinSample: double in seconds, TimeStamp of start of recording respective to
+% 8. FirstTimeStampinSample: double in seconds, TimeStamp of start of recording respective to
 % the aquisition start. Found in Data.Info
-% 8. AllRecordingIndicies: vector of recording indicies selected at data
+% 9. AllRecordingIndicies: vector of recording indicies selected at data
 % extraction. Basically holds which recordings the user wanted to
 % concatonate
+
 
 % Output: 
 % 1. Events: 1 x nevents cell array with each cell containing a
@@ -64,6 +66,10 @@ session = Session(Path);
 
 Info.NodeNrs = length(session.recordNodes);
 
+NeuropixelsRecording = [];
+if isfield(Data.Info,'NeuropixelProbe')
+    NeuropixelsRecording = 1;
+end
 
 %% If Exctract event window is opened, just get indos about available events from all available nodes. -- Loops through all of them
 if strcmp(WhatToDo,"Get Information")
@@ -101,16 +107,46 @@ if strcmp(WhatToDo,"Get Information")
             %% Handle Event Data
             % 3. Overlay all available event data
             eventProcessors = recording.ttlEvents.keys();
-            if length(eventProcessors)>1
-                disp("Multiple event processors found. Only one supported at a time. At standard, first processor is selected. Go to Extract_Events_Module_Extract_Open_Ephys_Events line 86 to change!")
-                eventProcessors = eventProcessors{1};
+            
+            ProcessorIndex = 1;
+
+            if length(eventProcessors)>1 && isempty(NeuropixelsRecording)
+                disp("Multiple event processors found. Only one supported at a time. At standard, first processor is selected. Go to Extract_Events_Module_Extract_Open_Ephys_Events.m to change!")
+            elseif NeuropixelsRecording == 1 % NP 1.0 Recording
+                ProcessorIndex = [];
+                for i = 1:length(eventProcessors)
+                    if strcmp(Data.Info.streamName,eventProcessors{i})
+                        ProcessorIndex = i;
+                    end
+                end
+
+                if isempty(ProcessorIndex)
+                    ProcessorIndex = 1;
+                    warning('Processor ID saved during data extraction is not part of event processor IDs in Extract_Events_Module_Extract_Open_Ephys_Events.m. Taking first event processor found.')
+                end
             end
 
-            for p = 1:length(eventProcessors)
-                processor = eventProcessors{p};
-                events = recording.ttlEvents(processor);
-    
+            eventProcessors = eventProcessors{ProcessorIndex};
+
+            for p = 1:1 % Always 1 so far
+
+                events = recording.ttlEvents(eventProcessors);
+                
+                if ~isempty(FirstTimeStampinSample) && ~isempty(events.sample_number)
+                    events.sample_number = double(events.sample_number) - FirstTimeStampinSample(nrrecordings);
+                    events.timestamp = events.timestamp - (FirstTimeStampinSample(nrrecordings)/Data.Info.NativeSamplingRate);
+                    if nrrecordings >= 2
+                        RecordingTimeSamples = Data.Info.RecordingTime*Data.Info.NativeSamplingRate;
+                        events.sample_number = double(events.sample_number) + sum(RecordingTimeSamples(1:nrrecordings-1));
+                        events.timestamp = events.timestamp + sum(Data.Info.RecordingTime(1:nrrecordings-1));
+                    end
+                else
+                    disp("Warning: Could not substract first timestamp of recording start from event times. This is normal if recording was started immediately or doesn not contain events. If this is not the reason, event times can lie outside of time limits without the first timestamp correction!")
+                end
+
+                % Found Events
                 if ~isempty(events.line)
+                    % first recording index
                     if nrrecordings == 1 % --> only dataframe of first recording with events get saved. This is bc its not straighforward to concatonate two data frames and this is only to show some event infos in the app window
                         if ~isempty(events)
                             Info.AvailabelNodes{k} = k;
@@ -123,19 +159,22 @@ if strcmp(WhatToDo,"Get Information")
                                 Events{k}.line = [];
                                 Events{k}.Properties = [];
                                 Events{k}.nodeId = [];
+                                Events{k}.processor_id = [];
                                 Events{k}.sample_number = [];
                                 Events{k}.state = [];
                                 Events{k}.timestamp = [];
                             end
                         end
                     end
+
+                    % Second, third... recording, if available
                     if nrrecordings > 1
                         Info.AvailabelNodes{k} = k;
                         TempEvents{k}.line = [Events{k}.line;events.line];
                         if isprop(events,'nodeId')
                             TempEvents{k}.nodeId = [Events{k}.nodeId;events.nodeId];
                         elseif isprop(events,'processor_id')
-                            TempEvents{k}.nodeId = [Events{k}.nodeId;events.processor_id];
+                            TempEvents{k}.processor_id = [Events{k}.processor_id;events.processor_id];
                         else
                             TempEvents{k}.nodeId = [];
                         end
@@ -156,13 +195,31 @@ if strcmp(WhatToDo,"Get Information")
                         Events{k}.Properties = [];
                         Events{k}.line = [];
                         Events{k}.nodeId = [];
+                        Events{k}.processor_id = [];
                         Events{k}.sample_number = [];
                         Events{k}.state = [];
                         Events{k}.timestamp = [];
                     end
-                end
-            end  
+                end % isempty(lines)
+            end  % Processors
         end % node.recordings
+
+    end
+
+    % Cleaning 
+    for i = 1:length(Events)
+        if isfield(Events{i},'processor_id')
+            if isempty(Events{i}.processor_id)
+                % Remove the 'Age' field
+                Events{i} = rmfield(Events{i}, 'processor_id');
+            end
+        end
+        if isfield(Events{i},'nodeId')
+            if isempty(Events{i}.nodeId)
+                % Remove the 'Age' field
+                Events{i} = rmfield(Events{i}, 'nodeId');
+            end
+        end
     end
 
     EventstoDeltete = [];
@@ -208,20 +265,42 @@ if strcmp(WhatToDo,"All")
         %% Handle Event Data
         % 3. Overlay all available event data
         eventProcessors = recording.ttlEvents.keys();
+            
+        ProcessorIndex = 1;
 
-        if ~isempty(eventProcessors)
-            if length(eventProcessors)>1
-                disp("Multiple event procesors found. Only one supported at a time. First one is autoselected.")
+        if length(eventProcessors)>1 && isempty(NeuropixelsRecording)
+            disp("Multiple event processors found. Only one supported at a time. At standard, first processor is selected. Go to Extract_Events_Module_Extract_Open_Ephys_Events.m to change!")
+        elseif NeuropixelsRecording == 1 % NP 1.0 Recording
+            ProcessorIndex = [];
+            for i = 1:length(eventProcessors)
+                if strcmp(Data.Info.streamName,eventProcessors{i})
+                    ProcessorIndex = i;
+                end
             end
-            Processortotake = 1;
-        else
-            Processortotake = 0;
+            if isempty(ProcessorIndex)
+                ProcessorIndex = 1;
+                warning('Processor ID saved during data extraction is not part of event processor IDs in Extract_Events_Module_Extract_Open_Ephys_Events.m. Taking first event processor found.')
+            end
         end
 
-        for p = 1:Processortotake
-            processor = eventProcessors{p};
-            events = recording.ttlEvents(processor);
+        eventProcessors = eventProcessors{ProcessorIndex};
+
+        for p = 1:1 % always 1 so far
+
+            events = recording.ttlEvents(eventProcessors);
     
+            if ~isempty(FirstTimeStampinSample) && ~isempty(events.sample_number)
+                events.sample_number = double(events.sample_number) - FirstTimeStampinSample(nrrecordings);
+                events.timestamp = events.timestamp - (FirstTimeStampinSample(nrrecordings)/Data.Info.NativeSamplingRate);
+                if nrrecordings >= 2
+                    RecordingTimeSamples = Data.Info.RecordingTime*Data.Info.NativeSamplingRate;
+                    events.sample_number = double(events.sample_number) + sum(RecordingTimeSamples(1:nrrecordings-1));
+                    events.timestamp = events.timestamp + sum(Data.Info.RecordingTime(1:nrrecordings-1));
+                end
+            else
+                disp("Warning: Could not substract first timestamp of recording start from event times. This is normal if recording was started immediately or doesn not contain events. If this is not the reason, event times can lie outside of time limits without the first timestamp correction!")
+            end 
+
             if ~isempty(events.line)
                 if isprop(events,'nodeID')
                     if length(unique(events.nodeID)) > 1
@@ -290,17 +369,16 @@ if strcmp(WhatToDo,"All")
                     end
                 end % prop name (ffile format)
             end % ~isempty events
-        end % Processors (always 1 at the moment)
-
-        if ~isempty(FirstTimeStampinSample) && ~isempty(sampleNumber)
-            sampleNumber = sampleNumber - FirstTimeStampinSample(nrrecordings);
-        else
-            disp("Warning: Could not substract first timestamp of recording start from event times. This is normal if recording was started immediately or doesn not contain events. If this is not the reason, event times can lie outside of time limits without the first timestamp correction!")
-        end
+        end % Processors (always 1 at the moment)    
 
         if ~isempty(NodeIdIndicies) && ~isempty(events.line)
-            eventlines = [eventlines,events.line(NodeIdIndicies==1)];
-            states = [states,events.state(NodeIdIndicies==1)];
+            if size(events.line,1) < size(events.line,2)
+                eventlines = [eventlines,events.line(NodeIdIndicies==1)];
+                states = [states,events.state(NodeIdIndicies==1)];
+            else
+                eventlines = [eventlines;events.line(NodeIdIndicies==1)];
+                states = [states;events.state(NodeIdIndicies==1)];
+            end
         end
 
     end % node.recordings

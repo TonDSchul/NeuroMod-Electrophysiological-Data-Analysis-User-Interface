@@ -36,10 +36,12 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
 > ## **Data Formats and Capabilities**
 
 
-<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="70%" />
+<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-The toolbox currently supports recordings from linear probes across all Intan systems formats (.dat and .rhd), all Open Ephys formats (.dat, .nwb, .continuous), as well as Spike2 (.smrx) and Neuralynx (.ncs).
-In addition to raw data, the GUI also supports event data (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
+The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx files.
+(Open Ephys GUI recordings were tested with the National Instruments PXIe-1083 chassis and Neuropixel basestations acquisition board, all Intan recordings were tested with the Intan USB Interface Board)
+
+In addition to channel data, the GUI can also extract event data from all recording formats mentioned (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
 
 <img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
@@ -77,7 +79,7 @@ Neuromod_Toolbox_GUI
 ```
 > ### **Get Started With Example Data**
 
-<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="25%" />
+<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="50%" />
 
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
@@ -85,7 +87,7 @@ To extract data from any dataset in one of the supported data formats select the
 
 > ### **Overview of required Matlab toolboxes**
 
-**1. To extract Neuralynx or Plexon data, you need:**
+**1. To extract Neuralynx data:**
 ```matlab
 Database Toolbox
 Fixed Point Designer

@@ -116,8 +116,12 @@ if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,
             ModifiedEventInfo = EventInfo.DINChannel;
         end
 
-        Extract_Events_Module_Load_and_Plot_Events(ModifiedEventInfo,FilePaths,app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown_2.Items,Data,RHDData,DownsampleRate);
+        [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(ModifiedEventInfo,FilePaths,app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown_2.Items,Data,RHDData,DownsampleRate);
     
+        if str2double(app.DowsampledSampleRateHzEditField.Value) ~= DownsampleRate
+            app.DowsampledSampleRateHzEditField.Value = num2str(DownsampleRate);
+        end
+
     else
         msgbox("No Input Channel found for this recording!");
     end
@@ -183,8 +187,11 @@ if strcmp(Data.Info.RecordingType,"Open Ephys")
     end
     % Include a specific duration of the event to make it clearly visible
     % -- 1ms standard
+
+    %% Normalize Timestamps to acquisition start
     
     Numsamplesevent = round(Data.Info.NativeSamplingRate*0.001);
+    %Numsamplesevent = 20;
 
     SampleEndNumber = SampleNumber+Numsamplesevent;
     EventData = zeros(1,length(Data.Time));
@@ -205,8 +212,12 @@ if strcmp(Data.Info.RecordingType,"Open Ephys")
     end
 
    
-    Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate)
+    [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate);
     
+    if str2double(app.DowsampledSampleRateHzEditField.Value) ~= DownsampleRate
+        app.DowsampledSampleRateHzEditField.Value = num2str(DownsampleRate);
+    end
+
 end
 
 if strcmp(Data.Info.RecordingType,"Neuralynx")
@@ -227,8 +238,12 @@ if strcmp(Data.Info.RecordingType,"Neuralynx")
         end
     end
 
-    Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate)
+    [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate);
     
+    if str2double(app.DowsampledSampleRateHzEditField.Value) ~= DownsampleRate
+        app.DowsampledSampleRateHzEditField.Value = num2str(DownsampleRate);
+    end
+
 end
 
 if strcmp(Data.Info.RecordingType,"Spike2")
@@ -321,7 +336,11 @@ if strcmp(Data.Info.RecordingType,"Spike2")
         close(h);
     end
 
-    Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate)
+    [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate);
     
+    if str2double(app.DowsampledSampleRateHzEditField.Value) ~= DownsampleRate
+        app.DowsampledSampleRateHzEditField.Value = num2str(DownsampleRate);
+    end
+
 end
                 

@@ -22,10 +22,10 @@ Module{1}.Items{1} = 'Spike Rate';
 Module{1}.Items{2} = 'Power Estimate';
 Module{1}.Items{3} = 'Current Source Density';
 %% Continous Data Module
-Module{2}.Title = 'Continous Data Module';
+Module{2}.Title = 'Continuous Data Module';
 Module{2}.Function = 'RUN_Continous_Data_Module';
 Module{2}.Items{1} = 'Preprocessing';
-Module{2}.Items{2} = 'Band Power Analysis';
+Module{2}.Items{2} = 'Static Spectrum Analysis';
 Module{2}.Items{3} = 'Spike Analysis';
 Module{2}.Items{4} = 'Unit Analysis';
 %% Event Data Module

@@ -8,7 +8,7 @@ if strcmp(ModuleFunctionName,"Preprocessing")
 
     Preprocessing_Window(app);
 
-elseif strcmp(ModuleFunctionName,"Band Power Analysis")
+elseif strcmp(ModuleFunctionName,"Static Spectrum Analysis")
 
     Static_Power_Spectrum_Window(app);
 

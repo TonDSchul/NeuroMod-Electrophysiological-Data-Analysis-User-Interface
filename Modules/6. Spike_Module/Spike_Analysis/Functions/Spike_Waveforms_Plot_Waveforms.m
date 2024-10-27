@@ -88,16 +88,16 @@ for nplots = 1:length(Units)
                 
                 for i = 1:size(TempWaves,1)
                     NrUnitPlots = NrUnitPlots+1;
-                    line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:), 'Tag', 'Waveforms','LineWidth',1);
+                    line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:), 'Tag', 'Waveforms','LineWidth',0.01);
                 end
             else
                 
                 for i = 1:size(TempWaves,1)
                     NrUnitPlots = NrUnitPlots+1;
                     if length(Waveformhandles)>= NrUnitPlots % enough plot handles
-                        set(Waveformhandles(NrUnitPlots),'XData',Time,'YData',TempWaves(i,:),'Color',colorMatrix(nindividualunits,:),'LineWidth',1, 'Tag', 'Waveforms');
+                        set(Waveformhandles(NrUnitPlots),'XData',Time,'YData',TempWaves(i,:),'Color',colorMatrix(nindividualunits,:),'LineWidth',0.01, 'Tag', 'Waveforms');
                     elseif length(Waveformhandles) < NrUnitPlots % enough plot handles
-                        line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:),'LineWidth',1, 'Tag', 'Waveforms')
+                        line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:),'LineWidth',0.01, 'Tag', 'Waveforms')
                     end
                 end
 
@@ -106,14 +106,14 @@ for nplots = 1:length(Units)
             %% Plot Mean
             if isempty(MeanWaveformhandles)
                 NrMeanPlots = NrMeanPlots+1;
-                meanline = line(Figurename,Time,mean(TempWaves,1),'Color','k','LineWidth',1.5, 'Tag', 'MeanWaveforms');
+                meanline = line(Figurename,Time,mean(TempWaves,1),'Color','k','LineWidth',1, 'Tag', 'MeanWaveforms');
             else
                 NrMeanPlots = NrMeanPlots+1;
                 if length(MeanWaveformhandles) > NrMeanPlots
-                    set(MeanWaveformhandles(NrMeanPlots),'XData',Time,'YData',mean(TempWaves,1),'Color','k','LineWidth',1.5, 'Tag', 'MeanWaveforms');
+                    set(MeanWaveformhandles(NrMeanPlots),'XData',Time,'YData',mean(TempWaves,1),'Color','k','LineWidth',1, 'Tag', 'MeanWaveforms');
                     meanline = MeanWaveformhandles(NrMeanPlots);
                 else
-                    meanline = line(Figurename,Time,mean(TempWaves,1),'Color','k','LineWidth',1.5, 'Tag', 'MeanWaveforms');
+                    meanline = line(Figurename,Time,mean(TempWaves,1),'Color','k','LineWidth',1, 'Tag', 'MeanWaveforms');
                 end
             end
 

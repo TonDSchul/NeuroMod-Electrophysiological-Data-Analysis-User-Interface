@@ -175,9 +175,9 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
             tableText = [TemptableText,tableText];
             % Display the text in the Text Area
             if isfield(Data.Info,'startTimestamp')
-                app.TextArea_2.Value = [strcat("Start time stamp of event recording: ",num2str(Info.startTimestamp{Nodetoshow}));strcat("Number of recordings: ",num2str(Data.Info.AllRecordingIndicies));"";tableText];
+                app.TextArea_2.Value = [strcat("Start time stamp of event recording: ",num2str(Info.startTimestamp{Nodetoshow}));strcat("Number of recordings: ",num2str(length(Data.Info.AllRecordingIndicies)));"";tableText];
             else
-                app.TextArea_2.Value = ["No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different";strcat("Number of recordings: ",num2str(Data.Info.AllRecordingIndicies));"";tableText];
+                app.TextArea_2.Value = ["No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different";strcat("Number of recordings: ",num2str(length(Data.Info.AllRecordingIndicies)));"";tableText];
             end
 
         else %% All recording systems other than OE
@@ -249,33 +249,39 @@ if strcmp(TimeOfExecution,"Initial")
             end
     
             if ~isempty(EventInfo{Nodetoshowfirst})
+                if isprop(EventInfo{Nodetoshowfirst},'line') || isfield(EventInfo{Nodetoshowfirst},'line') 
+                    if ~isempty(EventInfo{Nodetoshowfirst}.line)
+                        tableText = evalc('disp(EventInfo{Nodetoshowfirst})');  % Convert table to string
+                    
+                        % delte unwanted parts of the char
+                        cutpartsindicies = find(tableText =='>');
+                        TemptableText = [];
             
-                tableText = evalc('disp(EventInfo{Nodetoshowfirst})');  % Convert table to string
+                        if ~isempty(cutpartsindicies)
+                            tableText(1:cutpartsindicies(end)) = [];
+                        end
             
-                % delte unwanted parts of the char
-                cutpartsindicies = find(tableText =='>');
-                TemptableText = [];
-    
-                if ~isempty(cutpartsindicies)
-                    tableText(1:cutpartsindicies(end)) = [];
-                end
-    
-                for i = 1:length(EventInfo{Nodetoshowfirst}.Properties.VariableNames)
-                    if i == 1
-                        TemptableText = [TemptableText,EventInfo{Nodetoshowfirst}.Properties.VariableNames{i}];
+                        for i = 1:length(EventInfo{Nodetoshowfirst}.Properties.VariableNames)
+                            if i == 1
+                                TemptableText = [TemptableText,EventInfo{Nodetoshowfirst}.Properties.VariableNames{i}];
+                            else
+                                TemptableText = [TemptableText,',',' ',' ',EventInfo{Nodetoshowfirst}.Properties.VariableNames{i}];
+                            end
+                        end
+            
+                        tableText = [TemptableText,tableText];
+                        % Display the text in the Text Area
+                        if isfield(Data.Info,'startTimestamp')
+                            app.TextArea_2.Value = [strcat("Start time stamp of event recording: ",num2str(Info.startTimestamp{Nodetoshowfirst}));strcat("Number of recordings: ",num2str(length(Data.Info.AllRecordingIndicies)));"";tableText];
+                        else
+                            app.TextArea_2.Value = ["No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different";strcat("Number of recordings: ",num2str(length(Data.Info.AllRecordingIndicies)));"";tableText];
+                        end
                     else
-                        TemptableText = [TemptableText,',',' ',' ',EventInfo{Nodetoshowfirst}.Properties.VariableNames{i}];
+                        app.TextArea_2.Value = "Warning: No event data found in the selected node. Please select a different record node.";
                     end
-                end
-    
-                tableText = [TemptableText,tableText];
-                % Display the text in the Text Area
-                if isfield(Data.Info,'startTimestamp')
-                    app.TextArea_2.Value = [strcat("Start time stamp of event recording: ",num2str(Info.startTimestamp{Nodetoshowfirst}));strcat("Number of recordings: ",num2str(Data.Info.AllRecordingIndicies));"";tableText];
                 else
-                    app.TextArea_2.Value = ["No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different";strcat("Number of recordings: ",num2str(Data.Info.AllRecordingIndicies));"";tableText];
+                    app.TextArea_2.Value = "Warning: No event data found in the selected node. Please select a different record node.";
                 end
-            
             else
                 app.TextArea_2.Value = "Warning: No event data found in the selected node. Please select a different record node.";
             end

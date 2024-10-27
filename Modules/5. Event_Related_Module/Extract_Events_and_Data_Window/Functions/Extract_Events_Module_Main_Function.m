@@ -258,7 +258,7 @@ elseif strcmp(RecordingType,"Open Ephys")
         msgbox("Warning: No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different.")
     end
     
-    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp,Data.Info.AllRecordingIndicies);
+    [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Data,Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp,Data.Info.AllRecordingIndicies);
     
     % account for time being cut (cut start and cut end)
     for i = 1:length(Data.Events)

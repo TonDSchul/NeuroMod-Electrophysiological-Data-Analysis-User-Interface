@@ -180,9 +180,16 @@ if strcmp(type,"Downsample")
         for i = 1:length(PreprocessingSteps)
             % If downsampling was already applied
             if strcmp(PreprocessingSteps(i),"Downsampling")
-                f = msgbox("Downsampling was already added. Previous Settings got replaced by the current ones");
+                msgbox("Downsampling was already added. Previous Settings got replaced by the current ones");
                 Info.DownsampledSampleRate = str2double(DownsampleFactor);
-                Info.DownsampleFactor = round(SampleRate/Info.DownsampledSampleRate);
+                if mod(SampleRate/Info.DownsampledSampleRate,1) ~=0
+                    Info.DownsampleFactor = round(SampleRate/Info.DownsampledSampleRate);
+                    Info.DownsampledSampleRate = SampleRate/Info.DownsampleFactor;
+                    Info.DownsampleFactor = SampleRate/Info.DownsampledSampleRate;
+                    msgbox("Warning: Downsamplefactor resulting from entered sample rate is not an integer. Downsampled samplerate is adjusted accordingly!")
+                else
+                    Info.DownsampleFactor = SampleRate/Info.DownsampledSampleRate;
+                end
 
                 %Info.DownsampledSampleRate = round(SampleRate/Info.DownsampleFactor);
                 % function ends here, next lines only get executed when
@@ -196,13 +203,30 @@ if strcmp(type,"Downsample")
     if AlreadyFound == 0
         PreprocessingSteps = [PreprocessingSteps;"Downsampling"];
         Info.DownsampledSampleRate = str2double(DownsampleFactor);
-        Info.DownsampleFactor = round(SampleRate/Info.DownsampledSampleRate);
+
+        if mod(SampleRate/Info.DownsampledSampleRate,1) ~=0
+            Info.DownsampleFactor = round(SampleRate/Info.DownsampledSampleRate);
+            Info.DownsampledSampleRate = SampleRate/Info.DownsampleFactor;
+            Info.DownsampleFactor = SampleRate/Info.DownsampledSampleRate;
+            msgbox("Warning: Downsamplefactor resulting from entered sample rate is not an integer. Downsampled samplerate is adjusted accordingly!")
+        else
+            Info.DownsampleFactor = SampleRate/Info.DownsampledSampleRate;
+        end
+        
     end
 
     elseif isempty(PreprocessingSteps)
         PreprocessingSteps = [PreprocessingSteps,"Downsampling"];
         Info.DownsampledSampleRate = str2double(DownsampleFactor);
-        Info.DownsampleFactor = round(SampleRate/Info.DownsampledSampleRate);
+        
+        if mod(SampleRate/Info.DownsampledSampleRate,1) ~=0
+            Info.DownsampleFactor = round(SampleRate/Info.DownsampledSampleRate);
+            Info.DownsampledSampleRate = SampleRate/Info.DownsampleFactor;
+            Info.DownsampleFactor = SampleRate/Info.DownsampledSampleRate;
+            msgbox("Warning: Downsamplefactor resulting from entered sample rate is not an integer. Downsampled samplerate is adjusted accordingly!")
+        else
+            Info.DownsampleFactor = SampleRate/Info.DownsampledSampleRate;
+        end
     end
 end
 %% If user seleceted Normalize 

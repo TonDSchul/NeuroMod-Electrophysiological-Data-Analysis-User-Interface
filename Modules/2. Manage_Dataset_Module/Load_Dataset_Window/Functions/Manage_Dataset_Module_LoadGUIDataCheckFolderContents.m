@@ -45,7 +45,7 @@ cd(executableFolder);
 
 if isempty(NewFolderSelection) % If folder no manually set by user 
     % Autoset folder which contents should be checked 
-    SelectedFolder = [executableFolder,'\Example Data'];
+    SelectedFolder = [executableFolder,'\Recording Data\Saved GUI Data'];
 else
     SelectedFolder = NewFolderSelection;
 end
@@ -116,10 +116,9 @@ for i = 1:length(stringArray)
                     matfilecount = matfilecount + 1;
                     DataMatfileindex = [DataMatfileindex,i];
                 end
-
-                
             end
         end
+
         if strcmp(currentstring(end-3:end),".dat")
             DataDATfileindex = [DataDATfileindex,i];
         end

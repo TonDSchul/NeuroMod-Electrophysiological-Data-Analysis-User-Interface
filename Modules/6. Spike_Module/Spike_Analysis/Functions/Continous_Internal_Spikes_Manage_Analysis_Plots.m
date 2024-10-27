@@ -117,7 +117,7 @@ end
 
 %% Channel waveforms
 
-if strcmp(TypeofAnalysis,"Channel Waveforms")
+if strcmp(TypeofAnalysis,"Spike Waveforms")
     CurrentPlotData = Continous_Spikes_Plot_Waveforms(Data,SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,PlotInfo,ClustertoShowDropDown,Figure,CurrentPlotData);
 end
 
@@ -237,8 +237,8 @@ if strcmp(TypeofAnalysis,"Spike Triggered LFP")
 
     [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Continous",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoShowDropDown,CurrentPlotData,PlotAppearance);
     
-    if ~isempty(TempData) % if not preprocessed
-        Data = TempData; % if preprocessed
+    if ~isempty(TempData) % if preprocessed
+        Data = TempData;
     end
 
     texttoshow = ["Number of Spikes found: ";num2str(length(SpikeTimes))];

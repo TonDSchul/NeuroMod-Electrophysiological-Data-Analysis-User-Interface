@@ -42,15 +42,23 @@ function Module_MainWindow_Plot_Data(Data,UIAxis,Time,Channel_Selection,PlotLine
 %% Scale all channel lines so that they are as far apart as specified in main window
 % (Channelspacing)
 
-for i = 1:size(Data,1)     
-    Data(i, :) = Data(i, :) - (i - 1) * PlotLineSpacing;
+if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+    for i = 1:size(Data,1)     
+        Data(i, :) = Data(i, :) - (i - 1) * PlotLineSpacing;
+    end
+    YMaxLimitsMultipeERP = max(Data,[],"all");
+    YMinLimitsMultipeERP = min(Data,[],"all");
+    ylim(UIAxis, [YMinLimitsMultipeERP,YMaxLimitsMultipeERP]);
+else
+    Depth = 0:ChannelSpacing:(size(Data,1)-1)*ChannelSpacing;
+    YMinLimitsMultipeERP = Depth(1);
+    YMaxLimitsMultipeERP = Depth(end);
+    ylim(UIAxis, [Depth(1),Depth(end)]);
 end
 
 %% Predefine x and y lims and title before plotting to increase performance!
-YMaxLimitsMultipeERP = max(Data,[],"all");
-YMinLimitsMultipeERP = min(Data,[],"all");
+
 xlim(UIAxis, [Time(1),Time(end)]);
-ylim(UIAxis, [YMinLimitsMultipeERP,YMaxLimitsMultipeERP]);
 
 if size(Data,1)>1
     set(UIAxis,'yticklabel',{[]});
@@ -73,7 +81,7 @@ if strcmp(EventPlot,"Events")
     %% Downsampling: Events handled seperately. This is bc. event times are save in respect to raw data time.
     %% Time points saved in there are therefore not necessary the same as in the downsampled time vector.
     % Therefore, closest value of the event time to the downsampled
-    % vtime vecotor has to be found. (When eventtime in range of downsampled time)
+    % time vector has to be found. (When eventtime in range of downsampled time)
 
     TempEventIndicies = EventData >= StartIndex & EventData <= StopIndex;
     EventSamples = EventData(TempEventIndicies)-(StartIndex-1);
@@ -88,8 +96,7 @@ end
 if strcmp(Type,"Static")
     % All objects being plotted are lines. The following code captures all the lines
     % plotted to keep track of how much is plotted and to update already
-    % created line objects instead of creating new ones every time. This
-    % increases performance 
+    % created line objects instead of creating new ones every time.
     
     %% First Check and delete unneccesary plot handles
 
@@ -100,54 +107,74 @@ if strcmp(Type,"Static")
         Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
         if length(Eventline_handles) > sum(EventIndicies)
             delete(Eventline_handles(sum(EventIndicies)+1:end)); 
+            Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
         end
-        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
     end
 
     lineHandles = findobj(UIAxis, 'Tag', 'Data');
+    
+    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
 
-    %% Plot Channel Data
-    % lines = NaN(size,)
-    if isempty(lineHandles) 
-        % Plot for the first time
-        lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
-        % ColorMap
-        for i = 1:size(Data,1)
-            lines(i).Color = colorMap(i, :);
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        delete(lineHandles);
+        if length(ImageScChannel_handles)>1
+            delete(ImageScChannel_handles(2:end));
+            ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
         end
     else
-        if length(lineHandles) >= size(Data,1)
-            for i = 1:size(Data,1)
-                set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
-            end
-            delete(lineHandles(size(Data,1)+1:end));
+        delete(ImageScChannel_handles);
+    end
+
+    %% Plot Channel Data
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+        if isempty(lineHandles) 
+            % Plot for the first time
+            lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
             % ColorMap
             for i = 1:size(Data,1)
                 lines(i).Color = colorMap(i, :);
             end
-        elseif length(lineHandles) < size(Data,1)
-            for i = 1:length(lineHandles)
-                set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
-                lines(i)=lineHandles(i);
-            end
-            % Plot rest of the lines
-            lines(i+1:size(Data,1)) = line(UIAxis,Time,Data(i+1:end,:),'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
-            % ColorMap
-            for i = 1:size(Data,1)
-                lines(i).Color = colorMap(i, :);
+        else
+            if length(lineHandles) >= size(Data,1)
+                for i = 1:size(Data,1)
+                    set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
+                end
+                delete(lineHandles(size(Data,1)+1:end));
+                % ColorMap
+                for i = 1:size(Data,1)
+                    lines(i).Color = colorMap(i, :);
+                end
+            elseif length(lineHandles) < size(Data,1)
+
+                for i = 1:length(lineHandles)
+                    set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
+                    lines(i)=lineHandles(i);
+                end
+                % Plot rest of the lines
+                lines(i+1:size(Data,1)) = line(UIAxis,Time,Data(i+1:end,:),'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
+                % ColorMap
+                for i = 1:size(Data,1)
+                    lines(i).Color = colorMap(i, :);
+                end
             end
         end
     end
-     
+
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        
+        if isempty(ImageScChannel_handles)
+            imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
+        else
+            set(ImageScChannel_handles(1), 'XData', Time, 'YData', Depth,'CData', Data,'Tag','ImageScChannel');
+        end
+    end
+
     %% Events: Check if Events should be plotted.
     if strcmp(EventPlot,"Events") && sum(EventIndicies) > 0
 
         xData = [Time(EventIndicies == 1); Time(EventIndicies == 1)];
         yData = double(repmat([YMinLimitsMultipeERP,YMaxLimitsMultipeERP]', 1, length(Time(EventIndicies == 1))));
 
-        % If 64 lines: line 65 has to be plooted with line. Set
-        % will result in an error bc this handle indicie isnt
-        % existing yet
         if isempty(Eventline_handles) 
             line(UIAxis,xData, yData, 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events'); % Adjust color as needed
         else
@@ -174,13 +201,15 @@ if strcmp(Type,"Static")
     
                 SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
     
-                % Modify Positions to be able to take as indicie
-                SpikeData.Position = SpikeData.Position./ChannelSpacing;
-                SpikeData.Position = SpikeData.Position+1;
-                
-                %% Scale and Plot Kilosort Spike Positions
-                for nspikes = 1:numel(SpikeData.Indicie) 
-                    SpikeData.Position(nspikes) = Data(SpikeData.Position(nspikes),SpikeData.Indicie(nspikes));
+                if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+                    % Modify Positions to be able to take as indicie
+                    SpikeData.Position = SpikeData.Position./ChannelSpacing;
+                    SpikeData.Position = SpikeData.Position+1;
+
+                    %% Scale and Plot Spike Positions
+                    for nspikes = 1:numel(SpikeData.Indicie) 
+                        SpikeData.Position(nspikes) = Data(SpikeData.Position(nspikes),SpikeData.Indicie(nspikes));
+                    end
                 end
     
                 if isempty(SpikeHandles)
@@ -207,7 +236,7 @@ if strcmp(Type,"Static")
                     end
                 end      
             end
-        elseif strcmp(SpikePlotType,"Waveforms")
+        elseif strcmp(SpikePlotType,"Waveforms") && strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
             [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,Channel_Selection,SpikeDatatype);
             SpikeData.Position = SpikeData.Position./ChannelSpacing;
     
@@ -276,20 +305,24 @@ if strcmp(Type,"Static")
     elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort")
         if ~isempty(SpikeData.Indicie)
             
-            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,Channel_Selection,SpikeDatatype);
+            [SpikeData.Indicie,SpikeData.Position,ChannelPosition] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,Channel_Selection,SpikeDatatype);
 
             SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
 
-            %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
-            range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
-           
-            %% Scale and Plot Kilosort Spike Positions
-            for j = 1:numel(SpikeData.Indicie) 
-                %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
-                % Calculate the range of both vectors
-                range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
-                % Compute the scaling factor
-                SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+                %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
+                range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
+               
+                %% Scale and Plot Kilosort Spike Positions
+                for j = 1:numel(SpikeData.Indicie) 
+                    %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
+                    % Calculate the range of both vectors
+                    range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
+                    % Compute the scaling factor
+                    SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
+                end
+            else%imagsc plot
+                SpikeData.Position = (round(SpikeData.Position/ChannelSpacing))*ChannelSpacing;
             end
          
             if isempty(SpikeHandles)
@@ -343,39 +376,63 @@ if strcmp(Type,"Movie")
 
     lineHandles = findobj(UIAxis, 'Tag', 'Data');
 
-    %% Plot Channel Data
-    % lines = NaN(size,)
-    if isempty(lineHandles) 
-        % Plot rfor the first time
-        lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
-        % ColorMap
-        for i = 1:size(Data,1)
-            lines(i).Color = colorMap(i, :);
+    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        delete(lineHandles);
+        if length(ImageScChannel_handles)>1
+            delete(ImageScChannel_handles(2:end));
+            ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
         end
     else
-        if length(lineHandles) >= size(Data,1)
-            for i = 1:size(Data,1)
-                set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
-            end
-            delete(lineHandles(i+1:end));
+        delete(ImageScChannel_handles);
+    end
+
+    %% Plot Channel Data
+    % lines = NaN(size,)
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+        if isempty(lineHandles) 
+            % Plot rfor the first time
+            lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
             % ColorMap
             for i = 1:size(Data,1)
                 lines(i).Color = colorMap(i, :);
             end
-        elseif length(lineHandles) < size(Data,1)
-            for i = 1:length(lineHandles)
-                set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
-                lines(i)=lineHandles(i);
-            end
-            % Plot rest of the lines
-            lines(i+1:size(Data,1)) = line(UIAxis,Time,Data(i+1:end,:),'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
-            % ColorMap
-            for i = 1:size(Data,1)
-                lines(i).Color = colorMap(i, :);
+        else
+            if length(lineHandles) >= size(Data,1)
+                for i = 1:size(Data,1)
+                    set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
+                end
+                delete(lineHandles(i+1:end));
+                % ColorMap
+                for i = 1:size(Data,1)
+                    lines(i).Color = colorMap(i, :);
+                end
+            elseif length(lineHandles) < size(Data,1)
+                for i = 1:length(lineHandles)
+                    set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
+                    lines(i)=lineHandles(i);
+                end
+                % Plot rest of the lines
+                lines(i+1:size(Data,1)) = line(UIAxis,Time,Data(i+1:end,:),'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
+                % ColorMap
+                for i = 1:size(Data,1)
+                    lines(i).Color = colorMap(i, :);
+                end
             end
         end
     end
-     
+
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        Depth = 0:ChannelSpacing:(size(Data,1)-1)*ChannelSpacing;
+        if isempty(ImageScChannel_handles)
+            imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
+        else
+            %imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
+            set(ImageScChannel_handles(1), 'XData', Time, 'YData', Depth,'CData', Data,'Tag','ImageScChannel');
+        end
+    end
+
     %% Events: Check if Events should be plotted.
     if strcmp(EventPlot,"Events") && sum(EventIndicies) > 0
 
@@ -411,15 +468,17 @@ if strcmp(Type,"Movie")
     
                 SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
     
-                % Modify Positions to be able to take as indicie
-                SpikeData.Position = SpikeData.Position./ChannelSpacing;
-                SpikeData.Position = SpikeData.Position+1;
-                
-                %% Scale and Plot Kilosort Spike Positions
-                for nspikes = 1:numel(SpikeData.Indicie) 
-                    SpikeData.Position(nspikes) = Data(SpikeData.Position(nspikes),SpikeData.Indicie(nspikes));
+                if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+                    % Modify Positions to be able to take as indicie
+                    SpikeData.Position = SpikeData.Position./ChannelSpacing;
+                    SpikeData.Position = SpikeData.Position+1;
+                    
+                    %% Scale and Plot Kilosort Spike Positions
+                    for nspikes = 1:numel(SpikeData.Indicie) 
+                        SpikeData.Position(nspikes) = Data(SpikeData.Position(nspikes),SpikeData.Indicie(nspikes));
+                    end
                 end
-    
+
                 if isempty(SpikeHandles)
                     line(UIAxis, Time(SpikeData.Indicie), SpikeData.Position, ...
                      'LineStyle', 'none', ...  % No line between markers
@@ -444,7 +503,7 @@ if strcmp(Type,"Movie")
                     end
                 end       
             end
-        elseif strcmp(SpikePlotType,"Waveforms")
+        elseif strcmp(SpikePlotType,"Waveforms") && strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
             [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,Channel_Selection,SpikeDatatype);
             SpikeData.Position = SpikeData.Position./ChannelSpacing;
     
@@ -518,16 +577,20 @@ if strcmp(Type,"Movie")
 
             SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
 
-            %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
-            range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
-           
-            %% Scale and Plot Kilosort Spike Positions
-            for j = 1:numel(SpikeData.Indicie) 
-                %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
-                % Calculate the range of both vectors
-                range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
-                % Compute the scaling factor
-                SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+                %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
+                range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
+               
+                %% Scale and Plot Kilosort Spike Positions
+                for j = 1:numel(SpikeData.Indicie) 
+                    %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
+                    % Calculate the range of both vectors
+                    range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
+                    % Compute the scaling factor
+                    SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
+                end
+            else%imagsc plot
+                SpikeData.Position = (round(SpikeData.Position/ChannelSpacing))*ChannelSpacing;
             end
          
             if isempty(SpikeHandles)

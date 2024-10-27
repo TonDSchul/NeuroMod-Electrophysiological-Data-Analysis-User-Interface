@@ -26,6 +26,7 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.MainWindow.Data.Title.Raw = "Raw Data";
     PlotAppearance.MainWindow.Data.Title.Preprocessed = "Preprocessed Data";
+    PlotAppearance.MainWindow.Data.Plottype = "Individual Lines"; % Alternative: "Imagesc"
     PlotAppearance.MainWindow.Data.MainXLabel = "";
     PlotAppearance.MainWindow.Data.MainYLabel = "";
     PlotAppearance.MainWindow.Data.MainFontSize = 12;

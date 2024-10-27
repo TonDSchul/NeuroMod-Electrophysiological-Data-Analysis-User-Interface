@@ -286,6 +286,12 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
 
+    if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        app.UIAxes.YDir = 'reverse';
+    else
+        app.UIAxes.YDir = 'normal';
+    end
+    
 elseif strcmp(Type,"Preprocessing")
 
     % Save Downsampled SamplingRate when Downsampling was applied
@@ -373,6 +379,12 @@ elseif strcmp(Type,"Preprocessing")
     app.UIAxes_2.NextPlot = "add"; 
 
     app.UIAxes.Box = "off";
+
+    if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        app.UIAxes.YDir = 'reverse';
+    else
+        app.UIAxes.YDir = 'normal';
+    end
 
     %Take care of potentially changed backgroundcolor
     app.UIAxes.Color = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
