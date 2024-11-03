@@ -54,7 +54,7 @@ ds = (0:nChan)*ChannelSpacing; %depth in micrometers given 50 µm spacing
 
 xlim(Figure,[TimeRangetoPlot(1),TimeRangetoPlot(end)]);
 ylim(Figure,[ds(1),ds(end-1)]);
-titlestring = strcat("Current source density analysis of main window time range channel ",ChannelSelection);
+titlestring = strcat("Current Source Density Analysis of Main Window Plot");
 title(Figure,titlestring);
 xlabel(Figure,PlotAppearance.LiveCSDWindow.XLabel)
 ylabel(Figure,PlotAppearance.LiveCSDWindow.YLabel) 

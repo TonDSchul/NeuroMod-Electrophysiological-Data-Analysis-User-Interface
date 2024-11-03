@@ -54,18 +54,16 @@ function [DataChannelRange,DataChannelSelected,EventNrRange,CSD,TF] = Event_Modu
 
 TF = [];
 CSD = [];
-
+DataChannelRange = [];
 %% Extract Values to do calculations
 
 CommaIndex = find(EventNumberSelectionEditField==',');
 EventNrRange(1) = str2double(EventNumberSelectionEditField(1:CommaIndex-1));
 EventNrRange(2) = str2double(EventNumberSelectionEditField(CommaIndex+1:end));
 
-CommaIndex = find(ChannelSelectionDropDown==',');
-DataChannelSelected(1) = str2double(ChannelSelectionDropDown(1:CommaIndex-1));
-DataChannelSelected(2) = str2double(ChannelSelectionDropDown(CommaIndex+1:end));
+DataChannelSelected = ChannelSelectionDropDown;
 
-DataChannelRange = length(DataChannelSelected(1):DataChannelSelected(2));
+[DataChannelSelected] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,DataChannelSelected,'MainWindow');
     
 if strcmp(Type,"Moorlet Wavelets")
     %% Get Info of Wavelet Cycles from GUI

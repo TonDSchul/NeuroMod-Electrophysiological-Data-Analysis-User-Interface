@@ -83,6 +83,7 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
     TempSpike2EventChannelToTake = [];
     TempSpikeSorting = [];
     TempSpikeDetectionNrStd = [];
+    TempProbeInfo = [];
 
     if isfield(Data.Info,'CutStart')
         TempCutStart = Data.Info.CutStart;
@@ -102,6 +103,10 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
 
     if isfield(Data.Info,'KilosortScalingFactor')
         TempKilosortScalingFactor = Data.Info.KilosortScalingFactor;
+    end
+
+    if isfield(Data.Info,'ProbeInfo')
+        TempProbeInfo = Data.Info.KilosortScalingFactor;
     end
 
     if isfield(Data,'EventRelatedData')
@@ -155,6 +160,10 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
 
     if ~isempty(TempSpikeDetectionThreshold)
         Data.Info.SpikeDetectionThreshold = TempSpikeDetectionThreshold;
+    end
+
+    if ~isempty(TempProbeInfo)
+        Data.Info.ProbeInfo = TempProbeInfo;
     end
 
     if ~isempty(TempKilosortScalingFactor)

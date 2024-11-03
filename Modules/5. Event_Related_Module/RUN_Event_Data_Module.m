@@ -23,6 +23,11 @@ elseif strcmp(ModuleFunctionName,"LFP Analysis")
     else
         Analyse_Event_Related_Signal(app);
     end
+    
+    if isempty(app.ProbeViewWindowHandle)
+        app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+    end
+
 elseif strcmp(ModuleFunctionName,"Spike Analysis")
 
     % Delete Part of CurrentPlotData holding previous spike
@@ -52,20 +57,53 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort')
             %% Start GUI
 
+            if isempty(app.ProbeViewWindowHandle)
+                app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+            end
+
+            if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+                AlreadyIn = 0;
+                for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+                    if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Event Kilosort Spikes')
+                        AlreadyIn = 1;
+                    end
+                end
+                if AlreadyIn == 0
+                    app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Event Kilosort Spikes';
+                end 
+            end
+
             [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0);
 
             if Error == 0
-                Events_Kilosort_Spike_Window(app);
+                app.EventKilosortSpikesWindow = Events_Kilosort_Spike_Window(app);
             end
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
+
+            if isempty(app.ProbeViewWindowHandle)
+                app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+            end
+
+            if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+                AlreadyIn = 0;
+                for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+                    if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Event Internal Spikes')
+                        AlreadyIn = 1;
+                    end
+                end
+                if AlreadyIn == 0
+                    app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Event Internal Spikes';
+                end 
+            end
 
             [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0);
 
             if Error == 0
-                Events_Internal_Spike_Window(app);
+                app.EventInternalSpikesWindow = Events_Internal_Spike_Window(app);
             end
         end     
     end
+
 elseif strcmp(ModuleFunctionName,"Unit Analysis")
     if ~isfield(app.Data,'EventRelatedData')
         msgbox("Error: No event related data found. Please first extract events and event related data");
@@ -94,3 +132,4 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
         end       
     end
 end               
+

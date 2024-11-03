@@ -88,13 +88,12 @@ if strcmp(TwoORThreeD,"TwoD")
         PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
     end
 
-    min_z = 0;
     if isempty(PowerDepth2D_handles)
-        surface(Figure,time_edges(1:end-1),DepthToPlot, min_z * ones(size(spike_rates)), ...
-        'CData', spike_rates, 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+        imagesc(Figure,time_edges(1:end-1),DepthToPlot, ...
+        spike_rates, 'Tag', 'PowerDepth2D');
     else
-        set(PowerDepth2D_handles(1),'XData',time_edges(1:end-1),'YData',DepthToPlot, 'ZData',min_z * ones(size(spike_rates)), ...
-        'CData', spike_rates, 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
+        set(PowerDepth2D_handles(1),'XData',time_edges(1:end-1),'YData',DepthToPlot, ...
+        'CData', spike_rates, 'Tag', 'PowerDepth2D');
     end
 
     Event_handles = findobj(Figure,'Tag', 'Event');

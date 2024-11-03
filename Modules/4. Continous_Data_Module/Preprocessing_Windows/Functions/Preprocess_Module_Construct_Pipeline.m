@@ -312,6 +312,8 @@ if strcmp(type,"StimArtefactRejection")
             Info.StimArtefactChannel = ArtefactRejectionInfo.SelectedEventChannelName;
             Info.TimeAroundStimArtefact = ArtefactRejectionInfo.TimeAroundEvents./SampleRate; %convert to seconds;
             Info.TimeAroundStimArtefact(1) = -Info.TimeAroundStimArtefact(1);
+
+            Info.ChannelSelection = ArtefactRejectionInfo.ChannelSelection;
         end
 
     elseif isempty(PreprocessingSteps)
@@ -320,6 +322,7 @@ if strcmp(type,"StimArtefactRejection")
         Info.StimArtefactChannel = ArtefactRejectionInfo.SelectedEventChannelName;
         Info.TimeAroundStimArtefact = ArtefactRejectionInfo.TimeAroundEvents./SampleRate; %convert to seconds;
         Info.TimeAroundStimArtefact(1) = -Info.TimeAroundStimArtefact(1);
+        Info.ChannelSelection = ArtefactRejectionInfo.ChannelSelection;
     end
 end
 

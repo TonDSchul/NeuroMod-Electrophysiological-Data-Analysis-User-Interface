@@ -27,7 +27,7 @@ ArtefactDepth = str2double(ArtefactDepth);
 %get Channelnr of depth
 ArtefactDepth = round(ArtefactDepth/ChannelSpacing);
 % initiate progress bar
-h = waitbar(0, 'Filtering Spike Indicies...', 'Name','Filtering Spike Indicies...');
+h = waitbar(0, 'Filtering Spike Indicies...', 'Name','Filtering Vertical Spike Artefacts...');
 
 %% Attempted Filtering of artefacts across all channel
 % This code finds spike indicies that are the same +/-1 sample across more
@@ -53,7 +53,7 @@ for i = 1:length(SpikeTimes)
     if i == CurrentProgress
        % Update the progress bar
        fraction = CurrentProgress/length(SpikeTimes);
-       msg = sprintf('Filtering Spike Indicies... (%d%% done)', round(100*fraction));
+       msg = sprintf('Filtering Vertical Spike Artefacts... (%d%% done)', round(100*fraction));
        waitbar(fraction, h, msg);
        CurrentProgress = round(CurrentProgress+ProgressSteps);
     end

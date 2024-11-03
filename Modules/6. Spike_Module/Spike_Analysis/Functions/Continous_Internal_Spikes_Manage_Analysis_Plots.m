@@ -74,6 +74,10 @@ else
     numCluster = 1;
 end
 
+% Convert in um
+
+SpikePositions = (SpikePositions-1)*Data.Info.ChannelSpacing;
+
 %% Execute Selection
 %% Spike Map with amplitude color coding
 
@@ -157,7 +161,7 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     end
    
     %% Just Some Channel Selected
-    MeanWaveForm = MeanWaveForm(1,PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2),:);
+    MeanWaveForm = MeanWaveForm(1,PlotInfo.ChannelSelection,:);
     
     CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,ClustertoShowDropDown,MeanWaveForm,Data.Info.ChannelSpacing,"Internal",PlotInfo.Waveforms,TwoORThreeD,CurrentPlotData);
 end
@@ -173,7 +177,7 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
 
     set(Figure, 'YDir', 'reverse');
     
-    ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
+    ChannelRange = PlotInfo.ChannelSelection;
     %% basic quantification of spiking plot
     depthBins = 0:(length(ChannelRange)-1)*Data.Info.ChannelSpacing/150:((length(ChannelRange)-1)*Data.Info.ChannelSpacing)+0.5;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
@@ -205,7 +209,7 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
 
     set(Figure, 'YDir', 'reverse');
     
-    ChannelRange = PlotInfo.ChannelSelection(1):PlotInfo.ChannelSelection(2);
+    ChannelRange = PlotInfo.ChannelSelection;
     %% basic quantification of spiking plot
     depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:length(ChannelRange)*Data.Info.ChannelSpacing;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);

@@ -45,9 +45,9 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(EventRelat
 
 
 if strcmp(WaveletType,"Moorlet Wavelets")
-    EventRelatedData = EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),EventNrRange(1):EventNrRange(2),:);
+    EventRelatedData = EventRelatedData(DataChannelSelected,EventNrRange(1):EventNrRange(2),:);
 elseif strcmp(WaveletType,"Filter Hilbert")
-    EventRelatedData = EventRelatedData(DataChannelSelected(1):DataChannelSelected(2),EventNrRange(1):EventNrRange(2),:);
+    EventRelatedData = EventRelatedData(DataChannelSelected,EventNrRange(1):EventNrRange(2),:);
 end
 
 EventTime = 0-TimearoundEvent(1):1/SampleRate:TimearoundEvent(2);

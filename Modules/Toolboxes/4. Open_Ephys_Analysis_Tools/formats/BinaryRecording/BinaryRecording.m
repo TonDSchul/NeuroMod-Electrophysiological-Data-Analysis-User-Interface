@@ -60,7 +60,11 @@ classdef BinaryRecording < Recording
                 
                 stream.metadata.names = {};
                 for j = 1:length(self.info.continuous(i).channels)
-                    stream.metadata.names{j} = self.info.continuous(i).channels(j).channel_name;
+                    if iscell(self.info.continuous(i).channels)
+                        stream.metadata.names{j} = self.info.continuous(i).channels{j}.channel_name;
+                    else
+                        stream.metadata.names{j} = self.info.continuous(i).channels(j).channel_name;
+                    end
                 end
 
                 %Utils.log("Searching for start timestamp for stream: ");

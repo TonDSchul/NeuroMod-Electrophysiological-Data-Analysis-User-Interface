@@ -37,7 +37,7 @@ function CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,C
 % If no spike data and therefore no waveform for a channel: field is NaN
 % --> set to 0
 
-NumChannel = length(ChannelSelection(1):ChannelSelection(2));
+NumChannel = length(ChannelSelection);
 
 if ndims(MeanWaveform)==3
     Time = 0:1/Data.Info.NativeSamplingRate:(round(size(MeanWaveform,3))/Data.Info.NativeSamplingRate)-(1/Data.Info.NativeSamplingRate);
@@ -113,12 +113,12 @@ end
 set(Figure, 'YDir', 'reverse'); 
 
 if strcmp(UnitstoPlot,"All") || strcmp(UnitstoPlot,"Non")
-    title(Figure,strcat("All Units Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+    title(Figure,strcat("All Units Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channel Selection"))
 else
     if isnumeric(UnitstoPlot)
-        title(Figure,strcat("Unit ",num2str(UnitstoPlot)," Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+        title(Figure,strcat("Unit ",num2str(UnitstoPlot)," Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channel Selection"))
     else
-        title(Figure,strcat("Unit ",UnitstoPlot," Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channels ",num2str(ChannelSelection)))
+        title(Figure,strcat("Unit ",UnitstoPlot," Average of Biggest Waveform(s) ", num2str(WaveformsToPlot)," Across Channel Selection"))
     end
 end
 

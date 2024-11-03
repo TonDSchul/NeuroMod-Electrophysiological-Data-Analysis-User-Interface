@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,DataSource,PowerSpecResults,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,DataSource,PowerSpecResults,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,ActiveChannel)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth
@@ -38,6 +38,8 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum
 % 10. TwoORThreeD: string, "TwoD" to show 2D plots OR "ThreeD" to show 3
 % dimensional plots
 % 11. CurrentPlotData: structure saving results to export.
+% 12. ActiveChannel: double vector containing channel active in the probe
+% view window
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed
@@ -56,6 +58,7 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum
 % No data present, compute 
 if strcmp(DataSource,"Raw Data") && ~isfield(PowerSpecResults,'Raw')
     nChansInFile = size(Data.Raw,1);  
+    
     [BandPower.lfpByChannel, BandPower.allPowerEst, BandPower.F, BandPower.allPowerVar] = ...
     lfpBandPower([], Data.Info.NativeSamplingRate, nChansInFile, [], Data.Raw,TextArea);
     BandPower.allPowerEst = BandPower.allPowerEst';
@@ -106,7 +109,12 @@ dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % H
 Figure_2.NextPlot = "add";
 Figure_2.FontSize = 10;
 Figure.FontSize = 10;
-plotLFPpower(BandPower.F, BandPower.allPowerEst, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD);
+
+[ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
+
+BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
+
+plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD);
 
 %% save plotted data in case user wants to save 
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);

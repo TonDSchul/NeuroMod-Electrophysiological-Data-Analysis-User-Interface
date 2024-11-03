@@ -51,7 +51,7 @@ if ~strcmp(Type,"Eventrelated")
     end
 end
 
-NumChannel = length(ChannelSelection(1):ChannelSelection(2));
+NumChannel = length(ChannelSelection);
 
 %% Plot Spikes
 xlim(Figure,[Time(1),Time(end)]);
@@ -59,7 +59,7 @@ ylim(Figure,[0,((NumChannel-1)*ChannelSpacing)]);
 ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel)
 xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel)
 
-title(Figure,strcat("Spike Positions Across Time and Depth Channel ", num2str(ChannelSelection)));
+title(Figure,strcat("Spike Positions Across Time and Depth "));
 
 Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
 

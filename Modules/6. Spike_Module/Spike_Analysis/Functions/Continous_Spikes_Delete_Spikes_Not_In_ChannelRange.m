@@ -1,4 +1,4 @@
-function [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,SpikePositions,ChannelSpacing,Channel_Selection,SpikeType)
+function [SpikeTimes,SpikePositions,DeleteSpikePositions] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,SpikePositions,ChannelSpacing,Channel_Selection,SpikeType,ALLActiveChannel)
 
 %________________________________________________________________________________________
 %% Function to take spike times and delete indicies outside of selected channel range
@@ -27,30 +27,96 @@ function [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-% If Internal spikes convert channelnr in um depth
-if strcmp(SpikeType,'Internal')
-    SpikePositions = (SpikePositions-1).*ChannelSpacing;
-    ChannelRange = ((Channel_Selection(1):Channel_Selection(2))*ChannelSpacing)-ChannelSpacing;
-end
+DeleteSpikePositions = [];
 
-if strcmp(SpikeType,'Kilosort')
-    if Channel_Selection(1)~=Channel_Selection(2)
-        ChannelRange = (Channel_Selection(1):Channel_Selection(2)-1)*ChannelSpacing;
-    else
-        ChannelRange(1) = ((Channel_Selection(1)-1)*ChannelSpacing)-(ChannelSpacing/2);
-        ChannelRange(2) = ((Channel_Selection(2)-1)*ChannelSpacing)+(ChannelSpacing/2);
+%% Internal Spikes: Delete Spike Positions not part of vhannelselction, then substract a channel to account for new scaling
+
+if strcmp(SpikeType,'Internal')
+    %% Delte Channel not in range
+    % What channels where deleted?
+    DeleteIndicies = [];
+    for nchannel = 1:length(ALLActiveChannel)
+        if sum(nchannel == Channel_Selection) ==0 
+            DeleteIndicies = [DeleteIndicies,nchannel];
+        end
+    end
+
+    % Find spikes with channels that were deleted
+    % save in a array and delete after loop
+    DeleteSpikePositions = [];
+    if ~isempty(DeleteIndicies)
+        DeleteSpikePositions = zeros(length(SpikePositions),1);
+        for Idelete= 1:length(DeleteIndicies)
+            TempDeleteSpikePositions = SpikePositions == DeleteIndicies(Idelete);
+            DeleteSpikePositions = DeleteSpikePositions + double(TempDeleteSpikePositions);
+        end
+        % delete Spike Indsicies not in range
+        if sum(DeleteSpikePositions)>0
+            DeleteSpikePositions(DeleteSpikePositions>1) = 1;
+        
+            SpikePositions(DeleteSpikePositions>0) = [];
+            SpikeTimes(DeleteSpikePositions>0) = [];            
+        end
+    end
+
+    % No correct spike positions based on channel deleted --> account for
+    % channel deleted before by substracting number of channels delted
+    % above spikes
+    for i = 1:length(SpikePositions)
+        % Spikes below deletions
+        if sum(SpikePositions(i) > DeleteIndicies)
+            SpikePositions(i) = SpikePositions(i) - length(DeleteIndicies(SpikePositions(i) > DeleteIndicies));
+        end
     end
 end
 
-% SpikeIndicies within ChannelRange
-SelectedChannelIndicies = SpikePositions >= ChannelRange(1) & SpikePositions <= ChannelRange(end);
+if strcmp(SpikeType,'Kilosort')
 
-% Delete All indicies outside of Channelrange
-SpikeTimes = SpikeTimes(SelectedChannelIndicies==1);
-SpikePositions = SpikePositions(SelectedChannelIndicies==1);
+    %% Delte Channel not in range
+    % What channels where deleted?
+    DeleteIndicies = [];
+    for nchannel = 1:length(ALLActiveChannel)
+        if sum(nchannel == Channel_Selection) ==0 
+            DeleteIndicies = [DeleteIndicies,nchannel];
+        end
+    end
 
-%If Channel 10 to 20: 10 has to have indicie 1 to be plotted
-%correctly
-if Channel_Selection(1) > 1
-    SpikePositions = SpikePositions - (ChannelRange(1));
+    % Convert in um
+    DeleteIndicies = (DeleteIndicies-1)*ChannelSpacing;
+
+    % Find spikes with channels that were deleted
+    % save in a array and delete after loop
+    DeleteSpikePositions = [];
+    if ~isempty(DeleteIndicies)
+        DeleteSpikePositions = zeros(length(SpikePositions),1);
+        for Idelete= 1:length(DeleteIndicies)
+            TempDeleteSpikePositions = SpikePositions >= (DeleteIndicies(Idelete))-(ChannelSpacing/2) & SpikePositions <= DeleteIndicies(Idelete)+(ChannelSpacing/2);
+            DeleteSpikePositions = DeleteSpikePositions + double(TempDeleteSpikePositions);
+        end
+        % delete Spike Indicies not in range
+        if sum(DeleteSpikePositions)>0
+            DeleteSpikePositions(DeleteSpikePositions>1) = 1;
+        
+            SpikePositions(DeleteSpikePositions>0) = [];
+            SpikeTimes(DeleteSpikePositions>0) = [];            
+        end
+    end
+
+     % Convert back in channel
+    DeleteIndicies = (DeleteIndicies/ChannelSpacing)+1;
+
+    % No correct spike positions based on channel deleted --> account for
+    % channel deleted before by substracting number of channels delted
+    % above spikes
+    for i = 1:length(SpikePositions)
+
+        % Spikes below deletions
+        if sum(SpikePositions(i) > ((DeleteIndicies-1)*ChannelSpacing) -(ChannelSpacing/2)) > 0
+
+            Correction = sum(SpikePositions(i) > ((DeleteIndicies-1)*ChannelSpacing)) * ChannelSpacing;
+            
+            SpikePositions(i) = SpikePositions(i) - Correction;
+        end
+    end
 end
+

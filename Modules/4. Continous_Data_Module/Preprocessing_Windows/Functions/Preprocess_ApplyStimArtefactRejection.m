@@ -47,10 +47,10 @@ TimeAfter(1) = abs(PreproInfo.TimeAroundStimArtefact(2)*Info.NativeSamplingRate)
 
 for nevents = 1:length(Events{SelectedEventIndicie})
     if Events{SelectedEventIndicie}(nevents)-PreproInfo.TimeAroundStimArtefact(1) > 0 && Events{SelectedEventIndicie}(nevents)+PreproInfo.TimeAroundStimArtefact(2) < size(Data,2)
-        for nchannel = 1:size(Data,1)
+        for nchannel = 1:length(PreproInfo.ChannelSelection)
             % Interpolate Data
-            InterpolationValue(1) = Data(nchannel,(Events{SelectedEventIndicie}(nevents)-TimeBefore)-1); % First value before time window taken for interpolation
-            InterpolationValue(2) = Data(nchannel,(Events{SelectedEventIndicie}(nevents)+TimeAfter)+1); % First value after time window taken for interpolation
+            InterpolationValue(1) = Data(PreproInfo.ChannelSelection(nchannel),(Events{SelectedEventIndicie}(nevents)-TimeBefore)-1); % First value before time window taken for interpolation
+            InterpolationValue(2) = Data(PreproInfo.ChannelSelection(nchannel),(Events{SelectedEventIndicie}(nevents)+TimeAfter)+1); % First value after time window taken for interpolation
             
             InterpolationSample(1) = (Events{SelectedEventIndicie}(nevents)-TimeBefore)-1; % First value before time window taken for interpolation
             InterpolationSample(2) = (Events{SelectedEventIndicie}(nevents)+TimeAfter)+1; % First value after time window taken for interpolation
@@ -59,7 +59,7 @@ for nevents = 1:length(Events{SelectedEventIndicie})
             InterpolatedData = interp1(InterpolationSample, InterpolationValue, InterpolationRange, 'linear');
 
             % Swap Data with Interpolated Data
-            Data(nchannel,InterpolationRange) = InterpolatedData;
+            Data(PreproInfo.ChannelSelection(nchannel),InterpolationRange) = InterpolatedData;
         end
     else
         Eventsoutside = [Eventsoutside,nevents];

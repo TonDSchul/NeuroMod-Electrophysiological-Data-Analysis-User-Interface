@@ -91,7 +91,7 @@ end
 
 %% Only select Spikes in selected Channelrange
 
-[SpikeTimes,SpikePositions,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,SpikePositions,Data.Info.ChannelSpacing,Channelselection,Data.Info.SpikeType);
+[SpikeTimes,~,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,SpikePositions,Data.Info.ChannelSpacing,Channelselection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
 
 %% Caluclate Spike Rate in Hz over all Channel
 numbins = round(BinRange); 
@@ -101,7 +101,7 @@ Timerangebin = binsize/Samplingrate;
 [SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,[],numbins,binsize,Samplingrate,"SpikeRateoverTime");
 
 %% Divide by Channel Number 
-SpikesPerBin = SpikesPerBin./length(Channelselection(1):Channelselection(2));
+SpikesPerBin = SpikesPerBin./length(Channelselection);
 
 %% Low Pass filter results, bc of small bin sizes 
 
@@ -113,8 +113,7 @@ else
 end
 
 %% Set up figure and plot
-TitleChannelRange = strcat(num2str(Channelselection(1)),":",num2str(Channelselection(2)));
-title(Figure,strcat("Spike Rate of Main Window Time Range Channel: ",TitleChannelRange));
+title(Figure,strcat("Spike Rate of Main Window Time Range"));
 
 Timeofbins =linspace(TimeRangetoPlot(1),TimeRangetoPlot(end),numbins);
 

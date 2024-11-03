@@ -161,6 +161,7 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
     TempSpike2EventChannelToTake = [];
     TempSpikeSorting = [];
     TempSpikeDetectionNrStd = [];
+    TempProbeInfo = [];
 
     if isfield(Data.Info,'CutStart')
         TempCutStart = Data.Info.CutStart;
@@ -180,6 +181,10 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
 
     if isfield(Data.Info,'KilosortScalingFactor')
         TempKilosortScalingFactor = Data.Info.KilosortScalingFactor;
+    end
+
+    if isfield(Data.Info,'ProbeInfo')
+        TempProbeInfo = Data.Info.KilosortScalingFactor;
     end
 
     if isfield(Data,'EventRelatedData')
@@ -241,6 +246,10 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
 
     if ~isempty(TempCutStart)
          Data.Info.CutStart = TempCutStart;
+    end
+
+    if ~isempty(TempProbeInfo)
+        Data.Info.ProbeInfo = TempProbeInfo;
     end
 
     if ~isempty(TempCutStop)

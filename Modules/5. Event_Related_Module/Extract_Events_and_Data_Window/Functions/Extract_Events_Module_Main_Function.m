@@ -446,6 +446,14 @@ if isfield(Data,'Events')
     if ~isempty(Data.Events)
         Eventstodelete = [];
         for i = 1:length(Data.Events)
+
+            EventsSmallerZero = Data.Events{i}<=0;
+            
+            if sum(EventsSmallerZero)>0
+                Data.Events{i}(EventsSmallerZero) = [];
+                msgbox(strcat("Found and deleted ",num2str(sum(EventsSmallerZero))," event indicies smaller or equal to 0. For Open Ephys recordings this can be due to extracting a limited number of recordings for node A while extracting events from node B from which all recordings are analysze (nwb). This can lead to correct event times as long as events from node B lie outside of time range of node A. In doubt please try a different node and/or load all recordings from current node!"));
+            end
+
             if ~isempty(Data.Events{i})
                 if ~strcmp(RecordingType,"Open Ephys")% Done above
                     % account for time being cut (cut start and cut end)
@@ -453,6 +461,7 @@ if isfield(Data,'Events')
                         index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
         
                         EventsToDelete = Data.Events{i} <= index;
+
                         if sum(EventsToDelete)>0
                             Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
                             Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range

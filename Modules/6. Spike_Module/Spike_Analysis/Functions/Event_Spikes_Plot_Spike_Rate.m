@@ -68,7 +68,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(TempSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
     
     %% Calculate mean over all channel
-    ChannelRange = ChannelToPlot(1):ChannelToPlot(2);
+    ChannelRange = ChannelToPlot;
     SpikesInBins = ((SpikesInBins./BinSizeTime)./length(ChannelRange))/NumEvents;
     
     %% Low Pass Filter if time window smaller than 30ms so that spike rate is not multiple thousands of Hz
@@ -129,13 +129,13 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     
     if strcmp(Data.Info.SpikeType,"Kilosort")
         cN = str2double(NumBins);  % number of steps/chunks
-        dN = (length(ChannelToPlot(1):ChannelToPlot(2))-1)*Data.Info.ChannelSpacing;
+        dN = (length(ChannelToPlot)-1)*Data.Info.ChannelSpacing;
         TempSpikePos = SpikePositions;
         BinSize = dN/cN;
     else
-        cN = length(ChannelToPlot(1):ChannelToPlot(2));  % number of steps/chunks
-        dN = length(ChannelToPlot(1):ChannelToPlot(2));
-        TempSpikePos = SpikePositions/Data.Info.ChannelSpacing;
+        cN = length(ChannelToPlot);  % number of steps/chunks
+        dN = length(ChannelToPlot);
+        TempSpikePos = SpikePositions;
         BinSize = Data.Info.ChannelSpacing;
     end  
     
@@ -202,7 +202,7 @@ if ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,"
     end
 
     %% Calculate mean over all channel
-    ChannelRange = ChannelToPlot(1):ChannelToPlot(2);
+    ChannelRange = ChannelToPlot;
     SpikesInBins = ((SpikesInBins./BinSizeTime))/NumEvents;
         
     %% Low Pass Filter if time window smaller than 30ms so that spike rate is not multiple thousands of Hz

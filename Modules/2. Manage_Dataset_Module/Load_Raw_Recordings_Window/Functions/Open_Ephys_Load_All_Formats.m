@@ -156,7 +156,6 @@ for RecordingIndex = 1:NumRecordingIndex
                 disp("Error: Selection of either AP or LFP data failed. LFP data is exctracted by default. Rename 'SelectedStream' variable in Open_Ephys_Load_All_Formats.m")
                 streamIndex = 1; % == 1 if LFP data selected, == 2 if AP data selected
             end
-
         end
     end
 
@@ -243,6 +242,7 @@ for RecordingIndex = 1:NumRecordingIndex
             if isprop(Temp,'info')
                 %% NP recording
                 if Neuropixrecording == 1
+                    
                     if isfield(Temp.info.continuous(RecordingIndex).channels,'bit_volts')
                         disp(strcat("Bit_Volts Property for AD conversion to mV found."));
                         for nchannel = 1:length(DataChannel)
@@ -252,8 +252,27 @@ for RecordingIndex = 1:NumRecordingIndex
                         end
                         TempHeader.Bit_Volts = unique(TempHeader.Bit_Volts);
                     else
-                        disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
+                        if iscell(Temp.info.continuous(RecordingIndex).channels)
+                            for nchannel = 1:length(Temp.info.continuous(RecordingIndex).channels)
+                                % Non - sync channel
+                                if ~contains(Temp.info.continuous(RecordingIndex).channels{nchannel}.channel_name,'SYNC')
+                                    if isfield(Temp.info.continuous(RecordingIndex).channels{nchannel},'bit_volts')
+                                        Bits = Temp.info.continuous(RecordingIndex).channels{nchannel}.bit_volts;
+                                        TempData(nchannel,:) = (TempData(nchannel,:).*Bits)./1000; % convert uV in mV
+                                        TempHeader.Bit_Volts(nchannel) = Bits;
+                                    end
+                                else% Sync Channel, not part of raw dataset
+                                    TempData(nchannel,:) = [];
+                                end
+                            end
+                            if isfield(TempHeader,'Bit_Volts')
+                                disp(strcat("Bit_Volts Property for AD conversion to mV found."));
+                            else
+                                disp(strcat("Bit_Volts Property for AD conversion to mV not found. TempData can only be shown as integers"));
+                            end
+                        end
                     end
+
                 %% Non NP recording
                 else 
                     if isfield(Temp.info.continuous.channels,'bit_volts')
@@ -276,7 +295,7 @@ for RecordingIndex = 1:NumRecordingIndex
             TempHeader.Format = node.format;
             TempHeader.RecordingNode = node.name;
             TempHeader.AllRecordingIndicies = AllRecordingIndicies;
-            SampleRate = ContinousStream.metadata.sampleRate;% Gets added to info in main function
+            SampleRate = ContinousStream.metadata.sampleRate; % Gets added to info in main function
     
         elseif strcmp(node.format,'NWB')
         

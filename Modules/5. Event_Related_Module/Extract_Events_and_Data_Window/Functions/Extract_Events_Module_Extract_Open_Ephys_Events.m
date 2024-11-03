@@ -80,28 +80,49 @@ if strcmp(WhatToDo,"Get Information")
     Info.AvailabelNodes = cell(1,length(session.recordNodes));
     % Get the first recording 
 
-    for k = 1:length(session.recordNodes)
+    disp(strcat("Found ",num2str(length(session.recordNodes))," Nodes."))
+
+    for nNode = 1:length(session.recordNodes)
         
-        node = session.recordNodes{k};
-        if length(node.recordings)>1
-            disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recordings ", num2str(AllRecordingIndicies)," which got define when data was extracted."))
+        disp(strcat("Searching Node ",num2str(nNode)," for event data"));
+
+        % Get nodes
+        node = session.recordNodes{nNode};
+
+        if strcmp(node.name,Data.Info.RecordingNode) 
+            NrRecordingsinNode = AllRecordingIndicies;
+             if length(node.recordings)>1
+                disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recordings ", num2str(AllRecordingIndicies)," which got define when data was extracted."))
+            end
+        else
+            NrRecordingsinNode = 1:length(node.recordings);
+            if ~isequal(NrRecordingsinNode, AllRecordingIndicies)
+                warning('Selected number of recordings for extracted node not the same as for current node. Proceeding to extract all recordings from that node. If you extracted data from another node and only selected a subset of recordings, time scales between node events can be different!! The exception CAN be .nwb format. Multiple recordings will always be extracted together and only be visible as a single recording! In doubt, extract all recordings found and repeat.')
+                disp(strcat("Found ",num2str(length(node.recordings))," recordings. Taking all of them for event extraction."));
+            else
+                if length(node.recordings)>1
+                    disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recordings ", num2str(AllRecordingIndicies)," which got define when data was extracted."))
+                end
+            end
         end
 
-        for nrrecordings = 1:length(AllRecordingIndicies)
+        for nrrecordings = 1:length(NrRecordingsinNode)
         
             % Get the first recording 
-            recording = node.recordings{1,AllRecordingIndicies(nrrecordings)};
+            recording = node.recordings{1,NrRecordingsinNode(nrrecordings)};
 
             % Iterate over all data streams in the recording 
             streamNames = recording.continuous.keys();
             streamName = streamNames{1};
+
             % 1. Get the continuous data from the current stream/recording
             ContinousStream = recording.continuous(streamName);
+
             if strcmp(node.format,'OpenEphys') || strcmp(node.format,'Binary')
-                Info.startTimestamp{k}(nrrecordings) = ContinousStream.metadata.startTimestamp;
+                Info.startTimestamp{nNode}(nrrecordings) = ContinousStream.metadata.startTimestamp;
             elseif strcmp(node.format,'NWB')
                 TempHeader = ContinousStream.metadata;
-                Info.startTimestamp{k}(nrrecordings) = TempHeader.startTimestamp;
+                Info.startTimestamp{nNode}(nrrecordings) = TempHeader.startTimestamp;
             end
 
             %% Handle Event Data
@@ -149,61 +170,80 @@ if strcmp(WhatToDo,"Get Information")
                     % first recording index
                     if nrrecordings == 1 % --> only dataframe of first recording with events get saved. This is bc its not straighforward to concatonate two data frames and this is only to show some event infos in the app window
                         if ~isempty(events)
-                            Info.AvailabelNodes{k} = k;
-                            Events{k} = events;
+                            Info.AvailabelNodes{nNode} = nNode;
+                            Events{nNode} = events;
                         else
-                            if ~isempty(Info.AvailabelNodes{k})
-                                Info.AvailabelNodes{k} = [];
-                            end
-                            if ~isfield(Events{k},'line')
-                                Events{k}.line = [];
-                                Events{k}.Properties = [];
-                                Events{k}.nodeId = [];
-                                Events{k}.processor_id = [];
-                                Events{k}.sample_number = [];
-                                Events{k}.state = [];
-                                Events{k}.timestamp = [];
+                            % if ~isempty(Info.AvailabelNodes{nNode})
+                            %     Info.AvailabelNodes{nNode} = [];
+                            % end
+                            if isempty(Events{nNode})
+                                Events{nNode}.line = [];
+                                Events{nNode}.Properties = [];
+                                Events{nNode}.nodeId = [];
+                                Events{nNode}.processor_id = [];
+                                Events{nNode}.sample_number = [];
+                                Events{nNode}.state = [];
+                                Events{nNode}.timestamp = [];
                             end
                         end
                     end
 
                     % Second, third... recording, if available
                     if nrrecordings > 1
-                        Info.AvailabelNodes{k} = k;
-                        TempEvents{k}.line = [Events{k}.line;events.line];
+                        Info.AvailabelNodes{nNode} = nNode;
+                        
+                        TempEvents{nNode}.line = [Events{nNode}.line;events.line];
                         if isprop(events,'nodeId')
-                            TempEvents{k}.nodeId = [Events{k}.nodeId;events.nodeId];
+                            TempEvents{nNode}.nodeId = [Events{nNode}.nodeId;events.nodeId];
                         elseif isprop(events,'processor_id')
-                            TempEvents{k}.processor_id = [Events{k}.processor_id;events.processor_id];
+                            TempEvents{nNode}.processor_id = [Events{nNode}.processor_id;events.processor_id];
                         else
-                            TempEvents{k}.nodeId = [];
+                            TempEvents{nNode}.nodeId = [];
                         end
-                        TempEvents{k}.sample_number = [Events{k}.sample_number;events.sample_number];
-                        TempEvents{k}.state = [Events{k}.state;events.state];
-                        TempEvents{k}.timestamp = [Events{k}.timestamp;events.timestamp];
-                        TempEvents{k}.Properties = events.Properties;
-                        Events(k) = [];
-                        Events{k} = TempEvents{k};
-                        TempEvents(k) = [];
+                        TempEvents{nNode}.sample_number = [Events{nNode}.sample_number;events.sample_number];
+                        TempEvents{nNode}.state = [Events{nNode}.state;events.state];
+                        TempEvents{nNode}.timestamp = [Events{nNode}.timestamp;events.timestamp];
+                        TempEvents{nNode}.Properties = events.Properties;
+                        Events(nNode) = [];
+                        Events{nNode} = TempEvents{nNode};
+                        TempEvents(nNode) = [];
                     end
                 else
-                    if ~isempty(Info.AvailabelNodes{k})
-                        Info.AvailabelNodes{k} = [];
-                    end
-
-                    if ~isfield(Events{k},'line')
-                        Events{k}.Properties = [];
-                        Events{k}.line = [];
-                        Events{k}.nodeId = [];
-                        Events{k}.processor_id = [];
-                        Events{k}.sample_number = [];
-                        Events{k}.state = [];
-                        Events{k}.timestamp = [];
+                    if isempty(Events{nNode})
+                        Events{nNode}.Properties = [];
+                        Events{nNode}.line = [];
+                        Events{nNode}.nodeId = [];
+                        Events{nNode}.processor_id = [];
+                        Events{nNode}.sample_number = [];
+                        Events{nNode}.state = [];
+                        Events{nNode}.timestamp = [];
                     end
                 end % isempty(lines)
             end  % Processors
         end % node.recordings
 
+        if isempty(Events{nNode})
+            if ~isempty(Info.AvailabelNodes{nNode})
+                Info.AvailabelNodes{nNode} = [];
+                disp(strcat("No Events in Node ",num2str(nNode)," found"));
+            end
+        else
+            if isstruct(Events{nNode})
+                if ~isfield(Events{nNode},'line')
+                    if ~isempty(Info.AvailabelNodes{nNode})
+                        Info.AvailabelNodes{nNode} = [];
+                        disp(strcat("No Events in Node ",num2str(nNode)," found"));
+                    end
+                end
+            else
+                if ~isprop(Events{nNode},'line')
+                    if ~isempty(Info.AvailabelNodes{nNode})
+                        Info.AvailabelNodes{nNode} = [];
+                        disp(strcat("No Events in Node ",num2str(nNode)," found"));
+                    end
+                end
+            end
+        end
     end
 
     % Cleaning 
@@ -244,10 +284,24 @@ end
 
 if strcmp(WhatToDo,"All")
     node = session.recordNodes{NodeNr};
+    
     Events = {};
     
-    if length(node.recordings)>1
-        disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recordings ", num2str(AllRecordingIndicies)," which got define when data was extracted."))
+    if strcmp(node.name,Data.Info.RecordingNode) 
+        NrRecordingsinNode = AllRecordingIndicies;
+         if length(node.recordings)>1
+            disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recordings ", num2str(AllRecordingIndicies)," which got define when data was extracted."))
+        end
+    else
+        NrRecordingsinNode = 1:length(node.recordings);
+        if ~isequal(NrRecordingsinNode, AllRecordingIndicies)
+            warning('Selected number of recordings for extracted node not the same as for current node. Proceeding to extract all recordings from that node. If you extracted data from another node and only selected a subset of recordings, time scales between node events can be different!! The exception CAN be .nwb format. Multiple recordings will always be extracted together and only be visible as a single recording! In doubt, extract all recordings found and repeat.')
+            disp(strcat("Found ",num2str(length(node.recordings))," recordings. Taking all of them for event extraction."));
+        else
+            if length(node.recordings)>1
+                disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recordings ", num2str(AllRecordingIndicies)," which got define when data was extracted."))
+            end
+        end
     end
 
     % Strcuture capturing event sample over recordings
@@ -255,12 +309,14 @@ if strcmp(WhatToDo,"All")
     eventlines = [];
     states = [];
 
-    for nrrecordings = 1:length(AllRecordingIndicies)
+    for nrrecordings = 1:length(NrRecordingsinNode)
         
+        disp(strcat("Extracting events from recording number ",num2str(nrrecordings)));
+
         NodeIdIndicies = [];
 
         % Get the first recording 
-        recording = node.recordings{1,AllRecordingIndicies(nrrecordings)};
+        recording = node.recordings{1,NrRecordingsinNode(nrrecordings)};
         
         %% Handle Event Data
         % 3. Overlay all available event data
@@ -298,7 +354,11 @@ if strcmp(WhatToDo,"All")
                     events.timestamp = events.timestamp + sum(Data.Info.RecordingTime(1:nrrecordings-1));
                 end
             else
-                disp("Warning: Could not substract first timestamp of recording start from event times. This is normal if recording was started immediately or doesn not contain events. If this is not the reason, event times can lie outside of time limits without the first timestamp correction!")
+                if isempty(events.sample_number)
+                    disp(strcat("No events found for recording ",num2str(nrrecordings)));
+                else
+                    Warning("Could not substract first timestamp of recording start from event times. This is normal if recording was started immediately or doesn not contain events. If this is not the reason, event times can lie outside of time limits without the first timestamp correction!")
+                end
             end 
 
             if ~isempty(events.line)

@@ -148,52 +148,52 @@ elseif strcmp(RecordingSystem,"Neuralynx")
 
 %% Use Fieldtrip functions to extract Plexon data formats. First load Header and then data
 elseif strcmp(RecordingSystem,"Plexon")
-    TextArea.Value = "Extracting Data for Plexon Recording System. Please wait until this window closes and a data plot appears in the main window. If you dont have MATLAB importer mex files, this can take a while.";
-    pause(0.2);
-        
-    [HeaderInfo] = ft_read_header(SelectedFolder);
-
-    if isempty(HeaderInfo)
-        Data = [];
-        SampleRate = [];
-        RecordingType = [];
-        Time = [];
-        return;
-    end
-
-    SampleRate = HeaderInfo.Fs;    
-
-    [Data] = ft_read_data(SelectedFolder,'headerinfo',HeaderInfo);
-
-    if isempty(Data)
-        Data = [];
-        SampleRate = [];
-        RecordingType = [];
-        Time = [];
-        return;
-    end
-
-    Data = single(Data);
-
-    % Convert to mV
-    Data = Data ./1000;
-
-    NaNIndicies = isnan(Data);
-    SumNAN = sum(NaNIndicies);
-    SumNAN = sum(SumNAN);
-
-    [~,b] = find(isnan(Data));
-    NaNTimes = unique(b)./SampleRate;
-
-    if SumNAN>0
-        msgbox(strcat("Warning: ",num2str(SumNAN)," NaN found in data; TimeRange: ",num2str(NaNTimes(1)),"seconds to ",num2str(NaNTimes(end)),"seconds"));
-    end
-
-    % Apply Amplification 64 to translate signal in uV and
-    % translate into mV by dividing by 1000
-    %Data = Data./1000; %% Durch oder mal, mal schauen
-
-    RecordingType = "Plexon";
+    % TextArea.Value = "Extracting Data for Plexon Recording System. Please wait until this window closes and a data plot appears in the main window. If you dont have MATLAB importer mex files, this can take a while.";
+    % pause(0.2);
+    % 
+    % [HeaderInfo] = ft_read_header(SelectedFolder);
+    % 
+    % if isempty(HeaderInfo)
+    %     Data = [];
+    %     SampleRate = [];
+    %     RecordingType = [];
+    %     Time = [];
+    %     return;
+    % end
+    % 
+    % SampleRate = HeaderInfo.Fs;    
+    % 
+    % [Data] = ft_read_data(SelectedFolder,'headerinfo',HeaderInfo);
+    % 
+    % if isempty(Data)
+    %     Data = [];
+    %     SampleRate = [];
+    %     RecordingType = [];
+    %     Time = [];
+    %     return;
+    % end
+    % 
+    % Data = single(Data);
+    % 
+    % % Convert to mV
+    % Data = Data ./1000;
+    % 
+    % NaNIndicies = isnan(Data);
+    % SumNAN = sum(NaNIndicies);
+    % SumNAN = sum(SumNAN);
+    % 
+    % [~,b] = find(isnan(Data));
+    % NaNTimes = unique(b)./SampleRate;
+    % 
+    % if SumNAN>0
+    %     msgbox(strcat("Warning: ",num2str(SumNAN)," NaN found in data; TimeRange: ",num2str(NaNTimes(1)),"seconds to ",num2str(NaNTimes(end)),"seconds"));
+    % end
+    % 
+    % % Apply Amplification 64 to translate signal in uV and
+    % % translate into mV by dividing by 1000
+    % %Data = Data./1000; %% Durch oder mal, mal schauen
+    % 
+    % RecordingType = "Plexon";
 
 elseif strcmp(RecordingSystem,"Spike2")
     Spike2EventChannel = [];

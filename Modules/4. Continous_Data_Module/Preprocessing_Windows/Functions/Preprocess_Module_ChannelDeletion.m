@@ -40,6 +40,9 @@ end
 
 Data.Info.Channelorder(ChannelDeletion) = [];
 
+Data.Info.ProbeInfo.ActiveChannel(ChannelDeletion) = [];
+Data.Info.ProbeInfo.NrChannel = num2str(size(Data.Raw,1));
+
 %% Delete Spike indicies
 % if strcmp(Data.Info.SpikeType,"Internal")
 % 

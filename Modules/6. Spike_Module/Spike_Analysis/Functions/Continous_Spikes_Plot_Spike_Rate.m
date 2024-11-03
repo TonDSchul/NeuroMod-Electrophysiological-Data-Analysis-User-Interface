@@ -64,7 +64,7 @@ if strcmp(Type,"Initial") && ~strcmp(Type,"NewCluster") || strcmp(Type,"BinsizeC
     [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
     
     %% Calculate mean over all channel and convert to frequency
-    ChanneRange = ChannelSelection(1):ChannelSelection(2);
+    ChanneRange = ChannelSelection;
     SpikesInBins = (SpikesInBins./BinSizeTime)./length(ChanneRange);
     
     %% Plot
@@ -125,18 +125,17 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
 
     if strcmp(Data.Info.SpikeType,"Kilosort")
         cN = numBins;  % number of steps/chunks
-        dN = (length(ChannelSelection(1):ChannelSelection(2))-1)*Data.Info.ChannelSpacing;
-        TempSpikePos = SpikePositions;
+        dN = (length(ChannelSelection)-1)*Data.Info.ChannelSpacing;
         BinSize = dN/cN;
     else
-        cN = length(ChannelSelection(1):ChannelSelection(2));  % number of steps/chunks
-        dN = length(ChannelSelection(1):ChannelSelection(2));
-        TempSpikePos = SpikePositions/Data.Info.ChannelSpacing;
+        cN = length(ChannelSelection);  % number of steps/chunks
+        dN = length(ChannelSelection);
+        %TempSpikePos = SpikePositions/Data.Info.ChannelSpacing;
         BinSize = Data.Info.ChannelSpacing;
     end
     % Divide the data into chunks (last chunk is smaller than the rest)
 
-    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(TempSpikePos,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel");
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel");
     
     % Get Frequency
     SpikesInBins = SpikesInBins/Data.Time(end);

@@ -1,4 +1,4 @@
-function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,SelectedFolder,RecordingType,PreviousChannelDeletetion,Time,ChannelSpacing)
+function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,SelectedFolder,RecordingType,PreviousChannelDeletetion,Time,Load_Data_Window_Info)
 %________________________________________________________________________________________
 
 %% Function to Organize all basic mainapp values, properties, app parts and variables. 
@@ -56,7 +56,7 @@ if strcmp(Type,"Initial")
     plot(app.UIAxes_2,0,0);
 
     % Reset App Properties
-    app.ChannelSelectionEditField.Value = "";
+    %app.ChannelSelectionEditField.Value = "";
     app.ChannelSelection = [];
     app.DefaultTimeRangeDataPlot = [];
     app.TimeLimit = [];
@@ -98,7 +98,7 @@ if strcmp(Type,"Initial")
     % Predefine Time Ranges
     %app.DefaultTimeRangeDataPlot = 1000; % Default time range shown in app.Data plot in amount of samples (64x1000 points plot)
     app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
-    TimeRangeText = strcat(num2str(app.TimeLimit(1)),"s");
+    TimeRangeText = strcat(num2str(1),"s");
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.CurrentTimePoints = 1; % Standard TIme in seconds
     
@@ -132,6 +132,10 @@ if strcmp(Type,"Initial")
     app.CurrentPlotData.XTicks = [];
     
 elseif strcmp(Type,"Loading")
+
+    Organize_Delete_All_Open_Windows(app,1);
+
+    app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel;
 
     % Enable/Disable buttons
     app.RUNButton_5.Enable = "on";
@@ -186,10 +190,6 @@ elseif strcmp(Type,"Loading")
     
     app.PowerSpecResults = [];
 
-    % Get Channel Selection when new app.Data loadaed
-    ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));
-    app.ChannelSelectionEditField.Value = ChannelString;
-
     channelnr = size(app.Data.Raw,1);
 
     % Pick Colormap based on what the user selected (default = parula)
@@ -215,7 +215,7 @@ elseif strcmp(Type,"Extracting")
     Placeholder = {};
     app.DropDown.Items = Placeholder;
     app.DropDown.Items{1} = 'Raw Data';
-
+    
     Placeholder = {};
     app.DropDown_2.Items = Placeholder;
     app.DropDown_2.Items{1} = 'Non';
@@ -224,13 +224,19 @@ elseif strcmp(Type,"Extracting")
     
     % Pick Colormap based on what the user selected (default = parula)
     app.tempcolorMapset = eval(strcat(app.tempcolorMap,"(size(app.Data.Raw,1))")); % Example colormap: You can use any other colormap
-
+    
     Utility_Show_Info_Loaded_Data(app);
-
+    
+    if length(app.Data.Info.ProbeInfo.ActiveChannel)~=size(app.Data.Raw,1)
+        error('More amplifier data channels found than channel set as active channel! Please define probe layout again!')        
+    end
+    
     app.UIAxes.Box = "off";
-
+    
 elseif strcmp(Type,"VariableDefinition")
 
+    Organize_Delete_All_Open_Windows(app,1);
+    
     cd(app.executableFolder);
 
     %% Define all important Variables based on extracted dat files
@@ -251,21 +257,56 @@ elseif strcmp(Type,"VariableDefinition")
         app.Data.Info = rmfield(HeaderInfo.orig(1).hdr, fieldsToDelete);
     end
 
+    if ~isfield(app.Data.Info,'Channelorder')
+        app.Data.Info.Channelorder = [];
+    end
+
     app.Data.Info.num_data_points = size(app.Data.Raw,2);
     app.Data.Info.NrChannel = size(app.Data.Raw,1);
     app.Data.Info.Data_Path = SelectedFolder;
     app.Data.Info.NativeSamplingRate = SampleRate;
     app.Data.Info.RecordingType = RecordingType;
-    if ischar(ChannelSpacing) || isstring(ChannelSpacing)
-        app.Data.Info.ChannelSpacing = str2double(ChannelSpacing);
+
+    if ischar(Load_Data_Window_Info.ChannelSpacing) || isstring(Load_Data_Window_Info.ChannelSpacing)
+        app.Data.Info.ChannelSpacing = str2double(Load_Data_Window_Info.ChannelSpacing);
     else
-        app.Data.Info.ChannelSpacing = ChannelSpacing;
+        app.Data.Info.ChannelSpacing = Load_Data_Window_Info.ChannelSpacing;
+    end
+    
+    app.Data.Info.ProbeInfo.NrChannel = num2str(Load_Data_Window_Info.NrChannel);
+    app.Data.Info.ProbeInfo.NrRows = num2str(Load_Data_Window_Info.NumberChannelRows);
+    app.Data.Info.ProbeInfo.VertOffset = num2str(Load_Data_Window_Info.VerticalOffsetum);
+    app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
+    app.Data.Info.ProbeInfo.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
+
+    if app.Data.Time(end)<3
+        if app.Data.Time(end)<1
+            TimeRangeText = strcat(num2str(app.Data.Time(end)),"s");
+            app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
+        else
+            TimeRangeText = strcat(num2str(1),"s");
+            app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
+        end
+    else
+        TimeRangeText = strcat(num2str(1),"s");
+        app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
     end
 
+    app.TimeRangeViewBox.Value = TimeRangeText;
+
+    app.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
+
     app.Data.Info.SpikeType = "Non";
-    % Get Channel Selection when new app.Data loadaed
-    ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));
-    app.ChannelSelectionEditField.Value = ChannelString;
+
+    app.ChannelChange = "ProbeView";
+
+    if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
+        app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
+    end
+
+    % % Get Channel Selection when new app.Data loadaed
+    % ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));
+    % app.ChannelSelectionEditField.Value = ChannelString;
 
     % If extraction was succesfull and dat variable is
     % filled, indicate that it was succesful. This is
@@ -291,7 +332,8 @@ elseif strcmp(Type,"VariableDefinition")
     else
         app.UIAxes.YDir = 'normal';
     end
-    
+
+
 elseif strcmp(Type,"Preprocessing")
 
     % Save Downsampled SamplingRate when Downsampling was applied
@@ -365,11 +407,11 @@ elseif strcmp(Type,"Preprocessing")
         end
     end
 
-    if strcmp(app.DropDown.Value,'Raw Data')
-        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
-    elseif strcmp(app.DropDown.Value,'Preprocessed Data')
-        app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Preprocessed,1)));
-    end
+    % if strcmp(app.DropDown.Value,'Raw Data')
+    %     app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
+    % elseif strcmp(app.DropDown.Value,'Preprocessed Data')
+    %     app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Preprocessed,1)));
+    % end
 
     app.UIAxes.NextPlot = "replace"; 
     plot(app.UIAxes,0,0);

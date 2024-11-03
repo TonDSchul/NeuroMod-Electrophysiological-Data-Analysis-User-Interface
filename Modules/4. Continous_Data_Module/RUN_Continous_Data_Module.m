@@ -10,7 +10,23 @@ if strcmp(ModuleFunctionName,"Preprocessing")
 
 elseif strcmp(ModuleFunctionName,"Static Spectrum Analysis")
 
-    Static_Power_Spectrum_Window(app);
+    if isempty(app.ProbeViewWindowHandle)
+        app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+    end
+
+    if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+        AlreadyIn = 0;
+        for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+            if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Static Spectrum Window')
+                AlreadyIn = 1;
+            end
+        end
+        if AlreadyIn == 0
+            app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Static Spectrum Window';
+        end 
+    end
+
+    app.ContStaticSpectrumWindow = Static_Power_Spectrum_Window(app);
 
 elseif strcmp(ModuleFunctionName,"Spike Analysis")
     % Delete Part of CurrentPlotData holding previous spike
@@ -34,12 +50,48 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
     if ~isfield(app.Data,'Spikes')
         msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
         return;
+
     elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort')
+
+        if isempty(app.ProbeViewWindowHandle)
+            app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+        end
+
+        if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+            AlreadyIn = 0;
+            for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+                if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Cont. Kilosort Spikes')
+                    AlreadyIn = 1;
+                end
+            end
+            if AlreadyIn == 0
+                app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Cont. Kilosort Spikes';
+            end 
+        end
+
         % Open app window for Analysis of Kilosort Data
-        Continous_Kilosort_Spike_Window(app);
+        app.ConKilosortSpikesWindow = Continous_Kilosort_Spike_Window(app);
+
     elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
+        
+        if isempty(app.ProbeViewWindowHandle)
+            app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+        end
+
+        if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+            AlreadyIn = 0;
+            for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+                if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Cont. Internal Spikes')
+                    AlreadyIn = 1;
+                end
+            end
+            if AlreadyIn == 0
+                app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Cont. Internal Spikes';
+            end 
+        end
+
         % Open app window for Analysis of Internal Spike Detection
-        Continous_Internal_Spike_Window(app);
+        app.ConInternalSpikesWindow = Continous_Internal_Spike_Window(app);
     end
 
 elseif strcmp(ModuleFunctionName,"Unit Analysis")
@@ -49,14 +101,15 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
     else
         if strcmp(app.Data.Info.SpikeType,'Kilosort')
             if isfield(app.Data.Spikes,"Waveforms")
-                Continous_Waveform_Analysis_Window(app,"ContinousWindow");
+                app.UnitAnalysis = Continous_Waveform_Analysis_Window(app,"ContinousWindow");
             end
         elseif strcmp(app.Data.Info.SpikeType,'Internal')
             if isfield(app.Data.Info,'SpikeSorting')
-                Continous_Waveform_Analysis_Window(app,"ContinousWindow");
+                app.UnitAnalysis = Continous_Waveform_Analysis_Window(app,"ContinousWindow");
             else
                 msgbox("No Spike Sorting Data found for Internal Spike Analysis.");
             end
         end
     end
 end
+

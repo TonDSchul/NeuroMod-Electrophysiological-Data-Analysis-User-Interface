@@ -150,11 +150,11 @@ if strcmp(Format,".dat")
         Header = rmfield(Header, fieldsToDelete);
     end
 
-    if isfield(Header.Info,'scalingFactor')
-        fieldsToDelete = {'scalingFactor'};
-        % Delete fields
-        Header.Info = rmfield(Header.Info, fieldsToDelete);
-    end
+    % if isfield(Header.Info,'scalingFactor')
+    %     fieldsToDelete = {'scalingFactor'};
+    %     % Delete fields
+    %     Header.Info = rmfield(Header.Info, fieldsToDelete);
+    % end
 
     if isfield(Header.Info,'num_data_points_Downsampled')
         fieldsToDelete = {'num_data_points_Downsampled'};

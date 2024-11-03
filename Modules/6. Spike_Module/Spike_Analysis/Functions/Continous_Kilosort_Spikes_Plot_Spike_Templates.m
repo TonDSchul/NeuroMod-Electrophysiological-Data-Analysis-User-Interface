@@ -27,17 +27,17 @@ function CurrentPlotData = Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure
 
 Template_handles = findobj(Figure,'Type', 'line', 'Tag', 'Template');
 
-if numel(Template_handles)>length(ChannelSelection(1):ChannelSelection(2))
-    delete(Template_handles(length(ChannelSelection(1):ChannelSelection(2))+1:end));
+if numel(Template_handles)>length(ChannelSelection)
+    delete(Template_handles(length(ChannelSelection)+1:end));
 end
 
 Template_handles = findobj(Figure,'Type', 'line', 'Tag', 'Template');
 
-AllChannel = ChannelSelection(1):ChannelSelection(2);
+AllChannel = ChannelSelection;
 
-Datatoplot = squeeze(Data.Spikes.templates(units,:,ChannelSelection(1):ChannelSelection(2)));
+Datatoplot = squeeze(Data.Spikes.templates(units,:,ChannelSelection));
 
-if ChannelSelection(1)==ChannelSelection(2)
+if ChannelSelection(1)==ChannelSelection(end)
     Datatoplot = Datatoplot';
 end
 
@@ -73,7 +73,7 @@ end
 
 xlim(Figure,[Time(1),Time(end)]);
 ylabel(Figure,'Amplitude');xlabel(Figure,'Time [ms]'); 
-title(Figure,strcat("Spike Templates of Unit ",num2str(units)," Across Channel ",num2str(ChannelSelection)));
+title(Figure,strcat("Spike Templates of Unit ",num2str(units)," Across all Selected Channel"));
 
 %Add xticks
 Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);

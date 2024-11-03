@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth for event related data
@@ -94,10 +94,14 @@ commaindicie = find(FrequencyRangeHzEditField == ',');
 dispRange(1) = str2double(FrequencyRangeHzEditField(1:commaindicie(1)-1)); % Hz
 dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % Hz
 
+[ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
+
+BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
+
 Figure_2.NextPlot = "add";
 Figure_2.FontSize = 10;
 Figure.FontSize = 10;
-plotLFPpower(BandPower.F, BandPower.allPowerEst, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD);
+plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD);
 
 %% save plotted data in case user wants to save 
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);

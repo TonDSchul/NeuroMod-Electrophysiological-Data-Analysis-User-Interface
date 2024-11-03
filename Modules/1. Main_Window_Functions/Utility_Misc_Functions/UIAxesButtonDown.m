@@ -24,10 +24,8 @@ delete(app.ChannelTextHandle);
 closestLine = Utility_findClosestLineDatPlot(app,app.UIAxes, clickPoint);
 % Generate names to be displayed
 VectorNames = Utility_CreateChannelNames(app);
-% account for ChannelRange selected in the Main GUi
-CommaIndex = strfind(app.ChannelSelectionEditField.Value,",");
-Channelrange(1) = str2double(app.ChannelSelectionEditField.Value(1:CommaIndex-1));
-Channelrange(2) = str2double(app.ChannelSelectionEditField.Value(CommaIndex+1:end));
+% account for ChannelRange selected in tprobe view window
+[Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
 
 VectorToDisplay = VectorNames(closestLine+(Channelrange(1)-1));
 VectorToDisplay{1} = convertStringsToChars(strcat(VectorToDisplay{1},"; Time: ",num2str(clickPoint(1)),"s"));
