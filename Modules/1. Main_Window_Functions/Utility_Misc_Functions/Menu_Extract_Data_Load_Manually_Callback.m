@@ -1,4 +1,4 @@
-function Menu_Extract_Data_Load_Manually_Callback (app)
+function Menu_Extract_Data_Load_Manually_Callback (app, Window)
 
 %________________________________________________________________________________________
 
@@ -93,7 +93,7 @@ if strcmp(Window,"ProbeLayout")
         texttoshow = sprintf('%d, ', app.Load_Data_Window_Info.Channelorder);
         % Remove the trailing comma and whitespace
         texttoshow(end-1:end) = [];
-        app.ChannelOrderFormat1234LeaveemptyfornocostumorderEditField.Value = texttoshow;
+        app.ChannelOrderField.Value = texttoshow;
     end
     %Active Channel
     if ~isempty(app.Load_Data_Window_Info.ActiveChannel) && sum(isnan(app.Load_Data_Window_Info.ActiveChannel))==0
@@ -110,7 +110,25 @@ if strcmp(Window,"ProbeLayout")
     app.VerticalOffsetumEditField.Value = app.Load_Data_Window_Info.VerticalOffsetum;
     app.ChannelRowsDropDown.Value = app.Load_Data_Window_Info.NumberChannelRows;
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderFormat1234LeaveemptyfornocostumorderEditField.Value,app.ActiveChannelField.Value,app.FirstZoomChannel,1)
+    if str2double(app.Load_Data_Window_Info.NrChannel)<32
+        app.FirstZoomChannel = 1;
+    else
+        app.FirstZoomChannel = str2double(app.Load_Data_Window_Info.NrChannel)-31;
+    end
+
+    if isempty(app.ActiveChannelField.Value{1})
+        ActiveChannel = 1:str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value);
+    else
+        ActiveChannel = str2double(strsplit(app.ActiveChannelField.Value{1},','));
+    end
+
+    if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')
+        BrainAreaInfo = app.ProbeTrajectoryInfo;
+    else
+        BrainAreaInfo = [];
+    end
+
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo)
 
     if ~isempty(app.NrChannelEditField.Value) && ~isempty(app.ChannelSpacingumEditField.Value)
         %% Initiate Callback

@@ -112,8 +112,12 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
         % Now only take the max of each consecutive sequence of indicies
         % found
 
-        ToleranceDoubleWaveform = round(Data.Info.NativeSamplingRate*TimeOffset);
-        
+        if TimeOffSetFilter
+            ToleranceDoubleWaveform = round(Data.Info.NativeSamplingRate*TimeOffset);
+        else
+            ToleranceDoubleWaveform = 1;
+        end
+
         % Initialize the cell array to store the start and end values of each sequence
         minMaxSpikes = [];
         currentGroup = indices(1); % Start with the first spike in a new group
@@ -196,9 +200,13 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
         %% Spikes can have multiple consecutive samples below the threshold. Only one can be kept. Here, the smallest amplitude indicies is kept
         % Now only take the max of each consecutive sequence of indicies
         % found
-        
-        ToleranceDoubleWaveform = round(Data.Info.NativeSamplingRate*TimeOffset);
-        
+
+        if TimeOffSetFilter
+            ToleranceDoubleWaveform = round(Data.Info.NativeSamplingRate*TimeOffset);
+        else
+            ToleranceDoubleWaveform = 1;
+        end
+
         % Initialize the cell array to store the start and end values of each sequence
         minMaxSpikes = [];
         currentGroup = indices(1); % Start with the first spike in a new group

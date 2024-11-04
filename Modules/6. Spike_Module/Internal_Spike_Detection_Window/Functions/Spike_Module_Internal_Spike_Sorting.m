@@ -1,4 +1,4 @@
-function [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,WhatToDo)
+function [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,WhatToDo,ClusterType)
 
 %________________________________________________________________________________________
 
@@ -15,6 +15,7 @@ function [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,What
 % 2. SpikeSortingPath: char, folder to save spike times to / load spike sorting from; standard 'Recording_Path/Wave_Clus'
 % 3. WhatToDo: string, either "Clustering" to perform new spike sorting OR
 % "Loading" to only load spike cluserting results (actually the string doesnt matter, spike sorting results have to be loaded in any case. Only determines if wave clus 3 is executed)
+% 4. ClusterType: string, either "AllChannelTogether" OR "IndividualChannel"
 
 % Output: 
 % 1. Data structure with added field 'Spikes' (Data.Spikes); Now
@@ -24,7 +25,6 @@ function [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,What
 % Department systemsphysiology of learning, LIN Magdeburg.
 
 %________________________________________________________________________________________
-ClusterType = 'IndividualChannel';
 
 if strcmp(WhatToDo,"Clustering")
     

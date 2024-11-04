@@ -10,7 +10,7 @@ if NrRows == 1
     end
 else
     if NrChannel<=32
-        numSquares = NrChannel/2; % Number of squares - 
+        numSquares = NrChannel; % Number of squares - 
     else
         numSquares = 32; % Number of squares - 
     end

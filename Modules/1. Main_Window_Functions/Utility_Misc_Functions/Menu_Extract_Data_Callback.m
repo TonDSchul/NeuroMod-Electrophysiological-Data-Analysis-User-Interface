@@ -54,6 +54,12 @@ if ~isempty(DatatoSave)
     app.Load_Data_Window_Info.VerticalOffsetum = DatatoSave.VerticalOffsetum;
     app.Load_Data_Window_Info.NumberChannelRows = DatatoSave.NumberChannelRows;
    
+    if isfield(DatatoSave,'AreaNamesLong')
+        app.Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesLong = DatatoSave.AreaNamesLong;
+        app.Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort = DatatoSave.AreaNamesShort;
+        app.Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance = DatatoSave.AreaTipDistance;
+    end
+
     if iscell(app.Load_Data_Window_Info.Channelorder)
         % convert cell in matrix
         app.Load_Data_Window_Info.Channelorder = str2double(strsplit(cell2mat(app.Load_Data_Window_Info.Channelorder),','));
@@ -130,7 +136,13 @@ if strcmp(Window,"ProbeLayout")
         ActiveChannel = str2double(strsplit(app.ActiveChannelField.Value{1},','));
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1)
+    if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')
+        BrainAreaInfo = app.ProbeTrajectoryInfo;
+    else
+        BrainAreaInfo = [];
+    end
+
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo)
 
     if ~isempty(app.NrChannelEditField.Value) && ~isempty(app.ChannelSpacingumEditField.Value)
         %% Initiate Callback

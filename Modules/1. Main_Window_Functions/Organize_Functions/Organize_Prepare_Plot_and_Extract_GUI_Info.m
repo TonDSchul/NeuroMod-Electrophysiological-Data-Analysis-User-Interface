@@ -111,8 +111,10 @@ end
 MainPlot = 1;
 
 if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Window") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-        MainPlot = 0;
+    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Window") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+            MainPlot = 0;
+        end
     end
 end
 
@@ -163,8 +165,10 @@ end
 SpikeRatePlot = 1;
 
 if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Spike Rate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-        SpikeRatePlot = 0;
+    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Spike Rate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+            SpikeRatePlot = 0;
+        end
     end
 end
 
@@ -197,8 +201,10 @@ end
 CSDPlot = 1;
 
 if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Current Source Density") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-        CSDPlot = 0;
+    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Current Source Density") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+            CSDPlot = 0;
+        end
     end
 end
 
@@ -212,7 +218,7 @@ if isprop(app.CSDApp,'ExistflagCSD')
         % in main window user can select raw data. the csd however always
         % analyses preprocessed data. Since the DatatoPlot and TimeRangetoPlot are set above based on raw data when checkbox active, timerange and data have to be extracted again for preprocessed data and/or downsampled! 
         
-        if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')  
+        if strcmp(app.DropDown.Value,'Raw Data') && isfield(app.Data.Info,'DownsampleFactor')  
             TimeDurationTemp = str2double(app.TimeRangeViewBox.Value(1:end-1));
             StartTimeTemp = app.Data.Time(app.CurrentTimePoints);
             % Compute absolute differences
@@ -243,8 +249,10 @@ end
 PowerEstiamtePlot = 1;
 
 if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Power Estimate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-        PowerEstiamtePlot = 0;
+    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Power Estimate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+            PowerEstiamtePlot = 0;
+        end
     end
 end
 

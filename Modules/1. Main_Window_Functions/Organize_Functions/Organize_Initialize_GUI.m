@@ -279,6 +279,12 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
     app.Data.Info.ProbeInfo.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
 
+    if isfield(Load_Data_Window_Info,'ProbeTrajectoryInfo')
+        app.Data.Info.ProbeInfo.CompleteAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesLong;
+        app.Data.Info.ProbeInfo.ShortAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort;
+        app.Data.Info.ProbeInfo.AreaDistanceFromTip = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance;
+    end
+
     if app.Data.Time(end)<3
         if app.Data.Time(end)<1
             TimeRangeText = strcat(num2str(app.Data.Time(end)),"s");

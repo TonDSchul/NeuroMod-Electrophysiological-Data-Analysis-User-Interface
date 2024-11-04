@@ -59,7 +59,13 @@ if ProbeViewWindow
         ActiveChannel = str2double(strsplit(app.ActiveChannelField.Value{1},','));
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0)
+    if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')
+        BrainAreaInfo = app.ProbeTrajectoryInfo;
+    else
+        BrainAreaInfo = [];
+    end
+
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo)
 
 %% No probe layout window
 elseif ~ProbeViewWindow % no change when user clicked on a channel square in the right
@@ -103,7 +109,13 @@ elseif ~ProbeViewWindow % no change when user clicked on a channel square in the
             end
         end
 
-        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1)
+        if isfield(app.Mainapp.Data.Info.ProbeInfo,'CompleteAreaNames')
+            BrainAreaInfo = app.Mainapp.Data.Info.ProbeInfo.CompleteAreaNames;
+        else
+            BrainAreaInfo = [];
+        end
+
+        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo)
         
         app.Mainapp.ChannelChange = "ProbeView";
 

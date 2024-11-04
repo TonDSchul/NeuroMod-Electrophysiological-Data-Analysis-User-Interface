@@ -57,11 +57,11 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort')
             %% Start GUI
 
-            if isempty(app.ProbeViewWindowHandle)
+            if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
                 app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
             end
 
-            if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+            if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
                 AlreadyIn = 0;
                 for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
                     if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Event Kilosort Spikes')
@@ -80,7 +80,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
             end
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
 
-            if isempty(app.ProbeViewWindowHandle)
+            if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
                 app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
             end
 

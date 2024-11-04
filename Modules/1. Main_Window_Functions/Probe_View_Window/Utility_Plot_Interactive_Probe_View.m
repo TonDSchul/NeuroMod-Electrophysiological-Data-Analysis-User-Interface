@@ -1,4 +1,4 @@
-function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,ChannelRows,HorOffset,VerOffset,ChannelOrder,ActiveChannel,FirstZoomChannel,LeftProbeChanged)
+function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,ChannelRows,HorOffset,VerOffset,ChannelOrder,ActiveChannel,FirstZoomChannel,LeftProbeChanged,ProbeBrainAreas)
 
 %% Set Plot properties
 
@@ -107,5 +107,10 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
     else
         ylim(Figure,[yPoint yLimitBracktes(2)])
     end
+
+    %% Plot Brain Areas
+    % Position based on distance to tip
+    
+    Utility_Plot_BrainAreas(Figure,ProbeBrainAreas);
 
 end

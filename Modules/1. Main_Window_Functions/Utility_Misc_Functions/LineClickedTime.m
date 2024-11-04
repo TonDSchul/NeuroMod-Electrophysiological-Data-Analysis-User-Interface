@@ -25,7 +25,6 @@ if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,"Prepr
     differences = abs(clickLine(1) - app.Data.TimeDownsampled);
 else
     differences = abs(clickLine(1) - app.Data.Time);
-
 end
 
 % % Find the index of the minimum difference

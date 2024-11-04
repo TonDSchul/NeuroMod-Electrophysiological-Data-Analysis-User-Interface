@@ -22,14 +22,14 @@ clickPoint = event.IntersectionPoint;
 delete(app.ChannelTextHandle);
 % Identify the closest line to the clicked point
 closestLine = Utility_findClosestLineDatPlot(app,app.UIAxes, clickPoint);
-% Generate names to be displayed
-VectorNames = Utility_CreateChannelNames(app);
-% account for ChannelRange selected in tprobe view window
+
+% account for ChannelRange selected in the Main GUi
 [Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
 
-VectorToDisplay = VectorNames(closestLine+(Channelrange(1)-1));
-VectorToDisplay{1} = convertStringsToChars(strcat(VectorToDisplay{1},"; Time: ",num2str(clickPoint(1)),"s"));
+VectorToDisplay = Channelrange(closestLine);
+
+TexttoShow{1} = convertStringsToChars(strcat("Channel ",num2str(VectorToDisplay),"; Time: ",num2str(clickPoint(1)),"s"));
 
 if ~isempty(closestLine)
-    app.ChannelTextHandle = text(app.UIAxes, clickPoint(1), clickPoint(2),VectorToDisplay , 'FontSize', 13, 'Color', 'k');
+    app.ChannelTextHandle = text(app.UIAxes, clickPoint(1), clickPoint(2),TexttoShow , 'FontSize', 13, 'Color', 'k');
 end
