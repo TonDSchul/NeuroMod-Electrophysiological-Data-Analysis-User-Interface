@@ -6,7 +6,7 @@ function RUN_Spike_Module(app,ModuleFunctionName)
 
 if strcmp(ModuleFunctionName,"Internal Spike Detection")
     % Open app window for Internal Spike Detection
-    Spike_Detection_Window(app);
+    app.SpikeExtractionWindow = Spike_Detection_Window(app);
 
     if isfield(app.Data,'Spikes')
         if ~isempty(app.Data.Spikes)
@@ -66,7 +66,7 @@ elseif strcmp(ModuleFunctionName,"Save for Kilosort")
 
     cd(app.executableFolder);
 
-    Kilosort_Savefile_Format_Window(app);
+    app.SaveforKilosortWindowWindow = Kilosort_Savefile_Format_Window(app);
     
 elseif strcmp(ModuleFunctionName,"Load from Kilosort")
     
@@ -80,9 +80,9 @@ elseif strcmp(ModuleFunctionName,"Load from Kilosort")
 
     cd(app.executableFolder);
 
-    KilosortLoadWindow = Kilosort_Loadfile_Format_Window(app);
+    app.LoadfromKilosortWindowWindow = Kilosort_Loadfile_Format_Window(app);
 
-    waitfor(KilosortLoadWindow);
+    waitfor(app.LoadfromKilosortWindowWindow);
     
     if isfield(app.Data,'Spikes')
         if ~isempty(app.Data.Spikes)

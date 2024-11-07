@@ -101,6 +101,13 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
     SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
     SpikeData.Indicie(SpikeData.Indicie==0) = 1;
     SpikeData.ChannelPosition = app.Data.Spikes.ChannelPosition;
+    %% If doesnt start with 0 um rescale so that its correctly shown in main window plot
+    if strcmp(app.Data.Info.SpikeType,"Kilosort")
+        if app.Data.Spikes.ChannelPosition(1,2) ~= 0
+            %disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are therefore substracted by the channelspacing to rescale to 0um.")
+            SpikeData.Position = SpikeData.Position - app.Data.Info.ChannelSpacing;
+        end
+    end
 end
 
 %% Plot Data

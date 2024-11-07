@@ -19,7 +19,7 @@ if ~isempty(Spikeline_handles)
 end
 
 if ~strcmpi(opt, 'show')
-  nColorBins = 20;
+  nColorBins = 100;
   ampRange = quantile(spikeAmps, [0.1 0.9]);
   colorBins = linspace(ampRange(1), ampRange(2), nColorBins);
   

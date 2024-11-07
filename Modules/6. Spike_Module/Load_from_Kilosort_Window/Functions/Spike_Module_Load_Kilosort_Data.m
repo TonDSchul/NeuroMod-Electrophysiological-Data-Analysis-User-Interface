@@ -87,7 +87,7 @@ else
 end
 
 %% Check if data wa high pass filtered - if not do it here, otherwise waveforms will look weird. (recommended is also top take the grand average)
-%if ~isfield(Data.)
+
 
 %% First detect KS version -- only 3 has rez.mat file and params.py
 [stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
@@ -107,8 +107,9 @@ if isempty(KSversion)
     return;
 end
 
+
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, ~,Data.Spikes.BiggestAmplWaveform] = ksDriftmap(folderPath,KSversion);
+[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, ~,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
 
 if KSversion == 3
     %load(stringArray(foundrez),'rez');
@@ -168,9 +169,10 @@ for i = 1:length(fileNames)
 end
 
 % Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
-if Data.Spikes.ChannelMap(1) == Data.Info.ChannelSpacing
-    msgbox("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are therefore substracted by the channelspacing to rescale to 0um.")
+if Data.Spikes.ChannelPosition(1,2) ~= 0
+    disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m by commenting the lines after this message prompt.")
     Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
+    Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing;
 end
 
 if Data.Spikes.ChannelPosition(2,2)-Data.Spikes.ChannelPosition(1,2) ~= Data.Info.ChannelSpacing
@@ -225,7 +227,7 @@ if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
 
-    msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct kilosort outpout or try Kilsoort with another format (int16)." )
+    msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct kilosort outpout." )
 end
 
 SpikeTimesSmaller0 = Data.Spikes.SpikeTimes<= 0;
@@ -246,12 +248,13 @@ Data.Info.SpikeType = 'Kilosort';
 
 %% Extract Waveforms
 % For Kilosort we dont have channel information to extract from raw or
-% preprocessed data --> Therefor we take channel closest to position
+% preprocessed data --> Therefore we take channel closest to position
 
-SpikePositions = Data.Spikes.SpikePositions(:,2)+Data.Info.ChannelSpacing;
+SpikePositions = Data.Spikes.SpikePositions(:,2);
 SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
-SpikePositions = round(SpikePositions);
+SpikePositions = round(SpikePositions)+1;
 
+% SpikePositions= MaxTemplateChannel;
 Data.Spikes.SpikeChannel = SpikePositions;
 %SpikePositions = double(Data.Spikes.SpikeChannel);
 
@@ -288,7 +291,7 @@ if HigPassFiltered == 0
         SaveFilter = Spike_Extraction_HighPassWindow.HighPassFilterSettings.SaveFilter;
         delete(Spike_Extraction_HighPassWindow);
     else
-        disp("High pass filter settings window closed before manual config was saved. Using standad high pass filter settings (300Hz cutoff, filterorder 6)")
+        disp("High pass filter settings window closed before manual config was saved. Using standard high pass filter settings (300Hz cutoff, filterorder 6)")
         Cutoff = "300";
         FilterOrder = "6";
         SaveFilter = "No";
@@ -316,17 +319,17 @@ if HigPassFiltered == 0
         [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
         
         TempData = [];
-
+        
     else
         [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
         [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
-
+        
         %% Now extract Waveforms
         [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
     end
-
+    
 else % If high pass was already applied
-
+    
     [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
     
 end

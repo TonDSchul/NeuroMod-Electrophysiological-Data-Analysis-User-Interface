@@ -1,4 +1,4 @@
-function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance)
+function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance,ERPChannel)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot ERP and CSD for event analysis windows
@@ -35,6 +35,7 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % case user wants to export them
 % 13. PlotAppearance: structure holding info about plot appearances the user
 % might have modified.
+% 14. ERPChannel: Channel for ERP Plot on top
 
 % Outputs:
 % 1. CSDClim
@@ -73,18 +74,20 @@ if isempty(CSD)
             return;
         end
 
-        if DataChannelSelected(1) == DataChannelSelected(end) 
-            DataLinestoPlot = squeeze(EventRelatedData(DataChannelSelected(1),:,:));
-            ylim(Figure,[min(DataLinestoPlot,[],'all') max(DataLinestoPlot,[],'all')]);   
-        else
-            DataLinestoPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1));
-            ylim(Figure,[min(squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1)),[],'all') max(squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1)),[],'all')]);    
-        end
+        ERPChannel = str2double(ERPChannel);
+
+        % if DataChannelSelected(1) == DataChannelSelected(end) 
+        DataLinestoPlot = squeeze(EventRelatedData(ERPChannel,:,:));
+        ylim(Figure,[min(DataLinestoPlot,[],'all') max(DataLinestoPlot,[],'all')]);   
+        % else
+        %     DataLinestoPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1));
+        %     ylim(Figure,[min(squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1)),[],'all') max(squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1)),[],'all')]);    
+        % end
     
         xlim(Figure,[EventTime(1) EventTime(end)]);
         xlabel(Figure,PlotAppearance.ERPWindow.SingleERP.XLabel)
         ylabel(Figure,PlotAppearance.ERPWindow.SingleERP.YLabel)
-        title(Figure,strcat("Event Related Potential"));
+        title(Figure,strcat("Event Related Potential Channel ",num2str(ERPChannel)));
             
         TrialLinesHandles = findobj(Figure, 'Type', 'line', 'Tag', 'TrialLines');
     
@@ -102,17 +105,17 @@ if isempty(CSD)
         
         if isempty(TrialLinesHandles)
             if size(EventRelatedData,2) == 1
-                Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
+                Trialplot = line(Figure,EventTime,squeeze(EventRelatedData(ERPChannel,:,:))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
             else
-                Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1)), 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
+                Trialplot = line(Figure,EventTime,squeeze(EventRelatedData(ERPChannel,:,:)), 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
             end
         else
             for i = 1:size(EventRelatedData,2)
                 if i <= length(TrialLinesHandles)
-                    set(TrialLinesHandles(i), 'YData', squeeze(mean(EventRelatedData(DataChannelSelected,i,:),1))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth, 'Tag', 'TrialLines');
+                    set(TrialLinesHandles(i), 'YData',squeeze(EventRelatedData(ERPChannel,i,:))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth, 'Tag', 'TrialLines');
                     Trialplot = TrialLinesHandles(i);
                 else
-                    Trialplot = line(Figure,EventTime,squeeze(mean(EventRelatedData(DataChannelSelected,i,:),1))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
+                    Trialplot = line(Figure,EventTime,squeeze(EventRelatedData(ERPChannel,i,:))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
                 end
             end
         end

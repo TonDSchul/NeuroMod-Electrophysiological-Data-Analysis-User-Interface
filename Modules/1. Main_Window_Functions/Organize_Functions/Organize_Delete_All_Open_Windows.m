@@ -88,3 +88,61 @@ if ~isempty(app.PreproArtefactRejection)
     delete(app.PreproArtefactRejection);
     app.PreproArtefactRejection = [];
 end
+
+%% Event Extraction Window
+
+if ~isempty(app.EventExtractionWindow)
+    delete(app.EventExtractionWindow);
+    app.EventExtractionWindow = [];
+end
+
+%% Spike Extraction Window
+
+if ~isempty(app.SpikeExtractionWindow)
+    delete(app.SpikeExtractionWindow);
+    app.SpikeExtractionWindow = [];
+end
+
+%% Load from Kilosort Window
+
+if ~isempty(app.LoadfromKilosortWindowWindow)
+    delete(app.LoadfromKilosortWindowWindow);
+    app.LoadfromKilosortWindowWindow = [];
+end
+
+%% SaveforKilsort Window
+
+if ~isempty(app.SaveforKilosortWindowWindow)
+    delete(app.SaveforKilosortWindowWindow);
+    app.SaveforKilosortWindowWindow = [];
+end
+
+%% Preprocessing Window 
+if ~isempty(app.PreproWindow)
+    delete(app.PreproWindow);
+    app.PreproWindow = [];
+end
+
+%% Prepro Events Main Window Window 
+if ~isempty(app.PreproEventsMainWindow)
+    delete(app.PreproEventsMainWindow);
+    app.PreproEventsMainWindow = [];
+end
+
+%% Event LFP analysis main window
+if ~isempty(app.LFPEventsMainWindow)
+    delete(app.LFPEventsMainWindow);
+    app.LFPEventsMainWindow = [];
+end
+
+%% Load Data Window
+if ~isempty(app.LoadDataWindow)
+    delete(app.LoadDataWindow);
+    app.LoadDataWindow = [];
+end
+
+%% Save Data Window
+if ~isempty(app.SaveDataWindow)
+    delete(app.SaveDataWindow);
+    app.SaveDataWindow = [];
+end

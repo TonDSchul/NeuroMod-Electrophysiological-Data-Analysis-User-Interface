@@ -118,55 +118,59 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
             ToleranceDoubleWaveform = 1;
         end
 
-        % Initialize the cell array to store the start and end values of each sequence
-        minMaxSpikes = [];
-        currentGroup = indices(1); % Start with the first spike in a new group
-        
-        for i = 2:length(indices)
-            % Check if the current index is within tolerance of the last index in the current group
-            if abs(indices(i) - indices(i - 1)) <= ToleranceDoubleWaveform
-                % If within tolerance, add it to the current group
-                currentGroup = [currentGroup, indices(i)];
-            else
-                % Save only the smallest and largest values of the current group
-                minMaxSpikes = [minMaxSpikes; currentGroup(1), currentGroup(end)];
-                % Start a new group with the current spike
-                currentGroup = indices(i);
-            end
-        end
-        
-        % Add the smallest and largest values of the last group
-        TempSequences = [minMaxSpikes; currentGroup(1), currentGroup(end)];
+        TempSequences = [];
 
-        SpikeIndiciesBiggestWaveform = NaN(size(TempSequences,1),1);
-
-        for nSequences = 1:size(TempSequences,1)
-            if TempSequences(nSequences,1) ~= TempSequences(nSequences,2)
-                % minimum = spike peak for current sequence
-                [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1):TempSequences(nSequences,2)));
-                % indicie is in respect to range the minimum was searched
-                % for. Has to be adjusted to the total recording legnth
-                BiggestSequenceAmplitudes = TempSequences(nSequences,1)+(BiggestSequenceAmplitudes);
-                
-                SpikeIndiciesBiggestWaveform(nSequences) = BiggestSequenceAmplitudes;
-            else
-                if Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2 > 0 && TempSequences(nSequences,1)+2 <= length(Data.Time))
-                    [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2:TempSequences(nSequences,1)+2));
-    
-                    FinalBiggestSequenceAmplitudes = (TempSequences(nSequences,1)-2)+(BiggestSequenceAmplitudes);
-
-                    SpikeIndiciesBiggestWaveform(nSequences) = FinalBiggestSequenceAmplitudes;
+        if ~isempty(indices)
+            % Initialize the cell array to store the start and end values of each sequence
+            minMaxSpikes = [];
+            currentGroup = indices(1); % Start with the first spike in a new group
+            
+            for i = 2:length(indices)
+                % Check if the current index is within tolerance of the last index in the current group
+                if abs(indices(i) - indices(i - 1)) <= ToleranceDoubleWaveform
+                    % If within tolerance, add it to the current group
+                    currentGroup = [currentGroup, indices(i)];
                 else
-                    SpikeIndiciesBiggestWaveform(nSequences) = TempSequences(nSequences,1);
+                    % Save only the smallest and largest values of the current group
+                    minMaxSpikes = [minMaxSpikes; currentGroup(1), currentGroup(end)];
+                    % Start a new group with the current spike
+                    currentGroup = indices(i);
                 end
             end
-        end
-
-        SpikeTimes = SpikeIndiciesBiggestWaveform;
-        Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
-        Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
-        Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
             
+            % Add the smallest and largest values of the last group
+            TempSequences = [minMaxSpikes; currentGroup(1), currentGroup(end)];
+        end
+        
+        SpikeIndiciesBiggestWaveform = NaN(size(TempSequences,1),1);
+
+        if ~isempty(TempSequences)
+            for nSequences = 1:size(TempSequences,1)
+                if TempSequences(nSequences,1) ~= TempSequences(nSequences,2)
+                    % minimum = spike peak for current sequence
+                    [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1):TempSequences(nSequences,2)));
+                    % indicie is in respect to range the minimum was searched
+                    % for. Has to be adjusted to the total recording legnth
+                    BiggestSequenceAmplitudes = TempSequences(nSequences,1)+(BiggestSequenceAmplitudes);
+                    
+                    SpikeIndiciesBiggestWaveform(nSequences) = BiggestSequenceAmplitudes;
+                else
+                    if Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2 > 0 && TempSequences(nSequences,1)+2 <= length(Data.Time))
+                        [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2:TempSequences(nSequences,1)+2));
+        
+                        FinalBiggestSequenceAmplitudes = (TempSequences(nSequences,1)-2)+(BiggestSequenceAmplitudes);
+    
+                        SpikeIndiciesBiggestWaveform(nSequences) = FinalBiggestSequenceAmplitudes;
+                    else
+                        SpikeIndiciesBiggestWaveform(nSequences) = TempSequences(nSequences,1);
+                    end
+                end
+            end
+            SpikeTimes = SpikeIndiciesBiggestWaveform;
+            Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
+            Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
+            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+        end  
     end 
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
 
@@ -207,54 +211,59 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
             ToleranceDoubleWaveform = 1;
         end
 
-        % Initialize the cell array to store the start and end values of each sequence
-        minMaxSpikes = [];
-        currentGroup = indices(1); % Start with the first spike in a new group
-        
-        for i = 2:length(indices)
-            % Check if the current index is within tolerance of the last index in the current group
-            if abs(indices(i) - indices(i - 1)) <= ToleranceDoubleWaveform
-                % If within tolerance, add it to the current group
-                currentGroup = [currentGroup, indices(i)];
-            else
-                % Save only the smallest and largest values of the current group
-                minMaxSpikes = [minMaxSpikes; currentGroup(1), currentGroup(end)];
-                % Start a new group with the current spike
-                currentGroup = indices(i);
+        TempSequences = [];
+
+        if ~isempty(indices)
+            % Initialize the cell array to store the start and end values of each sequence
+            minMaxSpikes = [];
+            currentGroup = indices(1); % Start with the first spike in a new group
+            
+            for i = 2:length(indices)
+                % Check if the current index is within tolerance of the last index in the current group
+                if abs(indices(i) - indices(i - 1)) <= ToleranceDoubleWaveform
+                    % If within tolerance, add it to the current group
+                    currentGroup = [currentGroup, indices(i)];
+                else
+                    % Save only the smallest and largest values of the current group
+                    minMaxSpikes = [minMaxSpikes; currentGroup(1), currentGroup(end)];
+                    % Start a new group with the current spike
+                    currentGroup = indices(i);
+                end
             end
+            
+            % Add the smallest and largest values of the last group
+            TempSequences = [minMaxSpikes; currentGroup(1), currentGroup(end)];
         end
-        
-        % Add the smallest and largest values of the last group
-        TempSequences = [minMaxSpikes; currentGroup(1), currentGroup(end)];
 
         SpikeIndiciesBiggestWaveform = NaN(size(TempSequences,1),1);
 
-        for nSequences = 1:size(TempSequences,1)
-            if TempSequences(nSequences,1) ~= TempSequences(nSequences,2)
-                % minimum = spike peak for current sequence
-                [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1):TempSequences(nSequences,2)));
-                % indicie is in respect to range the minimum was searched
-                % for. Has to be adjusted to the total recording legnth
-                BiggestSequenceAmplitudes = TempSequences(nSequences,1)+(BiggestSequenceAmplitudes);
-                
-                SpikeIndiciesBiggestWaveform(nSequences) = BiggestSequenceAmplitudes;
-            else
-                if Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2 > 0 && TempSequences(nSequences,1)+2 <= length(Data.Time))
-                    [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2:TempSequences(nSequences,1)+2));
-    
-                    FinalBiggestSequenceAmplitudes = (TempSequences(nSequences,1)-2)+(BiggestSequenceAmplitudes);
-
-                    SpikeIndiciesBiggestWaveform(nSequences) = FinalBiggestSequenceAmplitudes;
+        if ~isempty(TempSequences)
+            for nSequences = 1:size(TempSequences,1)
+                if TempSequences(nSequences,1) ~= TempSequences(nSequences,2)
+                    % minimum = spike peak for current sequence
+                    [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1):TempSequences(nSequences,2)));
+                    % indicie is in respect to range the minimum was searched
+                    % for. Has to be adjusted to the total recording legnth
+                    BiggestSequenceAmplitudes = TempSequences(nSequences,1)+(BiggestSequenceAmplitudes);
+                    
+                    SpikeIndiciesBiggestWaveform(nSequences) = BiggestSequenceAmplitudes;
                 else
-                    SpikeIndiciesBiggestWaveform(nSequences) = TempSequences(nSequences,1);
+                    if Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2 > 0 && TempSequences(nSequences,1)+2 <= length(Data.Time))
+                        [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2:TempSequences(nSequences,1)+2));
+        
+                        FinalBiggestSequenceAmplitudes = (TempSequences(nSequences,1)-2)+(BiggestSequenceAmplitudes);
+    
+                        SpikeIndiciesBiggestWaveform(nSequences) = FinalBiggestSequenceAmplitudes;
+                    else
+                        SpikeIndiciesBiggestWaveform(nSequences) = TempSequences(nSequences,1);
+                    end
                 end
             end
+            SpikeTimes = SpikeIndiciesBiggestWaveform;
+            Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
+            Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
+            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
         end
-
-        SpikeTimes = SpikeIndiciesBiggestWaveform;
-        Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
-        Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
-        Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
             
     end
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
@@ -293,55 +302,59 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
             ToleranceDoubleWaveform = 1;
         end
 
-        % Initialize the cell array to store the start and end values of each sequence
-        minMaxSpikes = [];
-        currentGroup = indices(1); % Start with the first spike in a new group
-        
-        for i = 2:length(indices)
-            % Check if the current index is within tolerance of the last index in the current group
-            if abs(indices(i) - indices(i - 1)) <= ToleranceDoubleWaveform
-                % If within tolerance, add it to the current group
-                currentGroup = [currentGroup, indices(i)];
-            else
-                % Save only the smallest and largest values of the current group
-                minMaxSpikes = [minMaxSpikes; currentGroup(1), currentGroup(end)];
-                % Start a new group with the current spike
-                currentGroup = indices(i);
+        TempSequences = [];
+
+        if ~isempty(indices)
+            % Initialize the cell array to store the start and end values of each sequence
+            minMaxSpikes = [];
+            currentGroup = indices(1); % Start with the first spike in a new group
+            
+            for i = 2:length(indices)
+                % Check if the current index is within tolerance of the last index in the current group
+                if abs(indices(i) - indices(i - 1)) <= ToleranceDoubleWaveform
+                    % If within tolerance, add it to the current group
+                    currentGroup = [currentGroup, indices(i)];
+                else
+                    % Save only the smallest and largest values of the current group
+                    minMaxSpikes = [minMaxSpikes; currentGroup(1), currentGroup(end)];
+                    % Start a new group with the current spike
+                    currentGroup = indices(i);
+                end
             end
+            
+            % Add the smallest and largest values of the last group
+            TempSequences = [minMaxSpikes; currentGroup(1), currentGroup(end)];
         end
-        
-        % Add the smallest and largest values of the last group
-        TempSequences = [minMaxSpikes; currentGroup(1), currentGroup(end)];
 
         SpikeIndiciesBiggestWaveform = NaN(size(TempSequences,1),1);
 
-        for nSequences = 1:size(TempSequences,1)
-            if TempSequences(nSequences,1) ~= TempSequences(nSequences,2)
-                % minimum = spike peak for current sequence
-                [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1):TempSequences(nSequences,2)));
-                % indicie is in respect to range the minimum was searched
-                % for. Has to be adjusted to the total recording legnth
-                BiggestSequenceAmplitudes = TempSequences(nSequences,1)+(BiggestSequenceAmplitudes);
-                
-                SpikeIndiciesBiggestWaveform(nSequences) = BiggestSequenceAmplitudes;
-            else
-                if Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2 > 0 && TempSequences(nSequences,1)+2 <= length(Data.Time))
-                    [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2:TempSequences(nSequences,1)+2));
-    
-                    FinalBiggestSequenceAmplitudes = (TempSequences(nSequences,1)-2)+(BiggestSequenceAmplitudes);
-
-                    SpikeIndiciesBiggestWaveform(nSequences) = FinalBiggestSequenceAmplitudes;
+        if ~isempty(TempSequences)
+            for nSequences = 1:size(TempSequences,1)
+                if TempSequences(nSequences,1) ~= TempSequences(nSequences,2)
+                    % minimum = spike peak for current sequence
+                    [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1):TempSequences(nSequences,2)));
+                    % indicie is in respect to range the minimum was searched
+                    % for. Has to be adjusted to the total recording legnth
+                    BiggestSequenceAmplitudes = TempSequences(nSequences,1)+(BiggestSequenceAmplitudes);
+                    
+                    SpikeIndiciesBiggestWaveform(nSequences) = BiggestSequenceAmplitudes;
                 else
-                    SpikeIndiciesBiggestWaveform(nSequences) = TempSequences(nSequences,1);
+                    if Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2 > 0 && TempSequences(nSequences,1)+2 <= length(Data.Time))
+                        [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1)-2:TempSequences(nSequences,1)+2));
+        
+                        FinalBiggestSequenceAmplitudes = (TempSequences(nSequences,1)-2)+(BiggestSequenceAmplitudes);
+    
+                        SpikeIndiciesBiggestWaveform(nSequences) = FinalBiggestSequenceAmplitudes;
+                    else
+                        SpikeIndiciesBiggestWaveform(nSequences) = TempSequences(nSequences,1);
+                    end
                 end
             end
+            SpikeTimes = SpikeIndiciesBiggestWaveform;
+            Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
+            Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
+            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
         end
-
-        SpikeTimes = SpikeIndiciesBiggestWaveform;
-        Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
-        Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
-        Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
-      
     end
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
 end
@@ -363,7 +376,7 @@ close(h);
 %% Wrap up: Prepare all necessary fields of Spike structure.
 Data.Spikes.ChannelPosition(1:size(Data.Preprocessed,1),1) = 0;
 Data.Spikes.ChannelPosition(1:size(Data.Preprocessed,1),2) = Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:Data.Info.ChannelSpacing*size(Data.Preprocessed,1);
-Data.Spikes.SpikeTimes = Data.Spikes.SpikeTimes';
+Data.Spikes.SpikeTimes = Data.Spikes.SpikeTimes;
 Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps';
 Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
 Data.Spikes.ChannelMap = 1:size(Data.Preprocessed,1);

@@ -1,6 +1,6 @@
 % Inputs/outputs: mostly self explanatory 
 % localizedSpikesOnly (false by default) - if true, only spikes with no discrepancy between depth and site are returned. 
-function [spikeTimes, spikeAmps, spikeDepths, spikeSites, BiggestAmplWaveform] = ksDriftmap(ksDir, KSVersion, localizedSpikesOnly)
+function [spikeTimes, spikeAmps, spikeDepths, spikeSites, BiggestAmplWaveform, tempScalingAmps] = ksDriftmap(ksDir, KSVersion, localizedSpikesOnly)
 
 if nargin < 3
   localizedSpikesOnly = false;

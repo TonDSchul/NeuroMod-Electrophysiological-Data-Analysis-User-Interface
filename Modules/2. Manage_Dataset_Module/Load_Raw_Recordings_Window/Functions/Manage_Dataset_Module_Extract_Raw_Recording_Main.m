@@ -1,4 +1,4 @@
-function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder,AdditionalAmpFactor)
+function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder,AdditionalAmpFactor,NrChannel)
 
 %________________________________________________________________________________________
 
@@ -19,6 +19,7 @@ function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module
 % 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
 % 6. AdditionalAmpFactor: double, additional amplification raw data is
 % multiplied by
+% 7. NrChannel: from probe layout windoiw, just for spike2
 
 % Output: 
 % 1. Data: nchannel x ntimepoints matrix as single 
@@ -245,10 +246,27 @@ elseif strcmp(RecordingSystem,"Spike2")
         else
             disp(['Selected folder: ', selectedFolder]);
         end
-        savefilepath = strcat(executablefolder,'\Saved Data\Variables (so not edit)\CEDS64Path.mat');
+        savefilepath = strcat(executablefolder,'\Modules\MISC\Variables (do not edit)\CEDS64Path.mat');
         save(savefilepath,'selectedFolder')
-    else % If json interface found load path to it
+    else % If json interface found load path to it when its a valid path
         load(FolderWithPathVariable,'selectedFolder');
+
+        if ~isfolder(selectedFolder)
+            delete(FolderWithPathVariable)
+            msgbox("'Spike2 MATLAB SON Interface' library not found. To analyze Spike2 .smrx files, you need to install this library available at 'https://ced.co.uk/upgrades/spike2matson'. Please install and select the 'CEDS64ML' folder thats installed. You only need to do this once.");
+            % Use the uigetdir function to open the file explorer dialog
+            selectedFolder = uigetdir();
+        
+            % Check if the user canceled the dialog
+            if selectedFolder == 0
+                disp('Folder selection was canceled.');
+                selectedFolder = '';
+            else
+                disp(['Selected folder: ', selectedFolder]);
+            end
+            savefilepath = strcat(executablefolder,'\Modules\MISC\Variables (do not edit)\CEDS64Path.mat');
+            save(savefilepath,'selectedFolder')
+        end
     end
     
     % Load library
@@ -288,7 +306,7 @@ elseif strcmp(RecordingSystem,"Spike2")
         Data(currentchan,1:length(TempData)) = TempData;
         clear TempData
         % Update the progress bar
-        fraction = currentchan/32; %
+        fraction = currentchan/NrChannel; %
         msg = sprintf('Extracting Spike2 Data... (%d%% done)', round(100*fraction));
         waitbar(fraction, hSpike2, msg);
     end

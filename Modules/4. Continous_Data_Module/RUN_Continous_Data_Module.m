@@ -6,7 +6,7 @@ function RUN_Continous_Data_Module(app,ModuleFunctionName)
 
 if strcmp(ModuleFunctionName,"Preprocessing")
 
-    Preprocessing_Window(app);
+    app.PreproWindow = Preprocessing_Window(app);
 
 elseif strcmp(ModuleFunctionName,"Static Spectrum Analysis")
 

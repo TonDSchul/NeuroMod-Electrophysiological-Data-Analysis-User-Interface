@@ -74,40 +74,42 @@ cN = size(Data.EventRelatedData,2);
 
 % Loop over event indicies (trials)
 for nevents = 1:size(Data.EventRelatedData,2)
-
+    
     msg = sprintf('Extract Event Related Spikes... (%d%% done)', round(100*(nevents/cN)));
     waitbar(nevents/cN, h, msg);
-
+    
     % Extracts Spike Times from Kilosort Spike
     % positions within event range
     SpikeIndicieWithinCurrentEvent = SpikeTimes > Events(nevents)-NumSamplesBefore & SpikeTimes <= Events(nevents)+NumSamplesAfter;
-
-    % EventsSpikeeTimes
-    TempSpikeTimes = SpikeTimes(SpikeIndicieWithinCurrentEvent==1);
     
-    if SpikeTriggereAverage == 0
-        TempSpikeTimes = TempSpikeTimes - (Events(nevents) - NumSamplesBefore); % Scaled to event (Time 0)
-    end
+    if ~ isempty(SpikeIndicieWithinCurrentEvent)
+        % EventsSpikeeTimes
+        TempSpikeTimes = SpikeTimes(SpikeIndicieWithinCurrentEvent==1);
+        
+        if SpikeTriggereAverage == 0
+            TempSpikeTimes = TempSpikeTimes - (Events(nevents) - NumSamplesBefore); % Scaled to event (Time 0)
+        end
+        
+        Data.EventRelatedSpikes.SpikeTimes = [Data.EventRelatedSpikes.SpikeTimes;TempSpikeTimes];
+        Data.EventRelatedSpikes.SpikePositions = [Data.EventRelatedSpikes.SpikePositions;Data.Spikes.SpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
+        Data.EventRelatedSpikes.SpikeAmps = [Data.EventRelatedSpikes.SpikeAmps;Data.Spikes.SpikeAmps(SpikeIndicieWithinCurrentEvent==1)];
+        Data.EventRelatedSpikes.SpikeEvents = [Data.EventRelatedSpikes.SpikeEvents;zeros(sum(SpikeIndicieWithinCurrentEvent),1)+nevents];
+        Data.EventRelatedSpikes.SpikeChannel = [Data.EventRelatedSpikes.SpikeChannel;Data.Spikes.SpikeChannel(SpikeIndicieWithinCurrentEvent==1)];
+        Data.EventRelatedSpikes.SpikeWaveforms = [Data.EventRelatedSpikes.SpikeWaveforms;Data.Spikes.Waveforms(SpikeIndicieWithinCurrentEvent==1,:)];
     
-    Data.EventRelatedSpikes.SpikeTimes = [Data.EventRelatedSpikes.SpikeTimes;TempSpikeTimes];
-    Data.EventRelatedSpikes.SpikePositions = [Data.EventRelatedSpikes.SpikePositions;Data.Spikes.SpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
-    Data.EventRelatedSpikes.SpikeAmps = [Data.EventRelatedSpikes.SpikeAmps;Data.Spikes.SpikeAmps(SpikeIndicieWithinCurrentEvent==1)];
-    Data.EventRelatedSpikes.SpikeEvents = [Data.EventRelatedSpikes.SpikeEvents;zeros(sum(SpikeIndicieWithinCurrentEvent),1)+nevents];
-    Data.EventRelatedSpikes.SpikeChannel = [Data.EventRelatedSpikes.SpikeChannel;Data.Spikes.SpikeChannel(SpikeIndicieWithinCurrentEvent==1)];
-    Data.EventRelatedSpikes.SpikeWaveforms = [Data.EventRelatedSpikes.SpikeWaveforms;Data.Spikes.Waveforms(SpikeIndicieWithinCurrentEvent==1,:)];
-
-    if strcmp(SpikeType,"Kilosort")
-        Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
-    else
-        if isfield(Data.Info,'SpikeSorting')
+        if strcmp(SpikeType,"Kilosort")
             Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
         else
-            Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;zeros(sum(SpikeIndicieWithinCurrentEvent),1)]; 
+            if isfield(Data.Info,'SpikeSorting')
+                Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
+            else
+                Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;zeros(sum(SpikeIndicieWithinCurrentEvent),1)]; 
+            end
         end
-    end
-
-    if sum(Data.EventRelatedSpikes.SpikeTimes(Data.EventRelatedSpikes.SpikeTimes<=0)) > 0
-        Data.EventRelatedSpikes.SpikeTimes(Data.EventRelatedSpikes.SpikeTimes<=0) = 1;
+    
+        if sum(Data.EventRelatedSpikes.SpikeTimes(Data.EventRelatedSpikes.SpikeTimes<=0)) > 0
+            Data.EventRelatedSpikes.SpikeTimes(Data.EventRelatedSpikes.SpikeTimes<=0) = 1;
+        end
     end
 end
 

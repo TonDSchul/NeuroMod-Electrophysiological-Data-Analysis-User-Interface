@@ -133,7 +133,7 @@ if strcmp(Type,"Initial")
     
 elseif strcmp(Type,"Loading")
 
-    Organize_Delete_All_Open_Windows(app,1);
+    %Organize_Delete_All_Open_Windows(app,1);
 
     app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel;
 

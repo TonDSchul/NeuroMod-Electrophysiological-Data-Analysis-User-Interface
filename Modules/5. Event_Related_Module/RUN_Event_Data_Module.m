@@ -5,15 +5,18 @@ function RUN_Event_Data_Module(app,ModuleFunctionName)
 % made in the module field to the right of the RUN button
 
 if strcmp(ModuleFunctionName,"Extract Events and Data")
-    Extract_Events_Window(app);
+
+    app.EventExtractionWindow = Extract_Events_Window(app);
+
 elseif strcmp(ModuleFunctionName,"Preprocessing")
+
     if ~isfield(app.Data,'EventRelatedData')
         msgbox("Error: No event related data found. Please first extract events and event related data");
     else
         if isempty(app.Data.EventRelatedData)
             msgbox("Error: No event related data found. Please first extract events and event related data");
         else
-            Preprocessing_Events_Main_Window(app);
+            app.PreproEventsMainWindow = Preprocessing_Events_Main_Window(app);
         end
     end
     
@@ -21,7 +24,7 @@ elseif strcmp(ModuleFunctionName,"LFP Analysis")
     if ~isfield(app.Data,'EventRelatedData')
         msgbox("Error: No event related data found. Please first extract events and event related data");
     else
-        Analyse_Event_Related_Signal(app);
+        app.LFPEventsMainWindow = Analyse_Event_Related_Signal(app);
     end
     
     if isempty(app.ProbeViewWindowHandle)
