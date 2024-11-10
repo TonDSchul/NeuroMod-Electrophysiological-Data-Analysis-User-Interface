@@ -65,7 +65,7 @@ if ProbeViewWindow
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo)
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[])
 
 %% No probe layout window
 elseif ~ProbeViewWindow % no change when user clicked on a channel square in the right
@@ -99,40 +99,13 @@ elseif ~ProbeViewWindow % no change when user clicked on a channel square in the
 
     app.FirstZoomChannel = Channel;
 
-     %% If clicked Channel is actoive, inactivate it
-    if strcmp(Window,'Main Window') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Main Plot Current Source Density') || strcmp(Window,'Main Plot Power Estimate') || strcmp(Window,'Main Plot Spike Rate')
-        if ~isempty(ChannelClicked)
-            if sum(ChannelClicked==app.Mainapp.Data.Info.ProbeInfo.ActiveChannel)>0
-                app.Mainapp.ActiveChannel(ChannelClicked==app.Mainapp.Data.Info.ProbeInfo.ActiveChannel) = [];
-            else
-                app.Mainapp.ActiveChannel = sort([app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,ChannelClicked]);
-            end
-        end
-
-        if isfield(app.Mainapp.Data.Info.ProbeInfo,'CompleteAreaNames')
-            BrainAreaInfo = app.Mainapp.Data.Info.ProbeInfo.CompleteAreaNames;
-        else
-            BrainAreaInfo = [];
-        end
-
-        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo)
-        
-        app.Mainapp.ChannelChange = "ProbeView";
-
-        Organize_Prepare_Plot_and_Extract_GUI_Info(app.Mainapp,0,"Subsequent","Static",app.Mainapp.PlotEvents,app.Mainapp.Plotspikes);
+    if isfield(app.Mainapp.Data.Info.ProbeInfo,'CompleteAreaNames')
+        BrainAreaInfo = app.Mainapp.Data.Info.ProbeInfo.CompleteAreaNames;
+    else
+        BrainAreaInfo = [];
     end
 
-    if strcmp(Window,'Static Spectrum Window') || strcmp(Window,'All Windows Opened')
-        if ~isempty(app.Mainapp.ContStaticSpectrumWindow)
-            if isvalid(app.Mainapp.ContStaticSpectrumWindow)
-                if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
-                    [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'All',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel);
-                else
-                    [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'Just Frequency Bands',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel);
-                end
-            end
-        end
-    end
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[])
 
 end
 

@@ -1,4 +1,4 @@
-function Utility_Initialize_Clicks_Plots(app)
+function Utility_Initialize_Clicks_Plots(app,OldDataPlotName)
 %________________________________________________________________________________________
 %% Function to initilaze click functionality of plots
 % This function gets called whenever something new is plotted in the main
@@ -21,40 +21,50 @@ function Utility_Initialize_Clicks_Plots(app)
 % Intialize function
 
 %% Data Plot
-if isempty(app.UIAxes.ButtonDownFcn)
-    app.UIAxes.ButtonDownFcn = @(src1, event1) UIAxesButtonDown(app, event1);
-end   
-% Add ButtonDownFcn to each line object in UIAxis    
-lines = findobj(app.UIAxes, 'Type', 'line');
-
-%% Set the ButtonDownFcn for UIAxes to register clicks on a plotted line directly
-%if ~isprop(lines,"ButtonDownFcn")
+if ~strcmp(OldDataPlotName,"MainWindowTimeManipulation") && ~strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+    if isempty(app.UIAxes.ButtonDownFcn)
+        app.UIAxes.ButtonDownFcn = @(src1, event1) UIAxesButtonDown(app, event1);
+    end   
+    % Add ButtonDownFcn to each line object in UIAxis    
+    lines = findobj(app.UIAxes, 'Type', 'line');
+    
+    %% Set the ButtonDownFcn for UIAxes to register clicks on a plotted line directly
     for i = 1:numel(lines)
         % Call Lineclicked function if that happens
         lines(i).ButtonDownFcn = @(src1, event1) LineClicked(app, event1);
     end
-%end
+end
 
-%% Time Plot
-if isempty(app.UIAxes_2.ButtonDownFcn)
-    %% Set the ButtonDownFcn for UIAxes:2 to register clicks in the Time plot
-    % Intialize function
-    app.UIAxes_2.ButtonDownFcn = @(src1, event1) UIAxes_2ButtonDown(app, event1);
+%% Make Data Plot scrollable
+if ~strcmp(OldDataPlotName,"MainWindowTimeManipulation") && ~strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+    if ~isprop(app.NeuromodToolboxMainWindowUIFigure,'WindowScrollWheelFcn')
+        app.NeuromodToolboxMainWindowUIFigure.WindowScrollWheelFcn = @(src, event) DataPlotonScrollZoom(app, event);
+    end
+end
+
+
+if ~strcmp(OldDataPlotName,"MainWindowTimeManipulation") && ~strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+    %% Time Plot
+    if isempty(app.UIAxes_2.ButtonDownFcn)
+        %% Set the ButtonDownFcn for UIAxes:2 to register clicks in the Time plot
+        % Intialize function
+        app.UIAxes_2.ButtonDownFcn = @(src1, event1) UIAxes_2ButtonDown(app, event1);
+        
+    end
+    % Add ButtonDownFcn to each line object in UIAxis
+    lines = findobj(app.UIAxes_2, 'Type', 'line');
     
+    % Add ButtonDownFcn to each line object in UIAxis
+    rectangle = findobj(app.UIAxes_2, 'Type', 'rectangle');
+    
+    %% Set the ButtonDownFcn for UIAxes to register clicks on a plotted line directly
+    
+    for i = 1:numel(lines)
+        % Call Lineclicked function if that happens
+        lines(i).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
+    end
+    
+    rectangle(1).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
 end
-% Add ButtonDownFcn to each line object in UIAxis
-lines = findobj(app.UIAxes_2, 'Type', 'line');
-
-% Add ButtonDownFcn to each line object in UIAxis
-rectangle = findobj(app.UIAxes_2, 'Type', 'rectangle');
-
-%% Set the ButtonDownFcn for UIAxes to register clicks on a plotted line directly
-
-for i = 1:numel(lines)
-    % Call Lineclicked function if that happens
-    lines(i).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
-end
-
-rectangle(1).ButtonDownFcn = @(src1, event1) LineClickedTime(app, event1);
 
 

@@ -1,4 +1,4 @@
-function [Formatsfound,TextAreaText,TextArea_3Text,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_LoadRecordingCheckFolderContents(ChannelOrder)
+function [Formatsfound,TextAreaText,TextArea_3Text,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_LoadRecordingCheckFolderContents(ProbeInfo)
 
 %________________________________________________________________________________________
 
@@ -101,7 +101,7 @@ if isempty(Formatsfound)
 
     if isempty(FolderIndicieWithEphysData) % if no open ephys data found
         TextAreaText = strcat("Error: No supported file types or recording systems found in ",SelectedFolder,".");
-        TextAreaText = [TextAreaText;"Make sure the folder contains any of the Intan recording formats (.dat and .rhd), Open Ephys recording formats (.dat, .nwb, .continous), .ncs Neualynx format, .plx Plexon format or .smrx Spike2 format."];
+        TextAreaText = [TextAreaText;"Make sure the folder contains any of the Intan recording formats (.dat and .rhd), Open Ephys recording formats (.dat, .nwb, .continous), .ncs Neualynx format or .smrx Spike2 format."];
         %msgbox(TextAreaText);
         TextArea_3Text = "";
         return;
@@ -200,8 +200,38 @@ if contains(Formatsfound,"Open Ephys")
 end
 
 %% Wrap up
-if isempty(ChannelOrder) || sum(isnan(ChannelOrder))>0
-    TextArea_3Text = ["Data Folder:";SelectedFolder;"";"ChannelOrder:";"";"not defined"];
+if ~isfield(ProbeInfo,'NrChannel')
+
+    TextArea_3Text = ["Data Folder:";SelectedFolder;"";"Probe Info:";"";"not defined"];
 else
-    TextArea_3Text = ["Data Folder:";SelectedFolder;"";"ChannelOrder:";"";num2str(ChannelOrder)];
+    if isempty(ProbeInfo.NrChannel)
+        TextArea_3Text = ["Data Folder:";SelectedFolder;"";"Probe Info:";"";"not defined"];
+        return;
+    end
+
+    if ~isempty(ProbeInfo.Channelorder) && sum(isnan(ProbeInfo.Channelorder))==0
+        texttoshow = sprintf('%d, ', ProbeInfo.Channelorder);
+        % Remove the trailing comma and whitespace
+        texttoshow(end-1:end) = [];
+        
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",num2str(ProbeInfo.NrChannel));strcat("Channel Spacing: ",num2str(ProbeInfo.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(ProbeInfo.NumberChannelRows));"Costum Channel Order: Yes";strcat("Active Channel: ",num2str(ProbeInfo.ActiveChannel))];
+    
+        if isempty(ProbeInfo.selectedFolder)
+
+        else
+            ProbeInfoText = ["Data Folder:";"";ProbeInfo.selectedFolder;"";ProbeInfoText];
+        end
+    else
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",num2str(ProbeInfo.NrChannel));strcat("Channel Spacing: ",num2str(ProbeInfo.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(ProbeInfo.NumberChannelRows));"Costum Channel Order: No";strcat("Active Channel: ",num2str(ProbeInfo.ActiveChannel))];
+    
+        if isempty(ProbeInfo.selectedFolder)
+
+        else
+            ProbeInfoText = ["Data Folder:";"";ProbeInfo.selectedFolder;"";ProbeInfoText];
+        end
+        
+    end
+
+    TextArea_3Text = ["Data Folder:";SelectedFolder;"";ProbeInfoText];
 end
+

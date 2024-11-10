@@ -18,9 +18,9 @@ if strcmp(Window,"ERP")
     end
     
     if strcmp(app.Mainapp.EventLFPERP.DataTypeDropDown.Value,'Raw Event Related Data')
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance);
+        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
     else
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,[],app.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance);
+        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,[],app.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
     end
 end
 
@@ -47,9 +47,9 @@ if strcmp(Window,"CSD")
     
     %% Plot CSD
     if strcmp(app.Mainapp.EventLFPCSD.DataTypeDropDown.Value,'Raw Event Related Data') 
-        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.EventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance);
+        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.EventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[]);
     else
-        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance); 
+        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[]); 
     end
 end
 

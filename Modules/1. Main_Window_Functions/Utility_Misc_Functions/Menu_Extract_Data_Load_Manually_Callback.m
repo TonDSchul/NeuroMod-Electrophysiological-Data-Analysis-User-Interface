@@ -66,22 +66,25 @@ end
 
 %% Fill UI Text field accordingly
 if strcmp(Window,"Extract Data")
-    % CHannelorder
+    % 
     if ~isempty(app.Load_Data_Window_Info.Channelorder) && sum(isnan(app.Load_Data_Window_Info.Channelorder))==0
-        texttoshow = sprintf('%d, ', app.Load_Data_Window_Info.Channelorder);
-        % Remove the trailing comma and whitespace
-        texttoshow(end-1:end) = [];
-    
+
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.Load_Data_Window_Info.NrChannel);strcat("Channel Spacing: ",app.Load_Data_Window_Info.ChannelSpacing);strcat("Nr Channel Rows: ",app.Load_Data_Window_Info.NumberChannelRows);"Costum Channel Order: Yes";strcat("Nr Active Channel: ",num2str(length(app.Load_Data_Window_Info.ActiveChannel)))];
+
         if isempty(app.Load_Data_Window_Info.selectedFolder)
-            app.TextArea_3.Value = ["ChannelOrder:";"";texttoshow];
+            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
+            app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea_3.Value = ["Data Folder:";"";app.Load_Data_Window_Info.selectedFolder;"";"ChannelOrder:";"";texttoshow];
+            app.TextArea.Value = ["Data Folder:";"";app.Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
         end
     else
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.Load_Data_Window_Info.NrChannel);strcat("Channel Spacing: ",app.Load_Data_Window_Info.ChannelSpacing);strcat("Nr Channel Rows: ",app.Load_Data_Window_Info.NumberChannelRows);"Costum Channel Order: No";strcat("Nr Active Channel: ",num2str(length(app.Load_Data_Window_Info.ActiveChannel)))];
+
         if isempty(app.Load_Data_Window_Info.selectedFolder)
-            app.TextArea_3.Value = ["ChannelOrder:";"";"Not defined"];
+            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
+            app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea_3.Value = ["Data Folder:";"";app.Load_Data_Window_Info.selectedFolder;"";"ChannelOrder:";"";"not defined"];
+            app.TextArea.Value = ["Data Folder:";"";app.Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
         end
     end
 end
@@ -128,7 +131,7 @@ if strcmp(Window,"ProbeLayout")
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo)
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,1,[])
 
     if ~isempty(app.NrChannelEditField.Value) && ~isempty(app.ChannelSpacingumEditField.Value)
         %% Initiate Callback
@@ -170,6 +173,20 @@ if strcmp(Window,"ProbeLayout")
             % Call Lineclicked function if that happens
             GrayProbeFilling(i).ButtonDownFcn = @(src1, event1) ProbeViewClickLineCallback(app, event1);
         end
+
+        %% Create Legend
+        % Create a dummy red line plot for the legend
+        dummyLine = plot(app.UIAxes2, NaN, NaN, 'Color', 'red', 'LineWidth', 2);
+        
+        % Create a dummy yellow rectangle using a patch for the legend
+        dummyRect = patch(app.UIAxes2, NaN, NaN, 'yellow', 'EdgeColor', 'none');
+        
+        % Create the legend and position it at the center of the plot
+        legend(app.UIAxes2, [dummyLine, dummyRect], {'All Active Channel', 'Currently Active Channel'}, 'AutoUpdate', 'off');
+        
+        % Position the legend in the middle of the figure (over the entire figure size)
+        legendPosition = [0.6, 0.9, 0.15, 0.04]; % x, y, width, height (normalized)
+        set(app.UIAxes2.Legend, 'Position', legendPosition);
         
     end
 

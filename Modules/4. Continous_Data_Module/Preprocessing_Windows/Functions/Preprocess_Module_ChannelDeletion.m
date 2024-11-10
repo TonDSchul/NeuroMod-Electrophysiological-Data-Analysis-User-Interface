@@ -20,6 +20,10 @@ function [Data] = Preprocess_Module_ChannelDeletion(Data,ChannelDeletion)
 
 %________________________________________________________________________________________
 
+h = waitbar(0, 'Deleting Channel...', 'Name','Deleting Channel...');
+
+msg = sprintf('Deleting Channel... (%d%% done)', round(100*(1/5)));
+waitbar(1/4, h, msg);
 
 %% Delete Continous Data points
 if isfield(Data,'Preprocessed')
@@ -43,6 +47,9 @@ Data.Info.Channelorder(ChannelDeletion) = [];
 Data.Info.ProbeInfo.ActiveChannel(ChannelDeletion) = [];
 Data.Info.ProbeInfo.NrChannel = num2str(size(Data.Raw,1));
 
+msg = sprintf('Deleting Channel... (%d%% done)', round(100*(2/4)));
+waitbar(2/4, h, msg);
+
 %% Delete Spike indicies
 % if strcmp(Data.Info.SpikeType,"Internal")
 % 
@@ -60,9 +67,9 @@ if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
             TempChannelIndicies = Data.Spikes.SpikePositions(:,2) == ChannelDeletion(nchannel);
             ChannelIndicies = ChannelIndicies+TempChannelIndicies;
         end
-
+        
         ChannelIndicies(ChannelIndicies>1) = 1;
-
+        
         if sum(ChannelIndicies) == length(Data.Spikes.SpikeTimes)
             fieldsToDelete = {'Spikes'};
             % Delete fields
@@ -163,11 +170,18 @@ elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")
         end
 end
 
+msg = sprintf('Deleting Channel... (%d%% done)', round(100*(3/4)));
+waitbar(3/4, h, msg);
+
 % NOTE: Nothing has to be done for EventRelatedSpikes, since evewnt related spikes are computed
 % everytime, a spike analysis is selcted
 
 % Adjust Info file
 Data.Info.NrChannel = size(Data.Raw,1);
 
+msg = sprintf('Deleting Channel... (%d%% done)', round(100*(4/4)));
+waitbar(4/4, h, msg);
+
+close(h);
 
 

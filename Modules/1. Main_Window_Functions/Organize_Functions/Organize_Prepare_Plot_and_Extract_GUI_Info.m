@@ -116,7 +116,8 @@ end
 % If Preprocessed data shown (Input argument 8 in plot fct. = 1 (1 if preprocessed, 0 if not))
 
 MainPlot = 1;
-
+% if main window not selected in probe view dont plot but only when user is
+% not changing time in main window plot
 if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
     if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
         if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Window") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
@@ -124,9 +125,32 @@ if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
         end
     end
 end
+ExtraAnalysisWindowsType = [];
+% when user manipulates time in main window always execute -- also when
+% preprocessing, event or spike extraction occurs, bc plot has to be
+% resetted
+% For the plot, DataPlotType has to be "Movie" or "Static". Therefore its
+% set to this while saving the other selection like
+% MainWindowTimeManipulation for example for the main window analysis plots
+if strcmp(DataPlotType,"MainWindowTimeManipulation")
+    MainPlot = 1;
+    OldDataPlotName = "MainWindowTimeManipulation";
+    DataPlotType = "Static";
+elseif strcmp(DataPlotType,"MainWindowTimeManipulationMovie")
+    MainPlot = 1;
+    DataPlotType = "Movie";
+    OldDataPlotName = "MainWindowTimeManipulationMovie";
+elseif strcmp(DataPlotType,"Preprocessing") || strcmp(DataPlotType,"SpikeExtraction") || strcmp(DataPlotType,"Events")
+    ExtraAnalysisWindowsType = DataPlotType;
+    MainPlot = 1;
+    OldDataPlotName = "Static";
+    DataPlotType = "Static";
+else
+    OldDataPlotName = DataPlotType;
+end
 
 if MainPlot
-
+    
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
         % If downsampled data to show: Input argument 11 in plot fct = 1 (1 if donwsampled, 0 if not)
         if isfield(app.Data.Info,'DownsampleFactor') 
@@ -144,9 +168,9 @@ if MainPlot
         SpikeDataType = app.Data.Info.SpikeType;
         Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange)
     end
-    
+  
     %% Plot Time
-    
+   
     if PlotTime == 1    
     % Those functions dont take the app object and are therefore plug and play
     % for other figure objects 
@@ -163,8 +187,8 @@ if MainPlot
     % Those fct. handle updating time and data plot when clicking a different
     % time window in time plot
     
-    Utility_Initialize_Clicks_Plots(app);
-
+    Utility_Initialize_Clicks_Plots(app,OldDataPlotName);
+   
 end
 
 %% Plot Spike Rate if Window for that is open
@@ -177,6 +201,15 @@ if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
             SpikeRatePlot = 0;
         end
     end
+end
+
+% when user manipulates time in main window always execute
+if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+    SpikeRatePlot = 1;
+elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+    SpikeRatePlot = 1;
+elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+    SpikeRatePlot = 1;
 end
 
 if isprop(app.PSTHApp,'Existflag')
@@ -215,6 +248,14 @@ if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
     end
 end
 
+% when user manipulates time in main window always execute
+if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+    CSDPlot = 1;
+elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+    CSDPlot = 1;
+elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+    CSDPlot = 1;
+end
 
 if isprop(app.CSDApp,'ExistflagCSD')
     if app.CSDApp.Startup == 1 || CSDPlot
@@ -261,6 +302,15 @@ if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
             PowerEstiamtePlot = 0;
         end
     end
+end
+
+% when user manipulates time in main window always execute
+if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+    PowerEstiamtePlot = 1;
+elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+    PowerEstiamtePlot = 1;
+elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+    PowerEstiamtePlot = 1;
 end
 
 if isprop(app.SpectralEstApp,'ExistflagSDE')

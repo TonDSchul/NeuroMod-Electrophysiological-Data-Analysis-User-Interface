@@ -118,10 +118,10 @@ if ~isempty(app.SaveforKilosortWindowWindow)
 end
 
 %% Preprocessing Window 
-if ~isempty(app.PreproWindow)
-    delete(app.PreproWindow);
-    app.PreproWindow = [];
-end
+% if ~isempty(app.PreproWindow)
+%     delete(app.PreproWindow);
+%     app.PreproWindow = [];
+% end
 
 %% Prepro Events Main Window Window 
 if ~isempty(app.PreproEventsMainWindow)

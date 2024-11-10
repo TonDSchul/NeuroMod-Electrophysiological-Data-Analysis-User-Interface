@@ -280,12 +280,12 @@ else
         return;
     end
 
-    if length(CSD.SelectedChannel) < 3
+    if length(DataChannelSelected) < 3
         msgbox("Error: At least 3 channel required to compute CSD! Returning.")
         return;
     end
     
-    DatatoPlot = squeeze(mean(EventRelatedData(CSD.SelectedChannel,:,:),2,'omitnan'));
+    DatatoPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),2,'omitnan'));
     
     [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow);
 

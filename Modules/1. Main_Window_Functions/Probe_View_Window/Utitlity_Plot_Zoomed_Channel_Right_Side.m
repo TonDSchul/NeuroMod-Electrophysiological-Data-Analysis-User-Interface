@@ -1,4 +1,4 @@
-function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,yPoint,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes)
+function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,CreateProbeWindow,ChannelActivation)
 
 %% Plot 64 channel on the right
 
@@ -20,6 +20,12 @@ highylimits = yLimitBracktes(2);
 lowylimits = yLimitBracktes(1);
 
 squareHeight = (highylimits-lowylimits)/numSquares;
+
+if ShowChannelSpacing
+    PlottedSquareHeight = floor(squareHeight/2);
+else
+    PlottedSquareHeight = squareHeight;
+end
 
 x1 = 4;   % x-position of the first vertical line
 x2 = 6;   % x-position of the second vertical line
@@ -186,31 +192,31 @@ for nrows = 1:ChannelRows
         if isempty(ChannelViewRight)
             % Plot the square
             if strcmp(faceColor,'y')
-                rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
                       'EdgeColor', 'k', 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
             else
-                rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
                       'EdgeColor', faceColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
             end
         else
             if strcmp(faceColor,'y')
                 if length(ChannelViewRight)>=Squareplots
                     % Plot the square
-                    set(ChannelViewRight(Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                    set(ChannelViewRight(Squareplots), 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
                               'EdgeColor', 'k', 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
                 else
                     % Plot the square
-                    rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                    rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
                               'EdgeColor', 'k', 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
                 end
             else
                 if length(ChannelViewRight)>=Squareplots
                     % Plot the square
-                    set(ChannelViewRight(Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                    set(ChannelViewRight(Squareplots), 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
                               'EdgeColor', faceColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
                 else
                     % Plot the square
-                    rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                    rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
                               'EdgeColor', faceColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
                 end
             end

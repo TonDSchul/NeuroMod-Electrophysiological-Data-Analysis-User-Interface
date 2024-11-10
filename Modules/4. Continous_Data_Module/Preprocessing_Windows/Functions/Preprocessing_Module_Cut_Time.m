@@ -199,6 +199,7 @@ if isfield(Data,'Spikes')
         end
         Data.Info.SpikeType = "Non";
     else
+        SpikeIndiciestoDelte = [];
         if strcmp(CutType,"CutStart")
             SpikeIndiciestoDelte = Data.Spikes.SpikeTimes < index;
         elseif strcmp(CutType,"CutEnd")
@@ -215,9 +216,13 @@ if isfield(Data,'Spikes')
                 % Delete fields
                 Data.Info = rmfield(Data.Info, fieldsToDelete);
             end
+        elseif sum(SpikeIndiciestoDelte)==0
+
         else
             Data.Spikes.SpikeTimes(SpikeIndiciestoDelte==1) = [];
-            Data.Spikes.SpikeCluster(SpikeIndiciestoDelte==1) = [];
+            if ~isempty(Data.Spikes.SpikeCluster)
+                Data.Spikes.SpikeCluster(SpikeIndiciestoDelte==1) = [];
+            end
             Data.Spikes.Waveforms(SpikeIndiciestoDelte==1,:) = [];
             Data.Spikes.SpikePositions(SpikeIndiciestoDelte==1,:) = [];
             Data.Spikes.SpikeAmps(SpikeIndiciestoDelte==1) = [];

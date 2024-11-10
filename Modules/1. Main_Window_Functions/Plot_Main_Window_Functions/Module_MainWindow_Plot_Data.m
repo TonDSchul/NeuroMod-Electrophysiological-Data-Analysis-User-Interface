@@ -61,16 +61,26 @@ end
 xlim(UIAxis, [Time(1),Time(end)]);
 
 if size(Data,1)>1
-    set(UIAxis,'yticklabel',{[]});
-    ylabel(UIAxis,PlotAppearance.MainWindow.Data.MainYLabel)
+    if ~isempty(UIAxis.YTickLabel)
+        if ~isempty(UIAxis.YTickLabel{1})
+            set(UIAxis,'yticklabel',{[]});
+            ylabel(UIAxis,PlotAppearance.MainWindow.Data.MainYLabel)
+        end
+    end
 end
 
-xlabel(UIAxis,PlotAppearance.MainWindow.Data.MainXLabel)
+if ~strcmp(UIAxis.XLabel.String,PlotAppearance.MainWindow.Data.MainXLabel)
+    xlabel(UIAxis,PlotAppearance.MainWindow.Data.MainXLabel)
+end
 
 if Preprocessed == 0
-    title(UIAxis, PlotAppearance.MainWindow.Data.Title.Raw);
+    if ~strcmp(UIAxis.Title.String,PlotAppearance.MainWindow.Data.Title.Raw)
+        title(UIAxis, PlotAppearance.MainWindow.Data.Title.Raw);
+    end
 elseif Preprocessed == 1 
-    title(UIAxis, PlotAppearance.MainWindow.Data.Title.Preprocessed);
+    if ~strcmp(UIAxis.Title.String,PlotAppearance.MainWindow.Data.Title.Preprocessed)
+        title(UIAxis, PlotAppearance.MainWindow.Data.Title.Preprocessed);
+    end
 end
 
 %% Select the current Colormap (tempcolorMapset set in Main window of GUI when colormap setting changed)
@@ -93,13 +103,14 @@ end
 
 %% Start Plot
 % If Not movie mode:
+
 if strcmp(Type,"Static")
     % All objects being plotted are lines. The following code captures all the lines
     % plotted to keep track of how much is plotted and to update already
     % created line objects instead of creating new ones every time.
     
     %% First Check and delete unneccesary plot handles
-
+  
     if sum(EventIndicies) == 0
         Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
         delete(Eventline_handles(1:end));  
@@ -124,7 +135,7 @@ if strcmp(Type,"Static")
     else
         delete(ImageScChannel_handles);
     end
-
+  
     %% Plot Channel Data
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
         if isempty(lineHandles) 
@@ -171,25 +182,44 @@ if strcmp(Type,"Static")
 
     %% Events: Check if Events should be plotted.
     if strcmp(EventPlot,"Events") && sum(EventIndicies) > 0
-
-        xData = [Time(EventIndicies == 1); Time(EventIndicies == 1)];
-        yData = double(repmat([YMinLimitsMultipeERP,YMaxLimitsMultipeERP]', 1, length(Time(EventIndicies == 1))));
-
-        if isempty(Eventline_handles) 
-            line(UIAxis,xData, yData, 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events'); % Adjust color as needed
+        
+        % Pre-calculate values used multiple times
+        eventTimes = Time(EventIndicies == 1);
+        numEvents = length(eventTimes);
+        
+        % Prepare xData and yData without redundant calculations
+        xData = [eventTimes; eventTimes];
+        yData = [YMinLimitsMultipeERP; YMaxLimitsMultipeERP];
+        yData = yData(:, ones(1, numEvents));  % Replicate columns without using repmat
+        
+        % Check if we need to create new lines or update existing ones
+        if isempty(Eventline_handles)
+            % Create new lines if there are no existing handles
+            line(UIAxis, xData, yData, 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents, ...
+                'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
         else
-            if length(Eventline_handles)>=size(xData,2)
-                for i = 1:size(xData,2)
-                    set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
-                end
-                delete(Eventline_handles(size(xData,2)+1:end));
-            elseif length(Eventline_handles) < size(xData,2)
-                for i = 1:length(Eventline_handles)
-                    set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
-                end
-                line(UIAxis,xData(:,length(Eventline_handles)+1:end), yData(:,length(Eventline_handles)+1:end), 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events'); % Adjust color as needed
-            end            
+            % Number of existing lines
+            numHandles = length(Eventline_handles);
+            
+            % Update existing handles if possible
+            minCount = min(numHandles, numEvents);
+            for i = 1:minCount
+                set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), ...
+                    'Color', PlotAppearance.MainWindow.Data.Color.MainEvents, ...
+                    'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
+            end
+            
+            % Add new lines if there are more events than handles
+            if numEvents > numHandles
+                line(UIAxis, xData(:, numHandles+1:end), yData(:, numHandles+1:end), ...
+                    'Color', PlotAppearance.MainWindow.Data.Color.MainEvents, ...
+                    'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
+            % Remove excess handles if there are more handles than events
+            elseif numEvents < numHandles
+                delete(Eventline_handles(numEvents+1:end));
+            end
         end
+        
     end 
 
     %% Plot Toolbox internally computed Spike Data
@@ -357,12 +387,15 @@ if strcmp(Type,"Static")
     end 
 end
 
+
 if strcmp(Type,"Movie")
 
     pause(0.04);
 
     %% First Check and delete unneccesary plot handles
 
+    %% First Check and delete unneccesary plot handles
+  
     if sum(EventIndicies) == 0
         Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
         delete(Eventline_handles(1:end));  
@@ -370,12 +403,12 @@ if strcmp(Type,"Movie")
         Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
         if length(Eventline_handles) > sum(EventIndicies)
             delete(Eventline_handles(sum(EventIndicies)+1:end)); 
+            Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
         end
-        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
     end
 
     lineHandles = findobj(UIAxis, 'Tag', 'Data');
-
+    
     ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
 
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
@@ -387,13 +420,12 @@ if strcmp(Type,"Movie")
     else
         delete(ImageScChannel_handles);
     end
-
+  
     %% Plot Channel Data
-    % lines = NaN(size,)
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
         if isempty(lineHandles) 
-            % Plot rfor the first time
-            lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
+            % Plot for the first time
+            lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
             % ColorMap
             for i = 1:size(Data,1)
                 lines(i).Color = colorMap(i, :);
@@ -403,12 +435,13 @@ if strcmp(Type,"Movie")
                 for i = 1:size(Data,1)
                     set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
                 end
-                delete(lineHandles(i+1:end));
+                delete(lineHandles(size(Data,1)+1:end));
                 % ColorMap
                 for i = 1:size(Data,1)
                     lines(i).Color = colorMap(i, :);
                 end
             elseif length(lineHandles) < size(Data,1)
+
                 for i = 1:length(lineHandles)
                     set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
                     lines(i)=lineHandles(i);
@@ -424,39 +457,54 @@ if strcmp(Type,"Movie")
     end
 
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-        Depth = 0:ChannelSpacing:(size(Data,1)-1)*ChannelSpacing;
+        
         if isempty(ImageScChannel_handles)
             imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
         else
-            %imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
             set(ImageScChannel_handles(1), 'XData', Time, 'YData', Depth,'CData', Data,'Tag','ImageScChannel');
         end
     end
 
     %% Events: Check if Events should be plotted.
     if strcmp(EventPlot,"Events") && sum(EventIndicies) > 0
-
-        xData = [Time(EventIndicies == 1); Time(EventIndicies == 1)];
-        yData = repmat([YMinLimitsMultipeERP,YMaxLimitsMultipeERP]', 1, length(Time(EventIndicies == 1)));
-
-        % If 64 lines: line 65 has to be plooted with line. Set
-        % will result in an error bc this handle indicie isnt
-        % existing yet
-        if isempty(Eventline_handles) 
-            line(UIAxis,xData, yData, 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events'); % Adjust color as needed
+        
+        % Pre-calculate values used multiple times
+        eventTimes = Time(EventIndicies == 1);
+        numEvents = length(eventTimes);
+        
+        % Prepare xData and yData without redundant calculations
+        xData = [eventTimes; eventTimes];
+        yData = [YMinLimitsMultipeERP; YMaxLimitsMultipeERP];
+        yData = yData(:, ones(1, numEvents));  % Replicate columns without using repmat
+        
+        % Check if we need to create new lines or update existing ones
+        if isempty(Eventline_handles)
+            % Create new lines if there are no existing handles
+            line(UIAxis, xData, yData, 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents, ...
+                'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
         else
-            if length(Eventline_handles)>=size(xData,2)
-                for i = 1:size(xData,2)
-                    set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
-                end
-                delete(Eventline_handles(size(xData,2)+1:end));
-            elseif length(Eventline_handles) < size(xData,2)
-                for i = 1:length(Eventline_handles)
-                    set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
-                end
-                line(UIAxis,xData(:,length(Eventline_handles)+1:end), yData(:,length(Eventline_handles)+1:end), 'Color', PlotAppearance.MainWindow.Data.Color.MainEvents,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events'); % Adjust color as needed
-            end            
+            % Number of existing lines
+            numHandles = length(Eventline_handles);
+            
+            % Update existing handles if possible
+            minCount = min(numHandles, numEvents);
+            for i = 1:minCount
+                set(Eventline_handles(i), 'XData', xData(:,i), 'YData', yData(:,i), ...
+                    'Color', PlotAppearance.MainWindow.Data.Color.MainEvents, ...
+                    'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
+            end
+            
+            % Add new lines if there are more events than handles
+            if numEvents > numHandles
+                line(UIAxis, xData(:, numHandles+1:end), yData(:, numHandles+1:end), ...
+                    'Color', PlotAppearance.MainWindow.Data.Color.MainEvents, ...
+                    'LineWidth', PlotAppearance.MainWindow.Data.LineWidth.MainEvents, 'Tag', 'Events');
+            % Remove excess handles if there are more handles than events
+            elseif numEvents < numHandles
+                delete(Eventline_handles(numEvents+1:end));
+            end
         end
+        
     end 
 
     %% Plot Toolbox internally computed Spike Data

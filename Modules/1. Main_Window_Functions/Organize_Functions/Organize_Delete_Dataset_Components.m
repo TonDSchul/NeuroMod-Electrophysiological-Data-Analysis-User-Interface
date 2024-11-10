@@ -145,135 +145,50 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
-    fieldNames = fieldnames(Data.Info);
-    idx = find(strcmp(fieldNames, 'Channelorder'));
-   
-    TempEventChannel = [];
-    TempEventDataType = [];
-    TempEventTimeRange = [];
-    TempPreproInfoType = [];
-    TempSpikeDetectionThreshold = [];
-    TempKilosortScalingFactor = [];
-    TempSpikeType = Data.Info.SpikeType;
-    TempCutStart = [];
-    TempCutStop = [];
-    TempChannelDeletion = [];
-    TempSpike2EventChannelToTake = [];
-    TempSpikeSorting = [];
-    TempSpikeDetectionNrStd = [];
-    TempProbeInfo = [];
-
-    if isfield(Data.Info,'CutStart')
-        TempCutStart = Data.Info.CutStart;
+    if isfield(Data,'TimeDownsampled')
+        % Fields to delete
+        fieldsToDelete = {'TimeDownsampled'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
     end
-    
-    if isfield(Data.Info,'Spike2EventChannelToTake')
-        TempSpike2EventChannelToTake = Data.Info.Spike2EventChannelToTake;
+    if isfield(Data.Info,'FilterMethod')
+        % Fields to delete
+        fieldsToDelete = {'Cutoff', 'FilterOrder', 'FilterMethod', 'FilterType', 'FilterDirection'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
-
-    if isfield(Data.Info,'CutEnd')
-        TempCutStop = Data.Info.CutEnd;
+    if isfield(Data.Info,'MedianFilterMethod')
+        % Fields to delete
+        fieldsToDelete = {'MedianFilterOrder', 'MedianFilterMethod'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
-
-    if isfield(Data.Info,'ChannelDeletion')
-        TempChannelDeletion = Data.Info.ChannelDeletion;
+    if isfield(Data.Info,'BandStopFilterMethod')
+        % Fields to delete
+        fieldsToDelete = {'BandStopCutoff', 'BandStopFilterOrder', 'BandStopFilterMethod', 'BandStopFilterType', 'BandStopFilterDirection'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
-
-    if isfield(Data.Info,'KilosortScalingFactor')
-        TempKilosortScalingFactor = Data.Info.KilosortScalingFactor;
+    if isfield(Data.Info,'DownsampleFactor')
+        fieldsToDeleteInfo = {'DownsampleFactor','DownsampledSampleRate'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDeleteInfo);
     end
-
-    if isfield(Data.Info,'ProbeInfo')
-        TempProbeInfo = Data.Info.KilosortScalingFactor;
+    if isfield(Data.Info,'Normalize')
+        fieldsToDelete = {'Normalize'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
-
-    if isfield(Data,'EventRelatedData')
-        TempEventChannel = Data.Info.EventRelatedDataChannel;
-        TempEventDataType = Data.Info.EventRelatedDataType;
-        TempEventTimeRange = Data.Info.EventRelatedDataTimeRange;
+    if isfield(Data.Info,'GrandAverage')
+        fieldsToDelete = {'GrandAverage'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
-
-    if isfield(Data,'PreprocessedEventRelatedData')
-        if isfield(Data.Info,'EventRelatedPreprocessing')
-            TempPreproInfoType = Data.Info.EventRelatedPreprocessing;
-        end
+    if isfield(Data.Info,'StimArtefactChannel')
+        fieldsToDelete = {'StimArtefactChannel','TimeAroundStimArtefact'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
-
-    if isfield(Data.Info,'SpikeSorting')
-        TempSpikeSorting = Data.Info.SpikeSorting;
-    end
-
-    if isfield(Data.Info,'SpikeDetectionNrStd')
-        TempSpikeDetectionNrStd = Data.Info.SpikeDetectionNrStd;
-    end
-
-    if isfield(Data.Info,'SpikeDetectionThreshold')
-        TempSpikeDetectionThreshold = Data.Info.SpikeDetectionThreshold;
-    end
-    
-    if isfield(Data.Info,'EventChannelNames')
-        TempEventChannelNames = Data.Info.EventChannelNames;
-        TempEventChannelType = Data.Info.EventChannelType;
-    else
-        TempEventChannelNames = [];
-    end
-
-    % Create a new structure with only the fields up to the found index
-    Data.Info = rmfield(Data.Info, fieldNames(idx+1:end));
-
-    if ~isempty(TempEventChannelNames)
-        Data.Info.EventChannelNames = TempEventChannelNames;
-        Data.Info.EventChannelType = TempEventChannelType;
-    end
-
-    if ~isempty(TempPreproInfoType)
-        Data.Info.EventRelatedPreprocessing = TempPreproInfoType;
-    end
-
-    if ~isempty(TempEventChannel)
-        Data.Info.EventRelatedDataChannel = TempEventChannel;
-        Data.Info.EventRelatedDataType = TempEventDataType;
-        Data.Info.EventRelatedDataTimeRange = TempEventTimeRange;
-    end
-
-    if ~isempty(TempSpikeDetectionThreshold)
-        Data.Info.SpikeDetectionThreshold = TempSpikeDetectionThreshold;
-    end
-
-    if ~isempty(TempKilosortScalingFactor)
-        Data.Info.KilosortScalingFactor = TempKilosortScalingFactor;
-    end
-
-    if ~isempty(TempCutStart)
-         Data.Info.CutStart = TempCutStart;
-    end
-
-    if ~isempty(TempProbeInfo)
-        Data.Info.ProbeInfo = TempProbeInfo;
-    end
-
-    if ~isempty(TempCutStop)
-        Data.Info.CutEnd = TempCutStop;
-    end
-
-    if ~isempty(TempChannelDeletion)
-        Data.Info.ChannelDeletion = TempChannelDeletion;
-    end
-
-    if ~isempty(TempSpike2EventChannelToTake)
-        Data.Info.Spike2EventChannelToTake = TempSpike2EventChannelToTake;
-    end
-
-    if ~isempty(TempSpikeSorting)
-        Data.Info.SpikeSorting = TempSpikeSorting;
-    end
-    
-    if ~isempty(TempSpikeDetectionNrStd)
-        Data.Info.SpikeDetectionNrStd = TempSpikeDetectionNrStd;
-    end
-
-    Data.Info.SpikeType = TempSpikeType;
-
     if isfield(Data,'Preprocessed')
         fieldsToDelete = {'Preprocessed'};
         % Delete fields

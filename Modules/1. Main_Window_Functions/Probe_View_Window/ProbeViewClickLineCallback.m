@@ -1,5 +1,6 @@
 function [app] = ProbeViewClickLineCallback(app, event, Window)
 
+
 if isprop(app,'NrChannelEditField')
     ProbeViewWindow = 1;
 else
@@ -221,11 +222,26 @@ if ProbeViewWindow == 0
 
             if sum(ChannelClicked==app.Mainapp.Data.Info.ProbeInfo.ActiveChannel)>0
                 if sum(ChannelClicked==app.Mainapp.ActiveChannel)>0
-                    app.Mainapp.ActiveChannel(ChannelClicked==app.Mainapp.ActiveChannel) = [];
+                    if length(app.Mainapp.ActiveChannel)>=2
+                        app.Mainapp.ActiveChannel(ChannelClicked==app.Mainapp.ActiveChannel) = [];
+                    else
+                        msgbox("Warning: At least one channel required to be active.")
+                    end
                 else
                     app.Mainapp.ActiveChannel = sort([app.Mainapp.ActiveChannel,ChannelClicked]);
                 end
             end
+
+            if isscalar(app.Mainapp.ActiveChannel)
+                app.Mainapp.UIAxes.YTickMode = 'auto';
+                app.Mainapp.UIAxes.YTickLabelMode = 'auto';
+                ylabel(app.Mainapp.UIAxes,"Signal [mV]");
+            else
+                app.Mainapp.UIAxes.YTick = [];         % Remove Y ticks
+                app.Mainapp.UIAxes.YTickLabel = {};    % Remove Y tick labels
+                ylabel(app.Mainapp.UIAxes,"");
+            end
+
 
             if isfield(app.Mainapp.Data.Info.ProbeInfo,'CompleteAreaNames')
                 BrainAreaInfo = app.Mainapp.Data.Info.ProbeInfo.CompleteAreaNames;
@@ -235,18 +251,20 @@ if ProbeViewWindow == 0
 
             %% Update plots with new channelselection
 
+        
             if strcmp(Window,'Main Window') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Main Plot Current Source Density') || strcmp(Window,'Main Plot Power Estimate') || strcmp(Window,'Main Plot Spike Rate')
-                
-                Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo)
+              
+                Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked)
                 
                 app.Mainapp.ChannelChange = "ProbeView";
     
                 Organize_Prepare_Plot_and_Extract_GUI_Info(app.Mainapp,0,"Subsequent","Static",app.Mainapp.PlotEvents,app.Mainapp.Plotspikes);
             end
-
+           
             if strcmp(Window,'Static Spectrum Window') || strcmp(Window,'All Windows Opened')
                 if ~isempty(app.Mainapp.ContStaticSpectrumWindow)
                     if isvalid(app.Mainapp.ContStaticSpectrumWindow)
+                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked) 
                         if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
                             [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'All',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel);
                         else
@@ -254,27 +272,25 @@ if ProbeViewWindow == 0
                         end
                     end
                 end
-
-                Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo) 
             end
             
             if strcmp(Window,'Cont. Internal Spikes') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Cont. Kilosort Spikes')
                 if ~isempty(app.Mainapp.ConInternalSpikesWindow) || ~isempty(app.Mainapp.ConKilosortSpikesWindow)
-                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo);
+                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked);
                     [app] = Utility_ProbeChange_Plot_ContSpikes(app);
                 end
             end
 
             if strcmp(Window,'Event Internal Spikes') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Event Kilosort Spikes')
                 if ~isempty(app.Mainapp.EventInternalSpikesWindow) || ~isempty(app.Mainapp.EventKilosortSpikesWindow)
-                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo);
+                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked);
                     [app] = Utility_ProbeChange_Plot_EventSpikes(app);
                 end
             end
 
             if strcmp(Window,'Event ERP Window') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Event CSD Window') || strcmp(Window,'Event CSD Window')|| strcmp(Window,'Event Static Spectrum Window')  || strcmp(Window,'Event Time Frequency Power Window') 
                 if ~isempty(app.Mainapp.EventLFPERP) || ~isempty(app.Mainapp.EventLFPCSD) || ~isempty(app.Mainapp.EventLFPSSP) || ~isempty(app.Mainapp.EventLFPTF)
-                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo);
+                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked);
                     if strcmp(Window,'Event CSD Window') && ~isempty(app.Mainapp.EventLFPCSD) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPCSD)
                         [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'CSD');
                     elseif strcmp(Window,'Event ERP Window') && ~isempty(app.Mainapp.EventLFPERP) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPERP)
@@ -292,7 +308,7 @@ if ProbeViewWindow == 0
                     [~,app.Mainapp.PreproArtefactRejection.StimArtefactInfo] = Preprocess_Extract_and_Plot_Stimulation_Artefact(app.Mainapp.Data, app.Mainapp.PreproArtefactRejection.TimeAroundEventsEditField_2.Value ,app.Mainapp.PreproArtefactRejection.TimeAroundEventsEditField.Value, app.Mainapp.PreproArtefactRejection.EventChannelforStimulationDropDown.Value, app.Mainapp.PreproArtefactRejection.EventstoPlotDropDown.Value, app.Mainapp.PreproArtefactRejection.Slider.Value, app.Mainapp.PreproArtefactRejection.UIAxes, app.Mainapp.ActiveChannel);            
                 end
             end
-
+           
         end
     end
 end
@@ -343,7 +359,7 @@ if ProbeViewWindow
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo)
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[])
 
 %% Main Window probe view_____if clicked on a line but not on a channel on the right side --> not to change channel selection
 elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDirection]) < 2 && ClickedOnChannelYDirection == 0 || ClickedOnChannelXDirection == 0 % no change when user clicked on a channel square in the right
@@ -384,6 +400,6 @@ elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDire
             BrainAreaInfo = [];
         end
 
-        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo)
+        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[])
     end
 end

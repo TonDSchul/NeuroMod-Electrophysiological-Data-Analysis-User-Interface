@@ -165,8 +165,8 @@ xticklabels(Figure, cellstr(num2str(Timeofbins(:), '%.2f')));
 
 
 %% save plotted data in case user wants to save 
-CurrentPlotData.XData = 1:length(filteredSpikeRate);
-CurrentPlotData.YData = filteredSpikeRate;
-CurrentPlotData.CData = [];
-CurrentPlotData.Type = strcat("Spike Rate with ",num2str(Timerangebin),"s per Bin");
-CurrentPlotData.XTicks = Figure.XTickLabel;
+CurrentPlotData.LiveSpikeXData = 1:length(filteredSpikeRate);
+CurrentPlotData.LiveSpikeYData = filteredSpikeRate;
+CurrentPlotData.LiveSpikeCData = [];
+CurrentPlotData.LiveSpikeType = strcat("Spike Rate with ",num2str(Timerangebin),"s per Bin");
+CurrentPlotData.LiveSpikeXTicks = Figure.XTickLabel;

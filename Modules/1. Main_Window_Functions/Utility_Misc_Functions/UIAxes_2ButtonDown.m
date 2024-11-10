@@ -37,5 +37,5 @@ end
 %input 2: 1 if plot time, 0 if no time plot necessary
 %input 3: Update time plot = Subsequent; Replot whole time plot = "Initial"
 %input 4: Whether Data plot should run in a movie or not
-Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Subsequent","Static",app.PlotEvents,app.Plotspikes);
+Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Subsequent","MainWindowTimeManipulation",app.PlotEvents,app.Plotspikes);
         

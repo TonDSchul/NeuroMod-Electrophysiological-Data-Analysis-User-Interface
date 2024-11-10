@@ -103,7 +103,11 @@ elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = 
             end
         end
         DataToSave.MainUnitXTicks =  PlottedData.MainUnitXTicks;
-
+    elseif contains(Analysis,"Spike") && contains(Analysis,"Live")
+        DataToSave.MainType =  PlottedData.LiveSpikeType;
+        DataToSave.MainXData =  PlottedData.LiveSpikeXData;
+        DataToSave.MainYData =  PlottedData.LiveSpikeYData;
+        DataToSave.MainXTicks =  PlottedData.LiveSpikeXTicks;
     elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
         DataToSave.MainType =  PlottedData.MainType;
         DataToSave.MainXData =  PlottedData.MainXData;
@@ -114,6 +118,7 @@ elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = 
             end
         end
         DataToSave.MainXTicks =  PlottedData.MainXTicks;
+    
     end
 end
 
