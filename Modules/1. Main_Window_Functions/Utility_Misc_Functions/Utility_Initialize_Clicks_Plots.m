@@ -37,11 +37,14 @@ end
 
 %% Make Data Plot scrollable
 if ~strcmp(OldDataPlotName,"MainWindowTimeManipulation") && ~strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
-    if ~isprop(app.NeuromodToolboxMainWindowUIFigure,'WindowScrollWheelFcn')
+    if ~isprop(app.NeuromodToolboxMainWindowUIFigure,'WindowScrollWheelFcn') 
         app.NeuromodToolboxMainWindowUIFigure.WindowScrollWheelFcn = @(src, event) DataPlotonScrollZoom(app, event);
+    else
+        if isempty(app.NeuromodToolboxMainWindowUIFigure.WindowScrollWheelFcn)
+            app.NeuromodToolboxMainWindowUIFigure.WindowScrollWheelFcn = @(src, event) DataPlotonScrollZoom(app, event);
+        end
     end
 end
-
 
 if ~strcmp(OldDataPlotName,"MainWindowTimeManipulation") && ~strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
     %% Time Plot

@@ -18,9 +18,9 @@ function [Module,app] = All_Module_Items(app,ChangeApp,ModuleOrder)
 %% Main Plot Analysis Module
 Module{1}.Title = 'Main Plot Analysis Module';
 Module{1}.Function = 'RUN_Main_Plot_Analysis_Module';
-Module{1}.Items{1} = 'Spike Rate';
-Module{1}.Items{2} = 'Power Estimate';
-Module{1}.Items{3} = 'Current Source Density';
+Module{1}.Items{1} = 'Live Spike Rate';
+Module{1}.Items{2} = 'Live Power Estimate';
+Module{1}.Items{3} = 'Live Current Source Density';
 %% Continous Data Module
 Module{2}.Title = 'Continuous Data Module';
 Module{2}.Function = 'RUN_Continous_Data_Module';

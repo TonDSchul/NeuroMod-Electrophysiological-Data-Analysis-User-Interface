@@ -8,6 +8,8 @@ if strcmp(ModuleFunctionName,"Extract Events and Data")
 
     app.EventExtractionWindow = Extract_Events_Window(app);
 
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"EventExtraction");
+    
 elseif strcmp(ModuleFunctionName,"Preprocessing")
 
     if ~isfield(app.Data,'EventRelatedData')
@@ -80,6 +82,9 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
 
             if Error == 0
                 app.EventKilosortSpikesWindow = Events_Kilosort_Spike_Window(app);
+
+                [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"EventSpikes");
+                
             end
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
 
@@ -103,6 +108,9 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
 
             if Error == 0
                 app.EventInternalSpikesWindow = Events_Internal_Spike_Window(app);
+
+                [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"EventSpikes");
+                
             end
         end     
     end

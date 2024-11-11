@@ -4,7 +4,7 @@ function RUN_Main_Plot_Analysis_Module(app,ModuleFunctionName)
 % It opens the windows of this module depending on the selection the user
 % made in the module field to the right of the RUN button
 
-if strcmp(ModuleFunctionName,"Spike Rate")
+if strcmp(ModuleFunctionName,"Live Spike Rate")
 
     if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
         app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
@@ -26,7 +26,9 @@ if strcmp(ModuleFunctionName,"Spike Rate")
 
     app.PSTHApp = Spike_Rate_Window(app);
     
-elseif strcmp(ModuleFunctionName,"Power Estimate")
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveSpikeRate");
+
+elseif strcmp(ModuleFunctionName,"Live Power Estimate")
 
     if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
         app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
@@ -48,7 +50,9 @@ elseif strcmp(ModuleFunctionName,"Power Estimate")
 
     app.SpectralEstApp = Spectral_Power_Estimate_Window(app);
 
-elseif strcmp(ModuleFunctionName,"Current Source Density")
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LivePowerEstimate");
+
+elseif strcmp(ModuleFunctionName,"Live Current Source Density")
 
     if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
         app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
@@ -69,4 +73,7 @@ elseif strcmp(ModuleFunctionName,"Current Source Density")
     end
 
     app.CSDApp = CSD_Window(app);
+
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveCSD");
+
 end

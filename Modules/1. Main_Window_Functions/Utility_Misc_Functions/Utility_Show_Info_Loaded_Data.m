@@ -44,6 +44,20 @@ for i = 1:numel(fields)
                 end
             end
         end
+
+        if isfield(app.Data.Info,'ProbeInfo')
+            ProbeInfofields = fieldnames(fieldValue);
+            for k = 1:numel(ProbeInfofields)
+                fieldName = ProbeInfofields{k};
+                fieldValue = app.Data.Info.ProbeInfo.(fieldName);
+                if isnumeric(fieldValue)
+                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+                else
+                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                end
+            end
+        end
+        
     elseif isstring( fieldValue ) || ischar( fieldValue )
         if strcmp(fieldName,"EventChannelNames")
             concatenatedString = join(fieldValue, ',');

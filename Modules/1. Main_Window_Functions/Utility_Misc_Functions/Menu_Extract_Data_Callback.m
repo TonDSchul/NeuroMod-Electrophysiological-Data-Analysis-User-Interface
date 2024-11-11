@@ -28,6 +28,11 @@ DatatoSave = [];
 
 load(strcat(DefaultFolder,fileNames),'DatatoSave');
 
+if isfield(app,'ActiveChannelField')
+    app.ActiveChannelField.Value = '';
+    app.ChannelOrderField.Value = '';
+end
+
 if ~isempty(DatatoSave)
     if ~isfield(DatatoSave,'ChannelSpacing') || ~isfield(DatatoSave,'ChannelOrder')
         disp(strcat("Saved probe information is empty or faulty and could not be loaded."));
@@ -48,7 +53,7 @@ if ~isempty(DatatoSave)
 
     app.Load_Data_Window_Info.ChannelSpacing = DatatoSave.ChannelSpacing;
     app.Load_Data_Window_Info.Channelorder = DatatoSave.ChannelOrder;
-    app.Load_Data_Window_Info.ActiveChannel = sort(DatatoSave.ActiveChannel);
+    app.Load_Data_Window_Info.ActiveChannel = DatatoSave.ActiveChannel;
     app.Load_Data_Window_Info.NrChannel = DatatoSave.NrChannel;
     app.Load_Data_Window_Info.HorizontalOffsetum = DatatoSave.HorizontalOffsetum;
     app.Load_Data_Window_Info.VerticalOffsetum = DatatoSave.VerticalOffsetum;
@@ -68,6 +73,8 @@ if ~isempty(DatatoSave)
     if iscell(app.Load_Data_Window_Info.ActiveChannel)
         % convert cell in matrix
         app.Load_Data_Window_Info.ActiveChannel = sort(str2double(strsplit(cell2mat(app.Load_Data_Window_Info.ActiveChannel),',')));
+    elseif ischar(app.Load_Data_Window_Info.ActiveChannel)
+        app.Load_Data_Window_Info.ActiveChannel = sort(str2double(strsplit(app.Load_Data_Window_Info.ActiveChannel,',')));
     end
 
     disp(strcat("Saved probe information in ",fileNames ," succesfully loaded!"));

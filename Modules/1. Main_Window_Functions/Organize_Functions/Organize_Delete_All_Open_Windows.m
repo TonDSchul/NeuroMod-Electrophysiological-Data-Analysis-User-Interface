@@ -136,10 +136,10 @@ if ~isempty(app.LFPEventsMainWindow)
 end
 
 %% Load Data Window
-if ~isempty(app.LoadDataWindow)
-    delete(app.LoadDataWindow);
-    app.LoadDataWindow = [];
-end
+% if ~isempty(app.LoadDataWindow)
+%     delete(app.LoadDataWindow);
+%     app.LoadDataWindow = [];
+% end
 
 %% Save Data Window
 if ~isempty(app.SaveDataWindow)

@@ -8,6 +8,8 @@ if strcmp(ModuleFunctionName,"Internal Spike Detection")
     % Open app window for Internal Spike Detection
     app.SpikeExtractionWindow = Spike_Detection_Window(app);
 
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ExtractSpikes");
+    
 elseif strcmp(ModuleFunctionName,"Save for Kilosort")
     
     if ~isfield(app.Data,'Raw')

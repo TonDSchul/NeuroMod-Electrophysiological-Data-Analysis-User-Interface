@@ -33,8 +33,23 @@ if strcmp(Operation,"NewTimeRange") % When time range editfield was changed
 
     if ~contains(app.TimeRangeViewBox.Value,'s')
         msgbox("Wrong Format! Please enter a number followed by a 's'")
-        app.TimeRangeViewBox.Value = event.PreviousValue;
-        return
+        if isprop(event,'PreviousValue')
+            if contains(app.TimeRangeViewBox.Value,'s')
+                sindicie = find(app.TimeRangeViewBox.Value=='s');
+                
+                rest = app.TimeRangeViewBox.Value(sindicie:end);
+
+                if isscalar(rest)
+                    app.TimeRangeViewBox.Value = event.PreviousValue;
+                else
+                    app.TimeRangeViewBox.Value = '1s';
+                end
+            else
+                app.TimeRangeViewBox.Value = '1s';
+            end
+        else
+            app.TimeRangeViewBox.Value = '1s';
+        end
     end
     
     sindicie = find(app.TimeRangeViewBox.Value=='s');

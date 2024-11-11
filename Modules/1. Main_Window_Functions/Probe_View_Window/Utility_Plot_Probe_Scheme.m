@@ -212,71 +212,47 @@ if ChannelActivation && CreateProbeWindow
             if LeftProbeChanged
                 if isempty(ChannelViewLeft)
                     % Plot the square using patch instead of rectangle
-                    p1 = patch(Figure, 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                       'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
-                                       'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                    rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                        'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                 else
                     if ~CreateProbeWindow
                         if length(ChannelViewLeft) >= Squareplots
                             % Update the existing patch position
                             if ChannelRows == 1
-                                p1 = set(ChannelViewLeft((numSquares+1)-Squareplots), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
-                                                              'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                                set(ChannelViewLeft((numSquares+1)-Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                  'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+
                             else
-                                p1 = set(ChannelViewLeft((length(ChannelViewLeft)+1)-Squareplots), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
-                                                              'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                                set(ChannelViewLeft((length(ChannelViewLeft)+1)-Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                  'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                             end
                         else
                             % Plot the square using patch
-                            p1 = patch(Figure, 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                               'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
-                                               'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                            rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                         end
                     else
                         if length(ChannelViewLeft) >= Squareplots
                             % Update the existing patch position
                             if ChannelRows == 1
-                                p1 = set(ChannelViewLeft(Squareplots), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
-                                                              'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                                
+                                set(ChannelViewLeft(Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                  'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                             else
-                                p1 = set(ChannelViewLeft(Squareplots), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
-                                                              'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                                set(ChannelViewLeft(Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                  'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                             end
                         else
                             % Plot the square using patch
-                            p1 = patch(Figure, 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                               'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
-                                               'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                            rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                         end
                     end
-                end
-                
-                if strcmp(Edgecolor, 'r')
-                    if ShowedLegendAllActive == 0
-                        LegendEntryOne = p1;
-                        ShowedLegendAllActive = 1;
-                    end
-                end
-                if strcmp(faceColor, 'y')
-                    if ShowedLegendCurrentlyActive == 0
-                        LegendEntryTwo = p1;
-                        ShowedLegendCurrentlyActive = 1;
-                    end
-                end
-    
+                end   
             end
         end
     end
     
-   
-    % if isempty(findobj(Figure, 'Type', 'Legend'))
-    %     legend(Figure, [LegendEntryOne LegendEntryTwo], {'All Active Channel','Currently Active Channel',},"AutoUpdate","off");
-    % end
-
 elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just update the one channel that changed
     if ~isempty(ChannelClicked)
         if sum(ChannelClicked == ActiveChannel)>0 % if clicked active
@@ -319,17 +295,14 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
        
             % Update the existing patch position
             if ChannelRows == 1
-                p1 = set(ChannelViewLeft(ChannelClicked), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
+                p1 = set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
                                               'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
             else
                 if ChannelClicked>NrChannel
-                    p1 = set(ChannelViewLeft(ChannelClicked-(NrChannel)), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
+                    p1 = set(ChannelViewLeft((NrChannel*2+1) - (ChannelClicked-(NrChannel))), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
                                               'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
                 else
-                    p1 = set(ChannelViewLeft(NrChannel+ChannelClicked), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
+                    p1 = set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
                                               'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
                 end
             end
@@ -380,17 +353,14 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
             end
             
             if ChannelRows == 1
-                p1 = set(ChannelViewLeft(ChannelClicked), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
+                p1 = set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
                                               'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
             else
                 if ChannelClicked>NrChannel
-                    p1 = set(ChannelViewLeft(ChannelClicked-(NrChannel)), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
+                    p1 = set(ChannelViewLeft((NrChannel*2+1) - (ChannelClicked-(NrChannel))), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
                                               'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                 else
-                    p1 = set(ChannelViewLeft(NrChannel+ChannelClicked), 'XData', [xPos, xPos + squareWidth, xPos + squareWidth, xPos], ...
-                                              'YData', [yPos, yPos, yPos + squareHeight, yPos + squareHeight], ...
+                    p1 = set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
                                               'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                 end
             end

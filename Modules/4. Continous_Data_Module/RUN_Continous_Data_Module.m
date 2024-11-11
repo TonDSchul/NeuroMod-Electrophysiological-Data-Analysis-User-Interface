@@ -8,6 +8,8 @@ if strcmp(ModuleFunctionName,"Preprocessing")
 
     app.PreproWindow = Preprocessing_Window(app);
 
+     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"Preprocessing");
+
 elseif strcmp(ModuleFunctionName,"Static Spectrum Analysis")
 
     if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
@@ -27,6 +29,8 @@ elseif strcmp(ModuleFunctionName,"Static Spectrum Analysis")
     end
 
     app.ContStaticSpectrumWindow = Static_Power_Spectrum_Window(app);
+
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConStaticSpectrum");
 
 elseif strcmp(ModuleFunctionName,"Spike Analysis")
     % Delete Part of CurrentPlotData holding previous spike
@@ -72,6 +76,8 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         % Open app window for Analysis of Kilosort Data
         app.ConKilosortSpikesWindow = Continous_Kilosort_Spike_Window(app);
 
+        [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConSpikes");
+        
     elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
         
         if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
@@ -92,6 +98,8 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
 
         % Open app window for Analysis of Internal Spike Detection
         app.ConInternalSpikesWindow = Continous_Internal_Spike_Window(app);
+
+        [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConSpikes");
     end
 
 elseif strcmp(ModuleFunctionName,"Unit Analysis")
