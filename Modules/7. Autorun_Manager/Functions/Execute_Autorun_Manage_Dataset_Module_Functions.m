@@ -64,7 +64,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         PlaceholderTextare.Value = 1;
         %% Extract Data
         SelectedFolder = convertStringsToChars(SelectedFolder);
-        [TempData,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(AutorunConfig.ExtractRawRecording.RecordingsSystem,AutorunConfig.ExtractRawRecording.FileType,SelectedFolder,PlaceholderTextare,executableFolder,AutorunConfig.AdditionalAmpFactor);
+        [TempData,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(AutorunConfig.ExtractRawRecording.RecordingsSystem,AutorunConfig.ExtractRawRecording.FileType,SelectedFolder,PlaceholderTextare,executableFolder,AutorunConfig.AdditionalAmpFactor,AutorunConfig.ProbeInfo.NrChannel,AutorunConfig.ProbeInfo.NrRows);
         
         %% Apply/save Header Infos
 
@@ -101,6 +101,21 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         Data.Info.RecordingType = RecordingType;
         Data.Info.ChannelSpacing = AutorunConfig.ExtractRawRecording.ChannelSpacing;
         Data.Info.SpikeType = "Non";
+
+        Data.Info.ProbeInfo.NrChannel = num2str(AutorunConfig.ProbeInfo.NrChannel);
+        Data.Info.ProbeInfo.NrRows = num2str(AutorunConfig.ProbeInfo.NumberChannelRows);
+        Data.Info.ProbeInfo.VertOffset = num2str(AutorunConfig.ProbeInfo.VerticalOffsetum);
+        Data.Info.ProbeInfo.HorOffset = num2str(AutorunConfig.ProbeInfo.HorizontalOffsetum);
+        Data.Info.ProbeInfo.ActiveChannel = sort(AutorunConfig.ProbeInfo.ActiveChannel);
+    
+        Data.Info.ProbeInfo.OffSetRows = sort(AutorunConfig.ProbeInfo.OffSetRows);
+        Data.Info.ProbeInfo.OffSetRowsDistance = sort(AutorunConfig.ProbeInfo.OffSetRowsDistance);
+    
+        if isfield(AutorunConfig.ProbeInfo,'ProbeTrajectoryInfo')
+            Data.Info.ProbeInfo.CompleteAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesLong;
+            Data.Info.ProbeInfo.ShortAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesShort;
+            Data.Info.ProbeInfo.AreaDistanceFromTip = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaTipDistance;
+        end
 
         % If extraction was succesfull and dat variable is
         % filled, indicate that it was succesful. This is

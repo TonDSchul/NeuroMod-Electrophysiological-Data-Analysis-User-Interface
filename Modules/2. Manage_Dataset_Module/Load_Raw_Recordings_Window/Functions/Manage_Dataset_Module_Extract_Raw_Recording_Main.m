@@ -1,4 +1,4 @@
-function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder,AdditionalAmpFactor,NrChannel)
+function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder,AdditionalAmpFactor,NrChannel,NrRows)
 
 %________________________________________________________________________________________
 
@@ -24,8 +24,9 @@ function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module
 % Output: 
 % 1. Data: nchannel x ntimepoints matrix as single 
 % 2. HeaderInfo: All infos from the header of the recordings that are later
-% saved as Data.Info
-% 3. SampleRate: Smaple Rate of the loaded recording in Hz as double+
+% saved as Data.Info -- no filed necessary for later. All necessary fields
+% are defined manually (ouputs below)
+% 3. SampleRate: Sample Rate of the loaded recording in Hz as double+
 % 4. RecordingType: char specyfiying the recording system the recording
 % comes from. Either "Intan" OR "Open Ephys" OR "Spike2" OP "Neuralynx".
 % Basically the same as RecordingSystem, but gets only set correctly when data
@@ -55,7 +56,7 @@ if strcmp(RecordingSystem,"Intan")
     %                               Data.Time = Timevector
     % Output HeaderInfo = Whatever header info your
     % recording has. 
-    [Data,HeaderInfo,SampleRate,RecordingType] = Main_Extract_Intan_Data(FileType,SelectedFolder,TextArea);
+    [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Intan_Data(FileType,SelectedFolder,TextArea);
     
     if isempty(Data)
         Time = [];
@@ -85,7 +86,7 @@ elseif strcmp(RecordingSystem,"Open Ephys")
 
     SelectedFolderindicie = find(CorrectedContents == FileType);
     
-    [Data,HeaderInfo,SampleRate] = Open_Ephys_Load_All_Formats(SelectedFolder,length(CorrectedContents),SelectedFolderindicie);
+    [Data,HeaderInfo,SampleRate] = Manage_Dataset_Extract_Open_Ephys_Data(SelectedFolder,length(CorrectedContents),SelectedFolderindicie);
     
     RecordingType = "Open Ephys";
 
@@ -306,7 +307,7 @@ elseif strcmp(RecordingSystem,"Spike2")
         Data(currentchan,1:length(TempData)) = TempData;
         clear TempData
         % Update the progress bar
-        fraction = currentchan/NrChannel; %
+        fraction = currentchan/(NrChannel*NrRows); %
         msg = sprintf('Extracting Spike2 Data... (%d%% done)', round(100*fraction));
         waitbar(fraction, hSpike2, msg);
     end
@@ -328,6 +329,8 @@ elseif strcmp(RecordingSystem,"Spike2")
     SampleRate = round(size(Data,2)/dSeconds);
 
 end
+
+%% Recording Type independent variables and processing
 
 % Create time vector
 Time = double(0:(1/SampleRate):(size(Data,2)-1)/SampleRate);

@@ -47,7 +47,17 @@ if strcmp(FunctionOrder,'Extract_Events')
 
     %% Start Event Extraction
     if strcmp(Data.Info.RecordingType,"Open Ephys")
-        SelectedNode = 1;
+        [stringArray] = Utility_Extract_Contents_of_Folder(DataPath);
+        stringArray(stringArray=="") = [];
+        stringArray(~contains(stringArray,"Record")) = [];
+
+        for i = 1:length(stringArray)
+            if strcmp(AutorunConfig.ExtractEventDataModule.ChannelOfInterest,stringArray(i))
+                SelectedNode = i;
+                break;
+            end
+        end
+        
         startTimestamp = Info.startTimestamp{SelectedNode};
         [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = Extract_Events_Module_Main_Function(Data,EventInfo,DataPath,Data.Info.RecordingType,AutorunConfig.ExtractEventDataModule.ChannelOfInterest,AutorunConfig.ExtractEventDataModule.EventSignalThreshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea,RHDAllChannelData,executableFolder,startTimestamp);
     else
@@ -383,6 +393,17 @@ end
 
 if isfield(Data,'Events')
     if strcmp(FunctionOrder,'Event_Spike_Analysis')
+
+        if isempty(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot)
+            DepthChannel = Data.Info.ProbeInfo.ActiveChannel;
+        else
+            commaindidcie = find(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot);
+            Ch(1) = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(1:commaindidcie(1)-1);
+            Ch(2) = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(commaindidcie(1)+1:end);
+
+            DepthChannel = Data.Info.ProbeInfo.ActiveChannel(DepthChannel(1):DepthChannel(2));
+        end
+
         if ~isfield(Data,'Spikes')
         
             msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
@@ -391,124 +412,123 @@ if isfield(Data,'Events')
             
             %[Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0);         
         
-            if Error == 0 
-                % Handle Events to show
-                if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
-                    Events = strcat('1,',num2str(size(Data.EventRelatedData,2)));
-                else
-                    Events = AutorunConfig.AnalyseEventSpikesModule.SelectedEvents;
+            % Handle Events to show
+            if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
+                Events = strcat('1,',num2str(size(Data.EventRelatedData,2)));
+            else
+                Events = AutorunConfig.AnalyseEventSpikesModule.SelectedEvents;
+            end
+            % Handle Channel to show
+            if isempty(AutorunConfig.AnalyseEventDataModule.ChannelSelection)
+                ChannelSelection = strcat('1,',num2str(size(Data.EventRelatedData,1)));
+            else
+                ChannelSelection = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot;
+            end
+
+            BaselineWindow.Value = AutorunConfig.AnalyseEventSpikesModule.BaselineWindow;
+
+            numCluster = numel(unique(Data.Spikes.SpikeCluster));
+            rgbMatrix = lines(numCluster);
+
+            UnitsToPlot.Value = AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot;
+
+            if isempty(UnitsToPlot.Value)
+                TotalIterations = 1;
+            else
+                TotalIterations = 2;
+            end
+
+            SpkTrgSpikes = 2;
+
+            [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0);
+
+            for TotalIts = 1:TotalIterations % 2 if unit plots
+
+                if TotalIts == 1 % if no unit plot
+                    UnitIterations = 1;
+                    ClusterToPlot = AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions;
+                else % if unit plot
+                    UnitIterations = length(AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot);
+                    ClusterToPlot = AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot;
                 end
-                % Handle Channel to show
-                if isempty(AutorunConfig.AnalyseEventDataModule.ChannelSelection)
-                    ChannelSelection = strcat('1,',num2str(size(Data.EventRelatedData,1)));
-                else
-                    ChannelSelection = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot;
-                end
-    
-                BaselineWindow.Value = AutorunConfig.AnalyseEventSpikesModule.BaselineWindow;
-    
-                numCluster = numel(unique(Data.Spikes.SpikeCluster));
-                rgbMatrix = lines(numCluster);
-
-                UnitsToPlot.Value = AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot;
-
-                if isempty(UnitsToPlot.Value)
-                    TotalIterations = 1;
-                else
-                    TotalIterations = 2;
-                end
-
-                SpkTrgSpikes = 2;
-
-                [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0);
-
-                for TotalIts = 1:TotalIterations % 2 if unit plots
-
-                    if TotalIts == 1 % if no unit plot
-                        UnitIterations = 1;
-                        ClusterToPlot = AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions;
-                    else % if unit plot
-                        UnitIterations = length(AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot);
-                        ClusterToPlot = AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot;
+                % loop over analysis types
+                for i = 1:length(AutorunConfig.AnalyseEventSpikesModule.Plottype)
+                    
+                    if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 0
+                        [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',1);
+                        SpkTrgSpikes = 1;
+                    elseif ~strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 1
+                        [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0);
+                        SpkTrgSpikes = 0;
                     end
-                    % loop over analysis types
-                    for i = 1:length(AutorunConfig.AnalyseEventSpikesModule.Plottype)
-                        
-                        if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 0
-                            [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',1);
-                            SpkTrgSpikes = 1;
-                        elseif ~strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average") && SpkTrgSpikes == 1
-                            [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0);
-                            SpkTrgSpikes = 0;
+                    
+                    % loop over units
+                    for nunits = 1:UnitIterations
+                        if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
+                            if str2double(ClusterToPlot(nunits))<=numCluster
+                                CurrentClusterToPlot.Value = num2str(ClusterToPlot(nunits));
+                            else
+                                disp(strcat("Unit ",ClusterToPlot(nunits)," not part of spike dataset. Skipping"));
+                                continue;
+                            end
+                        else
+                            CurrentClusterToPlot.Value  = ClusterToPlot;
                         end
-                        
-                        % loop over units
-                        for nunits = 1:UnitIterations
-                            if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
-                                if str2double(ClusterToPlot(nunits))<=numCluster
-                                    CurrentClusterToPlot.Value = num2str(ClusterToPlot(nunits));
-                                else
-                                    disp(strcat("Unit ",ClusterToPlot(nunits)," not part of spike dataset. Skipping"));
-                                    continue;
-                                end
-                            else
-                                CurrentClusterToPlot.Value  = ClusterToPlot;
-                            end
-        
-                            if ischar(CurrentClusterToPlot.Value)
-                                CurrentClusterToPlot.Value = convertCharsToStrings(CurrentClusterToPlot.Value);
-                            end
+    
+                        if ischar(CurrentClusterToPlot.Value)
+                            CurrentClusterToPlot.Value = convertCharsToStrings(CurrentClusterToPlot.Value);
+                        end
 
-                            SpikeAnalysisFigure = figure();
-                            UIAxes = subplot(2,2,1);
-                            UIAxes_2 = subplot(2,2,2);
-                            UIAxes_3 = subplot(2,2,3);
-                            UIAxes.NextPlot = "add";
-                            
-                            BaselineWindow.Value = AutorunConfig.AnalyseEventSpikesModule.BaselineWindow;
-            
-                            TextArea = [];
+                        SpikeAnalysisFigure = figure();
+                        UIAxes = subplot(2,2,1);
+                        UIAxes_2 = subplot(2,2,2);
+                        UIAxes_3 = subplot(2,2,3);
+                        UIAxes.NextPlot = "add";
+                        
+                        BaselineWindow.Value = AutorunConfig.AnalyseEventSpikesModule.BaselineWindow;
         
-                            [TempData,~,~,~,AutorunConfig.CurrentPlotData] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,numCluster,CurrentClusterToPlot.Value,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings,AutorunConfig.PlotAppearance);
-             
-                            if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP")
-                                if ~isempty(TempData)
-                                    Data = TempData;
-                                end
-                            else
+                        TextArea = [];
+    
+                        [TempData,~,~,~,AutorunConfig.CurrentPlotData] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,numCluster,CurrentClusterToPlot.Value,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings,AutorunConfig.PlotAppearance,DepthChannel);
+         
+                        if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP")
+                            if ~isempty(TempData)
                                 Data = TempData;
                             end
-        
-                            %% Properly set up plot for saving (x axis ticks/labels and stuff like that)
-                            if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
-                                [~] = Execute_Autorun_Set_Up_Figure(UIAxes,0,"Left Axis Only",[],[],"Time [s]",[],[],8);
-                            end
-            
-                            [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
-                            [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
-                            
-                            % Dont know why thats necessary, but it is,
-                            % just when units plotted 
-                            if UnitIterations > 1
-                                yyaxis(UIAxes_3, 'left');
-                                UIAxes_3.YDir = 'reverse';
-                            end
-
-                            if UnitIterations > 1
-                                %% Plot Results if turned on
-                                if strcmp(AutorunConfig.SaveFigures,"on")
-                                    Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,strcat(" Kilosort Event Spikes Unit ",num2str(nunits)," "), DataPath,AutorunConfig.AnalyseEventSpikesModule.Plottype(i) , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventIteration")
-                                end
-                            else
-                                if strcmp(AutorunConfig.SaveFigures,"on")
-                                    Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.AnalyseEventSpikesModule.Plottype(i), DataPath, " Kilosort Event Spikes " , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventSpikes")
-                                end
-                            end
-
+                        else
+                            %Data = TempData;
                         end
-                    end%Plottpes
-                end
+    
+                        %% Properly set up plot for saving (x axis ticks/labels and stuff like that)
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
+                            [~] = Execute_Autorun_Set_Up_Figure(UIAxes,0,"Left Axis Only",[],[],"Time [s]",[],[],8);
+                        end
+        
+                        [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
+                        [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
+                        
+                        % Dont know why thats necessary, but it is,
+                        % just when units plotted 
+                        if UnitIterations > 1
+                            yyaxis(UIAxes_3, 'left');
+                            UIAxes_3.YDir = 'reverse';
+                        end
+
+                        if UnitIterations > 1
+                            %% Plot Results if turned on
+                            if strcmp(AutorunConfig.SaveFigures,"on")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,strcat(" Kilosort Event Spikes Unit ",num2str(nunits)," "), DataPath,AutorunConfig.AnalyseEventSpikesModule.Plottype(i) , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventIteration")
+                            end
+                        else
+                            if strcmp(AutorunConfig.SaveFigures,"on")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.AnalyseEventSpikesModule.Plottype(i), DataPath, " Kilosort Event Spikes " , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventSpikes")
+                            end
+                        end
+
+                    end
+                end%Plottpes
             end
+           
         
         elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
            
@@ -609,14 +629,14 @@ if isfield(Data,'Events')
             
                             %% Prepare Analysis
                             TextArea = [];
-                            [TempData,~,~,~,AutorunConfig.CurrentPlotData] = Events_Internal_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting,CurrentClusterToPlot.Value,numCluster,AutorunConfig.CurrentPlotData,AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings,AutorunConfig.PlotAppearance);
+                            [TempData,~,~,~,AutorunConfig.CurrentPlotData] = Events_Internal_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting,CurrentClusterToPlot.Value,numCluster,AutorunConfig.CurrentPlotData,AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings,AutorunConfig.PlotAppearance,DepthChannel);
                     
                             if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP")
                                 if ~isempty(TempData)
                                     Data = TempData;
                                 end
                             else
-                                Data = TempData;
+                                %Data = TempData;
                             end
             
                             if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")

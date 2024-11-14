@@ -1,4 +1,4 @@
-function Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation)
+function Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation,PlotChannelSpacing,VerOffset,ChannelSpacing)
 
 Squareplots = 0;
 
@@ -11,13 +11,13 @@ if ~ChannelActivation || CreateProbeWindow
                 if nrows == 1
                     yPos = lowylimits+ ((i * (squareHeight))) ; % y-position of the square
                 else
-                    yPos = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) ; % y-position of the square
+                    yPos = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2) ; % y-position of the square
                 end
             else
                 if nrows == 1
                     yPos = lowylimits+((i * (squareHeight))) ; % y-position of the square
                 else
-                    yPos = lowylimits+(i * (squareHeight) + CorrrectedVerOffset) ; % y-position of the square
+                    yPos = lowylimits+(i * (squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2) ; % y-position of the square
                 end
             end
     
@@ -27,11 +27,23 @@ if ~ChannelActivation || CreateProbeWindow
             if mod(nrows, 2) == 0 % right
                 
                 x = 6;       % X-coordinate
-                y = yPos+(squareHeight/2);       % Y-coordinate
+                
+                if PlotChannelSpacing
+                    y = yPos+(squareHeight/4);       % Y-coordinate
+                else
+                    y = yPos+(squareHeight/2);       % Y-coordinate
+                end
     
-                currentchannel = NrChannel+2-(FirstZoomChannel+1+i);
-    
-                currentchannel = currentchannel+NrChannel;
+                if ChannelRows == 1
+                    currentchannel = NrChannel+2-(FirstZoomChannel+1+i);
+                    currentchannel = currentchannel+NrChannel;
+                else
+                    if i == 0
+                        currentchannel = (NrChannel+2-(FirstZoomChannel+1+i))*2;
+                    else
+                        currentchannel = currentchannel-2;
+                    end
+                end
     
                 textString = strcat("CH ",num2str(currentchannel));  % Text to display
                
@@ -56,12 +68,23 @@ if ~ChannelActivation || CreateProbeWindow
                     x = 3.2;       % X-coordinate
                 end
     
-                y = yPos+(squareHeight/2);       % Y-coordinate
-                
-                currentchannel = NrChannel+1-(FirstZoomChannel+i);
-    
+                if PlotChannelSpacing
+                    y = yPos+(squareHeight/4);       % Y-coordinate
+                else
+                    y = yPos+(squareHeight/2);       % Y-coordinate
+                end
+
+                if ChannelRows == 1
+                    currentchannel = NrChannel+1-(FirstZoomChannel+i);
+                else
+                    if i == 0
+                        currentchannel = ((NrChannel-(FirstZoomChannel+i))*2)+1;
+                    else
+                        currentchannel = currentchannel-2;
+                    end
+                end
+
                 textString = strcat("CH ",num2str(currentchannel));  % Text to display
-    
     
                 if isempty(ChannelText)
                     % Add the text to app.UIAxes at the specified coordinates

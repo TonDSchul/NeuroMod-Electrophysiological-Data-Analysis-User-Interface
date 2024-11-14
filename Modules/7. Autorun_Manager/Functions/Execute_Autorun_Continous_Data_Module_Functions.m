@@ -84,7 +84,7 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
             StaticPowerSpectrumfig = figure();
             StaticPowerSpectrumFigure = axes;
 
-            Analyse_Main_Window_Static_Power_Spectrum(Data,StaticPowerSpectrumFigure,AutorunConfig.StaticPowerSpectrum.DataType,AutorunConfig.StaticPowerSpectrum.DataSource,str2double(AutorunConfig.StaticPowerSpectrum.Channel),num2str(AutorunConfig.StaticPowerSpectrum.Channel),AutorunConfig.StaticPowerSpectrum.FrequencyRangeBPDepth,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+            Analyse_Main_Window_Static_Power_Spectrum(Data,StaticPowerSpectrumFigure,AutorunConfig.StaticPowerSpectrum.DataType,AutorunConfig.StaticPowerSpectrum.DataSource,str2double(AutorunConfig.StaticPowerSpectrum.Channel),num2str(AutorunConfig.StaticPowerSpectrum.Channel),AutorunConfig.StaticPowerSpectrum.FrequencyRange,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
         
         elseif strcmp(AutorunConfig.StaticPowerSpectrum.PlotType(i),"Band Power over Depth")
             StaticPowerSpectrumfig = figure();
@@ -97,7 +97,17 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
             BandPower = [];
             PowerSpecResults = [];
 
-            [~,~,AutorunConfig.CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,AutorunConfig.StaticPowerSpectrum.DataSource,PowerSpecResults,BandPower,AutorunConfig.StaticPowerSpectrum.FrequencyRangeBPDepth,UIAxes,UIAxes_2,TextArea,"All",AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData);
+            if isempty(AutorunConfig.StaticPowerSpectrum.DepthChannel)
+                DepthChannel = Data.Info.ProbeInfo.ActiveChannel;
+            else
+                commaindidcie = find(AutorunConfig.StaticPowerSpectrum.DepthChannel);
+                Ch(1) = AutorunConfig.StaticPowerSpectrum.DepthChannel(1:commaindidcie(1)-1);
+                Ch(2) = AutorunConfig.StaticPowerSpectrum.DepthChannel(commaindidcie(1)+1:end);
+
+                DepthChannel = Data.Info.ProbeInfo.ActiveChannel(DepthChannel(1):DepthChannel(2));
+            end
+
+            [~,~,AutorunConfig.CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,AutorunConfig.StaticPowerSpectrum.DataSource,PowerSpecResults,BandPower,AutorunConfig.StaticPowerSpectrum.FrequencyRange,UIAxes,UIAxes_2,TextArea,"All",AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,DepthChannel);
 
         end
     
@@ -120,6 +130,17 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
     end
     
     if Execute == 1
+
+        if isempty(AutorunConfig.ContSpikeAnalysis.ChannelSelection)
+            DepthChannel = Data.Info.ProbeInfo.ActiveChannel;
+        else
+            commaindidcie = find(AutorunConfig.ContSpikeAnalysis.ChannelSelection);
+            Ch(1) = AutorunConfig.ContSpikeAnalysis.ChannelSelection(1:commaindidcie(1)-1);
+            Ch(2) = AutorunConfig.ContSpikeAnalysis.ChannelSelection(commaindidcie(1)+1:end);
+
+            DepthChannel = Data.Info.ProbeInfo.ActiveChannel(DepthChannel(1):DepthChannel(2));
+        end
+
         if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")
             AverageWaveforms = [];
             % Handle Events: when empty take first event when
@@ -285,9 +306,9 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         %% Prepare Plots
     
                         if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Average Waveforms Across Channel")
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelectionforPlottingEditField,WaveformSelectionforPlottingEditField,UnitstoPlotEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Kilosort",KilosortPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,AverageWaveforms);
+                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelectionforPlottingEditField,WaveformSelectionforPlottingEditField,UnitstoPlotEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Kilosort",KilosortPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,AverageWaveforms,DepthChannel);
                         else
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelectionforPlottingEditField,WaveformSelectionforPlottingEditField,UnitstoPlotEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Kilosort",KilosortPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,Data.Spikes.Waveforms);
+                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelectionforPlottingEditField,WaveformSelectionforPlottingEditField,UnitstoPlotEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Kilosort",KilosortPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,Data.Spikes.Waveforms,DepthChannel);
                         end
     
                         %% Plot
@@ -302,7 +323,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                 Data = TempData;
                             end
                         else
-                            Data = TempData;
+                            %Data = TempData;
                         end
     
                         if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
@@ -498,9 +519,9 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         end
 
                         if strcmp(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),"Average Waveforms Across Channel")
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Internal",InternalPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,AverageWaveforms);
+                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Internal",InternalPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,AverageWaveforms,DepthChannel);
                         else
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Internal",InternalPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,Data.Spikes.Waveforms);
+                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Internal",InternalPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,Data.Spikes.Waveforms,DepthChannel);
                         end
     
                         %% Plot
@@ -519,7 +540,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                 Data = TempData;
                             end
                         else
-                            Data = TempData;
+                            %Data = TempData;
                         end
         
                         if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")

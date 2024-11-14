@@ -21,8 +21,8 @@ function Menu_Extract_Data_Callback (app, fileNames, DefaultFolder, Window)
 
 %________________________________________________________________________________________
 
-app.Load_Data_Window_Info.ChannelSpacing = [];
-app.Load_Data_Window_Info.Channelorder = [];
+app.ProbeInfoandPath.ChannelSpacing = [];
+app.ProbeInfoandPath.Channelorder = [];
 
 DatatoSave = [];
 
@@ -51,30 +51,33 @@ if ~isempty(DatatoSave)
         return;
     end
 
-    app.Load_Data_Window_Info.ChannelSpacing = DatatoSave.ChannelSpacing;
-    app.Load_Data_Window_Info.Channelorder = DatatoSave.ChannelOrder;
-    app.Load_Data_Window_Info.ActiveChannel = DatatoSave.ActiveChannel;
-    app.Load_Data_Window_Info.NrChannel = DatatoSave.NrChannel;
-    app.Load_Data_Window_Info.HorizontalOffsetum = DatatoSave.HorizontalOffsetum;
-    app.Load_Data_Window_Info.VerticalOffsetum = DatatoSave.VerticalOffsetum;
-    app.Load_Data_Window_Info.NumberChannelRows = DatatoSave.NumberChannelRows;
+    app.ProbeInfoandPath .ChannelSpacing = DatatoSave.ChannelSpacing;
+    app.ProbeInfoandPath .Channelorder = DatatoSave.ChannelOrder;
+    app.ProbeInfoandPath .ActiveChannel = DatatoSave.ActiveChannel;
+    app.ProbeInfoandPath .NrChannel = DatatoSave.NrChannel;
+    app.ProbeInfoandPath .HorizontalOffsetum = DatatoSave.HorizontalOffsetum;
+    app.ProbeInfoandPath .VerticalOffsetum = DatatoSave.VerticalOffsetum;
+    app.ProbeInfoandPath .NumberChannelRows = DatatoSave.NumberChannelRows;
+
+    app.ProbeInfoandPath .OffSetRows = DatatoSave.OffSetRows;
+    app.ProbeInfoandPath .OffSetRowsDistance = DatatoSave.OffSetRowsDistance;
    
     if isfield(DatatoSave,'AreaNamesLong')
-        app.Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesLong = DatatoSave.AreaNamesLong;
-        app.Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort = DatatoSave.AreaNamesShort;
-        app.Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance = DatatoSave.AreaTipDistance;
+        app.ProbeInfoandPath .ProbeTrajectoryInfo.AreaNamesLong = DatatoSave.AreaNamesLong;
+        app.ProbeInfoandPath .ProbeTrajectoryInfo.AreaNamesShort = DatatoSave.AreaNamesShort;
+        app.ProbeInfoandPath .ProbeTrajectoryInfo.AreaTipDistance = DatatoSave.AreaTipDistance;
     end
 
-    if iscell(app.Load_Data_Window_Info.Channelorder)
+    if iscell(app.ProbeInfoandPath .Channelorder)
         % convert cell in matrix
-        app.Load_Data_Window_Info.Channelorder = str2double(strsplit(cell2mat(app.Load_Data_Window_Info.Channelorder),','));
+        app.ProbeInfoandPath .Channelorder = str2double(strsplit(cell2mat(app.ProbeInfoandPath .Channelorder),','));
     end
 
-    if iscell(app.Load_Data_Window_Info.ActiveChannel)
+    if iscell(app.ProbeInfoandPath .ActiveChannel)
         % convert cell in matrix
-        app.Load_Data_Window_Info.ActiveChannel = sort(str2double(strsplit(cell2mat(app.Load_Data_Window_Info.ActiveChannel),',')));
-    elseif ischar(app.Load_Data_Window_Info.ActiveChannel)
-        app.Load_Data_Window_Info.ActiveChannel = sort(str2double(strsplit(app.Load_Data_Window_Info.ActiveChannel,',')));
+        app.ProbeInfoandPath .ActiveChannel = sort(str2double(strsplit(cell2mat(app.ProbeInfoandPath .ActiveChannel),',')));
+    elseif ischar(app.ProbeInfoandPath .ActiveChannel)
+        app.ProbeInfoandPath .ActiveChannel = sort(str2double(strsplit(app.ProbeInfoandPath .ActiveChannel,',')));
     end
 
     disp(strcat("Saved probe information in ",fileNames ," succesfully loaded!"));
@@ -88,24 +91,24 @@ end
 %% Fill UI Text field accordingly
 if strcmp(Window,"Extract Data")
     % 
-    if ~isempty(app.Load_Data_Window_Info.Channelorder) && sum(isnan(app.Load_Data_Window_Info.Channelorder))==0
+    if ~isempty(app.ProbeInfoandPath .Channelorder) && sum(isnan(app.ProbeInfoandPath .Channelorder))==0
 
-        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.Load_Data_Window_Info.NrChannel);strcat("Channel Spacing: ",app.Load_Data_Window_Info.ChannelSpacing);strcat("Nr Channel Rows: ",app.Load_Data_Window_Info.NumberChannelRows);"Costum Channel Order: Yes";strcat("Nr Active Channel: ",num2str(length(app.Load_Data_Window_Info.ActiveChannel)))];
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.ProbeInfoandPath .NrChannel);strcat("Channel Spacing: ",app.ProbeInfoandPath .ChannelSpacing);strcat("Nr Channel Rows: ",app.ProbeInfoandPath .NumberChannelRows);"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(app.ProbeInfoandPath.OffSetRows));strcat("Nr Active Channel: ",num2str(length(app.ProbeInfoandPath .ActiveChannel)))];
 
-        if isempty(app.Load_Data_Window_Info.selectedFolder)
+        if isempty(app.ProbeInfoandPath.selectedFolder)
             ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
             app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea.Value = ["Data Folder:";"";app.Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
+            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText];
         end
     else
-        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.Load_Data_Window_Info.NrChannel);strcat("Channel Spacing: ",app.Load_Data_Window_Info.ChannelSpacing);strcat("Nr Channel Rows: ",app.Load_Data_Window_Info.NumberChannelRows);"Costum Channel Order: No";strcat("Nr Active Channel: ",num2str(length(app.Load_Data_Window_Info.ActiveChannel)))];
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.ProbeInfoandPath .NrChannel);strcat("Channel Spacing: ",app.ProbeInfoandPath .ChannelSpacing);strcat("Nr Channel Rows: ",app.ProbeInfoandPath .NumberChannelRows);"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(app.ProbeInfoandPath.OffSetRows));strcat("Nr Active Channel: ",num2str(length(app.ProbeInfoandPath .ActiveChannel)))];
 
-        if isempty(app.Load_Data_Window_Info.selectedFolder)
+        if isempty(app.ProbeInfoandPath .selectedFolder)
             ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
             app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea.Value = ["Data Folder:";"";app.Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
+            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText];
         end
     end
 end
@@ -113,31 +116,34 @@ end
 if strcmp(Window,"ProbeLayout")
 
     %channel order
-    if ~isempty(app.Load_Data_Window_Info.Channelorder) && sum(isnan(app.Load_Data_Window_Info.Channelorder))==0
-        texttoshow = sprintf('%d, ', app.Load_Data_Window_Info.Channelorder);
+    if ~isempty(app.ProbeInfoandPath .Channelorder) && sum(isnan(app.ProbeInfoandPath .Channelorder))==0
+        texttoshow = sprintf('%d, ', app.ProbeInfoandPath .Channelorder);
         % Remove the trailing comma and whitespace
         texttoshow(end-1:end) = [];
         app.ChannelOrderField.Value = texttoshow;
     end
     %Active Channel
-    if ~isempty(app.Load_Data_Window_Info.ActiveChannel) && sum(isnan(app.Load_Data_Window_Info.ActiveChannel))==0
-        texttoshow = sprintf('%d, ', app.Load_Data_Window_Info.ActiveChannel);
+    if ~isempty(app.ProbeInfoandPath .ActiveChannel) && sum(isnan(app.ProbeInfoandPath .ActiveChannel))==0
+        texttoshow = sprintf('%d, ', app.ProbeInfoandPath .ActiveChannel);
         % Remove the trailing comma and whitespace
         texttoshow(end-1:end) = [];
         app.ActiveChannelField.Value = texttoshow;
     end
 
-    app.NrChannelEditField.Value = app.Load_Data_Window_Info.NrChannel;
-    app.ChannelSpacingumEditField.Value = app.Load_Data_Window_Info.ChannelSpacing;
-    app.Load_Data_Window_Info.ActiveChannel = sort(DatatoSave.ActiveChannel);
-    app.HorizontalOffsetumEditField.Value = app.Load_Data_Window_Info.HorizontalOffsetum;
-    app.VerticalOffsetumEditField.Value = app.Load_Data_Window_Info.VerticalOffsetum;
-    app.ChannelRowsDropDown.Value = app.Load_Data_Window_Info.NumberChannelRows;
+    app.NrChannelEditField.Value = app.ProbeInfoandPath .NrChannel;
+    app.ChannelSpacingumEditField.Value = app.ProbeInfoandPath .ChannelSpacing;
+    app.ProbeInfoandPath .ActiveChannel = sort(DatatoSave.ActiveChannel);
+    app.HorizontalOffsetumEditField.Value = app.ProbeInfoandPath .HorizontalOffsetum;
+    app.VerticalOffsetumEditField.Value = app.ProbeInfoandPath .VerticalOffsetum;
+    app.ChannelRowsDropDown.Value = app.ProbeInfoandPath .NumberChannelRows;
 
-    if str2double(app.Load_Data_Window_Info.NrChannel)<32
+    app.CheckBox.Value = app.ProbeInfoandPath.OffSetRows;
+    app.VerticalOffsetumEditField_2.Value = app.ProbeInfoandPath.OffSetRowsDistance;
+
+    if str2double(app.ProbeInfoandPath .NrChannel)<32
         app.FirstZoomChannel = 1;
     else
-        app.FirstZoomChannel = str2double(app.Load_Data_Window_Info.NrChannel)-31;
+        app.FirstZoomChannel = str2double(app.ProbeInfoandPath .NrChannel)-31;
     end
 
     if isempty(app.ActiveChannelField.Value{1})
@@ -152,7 +158,7 @@ if strcmp(Window,"ProbeLayout")
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,1,[])
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,1,[],app.CheckBox.Value,[])
 
     if ~isempty(app.NrChannelEditField.Value) && ~isempty(app.ChannelSpacingumEditField.Value)
         %% Initiate Callback

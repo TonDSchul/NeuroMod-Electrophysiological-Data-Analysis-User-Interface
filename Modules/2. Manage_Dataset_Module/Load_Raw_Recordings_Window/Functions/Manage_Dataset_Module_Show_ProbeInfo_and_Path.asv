@@ -1,0 +1,173 @@
+function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder)
+
+if strcmp(ProbeInfoOrFolder,"ProbeInfo")
+    
+    FolderContentsText = []; % not needed here but got to be defined as a output argument
+
+    if ~isfield(Load_Data_Window_Info,'selectedFolder')
+        Load_Data_Window_Info.selectedFolder = [];
+    end
+    
+    if isempty(app.ChannelSpacingumEditField.Value)
+        msgbox("Error: Please first input a channel spacing for your probe design! Returning")
+        return;
+    end
+    if isempty(app.NrChannelEditField.Value)
+        msgbox("Error: Please first input a channel number for your probe design! Returning")
+        return;
+    end
+    
+    Load_Data_Window_Info.ChannelSpacing = str2double(app.ChannelSpacingumEditField.Value);
+    Load_Data_Window_Info.NrRows = str2double(app.ChannelRowsDropDown.Value);
+    
+    if isempty(app.ActiveChannelField.Value{1})
+        Load_Data_Window_Info.ActiveChannel = 1:str2double(app.NrChannelEditField.Value);
+    else
+        if length(str2double(strsplit(app.ActiveChannelField.Value{1},','))) > str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)
+            msgbox("Error: Number of channel order elements exceeds number of active channel!")
+            return;
+        else
+            Load_Data_Window_Info.ActiveChannel = sort(str2double(strsplit(app.ActiveChannelField.Value{1},',')));
+        end
+    end
+    
+    Load_Data_Window_Info.NumberChannelRows = str2double(app.ChannelRowsDropDown.Value);
+    Load_Data_Window_Info.NrChannel = str2double(app.NrChannelEditField.Value)*;
+
+    Load_Data_Window_Info.OffSetRows = app.CheckBox.Value;
+
+    if ~isempty(app.VerticalOffsetumEditField_2.Value)
+        Load_Data_Window_Info.OffSetRowsDistance = app.VerticalOffsetumEditField_2.Value;
+    else
+        Load_Data_Window_Info.OffSetRowsDistance = '0';
+    end
+
+    if isempty(app.HorizontalOffsetumEditField.Value)
+        Load_Data_Window_Info.HorizontalOffsetum = 0;
+    else
+        Load_Data_Window_Info.HorizontalOffsetum = str2double(app.HorizontalOffsetumEditField.Value);
+    end
+    if isempty(app.HorizontalOffsetumEditField.Value)
+        Load_Data_Window_Info.VerticalOffsetum = 0;
+    else
+        Load_Data_Window_Info.VerticalOffsetum = str2double(app.VerticalOffsetumEditField.Value);
+    end
+    
+    if isempty(app.ChannelOrderField.Value)
+        Load_Data_Window_Info.Channelorder = [];
+    else
+        if length(str2double(strsplit(app.ChannelOrderField.Value{1}, ','))) > str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value) || length(str2double(strsplit(app.ChannelOrderField.Value{1}, ','))) > length(Load_Data_Window_Info.ActiveChannel)
+            msgbox("Error: Number of channel order elements exceeds number of active channel or total number of channel!")
+            return;
+        else
+    
+        end
+        % Split the string by commas
+        split_array = strsplit(app.ChannelOrderField.Value{1}, ',');
+        
+        % Convert each element to double
+        Load_Data_Window_Info.Channelorder = str2double(split_array);
+    end
+    
+    %tempChOrder = app.Load_Data_Window_Info.Channelorder;
+    if ~isempty(Load_Data_Window_Info.Channelorder) && sum(isnan(Load_Data_Window_Info.Channelorder))==0
+        
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.NrChannelEditField.Value);strcat("Channel Spacing: ",app.ChannelSpacingumEditField.Value);strcat("Nr Channel Rows: ",app.ChannelRowsDropDown.Value);"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(app.CheckBox.Value));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+    
+        if isempty(Load_Data_Window_Info.selectedFolder)
+            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
+            %app.ExtractRecordingWindow.TextArea.Value = ProbeInfoText;
+        else
+            ProbeInfoText = ["Data Folder:";"";Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
+            %app.ExtractRecordingWindow.TextArea.Value = ["Data Folder:";"";Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
+        end
+    else
+        ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.NrChannelEditField.Value);strcat("Channel Spacing: ",app.ChannelSpacingumEditField.Value);strcat("Nr Channel Rows: ",app.ChannelRowsDropDown.Value);"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(app.CheckBox.Value));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+    
+        if isempty(Load_Data_Window_Info.selectedFolder)
+            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
+            %app.ExtractRecordingWindow.TextArea.Value = ProbeInfoText;
+        else
+            %app.ExtractRecordingWindow.TextArea.Value = ["Data Folder:";"";Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
+            ProbeInfoText = ["Data Folder:";"";Load_Data_Window_Info.selectedFolder;"";ProbeInfoText];
+        end
+    end
+    
+    %% Probe Trajectory if loaded
+    
+    if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')
+       Load_Data_Window_Info.ProbeTrajectoryInfo = app.ProbeTrajectoryInfo;
+    else
+    
+    end
+end
+
+if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"AutorunFolderSelection")
+    
+
+    [Formatsfound,FolderContentsText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(app.ProbeInfoandPath);
+
+    if SelectedFolder == 0
+        FolderContentsText = strcat("No folder selected!");
+        Load_Data_Window_Info.selectedFolder = [];
+        if isfield(Load_Data_Window_Info,'NrChannel')
+            if ~isempty(Load_Data_Window_Info.NrChannel)
+                if ~isempty(Load_Data_Window_Info.Channelorder) && sum(isnan(Load_Data_Window_Info.Channelorder))==0
+                    ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                else
+                    ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                end
+            end
+        end
+        return;
+    end
+
+    if isempty(Formatsfound)
+        FolderContentsText = strcat("Path ",SelectedFolder," contains no suitable recording formats!");
+        Load_Data_Window_Info.selectedFolder = [];
+        if isfield(Load_Data_Window_Info,'NrChannel')
+            if ~isempty(Load_Data_Window_Info.NrChannel)
+                if ~isempty(Load_Data_Window_Info.Channelorder) && sum(isnan(Load_Data_Window_Info.Channelorder))==0
+                    ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                else
+                    ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                end
+            end
+        end
+        return;
+    end
+
+    if isempty(FileTypeDropDownItems) || isempty(RecordingSystemDropDownItems)
+        FolderContentsText = "Folder contains recordings of multiple recording systems. Please select a folder with only a single recording of a single recording system.";
+        Load_Data_Window_Info.selectedFolder = [];
+        return;
+    else
+        app.FileTypeDropDown.Items = FileTypeDropDownItems;
+        app.RecordingSystemDropDown.Items = RecordingSystemDropDownItems;
+
+        Load_Data_Window_Info.selectedFolder = SelectedFolder;
+    end
+
+    if ~isempty(FolderContentsText)
+    else
+        if ~isempty(stringArray)
+            if strcmp(RecordingSystemDropDownItems{1},'Open Ephys')
+                for i = 1:length(stringArray)
+                    if strcmp(stringArray(i),"Record Node 101")
+                        stringArray(i) = strcat(stringArray(i));
+                    elseif strcmp(stringArray(i),"Record Node 105")
+                        stringArray(i) = strcat(stringArray(i));
+                    elseif strcmp(stringArray(i),"Record Node 113")
+                        stringArray(i) = strcat(stringArray(i));
+                    end
+                end
+                stringArray = ["Selected folder contains the following recording files:";RecordingSystemDropDownItems{1};"";stringArray];
+                FolderContentsText = stringArray;
+            else
+                stringArray = ["Selected folder contains the following recording files:";RecordingSystemDropDownItems{1};"";stringArray];
+                FolderContentsText = stringArray;
+            end         
+        end
+    end
+
+end

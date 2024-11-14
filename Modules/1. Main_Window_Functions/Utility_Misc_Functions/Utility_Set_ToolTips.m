@@ -20,6 +20,8 @@ if Activated
         app.DropDown_2.Tooltip = "Select addons to plot like spikes and events";
     
         app.EventChannelDropDown.Tooltip = "Select event channel to plot";
+
+        app.TextArea.Tooltip = "See all additional information about your recording. This includes infos from extracting data, preprocessing, spike and event detection and so on. So if you want to see what was done to the dataset all information is stored here.";
     end
     
     %% Extract Data window
@@ -43,16 +45,19 @@ if Activated
                     app.ExtractDataWindow.ProbeLayoutWindow.ChannelSpacingumEditField.Tooltip = "Edit channel spacing between channels in a row in µm. Necessary to plot.";
                     app.ExtractDataWindow.ProbeLayoutWindow.ChannelRowsDropDown.Tooltip = "Edit the number of channel rows per Shank. Second channel row is to the right of the first one.";
                     app.ExtractDataWindow.ProbeLayoutWindow.HorizontalOffsetumEditField.Tooltip = "Edit distance between channel rows; in µm.";
-                    app.ExtractDataWindow.ProbeLayoutWindow.VerticalOffsetumEditField.Tooltip = "Edit vertical offset of second channel row on the right compared to the first channel row; in µm.";
+                    app.ExtractDataWindow.ProbeLayoutWindow.VerticalOffsetumEditField.Tooltip = "Only applied when two rows selected. Edit vertical offset of second channel row on the right compared to the first channel row; in µm.";
             
-                    app.ExtractDataWindow.ProbeLayoutWindow.ActiveChannelField.Tooltip = "Active channel are those that you recorded from in respect to the probe geometry on the right. [1,2,3] means that the first three channel of the Probe design on the right represent the first three channel you recorded from. Number of channel specified here has to be the same as channel found in your recording. Leave empty to take mark channel as active.";
+                    app.ExtractDataWindow.ProbeLayoutWindow.VerticalOffsetumEditField_2.Tooltip = "Vertical offset between indented channels; in µm.";
+                    app.ExtractDataWindow.ProbeLayoutWindow.CheckBox.Tooltip = "When activated odd and even channel rows are indented (Still counts as one channel row when one row is selected).";
+   
+                    app.ExtractDataWindow.ProbeLayoutWindow.ActiveChannelField.Tooltip = "Active channel are those that you recorded from in respect to the probe geometry on the right. [1,2,3] means that the first three channel of the Probe design on the right represent the first three channel you recorded from. Number of channel specified here has to be the same as channel found in your recording. Leave empty to mark channel as active. Note: When two channel rows are selected and this field is empty, number of active channel is nr of channel*2!";
                     app.ExtractDataWindow.ProbeLayoutWindow.ChannelOrderField.Tooltip = "If channel are recorded and therefore loaded not in the correct order, you can change the order here. [5,4,1] means that the first loaded channel will be changed to channel (row) 5 after extracting the dataset. Has to have the same length as active channel. Empty for no costum channel order.";
             
                     app.ExtractDataWindow.ProbeLayoutWindow.LoadChannelOrderButton.Tooltip = "Load a saved channel order. Has to be a .mat file containing a single vector with integers specifying the channel.";
                     app.ExtractDataWindow.ProbeLayoutWindow.LoadActiveChannelSelectionButton.Tooltip = "Load a saved channel order. Has to be a .mat file containing a single vector with integers specifying the channel.";
             
                     app.ExtractDataWindow.ProbeLayoutWindow.SetProbeInformationandContinueButton.Tooltip = "If you specified all aspects of your probe design press this button which adds probe info to the 'Extract Data' window to be able to start data extraction.";
-                    app.ExtractDataWindow.ProbeLayoutWindow.ShowChannelSpacingCheckBox.Tooltip = "Space channel triangles on the right according to your channel spacing.";
+                    app.ExtractDataWindow.ProbeLayoutWindow.ShowChannelSpacingCheckBox.Tooltip = "Click to show channel spacing on the zoomed channel on the right side.";
                 end
             end
         end
@@ -229,6 +234,53 @@ if Activated
             app.SpikeExtractionWindow.RUNButton.Tooltip = "Execute the option you specified above.";
         end
     end
+
+    %% Manage Modules window
+    if strcmp(Window,"ManageModuleWindow") || strcmp(Window,"All")
+        if ~isempty(app.ManageModulesWindow) && isvalid(app.ManageModulesWindow) 
+           
+            app.ManageModulesWindow.SelectCheckBox_2.Tooltip = "Activate to mark the module on the left as the one to be switched out with the one selected in the dropdown menu on the right.";
+            app.ManageModulesWindow.SelectCheckBox_3.Tooltip = "Activate to mark the module on the left as the one to be switched out with the one selected in the dropdown menu on the right.";
+            app.ManageModulesWindow.SelectCheckBox_4.Tooltip = "Activate to mark the module on the left as the one to be switched out with the one selected in the dropdown menu on the right.";
+            app.ManageModulesWindow.SelectCheckBox_5.Tooltip = "Activate to mark the module on the left as the one to be switched out with the one selected in the dropdown menu on the right.";
+            
+            app.ManageModulesWindow.ListBox_5.Tooltip = "Currently active module in the main window that can be replaced by a different module.";
+            app.ManageModulesWindow.ListBox_4.Tooltip = "Currently active module in the main window that can be replaced by a different module.";
+            app.ManageModulesWindow.ListBox_2.Tooltip = "Currently active module in the main window that can be replaced by a different module.";
+            app.ManageModulesWindow.ListBox.Tooltip = "Currently active module in the main window that can be replaced by a different module.";
+            
+            app.ManageModulesWindow.SelectedModuleDropDown.Tooltip = "Selection of all modules added to the GUI (all specified in 'All_Mdoule_Items.m'). Pick one that should replace the module on the left you marked.";
+            app.ManageModulesWindow.SwitchandApplytoMainWindowButton.Tooltip = "Click to exchange the module you marked on the left with the module selected in the dropdown menu on the right and apply this change to the main window.";
+            app.ManageModulesWindow.CreateNewModuleButton.Tooltip = "Opens the 'All_Mdoule_Items.m' function which holds information about all active modules. To add your own, add a new cell and specify the module names. Then add the name of a function you want to execute when the user presses the RUN button - thats it!";
+            app.ManageModulesWindow.SetasnewdefaultButton.Tooltip = "Set the current modules arrangement as the new standard, which means that it will be applied on startup of the main window and doesnt has to be configured again.";
+            app.ManageModulesWindow.RestoreStandardButton.Tooltip = "Restores the standard module order of the main window as it is out of the box.";
+            
+        end
+    end
+
+    %% Autorun Manager window
+    if strcmp(Window,"AutorunWindow") || strcmp(Window,"All")
+        if ~isempty(app.AutorunWindow) && isvalid(app.AutorunWindow) 
+           
+            app.AutorunWindow.AddNewConfigButton.Tooltip = "Autorun requires a config file that contains all necessary analysis parameter. Add a new config here. You are prompted to select a template as a starting point which you can then edit as you want.";
+            app.AutorunWindow.SelectdifferentConfigFolderButton.Tooltip = "The configs you can select from are auto-searched for in the folder 'GUI_Patch/Autorun Configs\Config_Files'. If you saved your config(s) somewhere else, select the folder by clicking this button.";
+            app.AutorunWindow.ConfigSelectedDropDown.Tooltip = "All config files found in the auto-searched folder. The config you select here is used for the autorun!";
+            app.AutorunWindow.ShowConfiginGUIButton.Tooltip = "Click to open the currently selected config in a app window to see and modify all settings.";
+            app.AutorunWindow.ShowConfiginMatlabButton.Tooltip = "Click to open the Matlab function of the currently selected config to see and modify all settings.";
+
+            app.AutorunWindow.LoopovermultiplefolderCheckBox.Tooltip = "When activated, the GUI expects multiple recording folder in the selected folder to loop over them. Every analysis parameter specified in the Config will be applied to every recording. Inactivate to only analyse a single recording (then only folder containing a single recording are allowed!)";
+            app.AutorunWindow.FoldertoskipEditField.Tooltip = "Skip the first n-number of recordings found in the selected folder. Useful when previous autorun attempt failed or config had to be changed without wanting to go through the already analyzed folder again.";
+            app.AutorunWindow.PictureFormatDropDown.Tooltip = "All analysis visualizations of the GUI are also available in the Autorun. With the difference that visualizations are saved as images for the autorun. Select the format of the analysis pictures the autorun saves in the recording folder.";
+            
+            app.AutorunWindow.SaveAnalysisFiguresCheckBox.Tooltip = "Activate to save all analysis images in the reording folder and format specified.";
+            app.AutorunWindow.CloseFiguresafterPlottingCheckBox.Tooltip = "When looping over a lot of recordings with a lot of different analysis, iot can create a lot of figures. Activate to close figures after they were saved. ";
+            app.AutorunWindow.ProbeDesignButton.Tooltip = "Click to specify probe information necessary to start data extraction. This is the same as for normal data extraction in the GUI.";
+            app.AutorunWindow.SelectFolderButton.Tooltip = "Either select a folder containing multiple recordings, each in their own folder or a folder with a single recording.";
+            app.AutorunWindow.ExecuteSelectedConfigButton.Tooltip = "Click to start the autorun config with the selected settings and folders. Progress can be seen in the Matlab command window.";
+        end
+    end
+
+    
 
     %disp("Tooltips turned ON");
 
@@ -453,6 +505,52 @@ else % Not activated
             app.SpikeExtractionWindow.SortallChannelTogetherCheckBox.Tooltip = "";
             app.SpikeExtractionWindow.SortforIndividualChannelCheckBox.Tooltip = "";
             app.SpikeExtractionWindow.RUNButton.Tooltip = "";
+        end
+    end
+
+    %% Manage Modules window
+    if strcmp(Window,"ManageModuleWindow") || strcmp(Window,"All")
+        if ~isempty(app.ManageModulesWindow) && isvalid(app.ManageModulesWindow) 
+           
+            app.ManageModulesWindow.SelectCheckBox_2.Tooltip = "";
+            app.ManageModulesWindow.SelectCheckBox_3.Tooltip = "";
+            app.ManageModulesWindow.SelectCheckBox_4.Tooltip = "";
+            app.ManageModulesWindow.SelectCheckBox_5.Tooltip = "";
+            
+            app.ManageModulesWindow.ListBox_5.Tooltip = "";
+            app.ManageModulesWindow.ListBox_4.Tooltip = "";
+            app.ManageModulesWindow.ListBox_2.Tooltip = "";
+            app.ManageModulesWindow.ListBox.Tooltip = "";
+            
+            app.ManageModulesWindow.SelectedModuleDropDown.Tooltip = "";
+            app.ManageModulesWindow.SwitchandApplytoMainWindowButton.Tooltip = "";
+            app.ManageModulesWindow.CreateNewModuleButton.Tooltip = "";
+            app.ManageModulesWindow.SetasnewdefaultButton.Tooltip = "";
+            app.ManageModulesWindow.RestoreStandardButton.Tooltip = "";
+            
+        end
+    end
+
+    %% Autorun Manager window
+    if strcmp(Window,"AutorunWindow") || strcmp(Window,"All")
+        if ~isempty(app.AutorunWindow) && isvalid(app.AutorunWindow) 
+           
+            app.AutorunWindow.AddNewConfigButton.Tooltip = "";
+            app.AutorunWindow.SelectdifferentConfigFolderButton.Tooltip = "";
+            app.AutorunWindow.ConfigSelectedDropDown.Tooltip = "";
+            app.AutorunWindow.ShowConfiginGUIButton.Tooltip = "";
+            app.AutorunWindow.ShowConfiginMatlabButton.Tooltip = "";
+
+            app.AutorunWindow.LoopovermultiplefolderCheckBox.Tooltip = "";
+            app.AutorunWindow.FoldertoskipEditField.Tooltip = "";
+            app.AutorunWindow.PictureFormatDropDown.Tooltip = "";
+            
+            app.AutorunWindow.SaveAnalysisFiguresCheckBox.Tooltip = "";
+            app.AutorunWindow.CloseFiguresafterPlottingCheckBox.Tooltip = "";
+            app.AutorunWindow.ProbeDesignButton.Tooltip = "";
+            app.AutorunWindow.SelectFolderButton.Tooltip = "";
+            app.AutorunWindow.ExecuteSelectedConfigButton.Tooltip = "";
+            
         end
     end
 

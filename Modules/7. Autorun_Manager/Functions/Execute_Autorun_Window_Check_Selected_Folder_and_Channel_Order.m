@@ -124,8 +124,8 @@ else
         end
 
         if containsFiles == false
-            msgbox("Selected folder does not contain recording files. Exiting")
-            error("Selected folder does not contain recording files. Exiting")
+            msgbox("Selected folder does not contain valid recording files. Exiting")
+            error("Selected folder does not contain valid recording files. Exiting")
         end
 
         AutorunConfig.selected_folder = selected_folder;

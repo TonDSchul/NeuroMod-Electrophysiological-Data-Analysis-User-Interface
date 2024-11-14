@@ -2,7 +2,7 @@
 
 <img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
 
-Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear probe recordings. 
+Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear single shank probe designs with arbitrary geometry. 
 It seamlessly integrates established toolboxes such as Kilosort and Fieldtrip, to bring together a wide range of analyses methods and support for various data formats in a code free user interface.
 
 The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
@@ -38,11 +38,13 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx files.
+The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 probes as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx files.
 (Open Ephys GUI recordings were tested with the National Instruments PXIe-1083 chassis and Neuropixel basestations acquisition board, all Intan recordings were tested with the Intan USB Interface Board)
 
 In addition to channel data, the GUI can also extract event data from all recording formats mentioned (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
+
+Since the supported recording systems are used with a wide range of probes designs, a fully interactive probe design and probe view window enable to set arbitrary probe designs while always having an overview and full control over which channel are used to analyse your data. Even Neuropixel probe design and hundreds of recording channels arbitarrily distributed over the whole shank can be analysed without loosing sight over which brain area the currently viewed data stems from.
 
 <img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
 

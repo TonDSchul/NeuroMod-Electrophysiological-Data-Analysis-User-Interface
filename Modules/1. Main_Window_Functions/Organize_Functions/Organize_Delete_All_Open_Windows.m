@@ -146,3 +146,16 @@ if ~isempty(app.SaveDataWindow)
     delete(app.SaveDataWindow);
     app.SaveDataWindow = [];
 end
+
+%% Autorun Window
+if ~isempty(app.AutorunWindow)
+    delete(app.AutorunWindow);
+    app.AutorunWindow = [];
+end
+
+%% Manage Modules window
+if ~isempty(app.ManageModulesWindow)
+    delete(app.ManageModulesWindow);
+    app.ManageModulesWindow = [];
+end
+

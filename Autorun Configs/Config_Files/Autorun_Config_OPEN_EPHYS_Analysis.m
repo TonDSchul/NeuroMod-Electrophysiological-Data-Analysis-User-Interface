@@ -36,7 +36,7 @@ function [AutorunConfig] = Autorun_Config_OPEN_EPHYS_Analysis(DisplayOrder)
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Internal_Spike_Detection","Continous_Spike_Analysis","Event_Spike_Analysis"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events"];
 
 % General Information
 AutorunConfig.AutorunConfigName = "OE LFP and Spike Analysis";
