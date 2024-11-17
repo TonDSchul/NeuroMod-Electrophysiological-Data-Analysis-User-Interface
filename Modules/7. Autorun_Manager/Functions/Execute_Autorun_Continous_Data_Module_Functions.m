@@ -318,7 +318,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             [~,AutorunConfig.CurrentPlotData] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,'SpikeRateBinSizeChange',TextArea,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);    
                         end
 
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Triggered LFP")
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Triggered Average")
                             if ~isempty(TempData)
                                 Data = TempData;
                             end
@@ -535,7 +535,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             [~,AutorunConfig.CurrentPlotData] = Continous_Internal_Spikes_Manage_Analysis_Plots('SpikeRateBinSizeChange',Data,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Waveforms,PlotInfo,TextArea,ChannelPosition,UIAxes,UIAxes_2,UIAxes_3,rgbMatrix,AutorunConfig.twoORthree_D_Plotting,CurrentClusterToPlot.Value,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
                         end
     
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),"Spike Triggered LFP")
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Triggered Average")
                             if ~isempty(TempData)
                                 Data = TempData;
                             end
@@ -617,7 +617,7 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
   
         %% Plot Autocorrelogramme
 
-        Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
+        Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),[],str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
 
         %% Plot Results if turned on
         if strcmp(AutorunConfig.SaveFigures,"on")

@@ -51,7 +51,7 @@ for nplots = 1:length(Units)
     end
 end
 
-maxLag = TimeLag;  % Maximum lag time to consider for the histogram
+maxLag = TimeLag;  % Maximum lag time
 binEdges = linspace(-maxLag,maxLag,NumBins);
 
 NRbarplots = 0;
@@ -71,19 +71,12 @@ for nplots = 1:length(Units)
     Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');
     delete(Barhandles(1:end)); 
     Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');
-    % if length(Barhandles)>length(Units{nplots})
-    %     delete(Barhandles(length(Units{nplots})+1:end));
-    %     Barhandles = findobj(Figurename, 'Tag', 'AutoCorre');
-    % end
-    
     
     for nUnit = 1:length(Units{nplots})
         
         SpikePlotIndex = 1;  % Keeps track of where to insert into preallocated array
         nspikes = sum(SpikeCluster == Units{nplots}(nUnit));
         interspikeIntervals = NaN(1,(nspikes^2)+1);
-        %interspikeIntervals = [];
-        ZeroTimeDifference = 0;
         
         h = waitbar(0, 'Calculating Autocorrelogram...', 'Name','Calculating Autocorrelogram...');
 
@@ -104,16 +97,12 @@ for nplots = 1:length(Units)
                 spikeTimes_sec = (TemSpikes / Data.Info.NativeSamplingRate)*1000; % convert to ms
                 nSpikes = length(spikeTimes_sec);
 
-                % Compute interspike intervals (positive lags only)
+                % Compute interspike intervals 
                 for i = 1:nSpikes
                     for j = 1:nSpikes
                         if i ~=j
-                            if spikeTimes_sec(i) - spikeTimes_sec(j) ~= 0
-                                interspikeIntervals(SpikePlotIndex) = spikeTimes_sec(i) - spikeTimes_sec(j);
-                                SpikePlotIndex = SpikePlotIndex + 1;
-                            else
-                                ZeroTimeDifference = ZeroTimeDifference+1;
-                            end
+                            interspikeIntervals(SpikePlotIndex) = spikeTimes_sec(i) - spikeTimes_sec(j);
+                            SpikePlotIndex = SpikePlotIndex + 1;
                         end
                     end
                 end
@@ -127,19 +116,11 @@ for nplots = 1:length(Units)
 
         close(h);
 
-        if ZeroTimeDifference ~= 0
-            disp(strcat(num2str(ZeroTimeDifference)," SpikeTime Differences are zero"));
-        end
-
         interspikeIntervals(isnan(interspikeIntervals)) = [];
         
         smaller = abs(interspikeIntervals)<maxLag;
         
         interspikeIntervals = interspikeIntervals(smaller);
-
-        bigger = abs(interspikeIntervals)>0.5;
-
-        interspikeIntervals = interspikeIntervals(bigger);
 
         if ~isempty(interspikeIntervals)
             % Create the histogram for the autocorrelogram

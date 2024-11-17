@@ -75,7 +75,7 @@ elseif strcmp(ComponentToDelete,"EventRelatedData")
     % Delete fields
     Data = rmfield(Data, fieldsToDelete);
     
-    fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+    fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
     Data.Info = rmfield(Data.Info, fieldsToDelete);
     
     if isfield(Data,'EventRelatedSpikes')
@@ -112,14 +112,14 @@ elseif strcmp(ComponentToDelete,"Events")
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
        
-        fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+        fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
     if isfield(Data,'EventRelatedData')
         fieldsToDelete = {'EventRelatedData'};
         Data = rmfield(Data, fieldsToDelete);
-        fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+        fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
     
@@ -202,7 +202,7 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
                 fieldsToDelete = {'EventRelatedData'};
                 % Delete fields
                 Data = rmfield(Data, fieldsToDelete);
-                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
                 Data.Info = rmfield(Data.Info, fieldsToDelete);
             end
             if isfield(Data,'PreprocessedEventRelatedData')
@@ -242,6 +242,9 @@ elseif strcmp(ComponentToDelete,"PreprocessedEventRelatedData")
         fieldsToDelete = {'EventRelatedPreprocessing'};
         
         Data.Info = rmfield(Data.Info, fieldsToDelete);
+
+        Data.Info.EventRelatedActiveChannel = Data.Info.ProbeInfo.ActiveChannel;
+
     end
 
 end

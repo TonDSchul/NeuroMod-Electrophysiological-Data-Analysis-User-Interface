@@ -140,6 +140,7 @@ end
 Data.Info.EventRelatedDataChannel = Data.Info.EventChannelNames{EventChannelNr};
 Data.Info.EventRelatedDataType = DatatoUse;
 Data.Info.EventRelatedDataTimeRange = [TimeWindowBefore,' ',TimeWindowAfter];
+Data.Info.EventRelatedActiveChannel = Data.Info.ProbeInfo.ActiveChannel;
 Data.EventRelatedData = single(Data.EventRelatedData);
 
 close(h);

@@ -380,7 +380,6 @@ if ProbeViewWindow == 0
                 ylabel(app.Mainapp.UIAxes,"");
             end
 
-
             if isfield(app.Mainapp.Data.Info.ProbeInfo,'CompleteAreaNames')
                 BrainAreaInfo = app.Mainapp.Data.Info.ProbeInfo.CompleteAreaNames;
             else
@@ -523,6 +522,13 @@ if ProbeViewWindow
 %% Main Window probe view_____if clicked on a line but not on a channel on the right side --> not to change channel selection
 elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDirection]) < 2 && ClickedOnChannelYDirection == 0 || ClickedOnChannelXDirection == 0 && sum([ClickedOnChannelYDirection,ClickedRightSide])<2 && sum([ClickedOnChannelYDirection,ClickedLeftSide])<2 && TwoRowOffsetDesignHit == 0 % no change when user clicked on a channel square in the right
     
+    x1 = 4;   % lower x-limit of squares
+    x2 = 6;   % upper x-limit of squares
+   
+    if xClick <= x2 && xClick >= x1
+        return;
+    end
+
     if ClickedOnChannelXDirectionLeft == 0 && ClickedOnChannelXDirectionRight == 0
             Channel = ceil(yClick/app.Mainapp.Data.Info.ChannelSpacing);
             rows = str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows);

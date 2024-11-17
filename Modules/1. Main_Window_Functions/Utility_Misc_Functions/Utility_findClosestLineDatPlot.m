@@ -21,31 +21,25 @@ function closestLine = Utility_findClosestLineDatPlot(app,axis, clickPoint)
 % axis = UIaxis object from main window (app.UIaxis)
 % clickPoint = x and y coordinates in the plot the user clicked on
 
-%%
 % Get UIaxis children (plotted data lines)
 children = findobj(axis, 'Type', 'line', 'Tag', 'Data');
-
-%children = axis.Children;
-
-% intialize variable for distances to all plotted objects 
-distances = zeros(1, numel(children));
-
 % Loop through all plotted lines
+
+YValues = NaN(1,length(children));
+
 for i = 1:length(children)
-% for i = 1:numel(children)
-    if isprop(children(i),'XData') == 1
-        % Get x and y of the current line 
+    if isprop(children(i), 'XData') == 1
+
         xData = children(i).XData;
         yData = children(i).YData;
-        % Calculate euclidian distance from clicked point to current line
-        distances(i) = min((xData - clickPoint(1)).^2 + (yData - clickPoint(2)).^2);
+
+        [~, XIndex] = min(abs(children(i).XData - clickPoint(1)));
+        YValues(i) = yData(XIndex);
     else
-        % If no x data: set distance super high so that this is not
-        % selected
-        distances(i) = 1000000;
+        YValues(i) = []; 
     end
-    
 end
-% Index of plotted lines with minimum distance to the clicked position
-[~, closestLine] = min(distances);
+
+[~,closestLine] = min(abs(YValues - clickPoint(2)));
+
 end

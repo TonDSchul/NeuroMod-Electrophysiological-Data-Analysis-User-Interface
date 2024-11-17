@@ -30,13 +30,12 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrd
 % 'Internal_Spike_Detection'
 % 'Create_Internal_Spike_Sorting'
 % 'Load_Internal_Spike_Sorting'
-% 'Internal_Spike_Detection'
 % 'Load_from_Kilosort'
 % 'Save_for_Kilosort'
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Load_Data","Extract_Event_Related_Data","Load_from_Kilosort","Event_Spike_Analysis","Continous_Spike_Analysis","Continous_Unit_Analysis","Event_Unit_Analysis"];
+AutorunConfig.FunctionOrder = ["Load_Data","Load_Internal_Spike_Sorting","Continous_Spike_Analysis"];
 
 % General Information
 AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";
@@ -231,11 +230,15 @@ AutorunConfig.EventUnitAnalysis.UnitsPlot3 = '5,6,8';
 %______________________________________________________________________________________________________
 AutorunConfig.InternalSpikeDetection.Detectionmethod = 'Quiroga Method'; % 'Quiroga Method' OR 'Threshold: Mean - Std' OR 'Threshold: Median - Std'
 AutorunConfig.InternalSpikeDetection.Type = 'Individual Ch.'; % 'All Channel' OR 'Individual Ch.'
-AutorunConfig.InternalSpikeDetection.STDThreshold = '5'; % Number of standard deviations from mean to set threshold.
+AutorunConfig.InternalSpikeDetection.STDThreshold = '5.5'; % Number of standard deviations from mean to set threshold.
 AutorunConfig.InternalSpikeDetection.Filterspikes = true;
 AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset = '3';
 AutorunConfig.InternalSpikeDetection.FilterArtefactDepth = '200';
 
+AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform = true; % false for no Filtering
+AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices = '0.001'; % in s
+
+AutorunConfig.InternalSpikeDetection.SpikeSortingType = 'AllChannelTogether'; %% 'AllChannelTogether' OR IndividualChannel
 %% 5.2 Save for Kilosort
 %______________________________________________________________________________________________________
 AutorunConfig.SaveforKilosort.SaveFormat = 'int32'; % 'int32' or 'int16' as char

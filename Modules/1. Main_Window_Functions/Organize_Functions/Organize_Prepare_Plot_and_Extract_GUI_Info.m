@@ -70,8 +70,14 @@ end
 
 if strcmp(app.ChannelChange,"EditField") && ~ isempty(app.ProbeViewWindowHandle)
     if ~isempty(app.ProbeViewWindowHandle.ChannelSelectionEditField.Value)
-        CommaIndex = strfind(app.ProbeViewWindowHandle.ChannelSelectionEditField.Value,",");
-        app.Channelrange = str2double(app.ProbeViewWindowHandle.ChannelSelectionEditField.Value(1:CommaIndex-1)) : str2double(app.ProbeViewWindowHandle.ChannelSelectionEditField.Value(CommaIndex+1:end));
+
+        [app.Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
+
+        colorMap = app.tempcolorMapset(app.Channelrange,:);
+    else
+        app.ChannelChange = "ProbeView";
+        [app.Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
+    
         colorMap = app.tempcolorMapset(app.Channelrange,:);
     end
 

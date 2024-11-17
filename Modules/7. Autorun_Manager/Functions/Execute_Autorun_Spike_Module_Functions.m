@@ -47,7 +47,7 @@ if strcmp(FunctionOrder,'Internal_Spike_Detection')
     end
 
     if Execute == 1
-        [Data,~] = Spike_Module_Spike_Detection(Data,AutorunConfig.InternalSpikeDetection.Detectionmethod,AutorunConfig.InternalSpikeDetection.Type,str2double(AutorunConfig.InternalSpikeDetection.STDThreshold),AutorunConfig.InternalSpikeDetection.Filterspikes,str2double(AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset),str2double(AutorunConfig.InternalSpikeDetection.FilterArtefactDepth));
+        [Data,~] = Spike_Module_Spike_Detection(Data,AutorunConfig.InternalSpikeDetection.Detectionmethod,AutorunConfig.InternalSpikeDetection.Type,str2double(AutorunConfig.InternalSpikeDetection.STDThreshold),AutorunConfig.InternalSpikeDetection.Filterspikes,str2double(AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset),str2double(AutorunConfig.InternalSpikeDetection.FilterArtefactDepth),AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform,str2double(AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices));
     end
 end
 
@@ -56,7 +56,14 @@ end
 
 if strcmp(FunctionOrder,'Create_Internal_Spike_Sorting')   
     SpikeSortingPath = strcat(Data.Info.Data_Path,'\Wave_Clus');
-    [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Clustering");
+
+    if strcmp(AutorunConfig.InternalSpikeDetection.SpikeSortingType,'AllChannelTogether')
+        SortingType = "AllChannelTogether";
+    elseif strcmp(AutorunConfig.InternalSpikeDetection.SpikeSortingType,'IndividualChannel')
+        SortingType = "IndividualChannel";
+    end
+
+    [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Clustering",SortingType);
 elseif strcmp(FunctionOrder,'Load_Internal_Spike_Sorting')
     SpikeSortingPath = strcat(Data.Info.Data_Path,'\Wave_Clus');
     [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Loading");

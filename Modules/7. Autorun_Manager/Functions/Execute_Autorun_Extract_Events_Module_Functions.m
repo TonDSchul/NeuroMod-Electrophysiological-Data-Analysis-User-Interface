@@ -401,16 +401,14 @@ if isfield(Data,'Events')
             Ch(1) = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(1:commaindidcie(1)-1);
             Ch(2) = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(commaindidcie(1)+1:end);
 
-            DepthChannel = Data.Info.ProbeInfo.ActiveChannel(DepthChannel(1):DepthChannel(2));
+            DepthChannel = Data.Info.ProbeInfo.ActiveChannel(Ch(1):Ch(2));
         end
 
         if ~isfield(Data,'Spikes')
         
             msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
         
-        elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")
-            
-            %[Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0);         
+        elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")   
         
             % Handle Events to show
             if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
@@ -491,7 +489,7 @@ if isfield(Data,'Events')
     
                         [TempData,~,~,~,AutorunConfig.CurrentPlotData] = Events_Kilosort_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,numCluster,CurrentClusterToPlot.Value,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings,AutorunConfig.PlotAppearance,DepthChannel);
          
-                        if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP")
+                        if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP") || strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average")
                             if ~isempty(TempData)
                                 Data = TempData;
                             end
@@ -532,7 +530,7 @@ if isfield(Data,'Events')
         
         elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
            
-            if Error == 0
+            %if Error == 0
                 % Handle Events to show
                 if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
                     Events = strcat('1,',num2str(size(Data.EventRelatedData,2)));
@@ -631,7 +629,7 @@ if isfield(Data,'Events')
                             TextArea = [];
                             [TempData,~,~,~,AutorunConfig.CurrentPlotData] = Events_Internal_Spikes_Manage_Analysis_Plots(Data,Events,UIAxes,AutorunConfig.AnalyseEventSpikesModule.Plottype(i),AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins,TextArea,rgbMatrix,ChannelSelection,BaselineWindow,AutorunConfig.AnalyseEventSpikesModule.Normalize,AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage,UIAxes_3,UIAxes_2,AutorunConfig.twoORthree_D_Plotting,CurrentClusterToPlot.Value,numCluster,AutorunConfig.CurrentPlotData,AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings,AutorunConfig.PlotAppearance,DepthChannel);
                     
-                            if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP")
+                            if strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered LFP") || strcmp(AutorunConfig.AnalyseEventSpikesModule.Plottype(i),"Spike Triggered Average")
                                 if ~isempty(TempData)
                                     Data = TempData;
                                 end
@@ -662,7 +660,7 @@ if isfield(Data,'Events')
                     end %Spike analysis Type
 
                 end % total iterations
-            end
+            %end
         end
     end
 else % if isfield(Data,'Events')
@@ -726,7 +724,7 @@ if strcmp(FunctionOrder,'Event_Unit_Analysis')
       
             %% Plot Autocorrelogramme
     
-            Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.EventUnitAnalysis.NumBins),str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
+            Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.EventUnitAnalysis.NumBins),[],str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
     
             %% Plot Results if turned on
             if strcmp(AutorunConfig.SaveFigures,"on")

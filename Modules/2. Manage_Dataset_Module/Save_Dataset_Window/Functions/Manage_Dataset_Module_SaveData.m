@@ -124,7 +124,7 @@ if Whattosave(1) == 1 && Whattosave(2) == 0
                 fieldsToDelete = {'EventRelatedData'};
                 % Delete fields
                 Data = rmfield(Data, fieldsToDelete);
-                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
                 Data.Info = rmfield(Data.Info, fieldsToDelete);
             end
             if isfield(Data,'PreprocessedEventRelatedData')
@@ -172,7 +172,7 @@ if Whattosave(1) == 0 && Whattosave(2) == 1
                     fieldsToDelete = {'EventRelatedData'};
                     % Delete fields
                     Data = rmfield(Data, fieldsToDelete);
-                    fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+                    fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
                     Data.Info = rmfield(Data.Info, fieldsToDelete);
                 end
                 if isfield(Data,'PreprocessedEventRelatedData')
@@ -285,7 +285,7 @@ if Whattosave(5) == 0
 
         if Whattosave(6) == 0
             if isfield(Data.Info,'EventRelatedDataChannel')
-                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
+                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
                 Data.Info = rmfield(Data.Info, fieldsToDelete);
 
                 if isfield(Data.Info,'EventRelatedPreprocessing')
@@ -353,6 +353,9 @@ if Whattosave(6) == 0
             fieldsToDelete = {'ChannelRejectionTrials'};
             Data.Info = rmfield(Data.Info, fieldsToDelete);
         end
+        
+        Data.Info.EventRelatedActiveChannel = Data.Info.ProbeInfo.ActiveChannel;
+        
     end
 else
     if ~isfield(Data,'PreprocessedEventRelatedData')

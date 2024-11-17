@@ -66,7 +66,7 @@ NumEvents = size(EventRelatedData,2);
 
 %% PLOT ERP
 if isempty(CSD)
-
+    
     if strcmp(Type,'SingleERPOnly') || strcmp(Type,'All')
         
         if size(EventRelatedData,2) == 0
@@ -74,20 +74,16 @@ if isempty(CSD)
             return;
         end
 
-        ERPChannel = str2double(ERPChannel);
+        OriginalERPChannel = str2double(ERPChannel);
+        [ERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,OriginalERPChannel,'MainPlot');
 
-        % if DataChannelSelected(1) == DataChannelSelected(end) 
         DataLinestoPlot = squeeze(EventRelatedData(ERPChannel,:,:));
         ylim(Figure,[min(DataLinestoPlot,[],'all') max(DataLinestoPlot,[],'all')]);   
-        % else
-        %     DataLinestoPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1));
-        %     ylim(Figure,[min(squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1)),[],'all') max(squeeze(mean(EventRelatedData(DataChannelSelected,:,:),1)),[],'all')]);    
-        % end
-    
+            
         xlim(Figure,[EventTime(1) EventTime(end)]);
         xlabel(Figure,PlotAppearance.ERPWindow.SingleERP.XLabel)
         ylabel(Figure,PlotAppearance.ERPWindow.SingleERP.YLabel)
-        title(Figure,strcat("Event Related Potential Channel ",num2str(ERPChannel)));
+        title(Figure,strcat("Event Related Potential Channel ",num2str(OriginalERPChannel)));
             
         TrialLinesHandles = findobj(Figure, 'Type', 'line', 'Tag', 'TrialLines');
     
@@ -324,17 +320,11 @@ else
             surf(Figure,EventTime,ds,csd','EdgeColor', 'none', 'Tag','PowerDepth3D')
             %2D
             % % 2D Plot
-            % min_z = min(csd,[],'all');
-            % surface(Figure,EventTime,ds, min_z * ones(size(csd')), ...
-            % 'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         else
             %3D
             set(PowerDepth3D_handles(1),'XData',EventTime,'YData',ds,'CData',csd','ZData',csd','EdgeColor', 'none', 'Tag', 'PowerDepth3D')
             %2D
             % 2D Plot
-            % min_z = min(csd,[],'all');
-            % set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds,'ZData', min_z * ones(size(csd')), ...
-            % 'CData', csd', 'FaceColor', 'texturemap', 'EdgeColor', 'none', 'Tag', 'PowerDepth2D');
         end
     
         %imagesc(Figure,Time,ydata,mnLFP)

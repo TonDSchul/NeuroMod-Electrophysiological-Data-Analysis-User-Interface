@@ -18,6 +18,17 @@ yClick = clickPoint(2);
 %% Check whether user clicked on a channel square on the right
 ClickedOnChannelXDirection = 0;
 ClickedOnChannelYDirection = 0;
+ClickedOnChannelXDirectionRight = 0;
+ClickedOnChannelXDirectionLeft = 0;
+
+ClickedLeftSide = 0;
+ClickedRightSide = 0;
+
+ClickedLeftSideR1 = 0;
+ClickedLeftSideR2 = 0;
+ClickedRightSideR1 = 0;
+ClickedRightSideR2 = 0;
+
 ChannelClicked = [];
 
 %% Deal with changing view of channel on the right when user clicked on the plot
@@ -70,6 +81,16 @@ if ProbeViewWindow
 %% No probe layout window
 elseif ~ProbeViewWindow % no change when user clicked on a channel square in the right
 
+    %% Only want to update if user is NOT clicking on the right side!
+    
+    %% Check if x pos. of squares was clicked
+    x1 = 4;   % lower x-limit of squares
+    x2 = 6;   % upper x-limit of squares
+   
+    if xClick <= x2 && xClick >= x1
+        return;
+    end
+  
     Channel = ceil(yClick/app.Mainapp.Data.Info.ChannelSpacing);
     rows = str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows);
     

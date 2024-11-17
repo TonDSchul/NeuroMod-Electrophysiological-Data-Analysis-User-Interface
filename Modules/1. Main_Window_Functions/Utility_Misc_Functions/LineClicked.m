@@ -29,7 +29,7 @@ closestLine = Utility_findClosestLineDatPlot(app,app.UIAxes, clickPoint);
 % account for ChannelRange selected in the Main GUi
 [Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
 
-VectorToDisplay = Channelrange(closestLine);
+VectorToDisplay = app.ActiveChannel(closestLine);
 
 TexttoShow{1} = convertStringsToChars(strcat("Channel ",num2str(VectorToDisplay),"; Time: ",num2str(clickPoint(1)),"s"));
 
