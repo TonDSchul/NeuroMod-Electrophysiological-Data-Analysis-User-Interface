@@ -107,7 +107,12 @@ if isempty(KSversion)
     return;
 end
 
+[stringArray] = Utility_Extract_Contents_of_Folder(folderPath);
 
+if sum(contains(stringArray,".npy")) == 0
+    msgbox("Error: Kilosort output directory doesnt contain expected .npy files.")
+    return;
+end
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
 [Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, ~,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
 

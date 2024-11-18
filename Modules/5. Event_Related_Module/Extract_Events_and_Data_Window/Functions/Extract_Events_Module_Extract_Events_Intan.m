@@ -49,9 +49,9 @@ if strcmp(Filetype, "Digital Inputs")
             
             FileIdentifier = fopen(DatFilePaths{InputChannelIndicie(InputChannelSelection(i))},'r');
             
-            InputChannelData{i} = fread(FileIdentifier, 'uint16');
+            InputChannelData{i} = fread(FileIdentifier, 'int16');
 
-            InputChannelData{i} = single(InputChannelData{i}); %analog input to Volt (not mV!)
+            InputChannelData{i} = single(InputChannelData{i});
 
         end
 
@@ -77,8 +77,30 @@ if strcmp(Filetype, "Digital Inputs")
 elseif strcmp(Filetype, "Analog Input")
 
     if strcmp(Data.Info.RecordingType,"IntanDat")
+        % Get board mode and corresponding scaling factors
+        RHDFile = strcat(Data.Info.Data_Path,'\info.rhd');
+        
+        if isfile(RHDFile)
+            RhDfid = fopen(RHDFile, 'r');
+            if RhDfid ~= -1
+                data_file_main_version_number = fread(RhDfid, 1, 'int16');
+                data_file_secondary_version_number = fread(RhDfid, 1, 'int16');
+            else
+                data_file_main_version_number = 0;
+                data_file_secondary_version_number = 0;
+            end
+        
+            board_mode = 0;
+            if ((data_file_main_version_number == 1 && data_file_secondary_version_number >= 3) ...
+                || (data_file_main_version_number > 1))
+                board_mode = fread(RhDfid, 1, 'int16');
+            end
+        else
+            Warning("No .rhd file found to get board mode. This can lead to unexpected behavior. (Taking standard mode 0)")
+            board_mode = 0;
+        end
 
-        InputChannelData = {};
+        InputChannelData = cell(1,length(InputChannelSelection));
 
         [DatFilePaths,~,~,~,~,~] = CheckIntanDatFiles(FolderPath);
         
@@ -86,10 +108,15 @@ elseif strcmp(Filetype, "Analog Input")
             
             FileIdentifier = fopen(DatFilePaths{InputChannelIndicie(InputChannelSelection(i))},'r');
             
-            InputChannelData{i} = fread(FileIdentifier, 'uint16');
-        
-            InputChannelData{i} = single(InputChannelData{i}.* 0.000050354); %analog input to Volt (not mV!)
- 
+            InputChannelData{i} = fread(FileIdentifier, 'int16');
+            % Apply scaling
+            if (board_mode == 1)
+                InputChannelData{i} = 152.59e-6 * (InputChannelData{i}); % units = volts
+            elseif (board_mode == 13) % Intan Recording Controller
+                InputChannelData{i} = 312.5e-6 * (InputChannelData{i}); % units = volts    
+            else
+                InputChannelData{i} = 50.354e-6 * InputChannelData{i}; % units = volts
+            end
         end
 
         [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData);
@@ -116,7 +143,7 @@ elseif strcmp(Filetype, "AUX Inputs")
             
             FileIdentifier = fopen(DatFilePaths{InputChannelIndicie(InputChannelSelection(i))},'r');
             
-            InputChannelData{i} = fread(FileIdentifier, 'uint16');
+            InputChannelData{i} = fread(FileIdentifier, 'int16');
 
             InputChannelData{i} = single(InputChannelData{i}.* 0.0000374); %analog input to Volt (not mV!)
             
@@ -146,9 +173,9 @@ elseif strcmp(Filetype, "DIN Inputs")
             
             FileIdentifier = fopen(DatFilePaths{InputChannelIndicie(InputChannelSelection(i))},'r');
             
-            InputChannelData{i} = fread(FileIdentifier, 'uint16');
+            InputChannelData{i} = fread(FileIdentifier, 'int16');
 
-            InputChannelData{i} = single(InputChannelData{i}); %analog input to Volt (not mV!)
+            InputChannelData{i} = single(InputChannelData{i}); 
 
         end
 

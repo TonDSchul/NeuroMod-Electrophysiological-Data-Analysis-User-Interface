@@ -57,13 +57,12 @@ if strcmp(Filetype,"Intan .dat")
         pause(0.05);
 
         if nchan == 1 % First channel: Define additional stuff
-            
-            FileIdentifier = fopen(DatFilePaths{AmplifierDataIndex(nchan)},'r');
-            tempData = fread(FileIdentifier, 'int16');
-            
-            Data = zeros(length(AmplifierDataIndex),length(tempData));
+           
+            mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
 
-            Data(nchan,1:end) = (single(tempData).*0.000195)';
+            Data = zeros(length(AmplifierDataIndex),size(mmf.Data,1));
+
+            Data(nchan,1:end) = (single(mmf.Data).*0.000195)'; % in mV
             
             num_data_points = size(Data,2);
             
@@ -84,13 +83,12 @@ if strcmp(Filetype,"Intan .dat")
             SampleRate = HeaderInfo.amplifier_sample_rate;
 
         else % if second to last channel just extract data
-
-            FileIdentifier = fopen(DatFilePaths{AmplifierDataIndex(nchan)},'r');
-            Data(nchan,1:num_data_points) = fread(FileIdentifier, 'int16')';
-            Data(nchan,1:num_data_points) = single(Data(nchan,1:num_data_points)).*0.000195;
+            
+            mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
+            Data(nchan,1:num_data_points) = mmf.Data';
+            Data(nchan,1:num_data_points) = single(Data(nchan,1:num_data_points)).*0.000195; % in mV
  
         end
-    
     end
 
     close(h);
@@ -106,8 +104,17 @@ if strcmp(Filetype,"Intan .rhd")
     [RhdFilePaths] = LoadIntanRHDFiles(SelectedFolder);
 
     LastDashIndex = find(RhdFilePaths == '\');
-    RHDPath = RhdFilePaths(1:LastDashIndex(end));
-    RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
+    if ~isempty(LastDashIndex)
+        RHDPath = RhdFilePaths(1:LastDashIndex(end));
+        RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
+    else
+        msgbox("Error: No .rhd file found in selected folder!")
+        Data = [];
+        HeaderInfo = [];
+        SampleRate = [];
+        RecordingType = [];
+        return;
+    end
     
     [amplifier_data,~,frequency_parameters,~,~,t_dig,~,~] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea);
     

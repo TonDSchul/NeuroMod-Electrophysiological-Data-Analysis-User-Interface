@@ -71,6 +71,17 @@ EventChannelIndex = [];
 
 TimeChannel = [];
 InfoRhd = [];
+IndexToDelete = [];
+% Delete unrelevant .dat files
+for k = 1:length(DatFilePaths)
+    if ~strcmp(DatFilePaths{k}(end-12:end-10),"amp") && ~strcmp(DatFilePaths{k}(end-16:end-16+6),"DIGITAL") && ~strcmp(DatFilePaths{k}(end-9:end-7),"ADC") && ~strcmp(DatFilePaths{k}(end-7:end-5),"AUX") && ~strcmp(DatFilePaths{k}(end-9:end-9+2),"DIN") && ~strcmp(DatFilePaths{k}(end-7:end-7+3),"time")
+        IndexToDelete = [IndexToDelete,k];
+    end
+end
+
+if ~isempty(IndexToDelete)
+    DatFilePaths(IndexToDelete) = [];
+end
 
 for k = 1:length(DatFilePaths)
     if strcmp(DatFilePaths{k}(end-12:end-10),"amp")
@@ -99,6 +110,7 @@ for k = 1:length(DatFilePaths)
         TimeChannel = [TimeChannel,k];
     end
 end
+
 
 if ~isfield(EventChannelIndex,'DIChannel') && ~isfield(EventChannelIndex,'ADCChannel') && ~isfield(EventChannelIndex,'AUXChannel') && ~isfield(EventChannelIndex,'DINChannel')
     EventChannelIndex = [];

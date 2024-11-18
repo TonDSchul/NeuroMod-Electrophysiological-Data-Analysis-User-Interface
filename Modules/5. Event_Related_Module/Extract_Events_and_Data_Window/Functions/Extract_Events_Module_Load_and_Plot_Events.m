@@ -38,9 +38,45 @@ if strcmp(Data.Info.RecordingType,"IntanDat")
     %% Load Data
     FileIdentifier = fopen(FilePaths{EventInfo(InputChannelSelection)},'r');
     
-    InputChannelData = fread(FileIdentifier, 'uint16');
+    InputChannelData = fread(FileIdentifier, 'int16');
     
-    InputChannelData = single(InputChannelData); %analog input to Volt (not mV!)
+    
+    if contains(AllChannelNames(InputChannelSelection),"DIN") || contains(AllChannelNames(InputChannelSelection),"Digital") || contains(AllChannelNames(InputChannelSelection),"DI")
+        InputChannelData = single(InputChannelData); %analog input to Volt (not mV!)
+    elseif contains(AllChannelNames(InputChannelSelection),"AUX") 
+        InputChannelData = single(37.4e-6 *InputChannelData); %analog input to Volt (not mV!)
+    elseif contains(AllChannelNames(InputChannelSelection),"ADC") 
+        
+        RHDFile = strcat(Data.Info.Data_Path,'\info.rhd');
+        % Get board mode and corresponding scaling factors
+        if isfile(RHDFile)
+            RhDfid = fopen(RHDFile, 'r');
+            if RhDfid ~= -1
+                data_file_main_version_number = fread(RhDfid, 1, 'int16');
+                data_file_secondary_version_number = fread(RhDfid, 1, 'int16');
+            else
+                data_file_main_version_number = 0;
+                data_file_secondary_version_number = 0;
+            end
+            
+            board_mode = 0;
+            if ((data_file_main_version_number == 1 && data_file_secondary_version_number >= 3) ...
+                || (data_file_main_version_number > 1))
+                board_mode = fread(RhDfid, 1, 'int16');
+            end
+        else
+            Warning("No .rhd file found to get board mode. This can lead to unexpected behavior. (Taking standard mode 0)")
+            board_mode = 0;
+        end
+        % Apply scaling
+        if (board_mode == 1)
+            InputChannelData = 152.59e-6 * (InputChannelData); % units = volts
+        elseif (board_mode == 13) % Intan Recording Controller
+            InputChannelData = 312.5e-6 * (InputChannelData); % units = volts    
+        else
+            InputChannelData = 50.354e-6 * InputChannelData; % units = volts
+        end
+    end
 
     % for rhd was already extracted (to not load data every time this
     % function is called) -- eaier to load at start ups

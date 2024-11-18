@@ -180,11 +180,12 @@ if isfield(Data,'Events')
             CSD.ChannelSpacing = AutorunConfig.AnalyseEventDataModule.CSDChannelSpacing;
             CSD.HammWindow = str2double(AutorunConfig.AnalyseEventDataModule.CSDHammWindow);
             CSD.SurfaceChannel = str2double(AutorunConfig.AnalyseEventDataModule.CSDSurfaceChannel);
-    
+            CSD.SelectedChannel = Data.Info.ProbeInfo.ActiveChannel(CSD.SurfaceChannel:end);
+            
             if strcmp(AutorunConfig.AnalyseEventDataModule.DataSource,'Raw Event Related Data')
-                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.EventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,AutorunConfig.AnalyseEventDataModule.ChannelSelection,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.EventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
             else
-                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.PreprocessedEventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,AutorunConfig.AnalyseEventDataModule.ChannelSelection,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.PreprocessedEventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
             end
     
             %% Plot Results if turned on
@@ -397,9 +398,9 @@ if isfield(Data,'Events')
         if isempty(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot)
             DepthChannel = Data.Info.ProbeInfo.ActiveChannel;
         else
-            commaindidcie = find(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot);
-            Ch(1) = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(1:commaindidcie(1)-1);
-            Ch(2) = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(commaindidcie(1)+1:end);
+            commaindidcie = find(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot==',');
+            Ch(1) = str2double(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(1:commaindidcie(1)-1));
+            Ch(2) = str2double(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(commaindidcie(1)+1:end));
 
             DepthChannel = Data.Info.ProbeInfo.ActiveChannel(Ch(1):Ch(2));
         end
