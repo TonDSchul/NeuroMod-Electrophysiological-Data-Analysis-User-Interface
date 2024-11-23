@@ -19,6 +19,9 @@ if strcmp(ProbeInfoOrFolder,"ProbeInfo")
     
     Load_Data_Window_Info.ChannelSpacing = str2double(app.ChannelSpacingumEditField.Value);
     Load_Data_Window_Info.NrRows = str2double(app.ChannelRowsDropDown.Value);
+
+    Load_Data_Window_Info.SwitchTopBottomChannel = double(app.ReverseTopandBottomChannelNumberCheckBox.Value);
+    Load_Data_Window_Info.SwitchLeftRightChannel = double(app.SwitchLeftandRightChannelNumberCheckBox.Value);
     
     if isempty(app.ActiveChannelField.Value{1})
         Load_Data_Window_Info.ActiveChannel = 1:str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value);

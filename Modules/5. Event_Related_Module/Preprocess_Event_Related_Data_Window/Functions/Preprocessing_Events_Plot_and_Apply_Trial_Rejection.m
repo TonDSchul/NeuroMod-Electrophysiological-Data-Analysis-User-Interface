@@ -1,4 +1,4 @@
-function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject)
+function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject)
 
 %________________________________________________________________________________________
 %% Function to apply and plot event/trial rejection
@@ -35,6 +35,16 @@ function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plo
 
 Error = 0;
 
+OriginalChannelSelection = ChannelSelection;
+if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+    TempActiveChannel = flip(sort(Data.Info.ProbeInfo.ActiveChannel));
+    [ChannelSelection] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,str2double(ChannelSelection),'MainPlot');
+    ChannelSelection = num2str(ChannelSelection);
+else
+    [ChannelSelection] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,str2double(ChannelSelection),'MainPlot');
+    ChannelSelection = num2str(ChannelSelection);
+end
+
 if strcmp(Type,'OnlyReject') || strcmp(Type,'RejectandPlot')
 
     [~,NrTrials,~] = size(EventRelatedData);
@@ -66,14 +76,14 @@ if strcmp(Type,'OnlyReject') || strcmp(Type,'RejectandPlot')
     Trialsavailable(2) = NrTrials;
     
     if RejectedTrialsofInterest(2) > Trialsavailable(2) 
-        f = msgbox("Error: Selected Trials not in Range");
+        msgbox("Error: Selected Trials not in Range");
         return;
     elseif RejectedTrialsofInterest(1) > Trialsavailable(2) 
-        f = msgbox("Error: Selected Trials not in Range");
+        msgbox("Error: Selected Trials not in Range");
         return;
     elseif RejectedTrialsofInterest(1) == 1 && RejectedTrialsofInterest(2)  == NrTrials
-       f = msgbox("Error: Not possible to reject all Trials");
-       return;
+        msgbox("Error: Not possible to reject all Trials");
+        return;
     end
 
     EventRelatedData(:,RejectedTrialsofInterest(1):RejectedTrialsofInterest(2),:) = [];
@@ -99,7 +109,7 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
     TopFigure.NextPlot = "replace";
     imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1),squeeze(EventRelatedData(str2double(ChannelSelection),:,:)))
     set(TopFigure,'YDir','normal');
-    titlestring = strcat("Broadband Plot Channel ",ChannelSelection);
+    titlestring = strcat("Broadband Plot Channel ",OriginalChannelSelection);
     TopFigure.FontSize = 10;
     xline(TopFigure,0,'Color','k','LineStyle','--','LineWidth',2);
     ylabel(TopFigure,'Trials/Events')
@@ -169,7 +179,7 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
 
     BottomFigure.FontSize = 11;
     
-    titlestring = strcat("ERP Channel ",ChannelSelection);
+    titlestring = strcat("ERP Channel ",OriginalChannelSelection);
     title(BottomFigure,titlestring);
     xlim(BottomFigure,[min(Time) max(Time)]);
     ylim(BottomFigure,[min(min(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)))) max(max(squeeze(EventRelatedData(str2double(ChannelSelection),:,:))))]);

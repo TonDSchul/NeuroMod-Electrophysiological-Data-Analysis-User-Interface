@@ -23,10 +23,16 @@ delete(app.ChannelTextHandle);
 % Identify the closest line to the clicked point
 closestLine = Utility_findClosestLineDatPlot(app,app.UIAxes, clickPoint);
 
-% account for ChannelRange selected in the Main GUi
-[Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
-
-VectorToDisplay = app.ActiveChannel(closestLine);
+% Get the actual channel name from the data index clicked on
+if app.Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+    if str2double(app.Data.Info.ProbeInfo.NrRows) == 1 
+        ChannelNames = flip(sort(app.Data.Info.ProbeInfo.ActiveChannel));
+        ChannelNames = ChannelNames(app.ActiveChannel);
+        VectorToDisplay = ChannelNames(closestLine);
+    end
+else
+    VectorToDisplay = app.ActiveChannel(closestLine);
+end
 
 TexttoShow{1} = convertStringsToChars(strcat("Channel ",num2str(VectorToDisplay),"; Time: ",num2str(clickPoint(1)),"s"));
 

@@ -59,6 +59,9 @@ if ~isempty(DatatoSave)
     app.ProbeInfoandPath .VerticalOffsetum = DatatoSave.VerticalOffsetum;
     app.ProbeInfoandPath .NumberChannelRows = DatatoSave.NumberChannelRows;
 
+    app.ProbeInfoandPath.SwitchTopBottomChannel = DatatoSave.SwitchTopBottomChannel;
+    app.ProbeInfoandPath.SwitchLeftRightChannel = DatatoSave.SwitchLeftRightChannel;
+
     app.ProbeInfoandPath .OffSetRows = DatatoSave.OffSetRows;
     app.ProbeInfoandPath .OffSetRowsDistance = DatatoSave.OffSetRowsDistance;
    
@@ -121,6 +124,8 @@ if strcmp(Window,"ProbeLayout")
         % Remove the trailing comma and whitespace
         texttoshow(end-1:end) = [];
         app.ChannelOrderField.Value = texttoshow;
+    else
+        app.ChannelOrderField.Value = '';
     end
     %Active Channel
     if ~isempty(app.ProbeInfoandPath .ActiveChannel) && sum(isnan(app.ProbeInfoandPath .ActiveChannel))==0
@@ -128,6 +133,8 @@ if strcmp(Window,"ProbeLayout")
         % Remove the trailing comma and whitespace
         texttoshow(end-1:end) = [];
         app.ActiveChannelField.Value = texttoshow;
+    else
+        app.ActiveChannelField.Value = '';
     end
 
     app.NrChannelEditField.Value = app.ProbeInfoandPath .NrChannel;
@@ -137,6 +144,9 @@ if strcmp(Window,"ProbeLayout")
     app.VerticalOffsetumEditField.Value = app.ProbeInfoandPath .VerticalOffsetum;
     app.ChannelRowsDropDown.Value = app.ProbeInfoandPath .NumberChannelRows;
 
+    app.ReverseTopandBottomChannelNumberCheckBox.Value = app.ProbeInfoandPath.SwitchTopBottomChannel;
+    app.SwitchLeftandRightChannelNumberCheckBox.Value = app.ProbeInfoandPath.SwitchLeftRightChannel;
+    
     app.CheckBox.Value = app.ProbeInfoandPath.OffSetRows;
     app.VerticalOffsetumEditField_2.Value = app.ProbeInfoandPath.OffSetRowsDistance;
 
@@ -158,7 +168,7 @@ if strcmp(Window,"ProbeLayout")
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,1,[],app.CheckBox.Value,[])
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,1,[],app.CheckBox.Value,[],app.ProbeInfoandPath.SwitchTopBottomChannel,app.ProbeInfoandPath.SwitchLeftRightChannel)
 
     if ~isempty(app.NrChannelEditField.Value) && ~isempty(app.ChannelSpacingumEditField.Value)
         %% Initiate Callback

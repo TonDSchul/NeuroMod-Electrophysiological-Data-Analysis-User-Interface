@@ -1,4 +1,4 @@
-function Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation,PlotChannelSpacing,VerOffset,ChannelSpacing)
+function Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation,PlotChannelSpacing,VerOffset,ChannelSpacing,SwitchTopBottom)
 
 Squareplots = 0;
 
@@ -34,14 +34,27 @@ if ~ChannelActivation || CreateProbeWindow
                     y = yPos+(squareHeight/2);       % Y-coordinate
                 end
     
-                if ChannelRows == 1
-                    currentchannel = NrChannel+2-(FirstZoomChannel+1+i);
-                    currentchannel = currentchannel+NrChannel;
-                else
-                    if i == 0
-                        currentchannel = (NrChannel+2-(FirstZoomChannel+1+i))*2;
+                if SwitchTopBottom % If top and bottom channel swicthed
+                    if ChannelRows == 1
+                        currentchannel = NrChannel+2-(FirstZoomChannel+1+i);
+                        currentchannel = currentchannel+NrChannel;
                     else
-                        currentchannel = currentchannel-2;
+                        if i == 0
+                            currentchannel = (FirstZoomChannel+i)*2;
+                        else
+                            currentchannel = currentchannel+2;
+                        end
+                    end
+                else
+                    if ChannelRows == 1
+                        currentchannel = NrChannel+2-(FirstZoomChannel+1+i);
+                        currentchannel = currentchannel+NrChannel;
+                    else
+                        if i == 0
+                            currentchannel = (NrChannel+2-(FirstZoomChannel+1+i))*2;
+                        else
+                            currentchannel = currentchannel-2;
+                        end
                     end
                 end
     
@@ -74,13 +87,25 @@ if ~ChannelActivation || CreateProbeWindow
                     y = yPos+(squareHeight/2);       % Y-coordinate
                 end
 
-                if ChannelRows == 1
-                    currentchannel = NrChannel+1-(FirstZoomChannel+i);
-                else
-                    if i == 0
-                        currentchannel = ((NrChannel-(FirstZoomChannel+i))*2)+1;
+                if SwitchTopBottom % If top and bottom channel swicthed
+                    if ChannelRows == 1
+                        currentchannel = FirstZoomChannel+i;
                     else
-                        currentchannel = currentchannel-2;
+                        if i == 0
+                            currentchannel = (FirstZoomChannel+i)*2-1;
+                        else
+                            currentchannel = currentchannel+2;
+                        end
+                    end
+                else % If top and bottom channel NOT swicthed
+                    if ChannelRows == 1
+                        currentchannel = NrChannel+1-(FirstZoomChannel+i);
+                    else
+                        if i == 0
+                            currentchannel = ((NrChannel-(FirstZoomChannel+i))*2)+1;
+                        else
+                            currentchannel = currentchannel-2;
+                        end
                     end
                 end
 

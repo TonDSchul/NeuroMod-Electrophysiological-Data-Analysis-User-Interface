@@ -68,7 +68,7 @@ end
 
 %% Extract Channel Number and set colormap
 
-if strcmp(app.ChannelChange,"EditField") && ~ isempty(app.ProbeViewWindowHandle)
+if strcmp(app.ChannelChange,"EditField") && ~isempty(app.ProbeViewWindowHandle)
     if ~isempty(app.ProbeViewWindowHandle.ChannelSelectionEditField.Value)
 
         [app.Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
@@ -80,8 +80,14 @@ if strcmp(app.ChannelChange,"EditField") && ~ isempty(app.ProbeViewWindowHandle)
     
         colorMap = app.tempcolorMapset(app.Channelrange,:);
     end
+elseif strcmp(app.ChannelChange,"EditField") && isempty(app.ProbeViewWindowHandle)
+    app.ChannelChange = "ProbeView";
+    [app.Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
 
-elseif strcmp(app.ChannelChange,"ProbeView")
+    colorMap = app.tempcolorMapset(app.Channelrange,:);
+end
+
+if strcmp(app.ChannelChange,"ProbeView")
     
     [app.Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
     
@@ -156,7 +162,6 @@ else
 end
 
 if MainPlot
-    
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
         % If downsampled data to show: Input argument 11 in plot fct = 1 (1 if donwsampled, 0 if not)
         if isfield(app.Data.Info,'DownsampleFactor') 

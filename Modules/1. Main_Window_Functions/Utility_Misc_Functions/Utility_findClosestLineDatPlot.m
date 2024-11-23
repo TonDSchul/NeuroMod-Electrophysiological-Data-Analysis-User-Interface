@@ -29,17 +29,20 @@ YValues = NaN(1,length(children));
 
 for i = 1:length(children)
     if isprop(children(i), 'XData') == 1
-
         xData = children(i).XData;
         yData = children(i).YData;
 
-        [~, XIndex] = min(abs(children(i).XData - clickPoint(1)));
+        [~, XIndex] = min(abs(xData - clickPoint(1)));
         YValues(i) = yData(XIndex);
     else
         YValues(i) = []; 
     end
 end
 
-[~,closestLine] = min(abs(YValues - clickPoint(2)));
-
+if YValues(1) < YValues(end) && length(children)>1 % Order wrong, smalles line is plotted first befor being updated
+    YValues = [YValues(2:end), YValues(1)];
+    [~,closestLine] = min(abs(YValues - clickPoint(2)));
+else
+    [~,closestLine] = min(abs(YValues - clickPoint(2)));
 end
+

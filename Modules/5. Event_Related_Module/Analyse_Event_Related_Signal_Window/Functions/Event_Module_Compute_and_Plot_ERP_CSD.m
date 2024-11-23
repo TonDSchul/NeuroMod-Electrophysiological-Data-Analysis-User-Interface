@@ -75,7 +75,13 @@ if isempty(CSD)
         end
 
         OriginalERPChannel = str2double(ERPChannel);
-        [ERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,OriginalERPChannel,'MainPlot');
+        
+        if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+            TempActiveChannel = flip(sort(Data.Info.ProbeInfo.ActiveChannel));
+            [ERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,OriginalERPChannel,'MainPlot');
+        else
+            [ERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,OriginalERPChannel,'MainPlot');
+        end
 
         DataLinestoPlot = squeeze(EventRelatedData(ERPChannel,:,:));
         ylim(Figure,[min(DataLinestoPlot,[],'all') max(DataLinestoPlot,[],'all')]);   
