@@ -52,9 +52,10 @@ if ~isempty(DatatoSave)
     app.ProbeInfoandPath .VerticalOffsetum = DatatoSave.VerticalOffsetum;
     app.ProbeInfoandPath .NumberChannelRows = DatatoSave.NumberChannelRows;
 
-    app.ProbeInfoandPath.SwitchTopBottomChannel = DatatoSave.SwitchTopBottomChannel;
-    app.ProbeInfoandPath.SwitchLeftRightChannel = DatatoSave.SwitchLeftRightChannel;
-
+    app.ProbeInfoandPath.SwitchTopBottomChannel = double(DatatoSave.SwitchTopBottomChannel);
+    app.ProbeInfoandPath.SwitchLeftRightChannel = double(DatatoSave.SwitchLeftRightChannel);
+    app.ProbeInfoandPath.FlipLoadedData = double(DatatoSave.FlipLoadedData);
+    
     app.ProbeInfoandPath .OffSetRows = DatatoSave.OffSetRows;
     app.ProbeInfoandPath .OffSetRowsDistance = DatatoSave.OffSetRowsDistance;
     
@@ -132,6 +133,7 @@ if strcmp(Window,"ProbeLayout")
 
     app.ReverseTopandBottomChannelNumberCheckBox.Value = app.ProbeInfoandPath.SwitchTopBottomChannel;
     app.SwitchLeftandRightChannelNumberCheckBox.Value = app.ProbeInfoandPath.SwitchLeftRightChannel;
+    app.ReverseTopandBottomChannelNumberCheckBox_2.Value = app.ProbeInfoandPath.FlipLoadedData;
 
     app.CheckBox.Value = app.ProbeInfoandPath.OffSetRows;
     app.VerticalOffsetumEditField_2.Value = app.ProbeInfoandPath.OffSetRowsDistance;
@@ -146,6 +148,16 @@ if strcmp(Window,"ProbeLayout")
         ActiveChannel = 1:str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value);
     else
         ActiveChannel = str2double(strsplit(app.ActiveChannelField.Value{1},','));
+    end
+
+    if app.ReverseTopandBottomChannelNumberCheckBox.Value == 1 && str2double(app.ChannelRowsDropDown.Value) == 2
+        ActiveChannel = (str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)+1)-ActiveChannel;
+        oddIndices = find(mod(ActiveChannel, 2) == 1);
+        evenIndices = find(mod(ActiveChannel, 2) == 0);
+        ActiveChannel(oddIndices) = ActiveChannel(oddIndices)+1;
+        ActiveChannel(evenIndices) = ActiveChannel(evenIndices)-1;
+    elseif app.ReverseTopandBottomChannelNumberCheckBox.Value == 1 && str2double(app.ChannelRowsDropDown.Value) == 1
+        ActiveChannel = (str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)+1)-ActiveChannel;
     end
 
     if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')

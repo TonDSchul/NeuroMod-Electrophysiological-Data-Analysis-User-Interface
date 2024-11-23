@@ -164,14 +164,16 @@ if strcmp(Window,"ProbeLayout")
         ActiveChannel = str2double(strsplit(app.ActiveChannelField.Value{1},','));
     end
 
+    if app.ReverseTopandBottomChannelNumberCheckBox.Value == 1
+        ActiveChannel = (str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)+1)-ActiveChannel;
+    end
+
     if app.ReverseTopandBottomChannelNumberCheckBox.Value == 1 && str2double(app.ChannelRowsDropDown.Value) == 2
         ActiveChannel = (str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)+1)-ActiveChannel;
         oddIndices = find(mod(ActiveChannel, 2) == 1);
         evenIndices = find(mod(ActiveChannel, 2) == 0);
         ActiveChannel(oddIndices) = ActiveChannel(oddIndices)+1;
         ActiveChannel(evenIndices) = ActiveChannel(evenIndices)-1;
-    elseif app.ReverseTopandBottomChannelNumberCheckBox.Value == 1 && str2double(app.ChannelRowsDropDown.Value) == 1
-        ActiveChannel = (str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)+1)-ActiveChannel;
     end
 
     if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')

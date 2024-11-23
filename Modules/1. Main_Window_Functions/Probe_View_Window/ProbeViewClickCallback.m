@@ -70,6 +70,10 @@ if ProbeViewWindow
         ActiveChannel = str2double(strsplit(app.ActiveChannelField.Value{1},','));
     end
 
+    if app.ReverseTopandBottomChannelNumberCheckBox.Value == 1
+        ActiveChannel = (str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)+1)-ActiveChannel;
+    end
+
     if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')
         BrainAreaInfo = app.ProbeTrajectoryInfo;
     else
@@ -125,8 +129,11 @@ elseif ~ProbeViewWindow % no change when user clicked on a channel square in the
     else
         BrainAreaInfo = [];
     end
+    
+    AllActiveChannel = app.Mainapp.Data.Info.ProbeInfo.ActiveChannel;
+    ActiveChannel = app.Mainapp.ActiveChannel;
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
 
 end
 

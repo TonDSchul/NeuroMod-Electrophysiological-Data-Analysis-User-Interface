@@ -12,6 +12,11 @@ function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands, BandP
 dispF = F>=dispRange(1) & F<=dispRange(2);
 nC = size(allPowerEst,1); 
 
+if nC <2
+    msgbox("Error; At least two channel required for power spectrum over depth!")
+    return;
+end
+
 if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
     if strcmp(TwoORThreeD,"TwoD")
         PowerDepth_handles = findobj(BandPowerFigure, 'Tag', 'PowerDepth');

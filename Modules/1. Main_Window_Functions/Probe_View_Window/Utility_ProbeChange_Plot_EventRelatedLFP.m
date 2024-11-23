@@ -60,6 +60,13 @@ if strcmp(Window,"EventSpectrum")
     if strcmp(app.Mainapp.EventLFPSSP.AnalysisDropDown.Value,"Band Power Individual Channel ")
 
         SelectedChannel = str2double(app.Mainapp.EventLFPSSP.ChannelDropDown.Value);
+        if app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+            TempActiveChannel = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)*str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+1)-sort(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel);
+            [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,SelectedChannel,'MainWindow');
+        else
+            [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,SelectedChannel,'MainWindow');
+        end
+
         SelectedEvents = str2double(split(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value,','))';
 
         set(app.Mainapp.EventLFPSSP.UIAxes, 'YDir', 'normal');

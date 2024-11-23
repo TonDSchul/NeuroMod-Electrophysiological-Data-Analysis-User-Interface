@@ -37,7 +37,7 @@ Error = 0;
 
 OriginalChannelSelection = ChannelSelection;
 if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
-    TempActiveChannel = flip(sort(Data.Info.ProbeInfo.ActiveChannel));
+    TempActiveChannel = (str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows)+1)-sort(Data.Info.ProbeInfo.ActiveChannel);
     [ChannelSelection] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,str2double(ChannelSelection),'MainPlot');
     ChannelSelection = num2str(ChannelSelection);
 else

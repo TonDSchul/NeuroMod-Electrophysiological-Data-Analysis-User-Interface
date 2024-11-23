@@ -1,4 +1,4 @@
-function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,AllActiveChannel,OffSetRows)
+function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom)
 
 
 ChannelLeft = [];
@@ -80,6 +80,12 @@ else
         ChannelLeft = CurrentChannelLeft:-2:CurrentChannelLeft-(NrChannel*2-1);
         ChannelRight = CurrentChannelLeft+1:-2:CurrentChannelLeft-(NrChannel*2-2);
     end
+
+    if SwitchTopBottom == 1
+        ChannelLeft = ChannelLeft+1;
+        ChannelRight = ChannelRight-1;
+    end
+
 end
 
 Squareplots = 0;

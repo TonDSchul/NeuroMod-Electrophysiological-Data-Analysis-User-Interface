@@ -281,7 +281,7 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.Data.Info.ProbeInfo.SwitchTopBottomChannel = Load_Data_Window_Info.SwitchTopBottomChannel;
     app.Data.Info.ProbeInfo.SwitchLeftRightChannel = Load_Data_Window_Info.SwitchLeftRightChannel;
-    app.Data.Info.ProbeInfo.FlipLoadedData = Load_Data_Window_Info.FlipLoadedData;
+    Load_Data_Window_Info.FlipLoadedData
 
     app.Data.Info.ProbeInfo.OffSetRows = sort(Load_Data_Window_Info.OffSetRows);
     app.Data.Info.ProbeInfo.OffSetRowsDistance = sort(Load_Data_Window_Info.OffSetRowsDistance);

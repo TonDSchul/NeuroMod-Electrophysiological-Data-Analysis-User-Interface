@@ -1,4 +1,4 @@
-function [EventRelatedData] = Preprocessing_Events_Channel_Rejection(EventRelatedData,Time,Channel,ChannelSpacing,Figure,Type,ActiveChannel)
+function [EventRelatedData] = Preprocessing_Events_Channel_Rejection(Data,EventRelatedData,Time,Channel,ChannelSpacing,Figure,Type,ActiveChannel)
 
 %________________________________________________________________________________________
 %% Function to execute channel rejection and interpolation event preprocessing step
@@ -33,7 +33,12 @@ if strcmp(Type,'InterpolatedOnly') || strcmp(Type,'All')
    
     nchannel=length(ActiveChannel); %get size
     
-    [Channel] = Organize_Convert_ActiveChannel_to_DataChannel(ActiveChannel,Channel,'MainWindow');
+    if Data.Info.ProbeInfo.SwitchTopBottomChannel == 0
+        [Channel] = Organize_Convert_ActiveChannel_to_DataChannel(ActiveChannel,Channel,'MainWindow');
+    else
+        ReversedActiveChannel = (str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows)+1)-Data.Info.ProbeInfo.ActiveChannel;
+        [Channel] = Organize_Convert_ActiveChannel_to_DataChannel(ReversedActiveChannel,Channel,'MainWindow');
+    end
 
     if isscalar(Channel)
         Channel(2) = Channel(1);

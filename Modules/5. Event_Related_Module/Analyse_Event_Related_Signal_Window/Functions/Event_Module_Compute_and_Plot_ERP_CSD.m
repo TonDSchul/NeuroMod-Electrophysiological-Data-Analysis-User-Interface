@@ -60,8 +60,7 @@ CSDClim = [];
 % Extract Cell with eventindicies of selected event channel
 
 NumEvents = size(EventRelatedData,2);
-
-
+%% For all Channel ERP
 [DataChannelSelected] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,DataChannelSelected,'MainPlot');
 
 %% PLOT ERP
@@ -77,7 +76,7 @@ if isempty(CSD)
         OriginalERPChannel = str2double(ERPChannel);
         
         if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
-            TempActiveChannel = flip(sort(Data.Info.ProbeInfo.ActiveChannel));
+            TempActiveChannel = (str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows)+1)-sort(Data.Info.ProbeInfo.ActiveChannel);
             [ERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,OriginalERPChannel,'MainPlot');
         else
             [ERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,OriginalERPChannel,'MainPlot');
