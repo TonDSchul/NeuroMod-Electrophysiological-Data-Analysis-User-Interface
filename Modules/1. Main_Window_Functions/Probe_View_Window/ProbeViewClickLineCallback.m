@@ -357,7 +357,7 @@ if ProbeViewWindow == 0
             end
         end
         
-        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) == 2
+        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) == 2 && app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
             if mod(ChannelClicked, 2) == 1
                 ChannelClicked = ChannelClicked+1;
             else
