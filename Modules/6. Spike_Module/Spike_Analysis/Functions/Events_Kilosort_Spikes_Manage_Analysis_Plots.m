@@ -82,10 +82,6 @@ if strcmp(AnalysisTypeDropDown,"Spike Triggered Average") && PlotInfo.ChannelsTo
     return;
 end
 
-if min(SpikeCluster)==0
-    SpikeCluster = SpikeCluster+1;
-end
-
 if strcmp(AnalysisTypeDropDown,"Spike Map")
     
     if ~strcmp(ClustertoshowDropDown,"All") && ~strcmp(ClustertoshowDropDown,"Non")

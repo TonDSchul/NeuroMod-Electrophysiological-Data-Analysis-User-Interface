@@ -121,9 +121,15 @@ if ~isempty(SelectedChannelIndicies)
 
     if strcmp(SpikeType,"Kilosort")
         TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster(SelectedChannelIndicies==0);
+        if min(Data.EventRelatedSpikes.SpikeCluster)==0 
+            TempSpikeCluster = TempSpikeCluster+1;
+        end
     else
          if isfield(Data.Info,'SpikeSorting')
             TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster(SelectedChannelIndicies==0);
+            if min(Data.EventRelatedSpikes.SpikeCluster)==0 
+                TempSpikeCluster = TempSpikeCluster+1;
+            end
          else
             TempSpikeCluster = zeros(1,length(TempSpikePositions))';
          end
@@ -134,9 +140,15 @@ else
 
     if strcmp(SpikeType,"Kilosort")
         TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster;
+        if min(Data.EventRelatedSpikes.SpikeCluster)==0 
+            TempSpikeCluster = TempSpikeCluster+1;
+        end
     else
          if isfield(Data.Info,'SpikeSorting')
             TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster;
+            if min(Data.EventRelatedSpikes.SpikeCluster)==0 
+                TempSpikeCluster = TempSpikeCluster+1;
+            end
          else
             TempSpikeCluster = zeros(1,length(TempSpikePositions))';
          end

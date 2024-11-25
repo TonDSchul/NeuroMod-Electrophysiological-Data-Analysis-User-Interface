@@ -236,7 +236,12 @@ WaveformChannel = [];
 if strcmp(SpikeType,"Kilosort")
     if ~isempty(SelectedChannelIndicies)
         SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==0);
+
         CluterPositions = Data.Spikes.SpikeCluster(SelectedChannelIndicies==0);
+        if min(Data.Spikes.SpikeCluster)==0
+            CluterPositions = CluterPositions+1;
+        end
+
         ChannelPosition = Data.Spikes.ChannelPosition;
         if ndims(Waveforms)==3
             Waveforms = Waveforms(:,SelectedChannelIndicies==0,:);
@@ -246,6 +251,11 @@ if strcmp(SpikeType,"Kilosort")
     else
         SpikeAmps = Data.Spikes.SpikeAmps;
         CluterPositions = Data.Spikes.SpikeCluster;
+
+        if min(Data.Spikes.SpikeCluster)==0
+            CluterPositions = CluterPositions+1;
+        end
+
         ChannelPosition = Data.Spikes.ChannelPosition;
 
         Waveforms = Waveforms;
@@ -260,6 +270,13 @@ elseif strcmp(SpikeType,"Internal")
         else
             CluterPositions = Data.Spikes.SpikeCluster;
         end
+        % CLuster ID's can start with 0 (from Kilosort). Its used for indexing, so
+        % min value has to be 1
+        
+        if min(Data.Spikes.SpikeCluster)==0
+            CluterPositions = CluterPositions+1;
+        end
+
     end
 
     if ~isempty(SelectedChannelIndicies)

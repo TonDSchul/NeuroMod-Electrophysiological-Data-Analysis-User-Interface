@@ -108,6 +108,10 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         Data.Info.ProbeInfo.HorOffset = num2str(AutorunConfig.ProbeInfo.HorizontalOffsetum);
         Data.Info.ProbeInfo.ActiveChannel = sort(AutorunConfig.ProbeInfo.ActiveChannel);
     
+        Data.Info.ProbeInfo.SwitchTopBottomChannel = AutorunConfig.ProbeInfo.SwitchTopBottomChannel;
+        Data.Info.ProbeInfo.SwitchLeftRightChannel = AutorunConfig.ProbeInfo.SwitchLeftRightChannel;
+        Data.Info.ProbeInfo.FlipLoadedData = AutorunConfig.ProbeInfo.FlipLoadedData;
+
         Data.Info.ProbeInfo.OffSetRows = sort(AutorunConfig.ProbeInfo.OffSetRows);
         Data.Info.ProbeInfo.OffSetRowsDistance = sort(AutorunConfig.ProbeInfo.OffSetRowsDistance);
     
@@ -132,6 +136,10 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         if AutorunConfig.ExtractRawRecording.CostumChannelOrder == true
             %% Apply ChannelOrder
             [Data] = Manage_Dataset_Module_Apply_ChannelOrder (Data,Channelorder);
+        end
+        %% FLip Data
+        if Data.Info.ProbeInfo.FlipLoadedData == 1
+            [Data.Raw] = Manage_Dataset_Module_Apply_DataFlip(Data.Raw);
         end
 
         AutorunConfig.PlotAppearance = [];

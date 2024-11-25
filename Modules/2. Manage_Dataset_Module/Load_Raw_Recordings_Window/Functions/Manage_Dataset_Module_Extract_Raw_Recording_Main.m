@@ -289,6 +289,14 @@ elseif strcmp(RecordingSystem,"Spike2")
     currentchan = 0;
     hSpike2 = waitbar(0, 'Extracting Spike2 Data...', 'Name','Extracting Spike2 Data...');
     % Extract channel wise data. Loops until all channel analyzed
+
+    if ischar(NrChannel)
+        NrChannel = str2double(NrChannel);
+    end
+    if ischar(NrRows)
+        NrRows = str2double(NrRows);
+    end
+
     while nchannel == true
         
         currentchan = currentchan+1;
@@ -307,6 +315,7 @@ elseif strcmp(RecordingSystem,"Spike2")
         Data(currentchan,1:length(TempData)) = TempData;
         clear TempData
         % Update the progress bar
+
         fraction = currentchan/(NrChannel*NrRows); %
         msg = sprintf('Extracting Spike2 Data... (%d%% done)', round(100*fraction));
         waitbar(fraction, hSpike2, msg);

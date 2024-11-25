@@ -60,13 +60,6 @@ if isstring(SpikeTimes)
     return;
 end
 
-% CLuster ID's can start with 0 (from Kilosort). Its used for indexing, so
-% min value has to be 1
-
-if min(CluterPositions)==0
-    CluterPositions = CluterPositions+1;
-end
-
 % If no spike clustering with internal spikes available
 if ~isempty(Data.Spikes.SpikeCluster)
     numCluster = length(unique(Data.Spikes.SpikeCluster));

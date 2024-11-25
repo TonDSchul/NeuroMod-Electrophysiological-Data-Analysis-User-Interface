@@ -61,10 +61,6 @@ if isstring(SpikeTimes)
     return;
 end
 
-if min(CluterPositions)==0
-    CluterPositions = CluterPositions+1;
-end
-
 if strcmp(TypeofAnalysis,"Spike Map")
     set(Figure, 'YDir','reverse');
 

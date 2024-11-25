@@ -182,6 +182,7 @@ end
 
 if Data.Spikes.ChannelPosition(2,2)-Data.Spikes.ChannelPosition(1,2) ~= Data.Info.ChannelSpacing
     msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
+    warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
 end
 
 if KSversion == 4

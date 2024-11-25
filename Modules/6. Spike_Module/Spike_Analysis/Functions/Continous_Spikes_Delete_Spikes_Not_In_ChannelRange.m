@@ -59,7 +59,7 @@ if strcmp(SpikeType,'Internal')
         end
     end
 
-    % No correct spike positions based on channel deleted --> account for
+    % Now correct spike positions based on channel deleted --> account for
     % channel deleted before by substracting number of channels delted
     % above spikes
     for i = 1:length(SpikePositions)
@@ -102,10 +102,10 @@ if strcmp(SpikeType,'Kilosort')
         end
     end
 
-     % Convert back in channel
+    % Convert back in channel
     DeleteIndicies = (DeleteIndicies/ChannelSpacing)+1;
 
-    % No correct spike positions based on channel deleted --> account for
+    % Now correct spike positions based on channel deleted --> account for
     % channel deleted before by substracting number of channels delted
     % above spikes
     for i = 1:length(SpikePositions)

@@ -1,7 +1,5 @@
 function Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField)
 
-app.ExtractRecordingWindow.Load_Data_Window_Info.Mainapp.executableFolder
-
 cd(strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
 
 if str2double(ChannelRowsDropDown) == 1

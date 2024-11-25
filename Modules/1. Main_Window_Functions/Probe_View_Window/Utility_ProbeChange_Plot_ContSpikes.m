@@ -1,6 +1,7 @@
 function [app] = Utility_ProbeChange_Plot_ContSpikes(app)
 
 if ~isempty(app.Mainapp.ConInternalSpikesWindow)
+    
     app.Mainapp.ConInternalSpikesWindow.UIAxes.Color = app.Mainapp.ConInternalSpikesWindow.Mainapp.PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor;
     app.Mainapp.ConInternalSpikesWindow.UIAxes.FontSize = app.Mainapp.ConInternalSpikesWindow.Mainapp.PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
     

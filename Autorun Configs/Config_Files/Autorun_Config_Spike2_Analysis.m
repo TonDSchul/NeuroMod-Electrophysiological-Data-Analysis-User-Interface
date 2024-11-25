@@ -35,8 +35,9 @@ function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
 % 'Save_for_Kilosort'
 
 % What to execute
+%AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Save_for_Kilosort"];
 
-AutorunConfig.FunctionOrder = ["Load_Data","Preprocess_Continous_Data","Internal_Spike_Detection","Continous_Spike_Analysis","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Load_from_Kilosort","Continous_Spike_Analysis","Continous_Unit_Analysis","Event_Spike_Analysis","Event_Unit_Analysis","Event_Analysis_ERP","Event_Analysis_CSD","Event_Analysis_TimeFrequencyPower","Save_Data"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Load_from_Kilosort","Continous_Spike_Analysis"];
 
 % General Information
 AutorunConfig.AutorunConfigName = "Spike2 LFP and Spike Analysis";
@@ -113,12 +114,13 @@ AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact = "-0.1,0.1";
 AutorunConfig.StaticPowerSpectrum.PlotType = ["Band Power Individual Channel ","Band Power over Depth"]; % Analysis options for static power spectrum analysis. Input either string array or single strig. Options: "Band Power Individual Channel" OR "Band Power over Depth"
 AutorunConfig.StaticPowerSpectrum.DataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
 AutorunConfig.StaticPowerSpectrum.DataSource = "Raw Data"; % "Raw Data" or "Preprocessed Data"
-AutorunConfig.StaticPowerSpectrum.FrequencyRangeBPDepth = '0,300'; % Frequency Range shown in Power Spectrum analysis over depth. This only affects the plot and has no influence on the analysis. Input as char
+AutorunConfig.StaticPowerSpectrum.FrequencyRange = '0,500'; % Frequency Range shown in Power Spectrum analysis over depth. This only affects the plot and has no influence on the analysis. Input as char
 AutorunConfig.StaticPowerSpectrum.Channel = '5'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
+AutorunConfig.StaticPowerSpectrum.DepthChannel = '';
 %% 3.3 Analyse Spike Data
 %______________________________________________________________________________________________________
 % Kilosort Plots
-AutorunConfig.ContSpikeAnalysis.KilosortPlotType = ["Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"];  %"Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"
+AutorunConfig.ContSpikeAnalysis.KilosortPlotType = ["Spike Map"];  %"Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"
 % Internal Spike Plots
 AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType = ["Spike Map","Average Waveforms Across Channel","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Spike Triggered LFP"]; % "Spike Map" OR "Average Waveforms Across Channel" OR "Spike Amplitude Density Along Depth" OR "Cumulative Spike Amplitude Density Along Depth" OR "Spike Waveforms" OR "Spike Triggered LFP"
 % For Kilosort AND Internal Spikes:

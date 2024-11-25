@@ -80,10 +80,6 @@ if strcmp(AnalysisTypeDropDown,"Spike Triggered Average") && PlotInfo.ChannelsTo
     return;
 end
 
-if min(SpikeCluster)==0
-    SpikeCluster = SpikeCluster+1;
-end
-
 % Convert in um
 
 SpikePositions = (SpikePositions-1)*Data.Info.ChannelSpacing;
