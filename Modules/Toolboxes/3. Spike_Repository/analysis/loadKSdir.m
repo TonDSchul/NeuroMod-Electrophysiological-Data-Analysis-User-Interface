@@ -65,7 +65,6 @@ if ~isempty(cgsFile)
         cgs = cgs(~ismember(cids, noiseClusters));
         cids = cids(~ismember(cids, noiseClusters));
         
-        
     end
     
 else

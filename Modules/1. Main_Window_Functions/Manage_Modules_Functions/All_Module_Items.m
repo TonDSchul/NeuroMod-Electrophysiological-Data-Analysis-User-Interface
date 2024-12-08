@@ -40,8 +40,8 @@ Module{3}.Items{5} = 'Unit Analysis';
 Module{4}.Title = 'Spike Module';
 Module{4}.Function = 'RUN_Spike_Module';
 Module{4}.Items{1} = 'Internal Spike Detection';
-Module{4}.Items{2} = 'Save for Kilosort';
-Module{4}.Items{3} = 'Load from Kilosort';
+Module{4}.Items{2} = 'Save for Spike Sorting';
+Module{4}.Items{3} = 'Load Spike Sorting Results';
 %% Example Module -- this could be yours!
 Module{5}.Title = 'Example Module - this could be yours!';
 Module{5}.Function = 'RUN_Example';

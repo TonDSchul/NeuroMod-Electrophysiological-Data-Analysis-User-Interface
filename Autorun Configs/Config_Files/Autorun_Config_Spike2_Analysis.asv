@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -30,15 +30,17 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrd
 % 'Internal_Spike_Detection'
 % 'Create_Internal_Spike_Sorting'
 % 'Load_Internal_Spike_Sorting'
+% 'Internal_Spike_Detection'
 % 'Load_from_Kilosort'
 % 'Save_for_Kilosort'
 
 % What to execute
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_from_Kilosort","Continous_Spike_Analysis","Save_Data"];
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Load_from_Kilosort","Extract_Events","Extract_Event_Related_Data","Continous_Spike_Analysis","Event_Spike_Analysis","Save_Data"];
+%AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Load_from_Kilosort","Continous_Spike_Analysis"];
 
 % General Information
-AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";
+AutorunConfig.AutorunConfigName = "Spike2 LFP and Spike Analysis";
 AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
 AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
 AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
@@ -64,9 +66,9 @@ end
 %% 1.1 Extract Data from Raw Recordings
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
-AutorunConfig.ExtractRawRecording.ChannelSpacing = 50; % Some Standard value. Has to be manually specified in Autorun window and is overwritten
-AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
-AutorunConfig.ExtractRawRecording.FileType = "Intan .dat"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
+AutorunConfig.ExtractRawRecording.ChannelSpacing = 50; % Some Standard value. Has to be manually specified in Autorun window
+AutorunConfig.ExtractRawRecording.RecordingsSystem = "Spike2"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
+AutorunConfig.ExtractRawRecording.FileType = ".smrx"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -105,20 +107,20 @@ AutorunConfig.PreprocessCont.FilterDirection{2} = "Zero-phase forward and revers
 AutorunConfig.PreprocessCont.FilterOrder{1} = "3"; % Filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
 AutorunConfig.PreprocessCont.FilterOrder{2} = "3"; % Filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
 AutorunConfig.PreprocessCont.DownsampleRate = "1000"; % New downsampled sampling rate in Hz; input as char. This only is required when a filter is selected as the methods field.
-AutorunConfig.PreprocessCont.ArtefactRejetction.StimArtefactChannel = "DIN-04"; % Event channel which holds the time points of the stimulation. These are equal to the artefact time points
+AutorunConfig.PreprocessCont.ArtefactRejetction.StimArtefactChannel = "Data Channel 9"; % just an example! % Event channel which holds the time points of the stimulation. These are equal to the artefact time points
 AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact = "-0.1,0.1"; % Time around the artefact for which you want to correct (interpolate) data; in seconds
 %% 3.2 Static Power Spectrum
 %______________________________________________________________________________________________________
 AutorunConfig.StaticPowerSpectrum.PlotType = ["Band Power Individual Channel ","Band Power over Depth"]; % Analysis options for static power spectrum analysis. Input either string array or single strig. Options: "Band Power Individual Channel" OR "Band Power over Depth"
 AutorunConfig.StaticPowerSpectrum.DataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
 AutorunConfig.StaticPowerSpectrum.DataSource = "Raw Data"; % "Raw Data" or "Preprocessed Data"
-AutorunConfig.StaticPowerSpectrum.FrequencyRange = '0,1000'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
-AutorunConfig.StaticPowerSpectrum.Channel = '15'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
-AutorunConfig.StaticPowerSpectrum.DepthChannel = ''; % if "Band Power over Depth" selected, empty for all, otherwise '1,20' for channel 1 to 20;
+AutorunConfig.StaticPowerSpectrum.FrequencyRange = '0,500'; % Frequency Range shown in Power Spectrum analysis over depth. This only affects the plot and has no influence on the analysis. Input as char
+AutorunConfig.StaticPowerSpectrum.Channel = '5'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
+AutorunConfig.StaticPowerSpectrum.DepthChannel = '';
 %% 3.3 Analyse Spike Data
 %______________________________________________________________________________________________________
 % Kilosort Plots
-AutorunConfig.ContSpikeAnalysis.KilosortPlotType = ["Spike Map"]; % "Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"
+AutorunConfig.ContSpikeAnalysis.KilosortPlotType = ["Spike Map"];  %"Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"
 % Internal Spike Plots
 AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType = ["Spike Map","Average Waveforms Across Channel","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Spike Triggered LFP"]; % "Spike Map" OR "Average Waveforms Across Channel" OR "Spike Amplitude Density Along Depth" OR "Cumulative Spike Amplitude Density Along Depth" OR "Spike Waveforms" OR "Spike Triggered LFP"
 % For Kilosort AND Internal Spikes:
@@ -139,7 +141,6 @@ AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["1","2","3","4","5","6"]; % 'All'
 %______________________________________________________________________________________________________
 AutorunConfig.ContinousUnitAnalysis.NumBins = "150";
 AutorunConfig.ContinousUnitAnalysis.MaxTImeISI = "0.15";
-AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram = "20";
 
 AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1 = '20';
 AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2 = '20';
@@ -148,22 +149,21 @@ AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3 = '20';
 AutorunConfig.ContinousUnitAnalysis.UnitsPlot1 = '1,2,3';
 AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4. Event Data Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4.1 Extract Events and Data
 %______________________________________________________________________________________________________
-% Warning: ChannelOfInterest is the kind of event channel to extract from.
-% 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
-% -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Analog Input'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
-AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
-AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.02'; % Threshold of event signal at which events are extracted as char
+% Warning: DO NOT CHANEG ChannelOfInterest 
+% EventChannelSelection = Data channel which hold event inputs
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Spike2 Channel'; %DO NOT CHANGE!
+AutorunConfig.ExtractEventDataModule.EventChannelSelection = '9,10'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3'; If event channel came from data channel 10, then the first number must be 10!
+AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.2'; % Threshold of event signal at which events are extracted as char
 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
-AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.1'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
-AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.7'; %Time in seconds extracted after events as char
+AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
+AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
 AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" OR "Preprocessed" as char
+
 %% 4.2 Prepro event related data
 %______________________________________________________________________________________________________
 % Trial/Event Deletion
@@ -187,8 +187,8 @@ AutorunConfig.AnalyseEventDataModule.ChannelSelection = []; % Empty for all chan
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
 % CSD Settings
 AutorunConfig.AnalyseEventDataModule.CSDChannelSpacing = AutorunConfig.ExtractRawRecording.ChannelSpacing; % ChannelSpacing in um - autopopulated
-AutorunConfig.AnalyseEventDataModule.CSDHammWindow = '7'; % How much is CSD data smoothed in time and space domain? Format: Char
-AutorunConfig.AnalyseEventDataModule.CSDSurfaceChannel = '7'; % If top channel is surface channel leave at 1. Otherwise specify first channel within brain, so that channel above surface are not plotted in CSD; Format: Char
+AutorunConfig.AnalyseEventDataModule.CSDHammWindow = '6'; % How much is CSD data smoothed in time and space domain? Format: Char
+AutorunConfig.AnalyseEventDataModule.CSDSurfaceChannel = '1'; % If top channel is surface channel leave at 1. Otherwise specify first channel within brain, so that channel above surface are not plotted in CSD; Format: Char
 AutorunConfig.AnalyseEventDataModule.tempcolorMap = "parula"; 
 % Time Freqency Power Settings
 AutorunConfig.AnalyseEventDataModule.TFFrequencyRange = '2,120,120'; % Frequency range being displayed, input as char in the format: Lowest Frequency, Highest Frequency, Steps
@@ -197,13 +197,12 @@ AutorunConfig.AnalyseEventDataModule.TFPlotType = ["TF","ITPC"]; % 'Time Frequen
 AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonPhaseLocked"]; % 'Phase independent' OR 'Phase locked' OR 'Non-phase locked'; If just one: format is char!
 %% 4.4 Analyse event related spikes
 %______________________________________________________________________________________________________
-% Standard Settings
 AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.depth_bin_size = []; %if empty: channelspacing is taken
 AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.time_bin_size = 0.006; % app.GeneralSettings.Time bin size in seconds; % false if you dont want this step to be executed
-AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map"]; %"Spike Map" OR "Spike Rate Heatmap"
+AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map","Spike Rate Heatmap","Spike Triggered Average"]; %"Spike Map" OR "Spike Rate Heatmap"
 AutorunConfig.AnalyseEventSpikesModule.SelectedEvents = []; % Empty for all Events, otherwise format is char: 'Event1,Event2' like '1,20' for events 1 to 20
-AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot = '7,32'; % Empty for all Channel, otherwise format is char: 'Channel1,Channel2' like '1,20' for chnanel 1 to 20
-AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins = '200'; % Number of bins for the spike rate plots
+AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot = []; % Empty for all Channel, otherwise format is char: 'Channel1,Channel2' like '1,20' for chnanel 1 to 20
+AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins = '100'; % Number of bins for the spike rate plots
 AutorunConfig.AnalyseEventSpikesModule.Normalize = true; % Only for Heatmap and applicable if heatmap as plot type selected
 AutorunConfig.AnalyseEventSpikesModule.BaselineWindow = '-0.2,-0.05'; % Window of event related data used to normalize (Before the event trigger)
 AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage = '-0.005,0.1';
@@ -229,24 +228,19 @@ AutorunConfig.EventUnitAnalysis.UnitsPlot3 = '5,6,8';
 %% 5.1 Internal Spike Detection
 %______________________________________________________________________________________________________
 AutorunConfig.InternalSpikeDetection.Detectionmethod = 'Quiroga Method'; % 'Quiroga Method' OR 'Threshold: Mean - Std' OR 'Threshold: Median - Std'
-AutorunConfig.InternalSpikeDetection.Type = 'All Channel'; % 'All Channel' OR 'Individual Ch.'
+AutorunConfig.InternalSpikeDetection.Type = 'Individual Ch.'; % 'All Channel' OR 'Individual Ch.'
 AutorunConfig.InternalSpikeDetection.STDThreshold = '4.5'; % Number of standard deviations from mean to set threshold.
-AutorunConfig.InternalSpikeDetection.Filterspikes = true;
+AutorunConfig.InternalSpikeDetection.Filterspikes = false;
 AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset = '3';
 AutorunConfig.InternalSpikeDetection.FilterArtefactDepth = '200';
-
-AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform = true; % false for no Filtering
-AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices = '0.001'; % in s
-
-AutorunConfig.InternalSpikeDetection.SpikeSortingType = 'AllChannelTogether'; %% 'AllChannelTogether' OR IndividualChannel
 %% 5.2 Save for Kilosort
 %______________________________________________________________________________________________________
-AutorunConfig.SaveforKilosort.FileFormat = '.dat'; % '.dat' or '.bin'
-AutorunConfig.SaveforKilosort.SaveFormat = 'int32'; % 'int32' or 'int16' or "double" as char
+AutorunConfig.SaveforKilosort.FileFormat = '.bin'; % '.dat' or '.bin'
+AutorunConfig.SaveforKilosort.SaveFormat = 'double'; % 'int32' or 'int16' or "double" as char
 %% 5.2 Load from Kilosort
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromKilosort.Sorter = 'Kilosort4'; % which Spike sorter was used to analyze your data? Options: Kilosort' OR 'SpikeInterface'
-AutorunConfig.LoadfromKilosort.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data'
+AutorunConfig.LoadfromKilosort.Sorter = 'Mountainsort5'; % which Spike sorter was used to analyze your data? Options: Kilosort4' OR Kilosort3' OR 'Mountainsort5' OR 'SpykingCircus2'
+
 AutorunConfig.LoadfromKilosort.ScalingFactor = []; % char, This is the 'int32' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and aplied when you saved data for kilosort before.

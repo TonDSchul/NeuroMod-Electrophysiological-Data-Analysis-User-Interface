@@ -10,25 +10,20 @@ if strcmp(ModuleFunctionName,"Internal Spike Detection")
 
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ExtractSpikes");
     
-elseif strcmp(ModuleFunctionName,"Save for Kilosort")
+elseif strcmp(ModuleFunctionName,"Save for Spike Sorting")
     
-    if ~isfield(app.Data,'Raw')
-        msgbox("Error: No raw data found! Preprocessing will be done in kilosort and can not be saved. Returning.");
-        return;
-    end
-
     cd(app.executableFolder);
 
     app.SaveforKilosortWindowWindow = Kilosort_Savefile_Format_Window(app);
     
-elseif strcmp(ModuleFunctionName,"Load from Kilosort")
+elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
     
     if isfield(app.Data.Info,'CutStart')
-        msgbox("Warning: Start time of current dataset was cut. Please ensure, that Kilosort results are based on the same dataset");
+        msgbox("Warning: Start time of current dataset was cut. Please ensure, that spike sorting results are based on the same dataset");
     end
 
     if isfield(app.Data.Info,'CutEnd') 
-        msgbox("Warning: End time of current dataset was cut. Please ensure, that Kilosort results are based on the same dataset");
+        msgbox("Warning: End time of current dataset was cut. Please ensure, that spike sorting results are based on the same dataset");
     end
 
     cd(app.executableFolder);

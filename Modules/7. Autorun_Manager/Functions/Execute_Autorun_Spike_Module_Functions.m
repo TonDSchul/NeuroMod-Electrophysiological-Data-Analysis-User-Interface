@@ -73,14 +73,21 @@ end
 % 5.3 Load from Kilosort
 %______________________________________________________________________________________________________
 if strcmp(FunctionOrder,'Load_from_Kilosort')
-
-    SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
-
-    if strcmp(AutorunConfig.LoadfromKilosort.KilosortVersion,"Kilosort4")
+    
+    if strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Kilosort4")
+        SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
         SelectedFolder = strcat(SelectedFolder,"kilosort4");
-    else
+    elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Kilosort3")
+        SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
         SelectedFolder = strcat(SelectedFolder,"kilosort3");
+    elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Mountainsort5")
+        SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
+        SelectedFolder = strcat(SelectedFolder,"mountainsort5");
+    elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"SpykingCircus2")
+        SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
+        SelectedFolder = strcat(SelectedFolder,"spikingcircus2");
     end
+
     if ~exist(SelectedFolder,'dir')
         msgbox("Automatic detection of saved kilosort data failed, please select a folder manually");
         AutorunSpikeDetection = "SingleFolder";
@@ -97,58 +104,69 @@ if strcmp(FunctionOrder,'Load_from_Kilosort')
         msgbox("Warning: End time of current dataset was cut. Please ensure, that Kilosort results are based on the same dataset");
     end
 
-    %% Autoseach scalingfactor
-    if ~isempty(AutorunConfig.LoadfromKilosort.ScalingFactor)
-        ScalingFactor = str2double(AutorunConfig.LoadfromKilosort.ScalingFactor);
-    else
-        ScalingFactorPath32 = strcat(Data.Info.Data_Path,'\Kilosort\Scaling Factor int32.mat');
-        ScalingFactorPath16 = strcat(Data.Info.Data_Path,'\Kilosort\Scaling Factor int16.mat');
-    
-        if isfile(ScalingFactorPath32) 
-            %% Check if selected mat file contains correct variable
-            variableName = 'scalingFactor';  % Variable you want to load
-            
-            % Get the list of variables in the file
-            variablesInFile = who('-file', ScalingFactorPath32);
-            
-            % Check if the desired variable exists
-            if ismember(variableName, variablesInFile)
-                load(ScalingFactorPath32, variableName);  % Load only the specific variable
-            else
-                msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
-                return;  % Exit if the variable does not exist
-            end
-            disp("Found Scalingfactor saved as .mat file.")
-            load(ScalingFactorPath32,'scalingFactor');
-            ScalingFactor = scalingFactor;
-            Data.Info.KilosortScalingFactor = scalingFactor;
-
-        elseif isfile(ScalingFactorPath16) 
-            %% Check if selected mat file contains correct variable
-            variableName = 'scalingFactor';  % Variable you want to load
-            
-            % Get the list of variables in the file
-            variablesInFile = who('-file', ScalingFactorPath16);
-            
-            % Check if the desired variable exists
-            if ismember(variableName, variablesInFile)
-                load(ScalingFactorPath16, variableName);  % Load only the specific variable
-            else
-                msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath16));
-                return;  % Exit if the variable does not exist
-            end
-            
-            disp("Found Scalingfactor saved as .mat file.")
-            load(ScalingFactorPath16,'scalingFactor');
-            ScalingFactor = scalingFactor;
-            Data.Info.KilosortScalingFactor = scalingFactor;
+    if strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Kilosort4") || strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Kilosort3")
+        %% Autoseach scalingfactor
+        if ~isempty(AutorunConfig.LoadfromKilosort.ScalingFactor)
+            ScalingFactor = str2double(AutorunConfig.LoadfromKilosort.ScalingFactor);
         else
-            disp("Scaling factor to convert int format of the kilosort output to mV was not found as part of the dataset or as a .mat file in 'Original_Recording_Path/Kilosort'. Select a .mat file with a variable called scalingfactor, enter the scalingfactor manually or leave it empty (for no scaling)");      
-            ScalingFactor = [];
+            ScalingFactorPath32 = strcat(Data.Info.Data_Path,'\Kilosort\Scaling Factor int32.mat');
+            ScalingFactorPath16 = strcat(Data.Info.Data_Path,'\Kilosort\Scaling Factor int16.mat');
+        
+            if isfile(ScalingFactorPath32) 
+                %% Check if selected mat file contains correct variable
+                variableName = 'scalingFactor';  % Variable you want to load
+                
+                % Get the list of variables in the file
+                variablesInFile = who('-file', ScalingFactorPath32);
+                
+                % Check if the desired variable exists
+                if ismember(variableName, variablesInFile)
+                    load(ScalingFactorPath32, variableName);  % Load only the specific variable
+                else
+                    msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
+                    return;  % Exit if the variable does not exist
+                end
+                disp("Found Scalingfactor saved as .mat file.")
+                load(ScalingFactorPath32,'scalingFactor');
+                ScalingFactor = scalingFactor;
+                Data.Info.KilosortScalingFactor = scalingFactor;
+    
+            elseif isfile(ScalingFactorPath16) 
+                %% Check if selected mat file contains correct variable
+                variableName = 'scalingFactor';  % Variable you want to load
+                
+                % Get the list of variables in the file
+                variablesInFile = who('-file', ScalingFactorPath16);
+                
+                % Check if the desired variable exists
+                if ismember(variableName, variablesInFile)
+                    load(ScalingFactorPath16, variableName);  % Load only the specific variable
+                else
+                    msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath16));
+                    return;  % Exit if the variable does not exist
+                end
+                
+                disp("Found Scalingfactor saved as .mat file.")
+                load(ScalingFactorPath16,'scalingFactor');
+                ScalingFactor = scalingFactor;
+                Data.Info.KilosortScalingFactor = scalingFactor;
+            else
+                disp("Scaling factor to convert int format of the kilosort output to mV was not found as part of the dataset or as a .mat file in 'Original_Recording_Path/Kilosort'. Select a .mat file with a variable called scalingfactor, enter the scalingfactor manually or leave it empty (for no scaling)");      
+                ScalingFactor = [];
+            end
         end
+    else
+        ScalingFactor = [];
     end
 
-    [Data] = Spike_Module_Load_Kilosort_Data(Data,AutorunSpikeDetection,SelectedFolder,ScalingFactor);
+    if strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Mountainsort5") || strcmp(AutorunConfig.LoadfromKilosort.Sorter,"SpykingCircus2")
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder);
+    end
+
+    if strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Kilosort4") || strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Kilosort3")
+        % Function to load all relevant npy and .mat files Kilosort outputs
+        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor);
+    end
 
 end
 
@@ -164,13 +182,24 @@ if strcmp(FunctionOrder,'Save_for_Kilosort')
 
     if Execute == 1
 
-        if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
-            SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
-            Filename = strcat(AutorunConfig.FolderContents{nRecordings},".dat");
-        else
-            dashindex = find(Data.Info.Data_Path=='\');
-            Filename = strcat(Data.Info.Data_Path(dashindex(end)+1:end),".dat");
-            SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
+        if strcmp(AutorunConfig.SaveforKilosort.FileFormat,'.dat')
+            if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
+                SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
+                Filename = strcat(AutorunConfig.FolderContents{nRecordings},".dat");
+            else
+                dashindex = find(Data.Info.Data_Path=='\');
+                Filename = strcat(Data.Info.Data_Path(dashindex(end)+1:end),".dat");
+                SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
+            end
+        elseif strcmp(AutorunConfig.SaveforKilosort.FileFormat,'.bin')
+            if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
+                SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\");
+                Filename = strcat(AutorunConfig.FolderContents{nRecordings},".bin");
+            else
+                dashindex = find(Data.Info.Data_Path=='\');
+                Filename = strcat(Data.Info.Data_Path(dashindex(end)+1:end),".bin");
+                SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\");
+            end          
         end
 
         if ~exist(SelectedFolder,'dir')
@@ -194,6 +223,6 @@ if strcmp(FunctionOrder,'Save_for_Kilosort')
         FullPath = strcat(SelectedFolder,Filename);
 
         % Function to Save Raw Data as int32 in a .dat file
-        [Data] = Spike_Module_Save_for_Kilosort(Data,AutorunDetection,FullPath,AutorunConfig.SaveforKilosort.SaveFormat);
+        [Data] = Spike_Module_Save_for_Kilosort(Data,AutorunDetection,FullPath,AutorunConfig.SaveforKilosort.SaveFormat,AutorunConfig.LoadfromKilosort.Sorter,AutorunConfig.LoadfromKilosort.Dataset);
     end
 end

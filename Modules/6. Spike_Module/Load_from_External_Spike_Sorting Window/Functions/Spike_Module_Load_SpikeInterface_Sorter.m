@@ -1,0 +1,294 @@
+function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder)
+
+%% only spikingcircus2 and mountainsort5 tested
+
+%% First detect KS version -- only 3 has rez.mat file and params.py
+[stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
+
+SorterData = find(stringArray == "params.py");
+
+if isempty(SorterData)
+    msgbox("No SpikeInterface sorting output found. Please export your Sorting Analyzer object for phy first and select the correct output folder")
+    return;
+end
+
+%% Check for existing spike data
+SaveFilter = "No";
+
+if isfield(Data,'Spikes')
+    msgbox("Warning: Spike data already part of the dataset. Exisitng data will be removed.");
+    Data.Spikes = [];
+    if isfield(Data,'EventRelatedSpikes')
+        fieldsToDelete = {'EventRelatedSpikes'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+    end
+    if isfield(Data.Info,'SpikeSorting')
+        fieldsToDelete = {'SpikeSorting'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'SpikeDetectionNrStd')
+        fieldsToDelete = {'SpikeDetectionNrStd'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'SpikeDetectionThreshold')
+        fieldsToDelete = {'SpikeDetectionThreshold'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+    Data.Info.SpikeType = "Non";
+end     
+
+% initiate field
+Data.Spikes = [];
+
+%% Take folder from above, get folder contents, loop through them and load the npy file
+% Get a list of all files in the folder
+fileList = dir(SelectedFolder);
+
+% Extract filenames (excluding directories '.' and '..')
+fileNames = {fileList(~[fileList.isdir]).name};
+
+if isstring(SelectedFolder)
+    % Convert the string to a character array
+    Data.Spikes.DataPath = char(SelectedFolder);
+else
+    Data.Spikes.DataPath = SelectedFolder;
+end
+
+%% Loop thtough filenames. If name matches with the below condition, file content is loaded
+for i = 1:length(fileNames)
+    if strcmp(fileNames{i}(1:end-4),'spike_clusters')
+        Data.Spikes.SpikeCluster = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.SpikeCluster = double(Data.Spikes.SpikeCluster);
+    elseif strcmp(fileNames{i}(1:end-4),'amplitudes')
+        Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'amplitude')
+        Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'channel_groups')
+        Data.Spikes.SpikeTemplates = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'channel_map')
+        Data.Spikes.ChannelMap = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'channel_positions')
+        Data.Spikes.ChannelPosition = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'spike_times')
+        Data.Spikes.SpikeTimes = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'templates_ind')
+        Data.Spikes.templates_ind = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'templates')
+        Data.Spikes.templates = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'spike_detection_templates')
+        Data.Spikes.spike_detection_templates = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'pc_features')
+        Data.Spikes.pc_features = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'pc_feature_ind')
+        Data.Spikes.pc_feature_ind = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'kept_spikes')
+        Data.Spikes.kept_spikes = readNPY(fullfile(SelectedFolder,fileNames{i}));
+    elseif strcmp(fileNames{i}(1:end-4),'SpikePositions')
+        TempPositions = load(fullfile(SelectedFolder,fileNames{i}));
+        % Get the list of field names
+        fields = fieldnames(TempPositions.SpikePositions);
+        % Assuming TempPositions is a 1 x n structure array
+        n = numel(TempPositions.SpikePositions); % Number of elements in the structure
+        
+        % Preallocate a matrix to store the results
+        % Assuming each field contains two numbers
+        resultMatrix = zeros(n, 2);
+        
+        % Loop over the structure array
+        for idx = 1:n
+            % Loop over fields (assuming you are working with the first field for each structure element)
+            for j = 1:numel(fields)
+                fieldName = fields{j};
+                
+                resultMatrix(idx, 1) = TempPositions.SpikePositions(idx).(fieldName);
+                resultMatrix(idx, 2) = TempPositions.SpikePositions(idx).(fieldName);
+            end
+        end
+
+
+        Data.Spikes.SpikePositions = resultMatrix;
+    end
+end
+
+
+% Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
+if Data.Spikes.ChannelPosition(1,2) ~= 0
+    disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m by commenting the lines after this message prompt.")
+    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
+    Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing;
+end
+
+if Data.Spikes.ChannelPosition(2,2)-Data.Spikes.ChannelPosition(1,2) ~= Data.Info.ChannelSpacing
+    msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
+    warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
+end
+
+if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
+    msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
+    disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
+end
+
+%% If no KilosortData found: Spike Field is emptyx but has to be deleted
+if isempty(Data.Spikes)
+    fieldsToDelete = {'Spikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+    Data.Info.SpikeType = 'Non';
+    msgbox("No Kilosort 4 data found in selected path.");
+    fieldsToDelete = {'EventRelatedSpikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+    if isfield(Data,'EventRelatedSpikes')
+        fieldsToDelete = {'EventRelatedSpikes'};
+        % Delete fieldsven
+        Data = rmfield(Data, fieldsToDelete);
+    end
+    return;
+end
+
+% extracted every time analysis ios plotted, so removing is not really
+% necessary, but for good measure
+if isfield(Data,'EventRelatedSpikes')
+    fieldsToDelete = {'EventRelatedSpikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+end
+
+if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
+    SpikeAboveTime = Data.Spikes.SpikeTimes>length(Data.Time);
+
+    Data.Spikes.SpikeTimes(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikePositions(SpikeAboveTime==1,:) = [];
+    Data.Spikes.SpikeAmps(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
+
+    msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct kilosort outpout." )
+end
+
+SpikeTimesSmaller0 = Data.Spikes.SpikeTimes<= 0;
+
+if sum(SpikeTimesSmaller0)>0
+    Data.Spikes.SpikeTimes(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikePositions(SpikeTimesSmaller0==1,:) = [];
+    Data.Spikes.SpikeAmps(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikeChannel(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikeCluster(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikeTemplates(SpikeTimesSmaller0==1) = [];
+
+    msgbox("Warning: spike time(s) smaller or equal to 0 found and deleted. This is a known behavior fixed in newer Kilosort 4 versions." )
+end
+
+%% Specify SpikeType
+Data.Info.SpikeType = 'Kilosort';
+
+%% Extract Waveforms
+% For Kilosort we dont have channel information to extract from raw or
+% preprocessed data --> Therefore we take channel closest to position
+
+SpikePositions = Data.Spikes.SpikePositions(:,2);
+SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
+SpikePositions = round(SpikePositions)+1;
+Data.Spikes.SpikeChannel = SpikePositions;
+
+%% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
+% Detect high pass filter
+HigPassFiltered = 1;
+
+if isfield(Data,'Preprocessed') 
+    if isfield(Data.Info,'FilterMethod') 
+        if ~strcmp(Data.Info.FilterMethod,'High-Pass')
+            %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+            HigPassFiltered = 0;
+        end
+    else
+        %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+        HigPassFiltered = 0;
+    end
+else
+    %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+    HigPassFiltered = 0;
+end
+
+%%% if it has to be high pass filtered --> save as TempData, extract
+%%% waveforms and delete temp variable
+if HigPassFiltered == 0
+    HighPassFilterSettings = [];
+    Spike_Extraction_HighPassWindow = Spike_Extraction_AskforHighPass(HighPassFilterSettings);
+    
+    uiwait(Spike_Extraction_HighPassWindow.PreproSTAWindowUIFigure);
+    
+    if isvalid(Spike_Extraction_HighPassWindow)
+        Cutoff = Spike_Extraction_HighPassWindow.HighPassFilterSettings.Cutoff;
+        FilterOrder = Spike_Extraction_HighPassWindow.HighPassFilterSettings.FilterOrder;
+        SaveFilter = Spike_Extraction_HighPassWindow.HighPassFilterSettings.SaveFilter;
+        delete(Spike_Extraction_HighPassWindow);
+    else
+        disp("High pass filter settings window closed before manual config was saved. Using standard high pass filter settings (300Hz cutoff, filterorder 6)")
+        Cutoff = "300";
+        FilterOrder = "6";
+        SaveFilter = "No";
+    end
+
+    PreproInfo = [];
+    PreprocessingSteps = [];
+
+    Methods = ["Filter"];
+    [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR",Cutoff,"Zero-phase forward and reverse",FilterOrder,[],Data.Info.NativeSamplingRate);
+        
+    if isfield(PreproInfo,'ChannelDeletion')
+        ChannelDeletion = PreproInfo.ChannelDeletion;
+    else
+        ChannelDeletion = [];
+    end
+    
+    TextArea = [];
+    
+    if strcmp(SaveFilter,"No")
+        [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+        [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+        
+        %% Now extract Waveforms
+        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
+        
+        TempData = [];
+        
+    else
+        [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+        [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+        
+        %% Now extract Waveforms
+        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
+    end
+    
+else % If high pass was already applied
+    
+    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
+    
+end
+
+% Remove NaN from Waveforms
+% Some SPikes can be removed when they are too close to the edge of the
+% recording to have a complete waveform
+if sum(SpikesWithWaveform)>0
+    NumSpikeRemoved = length(find(SpikesWithWaveform==0));
+    if NumSpikeRemoved>0
+        msgbox(strcat("Warning: ",num2str(NumSpikeRemoved)," Spikes removed bc they are too close to the time limits"))
+    end
+    Data.Spikes.SpikeTimes = Data.Spikes.SpikeTimes(SpikesWithWaveform==1);
+    Data.Spikes.SpikePositions(SpikesWithWaveform==0,:) = [];
+    Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
+    Data.Spikes.Waveforms = Data.Spikes.Waveforms(SpikesWithWaveform==1,:);
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1); 
+    Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
+    %Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
+end
+
+msgbox("SpikeInterface Sorting successfully loaded.");

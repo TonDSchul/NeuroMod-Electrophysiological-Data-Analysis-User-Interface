@@ -7,7 +7,7 @@ function [Datatoload] = Manage_Dataset_Module_LoadData(Format,FullPath,FullPathI
 % performance
 
 % Input:
-% 1. Format: Which format data should be save in; string either ".mat" or ".dat"
+% 1. Format: Format of data to load; string either ".mat" or ".dat"
 % 2. FullPath: Full Path the user selected to save data at. String
 % including filename and fileending.
 % 3. FullPathInfo: Path to the Info file saved along with the .dat data

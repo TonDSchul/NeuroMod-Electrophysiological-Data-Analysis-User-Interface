@@ -114,7 +114,11 @@ if sum(contains(stringArray,".npy")) == 0
     return;
 end
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, ~,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
+
+
+[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel ,Data.Spikes.BiggestAmplWaveform, c] = ksDriftmap(folderPath,KSversion);
+
+Data.Spikes.SpikeChannel = double(Data.Spikes.SpikeChannel);
 
 if KSversion == 3
     %load(stringArray(foundrez),'rez');
@@ -229,7 +233,7 @@ if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     Data.Spikes.SpikeTimes(SpikeAboveTime==1) = [];
     Data.Spikes.SpikePositions(SpikeAboveTime==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeAboveTime==1) = [];
-    %Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
 
@@ -242,7 +246,7 @@ if sum(SpikeTimesSmaller0)>0
     Data.Spikes.SpikeTimes(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikePositions(SpikeTimesSmaller0==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeTimesSmaller0==1) = [];
-    %Data.Spikes.SpikeChannel(SpikeTimesSmaller0==1) = [];
+    Data.Spikes.SpikeChannel(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikeCluster(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikeTemplates(SpikeTimesSmaller0==1) = [];
 
@@ -256,13 +260,10 @@ Data.Info.SpikeType = 'Kilosort';
 % For Kilosort we dont have channel information to extract from raw or
 % preprocessed data --> Therefore we take channel closest to position
 
-SpikePositions = Data.Spikes.SpikePositions(:,2);
-SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
-SpikePositions = round(SpikePositions)+1;
-
-% SpikePositions= MaxTemplateChannel;
-Data.Spikes.SpikeChannel = SpikePositions;
-%SpikePositions = double(Data.Spikes.SpikeChannel);
+% SpikePositions = Data.Spikes.SpikePositions(:,2);
+% SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
+% SpikePositions = round(SpikePositions)+1;
+% Data.Spikes.SpikeChannel = SpikePositions;
 
 %% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
 % Detect high pass filter
@@ -322,7 +323,7 @@ if HigPassFiltered == 0
         [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
         
         %% Now extract Waveforms
-        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
+        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
         
         TempData = [];
         
@@ -331,12 +332,12 @@ if HigPassFiltered == 0
         [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
         
         %% Now extract Waveforms
-        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
+        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
     end
     
 else % If high pass was already applied
     
-    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"NormalWaveforms");
+    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
     
 end
 
