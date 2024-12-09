@@ -216,9 +216,9 @@ else
 end
 
 if strcmp(Data.Info.SpikeType,'Internal')
-    [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,"Internal",Data.Info.ProbeInfo.ActiveChannel);
-elseif strcmp(Data.Info.SpikeType,'Kilosort')
-    [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+    [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+elseif strcmp(Data.Info.SpikeType,'Kilosort') || strcmp(Data.Info.SpikeType,"SpikeInterface")
+    [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
 end
 
 if isempty(SpikeTimes)
@@ -233,7 +233,7 @@ if isempty(SpikeTimes)
 end
 
 WaveformChannel = [];
-if strcmp(SpikeType,"Kilosort")
+if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
     if ~isempty(SelectedChannelIndicies)
         SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==0);
 

@@ -109,7 +109,7 @@ PlotInfo.Time = -PlotInfo.TimearoundEvent(1):1/Data.Info.NativeSamplingRate:Plot
 PlotInfo.SpikeRateNumBins = str2double(SpikeRateNumBinsEditField);
 
 %% Delete Data based on Channelselection
-if strcmp(SpikeType,"Kilosort")
+if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
     [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
 else
     [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Internal",Data.Info.ProbeInfo.ActiveChannel);
@@ -119,7 +119,7 @@ if ~isempty(SelectedChannelIndicies)
     TempSpikeAmplitude = Data.EventRelatedSpikes.SpikeAmps(SelectedChannelIndicies==0);
     TempEvents = Data.EventRelatedSpikes.SpikeEvents(SelectedChannelIndicies==0);
 
-    if strcmp(SpikeType,"Kilosort")
+    if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
         TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster(SelectedChannelIndicies==0);
         if min(Data.EventRelatedSpikes.SpikeCluster)==0 
             TempSpikeCluster = TempSpikeCluster+1;
@@ -138,7 +138,7 @@ else
     TempSpikeAmplitude = Data.EventRelatedSpikes.SpikeAmps;
     TempEvents = Data.EventRelatedSpikes.SpikeEvents;
 
-    if strcmp(SpikeType,"Kilosort")
+    if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
         TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster;
         if min(Data.EventRelatedSpikes.SpikeCluster)==0 
             TempSpikeCluster = TempSpikeCluster+1;

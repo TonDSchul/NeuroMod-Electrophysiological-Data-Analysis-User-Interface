@@ -4,9 +4,9 @@ function RUN_Spike_Module(app,ModuleFunctionName)
 % It opens the windows of this module depending on the selection the user
 % made in the module field to the right of the RUN button
 
-if strcmp(ModuleFunctionName,"Internal Spike Detection")
+if strcmp(ModuleFunctionName,"Spike Detection and Sorting")
     % Open app window for Internal Spike Detection
-    app.SpikeExtractionWindow = Spike_Detection_Window(app);
+    app.SpikeExtractionWindow = Spike_Detection_and_Sorting_Window(app);
 
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ExtractSpikes");
     
@@ -14,7 +14,7 @@ elseif strcmp(ModuleFunctionName,"Save for Spike Sorting")
     
     cd(app.executableFolder);
 
-    app.SaveforKilosortWindowWindow = Kilosort_Savefile_Format_Window(app);
+    app.SaveforKilosortWindowWindow = Save_for_Spike_Sorting_Window(app);
     
 elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
     
@@ -28,6 +28,6 @@ elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
 
     cd(app.executableFolder);
 
-    app.LoadfromKilosortWindowWindow = Kilosort_Loadfile_Format_Window(app);
+    app.LoadfromKilosortWindowWindow = Load_Spike_Sorting_Window(app);
            
 end

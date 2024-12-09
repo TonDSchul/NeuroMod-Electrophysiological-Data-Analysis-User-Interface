@@ -70,7 +70,7 @@ if strcmp(SpikeType,'Internal')
     end
 end
 
-if strcmp(SpikeType,'Kilosort')
+if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
 
     %% Delte Channel not in range
     % What channels where deleted?

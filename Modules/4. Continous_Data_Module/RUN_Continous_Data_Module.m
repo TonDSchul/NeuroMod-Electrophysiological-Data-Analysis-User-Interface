@@ -55,7 +55,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
         return;
 
-    elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort')
+    elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
 
         if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
             app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
@@ -107,7 +107,7 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
         msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
         return;
     else
-        if strcmp(app.Data.Info.SpikeType,'Kilosort')
+        if strcmp(app.Data.Info.SpikeType,'Kilosort') || strcmp(app.Data.Info.SpikeType,'SpikeInterface')
             if isfield(app.Data.Spikes,"Waveforms")
                 app.UnitAnalysis = Continous_Waveform_Analysis_Window(app,"ContinousWindow");
             end

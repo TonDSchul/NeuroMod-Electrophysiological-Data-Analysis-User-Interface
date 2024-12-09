@@ -43,14 +43,14 @@ from tkinter import filedialog
 num_elec=16
 ypitch=100
 
-MultipleRecordings = 1
+MultipleRecordings = 0
 FolderToStartAt = 1 # only when MultipleRecordings = 1
 
 Sorter = 'mountainsort5' # ['herdingspikes', 'mountainsort5', 'simple', 'spykingcircus2', 'tridesclous2']
 
 ### Data Path with .bin file of your recording
-#file_path = "F:/100 µm channel spacing/100 µm channel spacing/STO-9920_24_EAE_iso_0,6_hippo1"
-file_path = "F:/100 µm channel spacing/100 µm channel spacing"
+file_path = "F:/100 µm channel spacing/100 µm channel spacing/STO-9920_24_EAE_iso_0,6_hippo1"
+#file_path = "F:/100 µm channel spacing/100 µm channel spacing"
 
 TempCacheFolder = "C:/Users/tonyd/AppData/Local/Temp/spikeinterface_cache"
 
@@ -61,7 +61,7 @@ Apply_Preprocessing = 1;
 ### Specify whether new spike sorting should be created or existing sorting should be loaded
 LoadSpikeSorting = 0;
 ### Specify whether spikeinterface GUI should be openend with sorting data
-OpenSpikeInterface_GUI = 0;
+OpenSpikeInterface_GUI = 1;
 ### Specify whether to plot some results (traces, raster, uni summary, waveforms, templates)
 Plot_Results = 0
 ### Specify whether to just load spike sorting

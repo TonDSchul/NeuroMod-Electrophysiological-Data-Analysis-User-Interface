@@ -26,7 +26,7 @@ function Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,Plo
 % 14. StartIndex: First idicie plotted in main plot in samples as double
 % 15. StopIndex: Last idicie plotted in main plot in samples as double
 % 16. SpikeDatatype: Either "Internal" when plotting internal spike data or
-% "Kilosort" when plotting spikes analysed with kilosort
+% "Kilosort" when plotting spikes analysed with kilosort Or "SpikeInterface"
 % 17. ChannelSpacing: as double in um
 % 18. PlotAppearance: structure holding indo about the appearance of plots
 % the user selected
@@ -329,7 +329,7 @@ if strcmp(Type,"Static")
             end
         end
     %% Plot loaded Kilosort Spikes
-    elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort")
+    elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort") || strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"SpikeInterface")
         if ~isempty(SpikeData.Indicie)
             
             [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);

@@ -53,7 +53,7 @@ if strcmp(EventWindow,"EventWindow")
 
     app.EventRangeEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.EventRelatedData,2)));
     
-    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings,app.Mainapp.ActiveChannel);
     else
         [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Internal",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings,app.Mainapp.ActiveChannel);
@@ -61,7 +61,7 @@ if strcmp(EventWindow,"EventWindow")
     
     app.BaselineWindowStartStopinsEditField.Value = strcat(num2str(-PlotInfo.TimearoundEvent(1)),',',num2str(0.1)); 
 
-    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         [~,SpikeTimes,~,~,SpikeCluster,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings,app.Mainapp.ActiveChannel);
     else
         [~,SpikeTimes,~,~,SpikeCluster,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Internal",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings,app.Mainapp.ActiveChannel);
@@ -80,7 +80,7 @@ end
 
 if strcmp(EventWindow,"Non")
     %% Manage TextField
-    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
     else
@@ -93,7 +93,7 @@ if strcmp(EventWindow,"Non")
     end
 else
     %% Manage TextField
-    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
     else
@@ -125,18 +125,18 @@ if strcmp(EventWindow,"Non")
     end  
 end
 
-if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"Non")
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"Non") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface") && strcmp(EventWindow,"Non")
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
 elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
-elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"EventWindow")
+elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"EventWindow") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface") && strcmp(EventWindow,"Non")
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
 end
 
-if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
     % Define unique color for each cluster
     app.rgbMatrix = lines(app.numCluster);
 else
@@ -148,7 +148,7 @@ else
 end
 
 %% Manage Cluster Selection
-if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") 
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
     texttoshow = {};
     
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~isfield(app.Mainapp.Data.Info,'SpikeSorting')
@@ -173,7 +173,7 @@ if strcmp(EventWindow,"Non")
     app.ChannelSelectionforPlottingEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.Raw,1)));
 
     %% Set up GUI components
-    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         app.WaveformSelectionforPlottingEditField.Value = strcat('1,100');
     end
 end
@@ -182,13 +182,13 @@ end
 set(app.UIAxes, 'YDir','reverse');
 set(app.UIAxes,'xticklabel',{[]});
 
-if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
     yyaxis(app.UIAxes_3, 'left');
 end
 
 set(app.UIAxes_3, 'YDir','reverse');
 
-if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort")
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
     yyaxis(app.UIAxes_3, 'right');
     set(app.UIAxes_3, 'YDir','reverse');
     ylabel(app.UIAxes_3,"Spike Rate [Hz]")

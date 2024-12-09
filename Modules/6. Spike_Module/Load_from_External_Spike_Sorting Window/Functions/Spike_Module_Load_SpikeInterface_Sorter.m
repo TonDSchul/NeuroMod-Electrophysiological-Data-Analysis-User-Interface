@@ -67,20 +67,26 @@ for i = 1:length(fileNames)
         Data.Spikes.SpikeCluster = double(Data.Spikes.SpikeCluster);
     elseif strcmp(fileNames{i}(1:end-4),'amplitudes')
         Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
     elseif strcmp(fileNames{i}(1:end-4),'amplitude')
         Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
     elseif strcmp(fileNames{i}(1:end-4),'channel_groups')
         Data.Spikes.SpikeTemplates = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.SpikeTemplates = double(Data.Spikes.SpikeTemplates);
     elseif strcmp(fileNames{i}(1:end-4),'channel_map')
         Data.Spikes.ChannelMap = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.ChannelMap = double(Data.Spikes.ChannelMap);
     elseif strcmp(fileNames{i}(1:end-4),'channel_positions')
         Data.Spikes.ChannelPosition = readNPY(fullfile(SelectedFolder,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'spike_times')
         Data.Spikes.SpikeTimes = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.SpikeTimes = double(Data.Spikes.SpikeTimes);
     elseif strcmp(fileNames{i}(1:end-4),'templates_ind')
         Data.Spikes.templates_ind = readNPY(fullfile(SelectedFolder,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'templates')
         Data.Spikes.templates = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.templates = double(Data.Spikes.templates);
     elseif strcmp(fileNames{i}(1:end-4),'spike_detection_templates')
         Data.Spikes.spike_detection_templates = readNPY(fullfile(SelectedFolder,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'pc_features')
@@ -187,7 +193,7 @@ if sum(SpikeTimesSmaller0)>0
 end
 
 %% Specify SpikeType
-Data.Info.SpikeType = 'Kilosort';
+Data.Info.SpikeType = 'SpikeInterface';
 
 %% Extract Waveforms
 % For Kilosort we dont have channel information to extract from raw or

@@ -123,7 +123,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     
     yyaxis(TimeSpikeFigure, 'left');
 
-    if strcmp(Data.Info.SpikeType,"Kilosort")
+    if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
         cN = numBins;  % number of steps/chunks
         dN = (length(ChannelSelection)-1)*Data.Info.ChannelSpacing;
         BinSize = dN/cN;
@@ -159,7 +159,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     CurrentPlotData.MainRateChannelXData = SpikesInBins;
     CurrentPlotData.MainRateChannelYData = 1:length(SpikesInBins);
     CurrentPlotData.MainRateChannelCData = [];
-    if strcmp(Data.Info.SpikeType,"Kilosort")
+    if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
         CurrentPlotData.MainRateChannelType = strcat("Continous Kilosort All Spikes Spike Rate Channel");
     else
         CurrentPlotData.MainRateChannelType = strcat("Continous Internal All Spikes Spike Rate Channel");
@@ -230,7 +230,7 @@ if ~strcmp(ClustertoShow,"Non") && ~strcmp(ClustertoShow,"All")
     CurrentPlotData.MainRateUnitXData = 1:length(SpikesInBins);
     CurrentPlotData.MainRateUnitYData = SpikesInBins;
     CurrentPlotData.MainRateUnitCData = [];
-    if strcmp(Data.Info.SpikeType,"Kilosort")
+    if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
         CurrentPlotData.MainRateUnitType = strcat("Continous Kilosort Unit ", ClustertoShow ," Spike Rate Time");
     else
         CurrentPlotData.MainRateUnitType = strcat("Continous Internal Unit ", ClustertoShow ," Spike Rate Time");
