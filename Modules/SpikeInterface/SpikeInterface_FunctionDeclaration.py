@@ -20,16 +20,19 @@ from scipy.io import savemat
 
 
 """ ################################################################ Load Binary file Function ####### """
-def Load_Binary_In_SpikeInterface(file_path):
+def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels):
     
-    """"Parallel Processing"""
+    num_channels = int(num_channels)
+    
+    """"Parallel Proc
+    essing"""
     global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
     si.set_global_job_kwargs(**global_job_kwargs)
     
     print("Reading .bin file")
     """  Define recording parameters """
-    sampling_frequency = 20_000.0  # Adjust according to your MATLAB dataset
-    num_channels = 16  # Adjust according to your MATLAB dataset
+    #sampling_frequency = 20_000.0  # Adjust according to your MATLAB dataset
+    #num_channels = 16  # Adjust according to your MATLAB dataset
     dtype = "float64"  # MATLAB's double corresponds to Python's float64
 
     """  Load data using SpikeInterface """
@@ -42,7 +45,7 @@ def Load_Binary_In_SpikeInterface(file_path):
     return dtype
 
 """ ################################################################ Generate Probe Desing ####### """
-def Create_Probe(num_elec,ypitch):
+def Create_Probe(num_elec,ypitch,PlotTraces):
     
     print("Creating and attaching Probe")
     
@@ -50,8 +53,10 @@ def Create_Probe(num_elec,ypitch):
     # the probe has to be wired to the recording
     probe.set_device_channel_indices(np.arange(num_elec))
     probe.set_contact_ids(np.arange(num_elec))
-
-    plot_probe(probe, with_contact_id=True)
+    
+    if PlotTraces == 1:
+        print("Plotting Traces...")
+        plot_probe(probe, with_contact_id=True)
     
     probe.to_dataframe(complete=True).loc[:, ["contact_ids", "shank_ids", "device_channel_indices"]]
     
@@ -85,9 +90,11 @@ def Preprocessing(Recording,Probe,Apply_Preprocessing,TempCacheFolder):
             print(f"Failed to delete {item_path}. Reason: {e}")
             
     if Apply_Preprocessing == 1:
+        print("Preprocessing Data...")
         Recording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000)
         Recording = spre.whiten(recording=Recording)
-        
+    else:
+       print("Not Preprocessing Data...")
         #Recording = spre.common_reference(recording=Recording, operator="median")
     
     Recording = Recording.set_probe(Probe)
@@ -121,7 +128,7 @@ def combined_plot(recording,PreproRecording,ypitch):
     plt.show()
     
 """ ################################################################ SpikingCircus2 ####### """
-def SortWithSpikingCircus(recording,Sorting_output_folder):
+def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing):
     
     print("Starting Spike Sorting with SpikingCircus 2")
     
@@ -133,6 +140,11 @@ def SortWithSpikingCircus(recording,Sorting_output_folder):
 
     # Mountainsort4 spike sorting
     default_SC2_params['detection']['detect_threshold'] = 5
+    if Apply_Preprocessing == 1:
+        default_SC2_params['filter'] = False
+    else:
+        default_SC2_params['filter'] = True
+        
     print(default_SC2_params)
     
     folder_path = Sorting_output_folder
@@ -148,7 +160,7 @@ def SortWithSpikingCircus(recording,Sorting_output_folder):
     return sorting
 
 """ ################################################################ MountainSort 5 ####### """
-def SortWithMountainSort(recording,Sorting_output_folder):
+def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing):
     
     print("Starting Spike Sorting with Mountainsort5")
     
@@ -158,27 +170,35 @@ def SortWithMountainSort(recording,Sorting_output_folder):
     
     default_MS5_params = ss.Mountainsort5Sorter.default_params()
     # Mountainsort4 spike sorting
-    """ 100 um """
+    """ 100 um  
     default_MS5_params['scheme2_training_duration_sec'] = 30
     default_MS5_params['scheme3_block_duration_sec'] = 50
     default_MS5_params['scheme1_detect_channel_radius'] = 50
     default_MS5_params['scheme2_phase1_detect_channel_radius'] = 100
     default_MS5_params['scheme2_max_num_snippets_per_training_batch'] = 100
     default_MS5_params['snippet_mask_radius'] = 50
-    default_MS5_params['filter'] = False
-    default_MS5_params['detect_threshold'] = 5
+    if Apply_Preprocessing == 1:
+        default_MS5_params['filter'] = False
+    else:
+        default_MS5_params['filter'] = True
+        
+    default_MS5_params['detect_threshold'] = 4.5
+    """
     
-    
-    """ 50 um
+    """50 um"""
     default_MS5_params['scheme2_training_duration_sec'] = 30
     default_MS5_params['scheme3_block_duration_sec'] = 50
-    default_MS5_params['scheme1_detect_channel_radius'] = 100
-    default_MS5_params['scheme2_phase1_detect_channel_radius'] = 250
+    default_MS5_params['scheme1_detect_channel_radius'] = 150
+    default_MS5_params['scheme2_phase1_detect_channel_radius'] = 200
     default_MS5_params['scheme2_max_num_snippets_per_training_batch'] = 100
-    default_MS5_params['snippet_mask_radius'] = 100
+    default_MS5_params['snippet_mask_radius'] = 50
     default_MS5_params['filter'] = False
-    default_MS5_params['detect_threshold'] = 5
-    """
+    default_MS5_params['detect_threshold'] =4.5 
+    if Apply_Preprocessing == 1:
+        default_MS5_params['filter'] = False
+    else:
+        default_MS5_params['filter'] = True
+    
     print(default_MS5_params)
     
     sorting = ss.run_sorter(sorter_name='mountainsort5', **default_MS5_params, recording=recording,output_folder=Sorting_output_folder)
