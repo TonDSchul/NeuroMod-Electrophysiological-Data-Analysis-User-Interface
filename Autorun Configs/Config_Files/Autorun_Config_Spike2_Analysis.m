@@ -35,7 +35,7 @@ function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
 % 'Save_for_Kilosort'
 
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_from_Kilosort","Continous_Spike_Analysis","Save_Data"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_Kilosort","Continous_Spike_Analysis","Save_Data"];
 
 %AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Load_from_Kilosort","Continous_Spike_Analysis"];
 
@@ -239,7 +239,7 @@ AutorunConfig.SaveforKilosort.FileFormat = '.bin'; % '.dat' or '.bin'
 AutorunConfig.SaveforKilosort.SaveFormat = 'double'; % 'int32' or 'int16' or "double" as char
 %% 5.2 Load from Kilosort
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromKilosort.Sorter = 'Mountainsort5'; % which Spike sorter was used to analyze your data? Options: Mountainsort5' OR 'Kilosort4' OR 'Kilosort3' OR 'SpykingCircus2'
+AutorunConfig.LoadfromKilosort.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: Mountainsort5' OR 'Kilosort4' OR 'Kilosort3' OR 'SpykingCircus2'
 AutorunConfig.LoadfromKilosort.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data'
 AutorunConfig.LoadfromKilosort.ScalingFactor = []; % char, This is the 'int32' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be

@@ -409,7 +409,7 @@ if isfield(Data,'Events')
         
             msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
         
-        elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")   
+        elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort") || isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"SpikeInterface")   
         
             % Handle Events to show
             if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
@@ -708,7 +708,7 @@ if strcmp(FunctionOrder,'Event_Unit_Analysis')
         
         if strcmp(Data.Info.SpikeType,"Internal")
             [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Internal",0);
-        elseif strcmp(Data.Info.SpikeType,"Kilosort")
+        elseif strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface") 
             [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0);
         end
         

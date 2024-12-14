@@ -68,6 +68,12 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i}(1:end-4),'amplitudes')
         Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
         Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_isi_violations_ratio')
+        Tempcluster_isi_violations_ratio = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.cluster_isi_violations_ratio = table2array(Tempcluster_isi_violations_ratio);
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_isi_violations_count')
+        TempIsiviolations = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.cluster_isi_violations_count = table2array(TempIsiviolations);
     elseif strcmp(fileNames{i}(1:end-4),'amplitude')
         Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
         Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
@@ -116,12 +122,9 @@ for i = 1:length(fileNames)
                 resultMatrix(idx, 2) = TempPositions.SpikePositions(idx).(fieldName);
             end
         end
-
-
         Data.Spikes.SpikePositions = resultMatrix;
     end
 end
-
 
 % Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
 if Data.Spikes.ChannelPosition(1,2) ~= 0

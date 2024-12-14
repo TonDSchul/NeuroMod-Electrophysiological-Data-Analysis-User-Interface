@@ -141,7 +141,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
             DepthChannel = Data.Info.ProbeInfo.ActiveChannel(DepthChannel(1):DepthChannel(2));
         end
 
-        if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort")
+        if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort") || isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"SpikeInterface")
             AverageWaveforms = [];
             % Handle Events: when empty take first event when
             % extracted.

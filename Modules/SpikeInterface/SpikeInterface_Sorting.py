@@ -20,6 +20,7 @@ from pathlib import Path
 from spikeinterface.preprocessing import common_reference
 from spikeinterface.exporters import export_to_phy
 import shutil
+import json
 
 from SpikeInterface_FunctionDeclaration import Load_Binary_In_SpikeInterface
 from SpikeInterface_FunctionDeclaration import Create_Probe
@@ -85,6 +86,12 @@ def main(subfolders,file_path):
     SampleRate = sys.argv[9]  # Second argument
     num_elec = sys.argv[10]  # Second argument
     ypitch = sys.argv[11]  # Second argument
+    
+    # Read the JSON file
+    #json_file_path = sys.argv[12]  # Assume it's the last argument
+    JsonFilename = file_path+"/sorting_parameters.json"
+    with open(JsonFilename, 'r') as f:
+        SortingParameter = json.load(f)
     
     MultipleRecordings = int(MultipleRecordings);
     Apply_Preprocessing = int(Apply_Preprocessing);
@@ -175,7 +182,7 @@ def main(subfolders,file_path):
             print("Creating new sorting...")
             
             if Sorter in ['SpykingCircus 2']:
-                sorting = SortWithSpikingCircus(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing)
+                sorting = SortWithSpikingCircus(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
                 
                 try:
                     shutil.rmtree(Save_Sorting_Folder)
@@ -186,7 +193,7 @@ def main(subfolders,file_path):
                     sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 
             if Sorter in ['Mountainsort 5']:
-                sorting = SortWithMountainSort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing)
+                sorting = SortWithMountainSort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
                 try:
                     shutil.rmtree(Save_Sorting_Folder)
                 except FileNotFoundError:
@@ -200,7 +207,7 @@ def main(subfolders,file_path):
         
         """ ################################################################ Create Analyzer ###################################################################### """
         
-        Analyzer = CreateSortingAnalyzer(DumpedRecording,sorting)
+        Analyzer = CreateSortingAnalyzer(DumpedRecording,sorting,Save_Sorting_Folder)
         
         """ ################################################################ Plot Sorting ###################################################################### """
         if Plot_Results == 1:
@@ -247,7 +254,53 @@ def main(subfolders,file_path):
     
 if __name__ == "__main__":
     
-    try:
+    KeepConsoleOpen = sys.argv[12]
+    KeepConsoleOpen = int(KeepConsoleOpen)
+    
+    if KeepConsoleOpen == 1:
+        try:
+            # Access arguments
+            file_path = sys.argv[1]
+            Sorter = sys.argv[3]  # First argument
+            MultipleRecordings = sys.argv[2]  # Second argument
+            Apply_Preprocessing = sys.argv[4]  # Second argument
+            LoadSpikeSorting = sys.argv[5] # First argument
+            OpenSpikeInterface_GUI = sys.argv[6] # Second argument
+            Plot_Results = sys.argv[7] # First argument
+            JustOpenSpikeInterfaceGUI = sys.argv[8]  # Second argument
+            SampleRate = sys.argv[9]  # Second argument
+            
+            MultipleRecordings = int(MultipleRecordings);
+            
+            if not pyuac.isUserAdmin():
+                print("Re-launching as admin!")
+                pyuac.runAsAdmin()
+            else:     
+                if MultipleRecordings == 1:
+                   
+                    folder_path = file_path
+                    
+                    if folder_path:
+                        subfolders = get_all_subfolders(folder_path)
+                        print("Subfolders found:")
+                        for subfolder in subfolders:
+                            print(subfolder)
+                    else:
+                        print("No folder was selected.")
+                else:
+                    subfolders = file_path
+                
+                
+                main(subfolders,file_path)  # Already an admin here.
+                
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            print("Traceback details:")
+            import traceback
+            traceback.print_exc()  # Print detailed error information
+        finally:
+            input("Press Enter to exit...")
+    else:
         # Access arguments
         file_path = sys.argv[1]
         Sorter = sys.argv[3]  # First argument
@@ -282,10 +335,3 @@ if __name__ == "__main__":
             
             main(subfolders,file_path)  # Already an admin here.
             
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        print("Traceback details:")
-        import traceback
-        traceback.print_exc()  # Print detailed error information
-    finally:
-        input("Press Enter to exit...")

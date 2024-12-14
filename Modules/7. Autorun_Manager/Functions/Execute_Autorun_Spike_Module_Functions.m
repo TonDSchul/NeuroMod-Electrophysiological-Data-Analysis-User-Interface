@@ -80,12 +80,12 @@ if strcmp(FunctionOrder,'Load_from_Kilosort')
     elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Kilosort3")
         SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
         SelectedFolder = strcat(SelectedFolder,"kilosort3");
-    elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Mountainsort5")
+    elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Mountainsort 5")
         SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
-        SelectedFolder = strcat(SelectedFolder,"mountainsort5");
-    elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"SpykingCircus2")
+        SelectedFolder = strcat(SelectedFolder,"Mountainsort 5");
+    elseif strcmp(AutorunConfig.LoadfromKilosort.Sorter,"SpykingCircus 2")
         SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
-        SelectedFolder = strcat(SelectedFolder,"spikingcircus2");
+        SelectedFolder = strcat(SelectedFolder,"SpykingCircus 2");
     end
 
     if ~exist(SelectedFolder,'dir')
@@ -159,7 +159,7 @@ if strcmp(FunctionOrder,'Load_from_Kilosort')
         ScalingFactor = [];
     end
 
-    if strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Mountainsort5") || strcmp(AutorunConfig.LoadfromKilosort.Sorter,"SpykingCircus2")
+    if strcmp(AutorunConfig.LoadfromKilosort.Sorter,"Mountainsort 5") || strcmp(AutorunConfig.LoadfromKilosort.Sorter,"SpykingCircus 2")
         [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder);
     end
 
