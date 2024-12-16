@@ -225,17 +225,20 @@ if Activated
             app.SpikeExtractionWindow.MeanDropDown.Tooltip = "Specify whether the mean and standard deviation is calculated for each channel individually or for all channel together.";
             app.SpikeExtractionWindow.FilterVerticalSpikeArtefactsCheckBox.Tooltip = "Enable to reject spike artefacts that occur during the same time +/- a number of samples over a certain depth. Number of samples and minimum depth over which artefacts have to occur can be specified in the fields below.";
             
-            app.SpikeExtractionWindow.FilterDoubleSpikeIndiciesCheckBox.Tooltip = "In noisy data multiple spike indicies can be detected within the same spike waveform due to fast changing threshold crossings. Enabling this combines all spike times found within the time range specified and just retains the indicie of the peak amplitude value.";
+            app.SpikeExtractionWindow.FilterDoubleSpikeIndiciesCheckBox.Tooltip = "In recordings with low snr, multiple spike indicies can be detected within the same spike waveform due to fast changing threshold crossings. Enabling this combines all spike times found within the time range specified and just retains the indicie of the peak amplitude value.";
             app.SpikeExtractionWindow.VerticalSpikeOffsetToleranceSamplesEditField.Tooltip = "Number of samples the spike times can deviate to still count as a potential vertical artefact.";
             app.SpikeExtractionWindow.MinDepthofArtefactmEditField.Tooltip = "Minimum depth over which spikes within the same time +/- the specified amount of samples have to occur to count as a artefact. With a channel spacing of 20um and 200um specified in this field, the spike times have to be the same over at least 10 consecutive channel.";
             
             app.SpikeExtractionWindow.TimeOffsettoCombineSpikeIndiciessEditField.Tooltip = "Time range in seconds for which spike times get combined when inside the same waveform.";
-            app.SpikeExtractionWindow.StartSpikeDetectionButton.Tooltip = "This will start the spike extraction and enable you to cluster the detected spikes using Wave_clus 3 in the section below. It also enables to open all spike analysis windows.";
+            app.SpikeExtractionWindow.StartSpikeDetectionButton.Tooltip = "This will start the spike extraction and enable you to cluster the detected spikes using Wave_clus 3 in the section below. It also enables to open all spike analysis windows. Spike sorters other than Wave_Clus 3 do not need and use the spike detection results!";
 
-            app.SpikeExtractionWindow.OptionsDropDown.Tooltip = "Change which action you want to execute using the 'Run' button below. When 'Load Sorting Results' is selected check in the right if cluster results you might already have were autodetected. If you saved the clustering results in a different folder to the one checked for autodetection, select a folder manually by selecting 'Manually Select Folder with Sorting Results'.";
+            app.SpikeExtractionWindow.OptionsDropDown_2.Tooltip = "Change which action you want to execute using the 'Run' button below. When 'Load Sorting Results' is selected check in the right if cluster results you might already have were autodetected. If you saved the clustering results in a different folder to the one checked for autodetection, select a folder manually by selecting 'Manually Select Folder with Sorting Results'.";
             app.SpikeExtractionWindow.SortallChannelTogetherCheckBox.Tooltip = "Combines all spike times together to do a channel independent analysis using waveclus.";
             app.SpikeExtractionWindow.SortforIndividualChannelCheckBox.Tooltip = "Applies waveclus clustering to spikes of each channel individually.";
-            app.SpikeExtractionWindow.RUNButton.Tooltip = "Execute the option you specified above.";
+            app.SpikeExtractionWindow.RUNButton_2.Tooltip = "Execute the option you specified on the left for the selected sorter.";
+
+            app.SpikeExtractionWindow.Label.Tooltip = "When required files for Kilosort, Mountainsort or Spykingcircus (.bin file of recording) were found in auto-searched or manually selected folder, this turns green and shows the corresponding message. If Wave_Clus3 is selected as sorter, a spike_times-mat files is searched for.";
+            app.SpikeExtractionWindow.SetOutputFolderManuallyButton.Tooltip = "Applies waveclus clustering to spikes of each channel individually.";
         end
     end
 

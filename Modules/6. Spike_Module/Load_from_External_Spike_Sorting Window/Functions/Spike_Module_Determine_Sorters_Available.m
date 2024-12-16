@@ -146,26 +146,46 @@ else % If manual Folderselection
                 else
                     InfoText = ["Warning: No .npy sorter output files for Kilosort found in manually selected Path folder. Please select a different folder."; ""; InfoText];
                 end
-            elseif ChangedSelectedSorter == 2 % SpikeInterface
-                
+            elseif ChangedSelectedSorter == 2 % SpikeInterface Mountainsort 5
                 if ~isempty(npyFiles)
                     CurrentSorter = [];
                     if sum(contains(stringArray,"cluster_KSLabel.tsv"))==0
                         if sum(contains(stringArray,"SpikePositions.mat"))>0
                             CurrentSorter = "Mountainsort5"; 
-                            SorterNames = "Mountainsort5 or SpykingCircus2";
-                            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                            SorterNames = "Mountainsort5";
+                            InfoText = [strcat(".npy output files for sorter ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
                         else
                             InfoText = ["Warning: .npy file present but no SpikePosition.mat from SpikeInterface found."; ""; InfoText];
                         end
                     else
                         CurrentSorter = "Mountainsort5"; 
-                        SorterNames = "Mountainsort5 or SpykingCircus2";
+                        SorterNames = "Mountainsort5";
                         InfoText = [strcat("Warning: No .npy sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
                     end
                 else
                     InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
                 end
+            elseif ChangedSelectedSorter == 3 % SpikeInterface SpykingCircus 2
+                if ~isempty(npyFiles)
+                    CurrentSorter = [];
+                    if sum(contains(stringArray,"cluster_KSLabel.tsv"))==0
+                        if sum(contains(stringArray,"SpikePositions.mat"))>0
+                            CurrentSorter = "SpykingCircus2"; 
+                            SorterNames = "SpykingCircus2";
+                            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                        else
+                            InfoText = ["Warning: .npy file present but no SpikePosition.mat from SpikeInterface found."; ""; InfoText];
+                        end
+                    else
+                        CurrentSorter = "SpykingCircus2"; 
+                        SorterNames = "SpykingCircus2";
+                        InfoText = [strcat("Warning: No .npy sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
+                    end
+                else
+                    InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
+                end
+
+
             end
         end
     else

@@ -132,7 +132,8 @@ if ~ismember(ImageFormat, validFormats)
 end
 
 % Maximize the figure window
-set(Figure, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
+%set(Figure, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
+set(Figure, 'Units', 'normalized', 'OuterPosition', [0.25 0.25 0.5 0.5]);
 
 % Pause briefly to allow the figure to render at the new size
 pause(0.5);
@@ -140,13 +141,13 @@ pause(0.5);
 % Save the figure in the specified format
 switch ImageFormat
     case 'fig'
-        savefig(Figure, [Filename, '.fig']);
+        savefig(Figure, strcat(Filename, '.fig'));
         %disp(['Figure saved as ', filename, '.fig']);
     case 'png'
         saveas(Figure, strcat(Filename, '.png'));
         %disp(['Figure saved as ', filename, '.png']);
     case 'svg'
-        saveas(Figure, [Filename, '.svg']);
+        saveas(Figure, strcat(Filename, '.svg'));
         %disp(['Figure saved as ', filename, '.svg']);
 end
 

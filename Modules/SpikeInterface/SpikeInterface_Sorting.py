@@ -26,6 +26,7 @@ from SpikeInterface_FunctionDeclaration import Load_Binary_In_SpikeInterface
 from SpikeInterface_FunctionDeclaration import Create_Probe
 from SpikeInterface_FunctionDeclaration import Preprocessing
 from SpikeInterface_FunctionDeclaration import combined_plot
+
 from SpikeInterface_FunctionDeclaration import SortWithSpikingCircus
 from SpikeInterface_FunctionDeclaration import SortWithMountainSort
 from SpikeInterface_FunctionDeclaration import CreateSortingAnalyzer
@@ -34,6 +35,10 @@ from SpikeInterface_FunctionDeclaration import DeleteFolderContents
 from SpikeInterface_FunctionDeclaration import SaveSpikePosition_mat
 from SpikeInterface_FunctionDeclaration import get_all_subfolders
 from SpikeInterface_FunctionDeclaration import get_bin_files
+from SpikeInterface_FunctionDeclaration import get_dat_files
+from SpikeInterface_FunctionDeclaration import SortWithKilosort
+
+from DeletePermissionErrorHandle import DeletePermittedHandle
 
 import os
 import sys
@@ -92,7 +97,7 @@ def main(subfolders,file_path):
     JsonFilename = file_path+"/sorting_parameters.json"
     with open(JsonFilename, 'r') as f:
         SortingParameter = json.load(f)
-    
+        
     MultipleRecordings = int(MultipleRecordings);
     Apply_Preprocessing = int(Apply_Preprocessing);
     LoadSpikeSorting = int(LoadSpikeSorting);
@@ -107,8 +112,8 @@ def main(subfolders,file_path):
     
     print("Installed Sorter:")
     
-    ISO = si.installed_sorters()
-    print(ISO)
+    #ISO = si.installed_sorters()
+    #print(ISO)
     
     """ ################################################################ Manage Folder Structure ###################################################################### """
     
@@ -135,7 +140,11 @@ def main(subfolders,file_path):
         print(IterMessage)
         print(CompletePath)
         
+        #if Sorter in ['Kilosort 4']:
+        #     BinFiles = get_dat_files(CompletePath)
+        #else:
         BinFiles = get_bin_files(CompletePath)
+            
         PathToLoad = CompletePath+"/"+BinFiles[0]
         
         PathForPhy = CompletePath + "/SpikeInterface_Sorting_Phy_Results/"+Sorter
@@ -149,8 +158,8 @@ def main(subfolders,file_path):
             DeleteFolderContents(Save_Sorting_Folder)
         
         """ ################################################################ Start Processing ###################################################################### """
-        
-        Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec)
+            
+        Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter)
         
         Probe = Create_Probe(num_elec,ypitch,PlotTraces)
         
@@ -190,7 +199,8 @@ def main(subfolders,file_path):
                     print("The folder does not exist.")
                 except Exception as e:
                     print(f"An error occurred: {e}")
-                    sorting.save(folder=Save_Sorting_Folder,overwrite=True)
+                
+                #sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 
             if Sorter in ['Mountainsort 5']:
                 sorting = SortWithMountainSort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
@@ -201,7 +211,21 @@ def main(subfolders,file_path):
                 except Exception as e:
                     print(f"An error occurred: {e}")
                 #sorting = sorting.save()
+                
                 sorting.save(folder=Save_Sorting_Folder,overwrite=True)
+                
+            if Sorter in ['Kilosort 4']:
+                sorting = SortWithKilosort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
+                try:
+                    shutil.rmtree(Save_Sorting_Folder)
+                except FileNotFoundError:
+                    print("The folder does not exist.")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                #sorting = sorting.save()
+                
+                sorting.save(folder=Save_Sorting_Folder,overwrite=True)
+                
         else:
             sorting = load_extractor(Save_Sorting_Folder)
         

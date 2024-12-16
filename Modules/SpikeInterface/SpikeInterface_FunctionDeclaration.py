@@ -13,6 +13,7 @@ import numpy as np
 from probeinterface import generate_linear_probe
 from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
+#from kilosort import io
 import time
 import os
 import shutil
@@ -20,7 +21,7 @@ from scipy.io import savemat
 
 
 """ ################################################################ Load Binary file Function ####### """
-def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels):
+def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sorter):
     
     num_channels = int(num_channels)
     
@@ -33,8 +34,11 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels):
     """  Define recording parameters """
     #sampling_frequency = 20_000.0  # Adjust according to your MATLAB dataset
     #num_channels = 16  # Adjust according to your MATLAB dataset
-    dtype = "float64"  # MATLAB's double corresponds to Python's float64
-
+    if Sorter in ['Kilosort 4']:
+        dtype = "float32"  # MATLAB's double corresponds to Python's float64
+    else:
+        dtype = "float64"  # MATLAB's double corresponds to Python's float64
+    
     """  Load data using SpikeInterface """
     recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
                                num_channels=num_channels, dtype=dtype)
@@ -128,7 +132,7 @@ def combined_plot(recording,PreproRecording,ypitch):
     plt.show()
     
 """ ################################################################ SpikingCircus2 ####### """
-def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing):
+def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,SortingParameter):
     
     print("Starting Spike Sorting with SpikingCircus 2")
     
@@ -137,11 +141,13 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing):
     si.set_global_job_kwargs(**global_job_kwargs)
     
     default_SC2_params = ss.Spykingcircus2Sorter.default_params()
-
-    # Mountainsort4 spike sorting
-    default_SC2_params['detection']['detect_threshold'] = 5
+    
+    print(default_SC2_params)
+    
+    default_SC2_params = update_standards(default_SC2_params, SortingParameter)
         
     print(default_SC2_params)
+    
     
     folder_path = Sorting_output_folder
 
@@ -152,7 +158,7 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing):
     except Exception as e:
         print(f"An error occurred: {e}")
     
-    sorting = ss.run_sorter(sorter_name='spykingcircus2', **default_SC2_params, recording=recording,output_folder=Sorting_output_folder,verbose=True)
+    sorting = ss.run_sorter(sorter_name='spykingcircus2', **default_SC2_params, recording=recording,output_folder=Sorting_output_folder)
     return sorting
 
 """ ################################################################ MountainSort 5 ####### """
@@ -167,9 +173,9 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     default_MS5_params = ss.Mountainsort5Sorter.default_params()
     print(default_MS5_params)
     
-    default_MS5_params = update_standards(default_MS5_params, SortingParameter)
+    Costum_MS5_params = update_standards(default_MS5_params, SortingParameter)
     
-    print(default_MS5_params)
+    print(Costum_MS5_params)
 
     """ 100 um  
     default_MS5_params['scheme2_training_duration_sec'] = 30
@@ -196,7 +202,25 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     else:
         default_MS5_params['filter'] = True
     
-    sorting = ss.run_sorter(sorter_name='mountainsort5', **default_MS5_params, recording=recording,output_folder=Sorting_output_folder)
+    sorting = ss.run_sorter(sorter_name='mountainsort5', **Costum_MS5_params, recording=recording,output_folder=Sorting_output_folder)
+    return sorting
+
+""" ################################################################ MountainSort 5 ####### """
+def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,SortingParameter):
+    
+    print("Starting Spike Sorting with Kilosort 4")
+    
+    """"Parallel Processing"""
+    global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
+    si.set_global_job_kwargs(**global_job_kwargs)
+    
+    default_KS4_params = ss.Kilosort4Sorter.default_params()
+    print(default_KS4_params)
+    
+    #default_KS4_params = update_standards(default_KS4_params, SortingParameter)
+    #print(default_KS4_params)
+        
+    sorting = ss.run_sorter(sorter_name='kilosort4', **default_KS4_params, recording=recording,output_folder=Sorting_output_folder)
     return sorting
     
 """ ################################################################ MountainSort 5 ####### """
@@ -302,6 +326,18 @@ def get_bin_files(folder_path):
     # List all files in the folder and filter for .bin files
     bin_files = [file for file in os.listdir(folder_path) if file.endswith('.bin')]
     return bin_files
+
+def get_dat_files(folder_path):
+    """
+    Returns a list of filenames with the .bin extension in the given folder.
+    """
+    
+    if not os.path.exists(folder_path):
+        raise FileNotFoundError(f"The folder '{folder_path}' does not exist.")
+    
+    # List all files in the folder and filter for .bin files
+    dat_files = [file for file in os.listdir(folder_path) if file.endswith('.dat')]
+    return dat_files
         
 def update_standards(standsorting_parameters, sorting_parameters):
     for key, value in sorting_parameters.items():

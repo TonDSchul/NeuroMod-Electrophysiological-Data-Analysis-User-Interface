@@ -37,5 +37,28 @@ elseif strcmp(Sorter,"SpykingCircus 2")
                 Text, indent, field, formattedValue);
         end
     end
-
+elseif strcmp(Sorter,"Kilosort 4") 
+    
+    % Initialize an empty cell array to hold the formatted strings
+    params_cell = {};
+    
+    % Loop through the fields of the structure
+    fields = fieldnames(Struc);
+    for i = 1:numel(fields)
+        field = fields{i};
+        value = Struc.(field);
+        
+        % Convert value to string
+        if islogical(value)
+            value_str = mat2str(value);  % for boolean values
+        elseif isempty(value)
+            value_str = 'None';  % for empty arrays
+        else
+            value_str = mat2str(value);  % general case for other types
+        end
+        
+        % Create the field: value string and store it in the cell array
+        params_cell{end+1} = sprintf('%s: %s', field, value_str);
+    end
+    Text = params_cell;
 end

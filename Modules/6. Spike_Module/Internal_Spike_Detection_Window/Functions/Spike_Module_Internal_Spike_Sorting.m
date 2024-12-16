@@ -223,35 +223,36 @@ elseif isfile(strcat(strcat(SpikeSortingPath,'\Ch1_spikes.mat')))
     Data.Spikes.SpikeCluster = zeros(size(Data.Spikes.SpikeTimes));
 
     for nchannel = 1:size(Data.Raw,1)
-
-         load(strcat(strcat(SpikeSortingPath,'\times_Ch',num2str(nchannel),'.mat')),'cluster_class','par');
-         SpikesInChanel = Data.Spikes.SpikePositions(:,2) == nchannel;
-            
-         if sum(SpikesInChanel) == length(cluster_class)
-
-         else
-            warning(strcat("More spikes in cluster results for channel ",num2str(nchannel)," than in oroginal dataset. Please check that you loaded the correct wave_clus results folder"))
-         end
-
-         if nchannel==1
-             if sum(cluster_class(:,1) == 0) >0
-                cluster_class(:,1) = cluster_class(:,1)+1;
+        
+         if isfile(strcat(SpikeSortingPath,'\times_Ch',num2str(nchannel),'.mat'))
+             load(strcat(strcat(SpikeSortingPath,'\times_Ch',num2str(nchannel),'.mat')),'cluster_class','par');
+             SpikesInChanel = Data.Spikes.SpikePositions(:,2) == nchannel;
+                
+             if sum(SpikesInChanel) == length(cluster_class)
+    
+             else
+                warning(strcat("More spikes in cluster results for channel ",num2str(nchannel)," than in oroginal dataset. Please check that you loaded the correct wave_clus results folder"))
              end
-             
-            Data.Spikes.SpikeCluster(SpikesInChanel) = cluster_class(:,1);
-
-         else
-            numclusters = length(unique(Data.Spikes.SpikeCluster))-1; % -1 bc of 0 
-
-            if sum(cluster_class(:,1) == 0) >0
-                cluster_class(:,1) = cluster_class(:,1)+1;
-            end
-
-            cluster_class(:,1) = cluster_class(:,1) + numclusters;
-
-            Data.Spikes.SpikeCluster(SpikesInChanel) = cluster_class(:,1);
+    
+             if nchannel==1
+                 if sum(cluster_class(:,1) == 0) >0
+                    cluster_class(:,1) = cluster_class(:,1)+1;
+                 end
+                 
+                Data.Spikes.SpikeCluster(SpikesInChanel) = cluster_class(:,1);
+    
+             else
+                numclusters = length(unique(Data.Spikes.SpikeCluster))-1; % -1 bc of 0 
+    
+                if sum(cluster_class(:,1) == 0) >0
+                    cluster_class(:,1) = cluster_class(:,1)+1;
+                end
+    
+                cluster_class(:,1) = cluster_class(:,1) + numclusters;
+    
+                Data.Spikes.SpikeCluster(SpikesInChanel) = cluster_class(:,1);
+             end
          end
-            
     end
 
     Data.Info.SpikeType = "Internal";
