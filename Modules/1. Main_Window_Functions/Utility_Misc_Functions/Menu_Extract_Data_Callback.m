@@ -118,6 +118,20 @@ if strcmp(Window,"Extract Data")
 end
 
 if strcmp(Window,"ProbeLayout")
+    
+    if str2double(app.ProbeInfoandPath.NumberChannelRows) == 2
+        app.SwitchLeftandRightChannelNumberCheckBox.Enable = "on";
+        app.HorizontalOffsetumEditField.Enable = "on";
+        app.VerticalOffsetumEditField.Enable = "on";
+    else
+        app.SwitchLeftandRightChannelNumberCheckBox.Enable = "off";
+        app.HorizontalOffsetumEditField.Enable = "off";
+        app.VerticalOffsetumEditField.Enable = "off";
+
+        app.SwitchLeftandRightChannelNumberCheckBox.Value = 0;
+        app.HorizontalOffsetumEditField.Value = "0";
+        app.VerticalOffsetumEditField.Value = "0";
+    end
 
     %channel order
     if ~isempty(app.ProbeInfoandPath .Channelorder) && sum(isnan(app.ProbeInfoandPath .Channelorder))==0

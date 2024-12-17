@@ -119,4 +119,7 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
     if ~isempty(ProbeBrainAreas)
         Utility_Plot_BrainAreas(Figure,ProbeBrainAreas);
     end
+    
+    
+    Probe_View_Set_Y_Ticks(Figure,yLimits(2)-ChannelSpacing,yLimits(1),CreateProbeWindow,ChannelClicked)
 end

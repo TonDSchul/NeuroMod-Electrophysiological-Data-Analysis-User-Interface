@@ -49,7 +49,7 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sort
     return dtype
 
 """ ################################################################ Generate Probe Desing ####### """
-def Create_Probe(num_elec,ypitch,PlotTraces):
+def Create_Probe(num_elec,ypitch,PlotTraces,Recording):
     
     print("Creating and attaching Probe")
     
@@ -64,34 +64,14 @@ def Create_Probe(num_elec,ypitch,PlotTraces):
     
     probe.to_dataframe(complete=True).loc[:, ["contact_ids", "shank_ids", "device_channel_indices"]]
     
+    Recording = Recording.set_probe(probe)
+
     return probe
 
 """ ################################################################ Preprocessing ####### """
-def Preprocessing(Recording,Probe,Apply_Preprocessing,TempCacheFolder):
+def Preprocessing(Recording,Probe,Apply_Preprocessing):
 
     print("Preprocessing data and dump into cache")
-
-    """
-    Deletes all contents of the specified folder (files and subdirectories).
-    """
-    if not os.path.exists(TempCacheFolder):
-        print(f"The folder '{TempCacheFolder}' does not exist.")
-        return
-
-    # Iterate through each item in the folder
-    for item in os.listdir(TempCacheFolder):
-        item_path = os.path.join(TempCacheFolder, item)
-        try:
-            # If it's a file, remove it
-            if os.path.isfile(item_path) or os.path.islink(item_path):
-                os.remove(item_path)
-                print(f"Deleted file: {item_path}")
-            # If it's a directory, remove it and its contents
-            elif os.path.isdir(item_path):
-                shutil.rmtree(item_path)
-                print(f"Deleted folder: {item_path}")
-        except Exception as e:
-            print(f"Failed to delete {item_path}. Reason: {e}")
             
     if Apply_Preprocessing == 1:
         print("Preprocessing Data...")
@@ -99,15 +79,11 @@ def Preprocessing(Recording,Probe,Apply_Preprocessing,TempCacheFolder):
         Recording = spre.whiten(recording=Recording)
     else:
        print("Not Preprocessing Data...")
-        #Recording = spre.common_reference(recording=Recording, operator="median")
-    
+           
     Recording = Recording.set_probe(Probe)
-            
-    #preprocessed = "binary"
-    job_kwargs = dict(n_jobs=4, chunk_duration='1s', progress_bar=True)
     
-    Recording_Dumped = Recording.save()
-
+    Recording_Dumped = Recording
+    
     Recording_Dumped = Recording_Dumped.set_probe(Probe)
     
     return Recording_Dumped
@@ -140,6 +116,7 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
     global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
     si.set_global_job_kwargs(**global_job_kwargs)
     
+    
     default_SC2_params = ss.Spykingcircus2Sorter.default_params()
     
     print(default_SC2_params)
@@ -147,8 +124,7 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
     default_SC2_params = update_standards(default_SC2_params, SortingParameter)
         
     print(default_SC2_params)
-    
-    
+        
     folder_path = Sorting_output_folder
 
     try:
@@ -158,8 +134,8 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
     except Exception as e:
         print(f"An error occurred: {e}")
     
-    sorting = ss.run_sorter(sorter_name='spykingcircus2', **default_SC2_params, recording=recording,output_folder=Sorting_output_folder)
-    return sorting
+    sorting_SC  = ss.run_sorter(sorter_name='spykingcircus2', **default_SC2_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    return sorting_SC 
 
 """ ################################################################ MountainSort 5 ####### """
 def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,SortingParameter):
@@ -170,7 +146,8 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
     si.set_global_job_kwargs(**global_job_kwargs)
     
-    default_MS5_params = ss.Mountainsort5Sorter.default_params()
+    default_MS5_params =  si.get_default_sorter_params('mountainsort5')
+    #default_MS5_params = ss.Mountainsort5Sorter.default_params()
     print(default_MS5_params)
     
     Costum_MS5_params = update_standards(default_MS5_params, SortingParameter)
@@ -198,14 +175,16 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     """
     
     if Apply_Preprocessing == 1:
-        default_MS5_params['filter'] = False
+        Costum_MS5_params['filter'] = False
+        print("No Prepro in MS5")
     else:
-        default_MS5_params['filter'] = True
+        Costum_MS5_params['filter'] = True
+        print("Prepro in MS5")
     
-    sorting = ss.run_sorter(sorter_name='mountainsort5', **Costum_MS5_params, recording=recording,output_folder=Sorting_output_folder)
-    return sorting
+    sorting_MS5  = ss.run_sorter(sorter_name='mountainsort5', **Costum_MS5_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    return sorting_MS5
 
-""" ################################################################ MountainSort 5 ####### """
+""" ################################################################ Kilosort 4 ####### """
 def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,SortingParameter):
     
     print("Starting Spike Sorting with Kilosort 4")
@@ -220,34 +199,37 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
     #default_KS4_params = update_standards(default_KS4_params, SortingParameter)
     #print(default_KS4_params)
         
-    sorting = ss.run_sorter(sorter_name='kilosort4', **default_KS4_params, recording=recording,output_folder=Sorting_output_folder)
-    return sorting
+    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **default_KS4_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    return sortingKS4
     
-""" ################################################################ MountainSort 5 ####### """
+""" ################################################################ Sorting Analyzer ####### """
 def CreateSortingAnalyzer(recording,sorting,Save_Sorting_Folder):
     
-    analyzer = si.create_sorting_analyzer(sorting=sorting, recording=recording, format="memory")
+    analyzer = si.create_sorting_analyzer(sorting=sorting, recording=recording, format='memory', folder=None)
     print(analyzer)
 
     # which is equivalent to this:
     job_kwargs = dict(n_jobs=1, chunk_duration="1s", progress_bar=True)
     compute_dict = {
         'random_spikes': {'method': 'uniform', 'max_spikes_per_unit': 500},
-        'waveforms': {'ms_before': 1.0, 'ms_after': 2.0},
+        'waveforms': {'ms_before': 2.0, 'ms_after': 2.0},
         'templates': {'operators': ["average", "median", "std"]},
         'noise_levels':{},
         'correlograms':{'window_ms':100, 'bin_ms':5.},
-        'spike_amplitudes':{},
+        'spike_amplitudes':{'peak_sign':"neg"},
         'unit_locations':{},
         'spike_locations':{},
         'isi_histograms':{},
-        'principal_components':{'n_components':3, 'mode':'by_channel_global', 'whiten':True},
+        'principal_components':{},
         'quality_metrics':{'metric_names': ['snr', 'firing_rate','isi_violation']},
         'template_similarity':{}
     }
     
-    analyzer.compute(compute_dict, **job_kwargs)
-
+    analyzer.compute(compute_dict, **job_kwargs, save=False)
+    
+    print("Save Analyzer")
+    analyzer=analyzer.save_as(format='memory', folder=None, backend_options=None)
+ 
     print(analyzer)
     
     return analyzer

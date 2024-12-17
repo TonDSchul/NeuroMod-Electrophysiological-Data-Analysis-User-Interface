@@ -47,34 +47,7 @@ import tkinter as tkste
 from tkinter import filedialog
 
 
-### Specify Probe
-#num_elec=16
-
-#ypitch=100
-
-#MultipleRecordings = 0
 FolderToStartAt = 1 # only when MultipleRecordings = 1
-PlotTraces = 0;
-#Sorter = 'mountainsort5' # ['herdingspikes', 'mountainsort5', 'simple', 'spykingcircus2', 'tridesclous2']
-
-### Data Path with .bin file of your recording
-#file_path = "F:/100 µm channel spacing/100 µm channel spacing/STO-9920_24_EAE_iso_0,6_hippo1"
-#file_path = "F:/100 µm channel spacing/100 µm channel spacing"
-
-TempCacheFolder = "C:/Users/tonyd/AppData/Local/Temp/spikeinterface_cache"
-
-### Pick the sorter you want to use
-
-### Choose whether to preprocess data prior to sorting
-#Apply_Preprocessing = 1;
-### Specify whether new spike sorting should be created or existing sorting should be loaded
-#LoadSpikeSorting = 0;
-### Specify whether spikeinterface GUI should be openend with sorting data
-#OpenSpikeInterface_GUI = 1;
-### Specify whether to plot some results (traces, raster, uni summary, waveforms, templates)
-#Plot_Results = 0
-### Specify whether to just load spike sorting
-#JustOpenSpikeInterfaceGUI = 0;
 
 """ ################################################################ PipeLine functions ###################################################################### """
 
@@ -91,6 +64,7 @@ def main(subfolders,file_path):
     SampleRate = sys.argv[9]  # Second argument
     num_elec = sys.argv[10]  # Second argument
     ypitch = sys.argv[11]  # Second argument
+    PlotTraces = sys.argv[13]  # Second argument
     
     # Read the JSON file
     #json_file_path = sys.argv[12]  # Assume it's the last argument
@@ -104,6 +78,7 @@ def main(subfolders,file_path):
     OpenSpikeInterface_GUI = int(OpenSpikeInterface_GUI);
     JustOpenSpikeInterfaceGUI = int(JustOpenSpikeInterfaceGUI);
     Plot_Results = int(Plot_Results);
+    PlotTraces = int(PlotTraces);
     
     num_elec = int(num_elec)
     ypitch = int(ypitch)
@@ -112,8 +87,8 @@ def main(subfolders,file_path):
     
     print("Installed Sorter:")
     
-    #ISO = si.installed_sorters()
-    #print(ISO)
+    ISO = si.installed_sorters()
+    print(ISO)
     
     """ ################################################################ Manage Folder Structure ###################################################################### """
     
@@ -150,10 +125,11 @@ def main(subfolders,file_path):
         PathForPhy = CompletePath + "/SpikeInterface_Sorting_Phy_Results/"+Sorter
         ### Path to save sorting results in to load later
         Save_Sorting_Folder = CompletePath + "/SpikeInterface_Saved_Sorting/"+Sorter
-        
-        print("Attempting to delete already existing folder:")
-        
+                
         if LoadSpikeSorting == 0:
+            print("Attempting to delete already existing folder:")
+            print(PathForPhy)
+            print(Save_Sorting_Folder)
             DeleteFolderContents(PathForPhy)
             DeleteFolderContents(Save_Sorting_Folder)
         
@@ -161,11 +137,11 @@ def main(subfolders,file_path):
             
         Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter)
         
-        Probe = Create_Probe(num_elec,ypitch,PlotTraces)
+        Probe = Create_Probe(num_elec,ypitch,PlotTraces,Recording)
         
         Recording = Recording.set_probe(Probe)
         
-        DumpedRecording = Preprocessing(Recording,Probe,Apply_Preprocessing,TempCacheFolder);
+        DumpedRecording = Preprocessing(Recording,Probe,Apply_Preprocessing);
         
         if PlotTraces == 1:
             print("Not plotting traces...")
@@ -210,7 +186,6 @@ def main(subfolders,file_path):
                     print("The folder does not exist.")
                 except Exception as e:
                     print(f"An error occurred: {e}")
-                #sorting = sorting.save()
                 
                 sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 
@@ -267,14 +242,16 @@ def main(subfolders,file_path):
                
             export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy)
     
-        """ ################################################################ Spikeinterface GUI ###################################################################### """
-        if OpenSpikeInterface_GUI == 1:   
-            sw.plot_sorting_summary(Analyzer, backend="spikeinterface_gui")
-    
         """ ################################################################ Save SpikePositions as .mat###################################################################### """
         if LoadSpikeSorting == 0:
             SaveSpikePosition_mat(PathForPhy,Analyzer)
-    
+        
+        
+        """ ################################################################ Spikeinterface GUI ###################################################################### """
+        if OpenSpikeInterface_GUI == 1:   
+           
+            sw.plot_sorting_summary(Analyzer, backend="spikeinterface_gui")
+            
     
 if __name__ == "__main__":
     

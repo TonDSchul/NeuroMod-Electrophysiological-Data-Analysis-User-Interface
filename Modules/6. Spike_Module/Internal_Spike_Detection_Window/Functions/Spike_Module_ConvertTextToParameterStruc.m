@@ -1,3 +1,4 @@
+
 function [Struc] = Spike_Module_ConvertTextToParameterStruc(Text,Sorter,StartStruc)
 
 if strcmp(Sorter,"Mountainsort 5")  

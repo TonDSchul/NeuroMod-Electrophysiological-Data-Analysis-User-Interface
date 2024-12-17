@@ -28,7 +28,7 @@ x1 = 4;   % x-position of the first vertical line
 x2 = 6;   % x-position of the second vertical line
 
 if VerOffset ~= 0
-    CorrectionFactor = ChannelSpacing/VerOffset;
+    CorrectionFactor = ChannelSpacing/(VerOffset*2);
     
     CorrrectedVerOffset = squareHeight/CorrectionFactor;
 else
