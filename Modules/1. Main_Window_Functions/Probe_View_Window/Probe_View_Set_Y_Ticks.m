@@ -12,9 +12,9 @@ if ~isequal(yTickLabels{end}, '0') || CreateProbeWindow && isempty(ChannelClicke
     % Set y ticks and y tick labels only if '0' is not at the top
     Figure.YTick = yTicks;         % Tick positions in ascending order
     Figure.YTickLabel = yTickLabels; % Reversed labels
-    disp('Updated YTicks and YTickLabels.');
+    %disp('Updated YTicks and YTickLabels.');
 else
-    disp('YTickLabel "0" is already at the ymax position. No update required.');
+    %disp('YTickLabel "0" is already at the ymax position. No update required.');
 end
 
 % % Calculate 5 equally spaced values between yMin and yMax

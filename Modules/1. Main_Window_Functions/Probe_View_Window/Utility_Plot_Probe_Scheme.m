@@ -357,7 +357,7 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
                 elseif sum(AllChannelRight==ChannelClicked)
                     ChannelIndex = find(AllChannelRight==ChannelClicked);
                 end
-                yPos = ((ChannelIndex-1) * (ChannelSpacing)) + VerOffset ; % y-position of the square
+                yPos = ((ChannelIndex-1) * (ChannelSpacing))+ VerOffset ; % y-position of the square
             end
 
             yPos = ((NrChannel-1) * (ChannelSpacing))-yPos;
@@ -369,13 +369,23 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
                 if mod(ChannelClicked, 2) == 1 %odd - plot on the left
                     AllLeft = 1:2:NrChannel*2;
                     TempChannelClicked = find(ChannelClicked==AllLeft);
-                    set(ChannelViewLeft((NrChannel-TempChannelClicked)+1), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                    if ChannelClicked == AllLeft(end)
+                        yPos=yPos+ (VerOffset);
+                        squareHeight = squareHeight-VerOffset;
+                    end
+
+                    set(ChannelViewLeft((NrChannel-TempChannelClicked)+1), 'Position', [xPos, yPos, squareWidth, squareHeight+ (VerOffset)], ...
                                               'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
  
                 else % plot on the right
                     AllRight = 2:2:NrChannel*2;
                     TempChannelClicked = find(ChannelClicked==AllRight);
-                    set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                    if ChannelClicked == AllRight(end)
+                        yPos=yPos+ (VerOffset);
+                        squareHeight = squareHeight-VerOffset;
+                    end
+                    yPos = yPos+VerOffset;
+                    set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight+ (VerOffset)], ...
                                               'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
                 end
             end
@@ -446,7 +456,7 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
                     ChannelIndex = find(AllChannelRight==ChannelClicked);
                 end
 
-                yPos = ((ChannelIndex-1) * (ChannelSpacing)) + VerOffset ; % y-position of the square
+                yPos = ((ChannelIndex-1) * (ChannelSpacing)); %+ VerOffset ; % y-position of the square
             end
 
             yPos = ((NrChannel-1) * (ChannelSpacing))-yPos;
@@ -466,7 +476,11 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
                 else % plot on the right
                     AllRight = 2:2:NrChannel*2;
                     TempChannelClicked = find(ChannelClicked==AllRight);
-                    set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                    if ChannelClicked == AllRight(end)
+                        yPos=yPos+ (VerOffset);
+                        squareHeight = squareHeight-VerOffset;
+                    end
+                    set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight + (VerOffset)], ...
                                               'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                 end
             end

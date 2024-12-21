@@ -131,7 +131,7 @@ if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"Non
 elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
-elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"EventWindow") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface") && strcmp(EventWindow,"Non")
+elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"EventWindow") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface") && strcmp(EventWindow,"EventWindow")
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
 end

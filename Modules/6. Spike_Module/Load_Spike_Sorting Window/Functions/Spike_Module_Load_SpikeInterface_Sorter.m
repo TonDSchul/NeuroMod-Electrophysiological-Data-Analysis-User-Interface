@@ -126,9 +126,37 @@ for i = 1:length(fileNames)
     end
 end
 
+if ~isfield(Data.Spikes,'SpikePositions')
+    msgbox("Error: No SpikePosition.mat file found. When you use your own SpikeInterface code, please save the spike_locations output from the sorting analyzer as a .mat file! For reference, see 'GUI_Path\Proj. Ephys GUI\Modules\SpikeInterface\SpikeInterface_Sorting.py' for reference.")
+    Data.Spikes = [];
+else
+    if isempty(Data.Spikes.SpikePositions)
+        msgbox("Error: No SpikePosition.mat file found. When you use your own SpikeInterface code, please save the spike_locations output from the sorting analyzer as a .mat file! For reference, see 'GUI_Path\Proj. Ephys GUI\Modules\SpikeInterface\SpikeInterface_Sorting.py' for reference.")
+        Data.Spikes = [];
+    end
+end
+
+%% If no KilosortData found: Spike Field is emptyx but has to be deleted
+if isempty(Data.Spikes)
+    fieldsToDelete = {'Spikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+    Data.Info.SpikeType = 'Non';
+    msgbox("No sorting data could be loaded.");
+    fieldsToDelete = {'EventRelatedSpikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+    if isfield(Data,'EventRelatedSpikes')
+        fieldsToDelete = {'EventRelatedSpikes'};
+        % Delete fieldsven
+        Data = rmfield(Data, fieldsToDelete);
+    end
+    return;
+end
+
 % Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
 if Data.Spikes.ChannelPosition(1,2) ~= 0
-    disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m by commenting the lines after this message prompt.")
+    disp("Warning: Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m orCheck whether the correct output folder was selected.m by commenting the lines after this message prompt.")
     Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
     Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing;
 end
@@ -139,26 +167,8 @@ if Data.Spikes.ChannelPosition(2,2)-Data.Spikes.ChannelPosition(1,2) ~= Data.Inf
 end
 
 if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
-    msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
-    disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
-end
-
-%% If no KilosortData found: Spike Field is emptyx but has to be deleted
-if isempty(Data.Spikes)
-    fieldsToDelete = {'Spikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-    Data.Info.SpikeType = 'Non';
-    msgbox("No Kilosort 4 data found in selected path.");
-    fieldsToDelete = {'EventRelatedSpikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-    if isfield(Data,'EventRelatedSpikes')
-        fieldsToDelete = {'EventRelatedSpikes'};
-        % Delete fieldsven
-        Data = rmfield(Data, fieldsToDelete);
-    end
-    return;
+    msgbox("Warning: Loaded sorting data seems to have a different channelconfiguration than GUI data has. Check whether the correct output folder was selected.");
+    disp("Warning: Loaded sorting data seems to have a different channelconfiguration than GUI data has. Check whether the correct output folder was selected.");
 end
 
 % extracted every time analysis ios plotted, so removing is not really
@@ -179,7 +189,7 @@ if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
 
-    msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct kilosort outpout." )
+    msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct output folder." )
 end
 
 SpikeTimesSmaller0 = Data.Spikes.SpikeTimes<= 0;
@@ -192,7 +202,7 @@ if sum(SpikeTimesSmaller0)>0
     Data.Spikes.SpikeCluster(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikeTemplates(SpikeTimesSmaller0==1) = [];
 
-    msgbox("Warning: spike time(s) smaller or equal to 0 found and deleted. This is a known behavior fixed in newer Kilosort 4 versions." )
+    msgbox("Warning: spike time(s) smaller or equal to 0 found and deleted. This is a known behavior in Kilosort and fixed in newer versions." )
 end
 
 %% Specify SpikeType

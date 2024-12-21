@@ -1,4 +1,4 @@
-function [Data] = Extract_Events_Module_Extract_Events_Intan(Data,Filetype,InputChannelIndicie,FolderPath,Threshold,InputChannelSelection,RHDAllChannelData)
+function [Data] = Extract_Events_Module_Extract_Events_Intan(Data,Filetype,InputChannelIndicie,FolderPath,Threshold,InputChannelSelection,RHDAllChannelData,EventInfoType)
 
 %________________________________________________________________________________________
 %% Function to coordinate Intan Event Extraction
@@ -26,6 +26,8 @@ function [Data] = Extract_Events_Module_Extract_Events_Intan(Data,Filetype,Input
 % to be loaded earlier already to know what can be shown as otions in the
 % GUI. --> not as nicely doable as with individual .dat files for each
 % event
+% 8. EventInfoType: char, Either 'Event Onset' or 'Event Offset' to
+% determine whether rising or falling edge should be detected
 
 % Outputs:
 % 1. Data: Data structure with added field:
@@ -61,7 +63,7 @@ if strcmp(Filetype, "Digital Inputs")
             end
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData,EventInfoType);
 
     elseif strcmp(Data.Info.RecordingType,"IntanRHD")
 
@@ -70,7 +72,7 @@ if strcmp(Filetype, "Digital Inputs")
             InputDatatoextract{i} = RHDAllChannelData.board_dig_in_data(InputChannelSelection(i),:);
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract,EventInfoType);
 
     end
 
@@ -119,7 +121,7 @@ elseif strcmp(Filetype, "Analog Input")
             end
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData,EventInfoType);
 
     elseif strcmp(Data.Info.RecordingType,"IntanRHD")
         
@@ -128,7 +130,7 @@ elseif strcmp(Filetype, "Analog Input")
             InputDatatoextract{i} = RHDAllChannelData.board_adc_data(InputChannelSelection(i),:);
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract,EventInfoType);
 
     end
 elseif strcmp(Filetype, "AUX Inputs")
@@ -149,7 +151,7 @@ elseif strcmp(Filetype, "AUX Inputs")
             
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData,EventInfoType);
 
     elseif strcmp(Data.Info.RecordingType,"IntanRHD")
         
@@ -158,7 +160,7 @@ elseif strcmp(Filetype, "AUX Inputs")
             InputDatatoextract{i} = RHDAllChannelData.aux_input_data(InputChannelSelection(i),:);
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract,EventInfoType);
 
     end
 
@@ -185,7 +187,7 @@ elseif strcmp(Filetype, "DIN Inputs")
             end
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData,EventInfoType);
 
     elseif strcmp(Data.Info.RecordingType,"IntanRHD")
 
@@ -194,7 +196,7 @@ elseif strcmp(Filetype, "DIN Inputs")
             InputDatatoextract{i} = RHDAllChannelData.board_dig_in_data(InputChannelSelection(i),:);
         end
 
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract);
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputDatatoextract,EventInfoType);
 
     end
        

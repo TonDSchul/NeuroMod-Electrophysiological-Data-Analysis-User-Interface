@@ -287,7 +287,27 @@ if Activated
         end
     end
 
-    
+    %% Sorting parameter window
+    if strcmp(Window,"SortingParameterWindow") || strcmp(Window,"All")
+        if ~isempty(app.SpikeExtractionWindow) && isvalid(app.SpikeExtractionWindow)
+            if ~isempty(app.SpikeExtractionWindow.SortingParameterWindow) && isvalid(app.SpikeExtractionWindow.SortingParameterWindow)
+                app.SpikeExtractionWindow.SortingParameterWindow.OpenSpikeInterfaceGUIaftersortingCheckBox.Tooltip = "When sorting finshed, automatically open the SpikeInterface GUI to see the sorting results. In order to be able to proceed with the Matlab GUI, you have to close the SpikeInterface GUI and press 'Enter' in the Python and Matlab console to continue when the 'Keep Python Console Open when Finishied' option is set to on.";
+                app.SpikeExtractionWindow.SortingParameterWindow.LoadSpikeSortingCheckBox.Tooltip = "When data was already sorted with the selected sorter, you can simply load the results to avoid sorting again.";
+                app.SpikeExtractionWindow.SortingParameterWindow.PreprocessDataBandPassandWhiteningCheckBox.Tooltip = "Specify whether data should be preprocessed before sorting using SpikeInterface (seto to on) or if data should be preprocessed in the specified sorter itself (set to off).";
+                app.SpikeExtractionWindow.SortingParameterWindow.LoopovermultipleRecordingsCheckBox.Tooltip = "When selecting this, you can run the sorting over all recording folders within a folder you select automatically. For this dont select a folder with a single .bin file. but a folder with subfolders being the recording folder. The .bin files have to be saved in a folder called 'SpikeInterface' in the recording folder.";
+                app.SpikeExtractionWindow.SortingParameterWindow.KeepConsoleOpen.Tooltip = "When enabled, the python console will stay opened after the script finished to enable to see through the information. You have to press enter in the python and Matlab console to be able to continue with this GUI.";
+                app.SpikeExtractionWindow.SortingParameterWindow.PlotTracesCheckBox.Tooltip = "When enabled, raw vs. preprocessed data streams along with the probe design will be plotted. You have to close these plots to continue the sorting.";
+                app.SpikeExtractionWindow.SortingParameterWindow.PlotsomesortingresultsCheckBox.Tooltip = "When enabled, spike trains and some unit analysis plots with the shown. You have to close these plots to continue the sorting.";
+                
+                app.SpikeExtractionWindow.SortingParameterWindow.LoadSavedParameterDropDown.Tooltip = "Select previously saved sorting parameter to load.";
+                app.SpikeExtractionWindow.SortingParameterWindow.TextArea.Tooltip = "Change sorting paramter here! Only change the values behind the ':', not the variable name!";
+                app.SpikeExtractionWindow.SortingParameterWindow.SaveSettingsButton.Tooltip = "Save all currently set sorting parameter to be able to load later.";
+                app.SpikeExtractionWindow.SortingParameterWindow.RestoreDefaultButton.Tooltip = "When pressed, the standard sorting parameter are restored.";
+                app.SpikeExtractionWindow.SortingParameterWindow.SetNewSettingsandContinueButton.Tooltip = "Press this button to confrim the changes you made and proceed in the 'Spike Detection and Sorting' window.";
+                
+            end
+        end
+    end
 
     %disp("Tooltips turned ON");
 
@@ -508,10 +528,13 @@ else % Not activated
             app.SpikeExtractionWindow.TimeOffsettoCombineSpikeIndiciessEditField.Tooltip = "";
             app.SpikeExtractionWindow.StartSpikeDetectionButton.Tooltip = "";
 
-            app.SpikeExtractionWindow.OptionsDropDown.Tooltip = "";
+            app.SpikeExtractionWindow.OptionsDropDown_2.Tooltip = "";
             app.SpikeExtractionWindow.SortallChannelTogetherCheckBox.Tooltip = "";
             app.SpikeExtractionWindow.SortforIndividualChannelCheckBox.Tooltip = "";
-            app.SpikeExtractionWindow.RUNButton.Tooltip = "";
+            app.SpikeExtractionWindow.RUNButton_2.Tooltip = "";
+
+            app.SpikeExtractionWindow.Label.Tooltip = "";
+            app.SpikeExtractionWindow.SetOutputFolderManuallyButton.Tooltip = "";
         end
     end
 
@@ -558,6 +581,28 @@ else % Not activated
             app.AutorunWindow.SelectFolderButton.Tooltip = "";
             app.AutorunWindow.ExecuteSelectedConfigButton.Tooltip = "";
             
+        end
+    end
+
+    %% Sorting parameter window
+    if strcmp(Window,"SortingParameterWindow") || strcmp(Window,"All")
+        if ~isempty(app.SpikeExtractionWindow) && isvalid(app.SpikeExtractionWindow)
+            if ~isempty(app.SpikeExtractionWindow.SortingParameterWindow) && isvalid(app.SpikeExtractionWindow.SortingParameterWindow)
+                app.SpikeExtractionWindow.SortingParameterWindow.OpenSpikeInterfaceGUIaftersortingCheckBox.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.LoadSpikeSortingCheckBox.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.PreprocessDataBandPassandWhiteningCheckBox.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.LoopovermultipleRecordingsCheckBox.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.KeepConsoleOpen.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.PlotTracesCheckBox.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.PlotsomesortingresultsCheckBox.Tooltip = "";
+                
+                app.SpikeExtractionWindow.SortingParameterWindow.LoadSavedParameterDropDown.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.TextArea.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.SaveSettingsButton.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.RestoreDefaultButton.Tooltip = "";
+                app.SpikeExtractionWindow.SortingParameterWindow.SetNewSettingsandContinueButton.Tooltip = "";
+                
+            end
         end
     end
 

@@ -1,4 +1,4 @@
-function [Data,InputChannelData] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,ChannelPath,InputChannelType,Threshold,InputChannelData)
+function [Data,InputChannelData] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,ChannelPath,InputChannelType,Threshold,InputChannelData,EventInfoType)
 
 %________________________________________________________________________________________
 %% Function that takes 1 x nrecordingtime event data and searches for events
@@ -21,7 +21,8 @@ function [Data,InputChannelData] = Extract_Events_Module_Extract_Event_Indicies_
 % 4. Threshold: double representing threshold for idientifying events -->
 % signal has to be >= threshold
 % 5. InputChannelData: 1 x ntime data for each event channel of the specified InputChannelType
-
+% 6. EventInfoType: char, Either 'Event Onset' or 'Event Offset' to
+% determine whether rising or falling edge should be detected
 % Outputs:
 % 1. Data: Data structure with added field:
 % Data.Events{1:neventchannelfound} containing a 1 x nevents vector with
@@ -74,10 +75,21 @@ for numchannels = 1:length(InputChannelData)
         msgbox(strcat("No value smaller than threshold: ill defined, no events captured for event channel",num2str(numchannels))); 
         Data.Events{numchannels} = [];
     else
-        % Loop through the aboveThreshold array to find the start of each sequence
-        for i = 1:length(aboveThreshold)-1
-            if aboveThreshold(i) && (i == 1 || ~aboveThreshold(i-1)) && (aboveThreshold(i+1))
-                Data.Events{numchannels} = [Data.Events{numchannels}, i];
+        if strcmp(EventInfoType,'Event Onset')
+            % Detect rising edge 
+            for i = 1:length(aboveThreshold)-1
+                if aboveThreshold(i) && (i == 1 || ~aboveThreshold(i-1)) && (aboveThreshold(i+1))
+                    Data.Events{numchannels} = [Data.Events{numchannels}, i];
+                end
+            end
+        else
+            % Detect falling edge 
+            for i = 1:length(aboveThreshold) - 1
+                if belowThreshold(i) && (i == 1 || ~belowThreshold(i-1)) && belowThreshold(i+1)
+                    if i ~= 1
+                        Data.Events{numchannels} = [Data.Events{numchannels}, i];
+                    end
+                end
             end
         end
     end

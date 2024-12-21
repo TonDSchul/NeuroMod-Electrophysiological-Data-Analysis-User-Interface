@@ -74,7 +74,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         end
 
         % Open app window for Analysis of Kilosort Data
-        app.ConKilosortSpikesWindow = Continous_Kilosort_Spike_Window(app);
+        app.ConKilosortSpikesWindow = Continous_Spike_Window(app);
 
         [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConSpikes");
         

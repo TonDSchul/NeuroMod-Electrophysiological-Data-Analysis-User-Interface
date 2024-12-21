@@ -59,7 +59,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         if ~isfield(app.Data,'Spikes')
             msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
             return;
-        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort')
+        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
             %% Start GUI
 
             if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
@@ -81,7 +81,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
             [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0);
 
             if Error == 0
-                app.EventKilosortSpikesWindow = Events_Kilosort_Spike_Window(app);
+                app.EventKilosortSpikesWindow = Events_Spike_Window(app);
 
                 [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"EventSpikes");
                 
@@ -122,7 +122,7 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
         if ~isfield(app.Data,'Spikes')
             msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
             return;
-        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort')
+        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
             %% Start GUI
             [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0);
 

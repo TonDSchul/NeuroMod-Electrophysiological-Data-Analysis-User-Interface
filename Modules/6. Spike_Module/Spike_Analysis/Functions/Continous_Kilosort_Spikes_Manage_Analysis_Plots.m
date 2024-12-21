@@ -146,8 +146,17 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         % Select Units
         ClusterToPlot = CluterPositions==PlotInfo.Units;
-        SpikeAmps = SpikeAmps(ClusterToPlot==1);
+        if strcmp(Data.Info.SpikeType,"SpikeInterface")
+            SpikeAmps = abs(SpikeAmps(ClusterToPlot==1));
+        else
+            SpikeAmps = SpikeAmps(ClusterToPlot==1);
+        end
+
         SpikePositions = SpikePositions(ClusterToPlot==1);
+    else
+        if strcmp(Data.Info.SpikeType,"SpikeInterface")
+            SpikeAmps = abs(SpikeAmps);
+        end
     end
 
     set(Figure, 'YDir', 'reverse');
@@ -178,8 +187,16 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         % Select Units
         ClusterToPlot = CluterPositions==PlotInfo.Units;
-        SpikeAmps = SpikeAmps(ClusterToPlot==1);
         SpikePositions = SpikePositions(ClusterToPlot==1);
+        if strcmp(Data.Info.SpikeType,"SpikeInterface")
+            SpikeAmps = abs(SpikeAmps(ClusterToPlot==1));
+        else
+            SpikeAmps = SpikeAmps(ClusterToPlot==1);
+        end
+    else
+        if strcmp(Data.Info.SpikeType,"SpikeInterface")
+            SpikeAmps = abs(SpikeAmps);
+        end
     end
     
     set(Figure, 'YDir', 'reverse');

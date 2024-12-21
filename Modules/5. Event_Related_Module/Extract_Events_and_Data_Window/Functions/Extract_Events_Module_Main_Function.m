@@ -227,9 +227,13 @@ if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
             [~,~,~,RHDAllChannelData.din_input_data,~,~,~,~,~,ChannelNames] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"Extracting",[]);
         end
     end
+    
+    EventInfoField = EventInfo.DINChannel;
+
+    EventInfoType = EventInfo.EventType;
 
     %% Start Event Extraction with parameters found above
-    [Data] = Extract_Events_Module_Extract_Events_Intan(Data,FileTypeDropDown,EventInfoField,Path,str2double(Threshold),InputChannelSelection,RHDAllChannelData);
+    [Data] = Extract_Events_Module_Extract_Events_Intan(Data,FileTypeDropDown,EventInfoField,Path,str2double(Threshold),InputChannelSelection,RHDAllChannelData,EventInfoType);
 
 %% Analyze Open Ephys Data
 elseif strcmp(RecordingType,"Open Ephys")
@@ -437,7 +441,9 @@ elseif strcmp(RecordingType,"Spike2")
             clear TempData
         end
     
-        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,[],"Spike2",str2double(Threshold),EventData);
+        EventInfoType = EventInfo.EventType;
+
+        [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,[],"Spike2",str2double(Threshold),EventData,EventInfoType);
 
     end
 end
