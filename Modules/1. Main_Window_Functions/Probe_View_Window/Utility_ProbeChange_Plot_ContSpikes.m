@@ -1,5 +1,21 @@
 function [app] = Utility_ProbeChange_Plot_ContSpikes(app)
 
+%________________________________________________________________________________________
+%% Function to update continous spike analysis plots when the user changed the active channel selection
+
+% Executed only when the user changes the channelselection and cont. spike
+% analysis windows are supposed to be updated (in the dropdown menu of the probe view window)
+
+% Inputs: 
+% 1. app: probe view window object
+
+% Outputs:
+% 1. app: probe view window object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if ~isempty(app.Mainapp.ConInternalSpikesWindow)
     
     app.Mainapp.ConInternalSpikesWindow.UIAxes.Color = app.Mainapp.ConInternalSpikesWindow.Mainapp.PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor;

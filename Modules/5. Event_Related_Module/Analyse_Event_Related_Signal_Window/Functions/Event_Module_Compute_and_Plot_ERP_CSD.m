@@ -35,7 +35,7 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % case user wants to export them
 % 13. PlotAppearance: structure holding info about plot appearances the user
 % might have modified.
-% 14. ERPChannel: Channel for ERP Plot on top
+% 14. ERPChannel: char, Channel for ERP Plot on top
 
 % Outputs:
 % 1. CSDClim

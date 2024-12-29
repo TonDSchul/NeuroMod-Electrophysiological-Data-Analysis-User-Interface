@@ -1,5 +1,24 @@
 function [Text] = Spike_Module_ConverStrucToTextArea(Struc,Sorter)
 
+%________________________________________________________________________________________
+%% Function to convert spike sorting parameter Structure to text containing all fields and values of the sorting parameter
+%% structure 
+
+%% cleans quotes from values
+
+% Inputs:
+% 1. Struc: spike sorting settings structure
+% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpykingCircus 2"
+% OR "Kilosort 4"
+
+% Outputs
+% 1. Text: text containing all fields and values of the sorting parameter
+% structure 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if strcmp(Sorter,"Mountainsort 5")  
     % Convert the structure to a readable string
     fields = fieldnames(Struc);

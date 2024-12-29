@@ -1,5 +1,53 @@
 function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,ChannelRows,HorOffset,VerOffset,ChannelOrder,ActiveChannel,FirstZoomChannel,LeftProbeChanged,ProbeBrainAreas,AllActiveChannel,PlotChannelSpacing,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,SwitchTopBottom,SwitchLeftRight)
 
+%________________________________________________________________________________________
+%% Main Function to plot interactive probe view. Handles all sub functions to plot individual parts
+
+%% Executed every time something about a probe view is plotted. Most necessray parameter come from Data.Info structure or the create probe view window as
+%% well as the clickcallbacks executed when the user clicks something (like what exactly was clicked on, which channel are shwon at the moment etc.)
+%% Most Inputs are logical 1 or 0 or double 1 or 0 specifying what happended and should be plotted. T
+
+% Inputs: 
+% 1. Figure: figure object of probe view window
+% 2. ChannelSpacing: double, from Data.Info structure in um
+% 3. NrChannel: double, from Data.Info structure or create probe view window
+% 4. ChannelRows: double, 1 or 2 from Data.Info structure or create probe view window
+% 5. HorOffset: Horizontal offset in um between channel rows (0 if 1 channel row)
+% 6. VerOffset: Vertical offset in um between channel rows (0 if 1 channel
+% row) --> affects right row only. Positive and negative possible
+% 7. ChannelOrder: double, vector with channel order. 1:NrChannel when no
+% costume channel order from Data.Info structure
+% 8. ActiveChannel: double vector with all channel selected/activated by the
+% user in the probe view window
+% 9. FirstZoomChannel: First Channel shown in zoomed channel view on the
+% right (lowest channel) - comes from ClickCallback functions
+% 10. LeftProbeChanged: double, 1 or 0 - if the left probe plot has to be
+% updated -- saves time if not
+% 11. ProbeBrainAreas: structure from trajectory explorer, empty if non
+% 12. AllActiveChannel: double, vector with active channel  from Data.Info
+% structure
+% 13. PlotChannelSpacing: logical 1 or 0, if channel spacing should be
+% shown in plot (rectangles for channel do not touch each other, gives more
+% accurate scale and appearance) - selected in checkbox of probe view
+% window
+% 14. CreateProbeWindow: double, 1 or 0, if plot is for create probe window
+% or probe view window
+% 15. ChannelActivation: double, 1 or 0, if user activated/deactivated a
+% channel (comes from ClickCallbacks), but also 1 if initialy created!!
+% 16. ChannelClicked: double, channel the user clicked on if he did so,
+% empty if not
+% 17. OffSetRows: logical, 1 or 0, if left and right row have an offset (only if two channelrows)
+% 18. RowClicked: 0 if clicked on a row on the left
+% 19. SwitchTopBottom:  logical 1 or 0 if channel names are reversed from
+% top to bottom
+% 20. SwitchLeftRight logical 1 or 0 if channel names are switched between
+% left and right channel row
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 % SwitchTopBottom = logical 1 or 0 
 % SwitchLeftRight = logical 1 or 0 only when 2 channelrows
 

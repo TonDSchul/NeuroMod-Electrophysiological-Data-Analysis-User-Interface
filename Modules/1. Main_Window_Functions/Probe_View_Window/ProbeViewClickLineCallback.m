@@ -1,5 +1,19 @@
 function [app] = ProbeViewClickLineCallback(app, event, Window)
 
+%________________________________________________________________________________________
+%% Function to handle click on the probe view window -- only clicks not on a line or rectangle
+
+% Inputs: 
+% 1. app: Probe View app window
+% 2. event: click event holding x and y position
+% 3. Window: not used here
+
+% Outputs:
+% 1. app: Probe View app window
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 if isprop(app,'NrChannelEditField')
     ProbeViewWindow = 1;

@@ -1,5 +1,20 @@
 function Utility_Plot_BrainAreas(Figure,ProbeBrainAreas)
 
+%________________________________________________________________________________________
+%% Function to plot brain areas from trajectory explorer in probe view window
+%% -- not implemented yet!!!
+
+% Inputs: 
+% 1. Figure: Figure object of probe view window
+% 2. ProbeBrainAreas: Structure holding trajectorx explorer info
+
+% Outputs:
+% 1. app: Probe View app window
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if isfield(ProbeBrainAreas,'AreaDistanceFromTip') 
     ProbeBrainAreas.AreaTipDistance = ProbeBrainAreas.AreaDistanceFromTip;
     ProbeBrainAreas.AreaNamesShort = ProbeBrainAreas.ShortAreaNames;

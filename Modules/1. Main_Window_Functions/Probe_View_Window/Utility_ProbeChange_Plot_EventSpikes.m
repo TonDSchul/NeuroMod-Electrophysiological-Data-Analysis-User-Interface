@@ -1,5 +1,21 @@
 function [app] = Utility_ProbeChange_Plot_EventSpikes(app)
 
+%________________________________________________________________________________________
+%% Function to update event related spike analysis plots when the user changed the active channel selection
+
+% Executed only when the user changes the channelselection and event related spike analysis windows are supposed to be updated (in the dropdown menu of the probe view window)
+
+% Inputs: 
+% 1. app: probe view window object
+
+% Outputs:
+% 1. app: probe view window object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 if ~isempty(app.Mainapp.EventInternalSpikesWindow)
 
     app.Mainapp.EventInternalSpikesWindow.UIAxes.Color = app.Mainapp.EventInternalSpikesWindow.Mainapp.PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor;

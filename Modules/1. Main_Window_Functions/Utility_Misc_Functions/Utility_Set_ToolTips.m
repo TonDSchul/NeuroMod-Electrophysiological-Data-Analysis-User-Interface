@@ -1,5 +1,20 @@
 function [app] = Utility_Set_ToolTips(app,Activated,Window)
 
+
+%________________________________________________________________________________________
+%% Function show or disable tooltips in all opened app windows.
+% all app windows are saved as a property of the GUI main window
+
+% Inputs:
+% 1: app: main window app object
+% 2: Activated: double, 1 or 0 whether to activate tooltips
+% 3. Window: string, name of the window that opened and for which tooltips
+% should be shwon or not
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if Activated
     %% Main Window
     if strcmp(Window,"MainWindow") || strcmp(Window,"All")

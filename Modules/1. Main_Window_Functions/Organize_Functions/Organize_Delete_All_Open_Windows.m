@@ -1,5 +1,19 @@
 function Organize_Delete_All_Open_Windows(app,DeleteProbeView)
 
+%________________________________________________________________________________________
+%% Function to close all related app widows when app is closed or new data is loaded
+
+% Input Arguments:
+% 1. app: main app window object containing all app windows as property (or empty if not opened)
+% 2. DeleteProbeView: double, 1 or 0, specify whether the probe window is
+% supposed to be closed
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 if DeleteProbeView
     if ~isempty(app.ProbeViewWindowHandle)
         if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')

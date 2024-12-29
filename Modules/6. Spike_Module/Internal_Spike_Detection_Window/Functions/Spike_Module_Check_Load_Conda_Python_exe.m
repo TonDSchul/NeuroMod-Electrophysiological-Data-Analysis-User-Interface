@@ -1,5 +1,21 @@
 function [Python_Conda_Environment_Path] = Spike_Module_Check_Load_Conda_Python_exe(executablefolder)
 
+%________________________________________________________________________________________
+%% Function to check whether python.exe is present and promt to select a folder containing it if not
+
+%% Creates a variable in GUI_Path/Modules/MISC/Variables (do not edit) that saves the path to the python exe if it was succesfully selected
+
+% Inputs:
+% 1. executablefolder: char, GUI path
+
+% Outputs
+% 1. Python_Conda_Environment_Path: char, path to the selected python conda
+% exe
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 Python_Conda_Environment_Path = [];
 
 PathVariableLocation = strcat(executablefolder,"\Modules\MISC\Variables (do not edit)\Python_Conda_Path.mat");

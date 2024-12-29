@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -22,6 +22,7 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrd
 % 'PreproEventDataModule'
 % 'Event_Analysis_ERP'
 % 'Event_Analysis_CSD'
+% 'Event_Static_Power_Spectrum'
 % 'Event_Analysis_TimeFrequencyPower'
 % 'Event_Unit_Analysis'
 %______________________
@@ -29,13 +30,16 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrd
 %______________________
 % 'Internal_Spike_Detection'
 % 'Create_Internal_Spike_Sorting'
-% 'Load_Internal_Spike_Sorting'
-% 'Load_from_Kilosort'
-% 'Save_for_Kilosort'
+% 'Load_from_SpikeSorting'
+% 'Save_for_SpikeSorting'
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data","Load_from_Kilosort","Event_Spike_Analysis","Preprocess_Continous_Data","Extract_Event_Related_Data","Event_Analysis_CSD"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Extract_Events","Extract_Event_Related_Data"];
+
+% Channel and Events to Analyze
+AutorunConfig.ChannelRange = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,64'; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range = 1:NrChannel (NOT based on active channel names but number of available channel number!)
+AutorunConfig.EventRange = '1,10'; % Only necessary if events are extracted and analyzed, Empty for all events, otherwise char, '1,10' for events 1:10; (only two numbers allowed, '1','2','3','4' will not work!)
 
 % General Information
 AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";
@@ -64,7 +68,6 @@ end
 %% 1.1 Extract Data from Raw Recordings
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
-AutorunConfig.ExtractRawRecording.ChannelSpacing = 50; % Some Standard value. Has to be manually specified in Autorun window and is overwritten
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
 AutorunConfig.ExtractRawRecording.FileType = "Intan .dat"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
 %______________________________________________________________________________________________________
@@ -92,13 +95,13 @@ AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 
 % string array to apply multiple processing methods in the same
 % preprocessing instance.
 
-AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter"]; % Preprocessing ethod to apply.Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
-AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter","Downsample"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
-AutorunConfig.PreprocessCont.FilterMethod{1} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
+AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter","Downsample"]; % Preprocessing ethod to apply.Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.FilterMethod{1} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
 AutorunConfig.PreprocessCont.FilterMethod{2} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
 AutorunConfig.PreprocessCont.FilterType{1} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
 AutorunConfig.PreprocessCont.FilterType{2} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
-AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "300"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
+AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
 AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
 AutorunConfig.PreprocessCont.FilterDirection{1} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterDirection{2} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
@@ -113,16 +116,14 @@ AutorunConfig.StaticPowerSpectrum.PlotType = ["Band Power Individual Channel ","
 AutorunConfig.StaticPowerSpectrum.DataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
 AutorunConfig.StaticPowerSpectrum.DataSource = "Raw Data"; % "Raw Data" or "Preprocessed Data"
 AutorunConfig.StaticPowerSpectrum.FrequencyRange = '0,1000'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
-AutorunConfig.StaticPowerSpectrum.Channel = '15'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
-AutorunConfig.StaticPowerSpectrum.DepthChannel = ''; % if "Band Power over Depth" selected, empty for all, otherwise '1,20' for channel 1 to 20;
+AutorunConfig.StaticPowerSpectrum.Channel = '64'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 %% 3.3 Analyse Spike Data
 %______________________________________________________________________________________________________
 % Kilosort Plots
-AutorunConfig.ContSpikeAnalysis.KilosortPlotType = ["Spike Map"]; % "Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"
+AutorunConfig.ContSpikeAnalysis.KilosortPlotType = ["Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel"]; % "Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"
 % Internal Spike Plots
 AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType = ["Spike Map","Average Waveforms Across Channel","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Spike Triggered LFP"]; % "Spike Map" OR "Average Waveforms Across Channel" OR "Spike Amplitude Density Along Depth" OR "Cumulative Spike Amplitude Density Along Depth" OR "Spike Waveforms" OR "Spike Triggered LFP"
 % For Kilosort AND Internal Spikes:
-AutorunConfig.ContSpikeAnalysis.ChannelSelection = []; % Empty for all Channel, otherwise char with two channel i.e. '1,10'
 AutorunConfig.ContSpikeAnalysis.EventChannelToPlot = "Non"; %Non for no event plotting, empty for first automatically taking the first channel, otherwise eventName specified as char, like 'DIN-04' or 'ADC-01'
 AutorunConfig.ContSpikeAnalysis.TimeWindowSpiketriggredLFP = '-0.005,0.25'; %as char
 AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate = "200"; % Number of bins for the spike rate plots as char
@@ -157,7 +158,8 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Analog Input'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'DIN Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
+AutorunConfig.ExtractEventDataModule.EventType = 'Event Onset'; % char, Either 'Event Onset' or 'Event Offset' to determine whether rising or falling edge should be detected
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.02'; % Threshold of event signal at which events are extracted as char
 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
@@ -167,31 +169,30 @@ AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" 
 %% 4.2 Prepro event related data
 %______________________________________________________________________________________________________
 % Trial/Event Deletion
-AutorunConfig.PreproEventDataModule.TrialRejection = true; % false if you dont want this step to be executed
+AutorunConfig.PreproEventDataModule.TrialRejection = false; % false if you dont want this step to be executed
 AutorunConfig.PreproEventDataModule.TrialsToReject = '1,10'; % char, specify events/trials to be deleted, i.e. '1,10' for trials 1 to 10
 % Channel Deletion and Interpolation
-AutorunConfig.PreproEventDataModule.ChannelRejection = true;
+AutorunConfig.PreproEventDataModule.ChannelRejection = false;
 AutorunConfig.PreproEventDataModule.ChannelToReject = '1,10'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
-% Artefact Rejection
-AutorunConfig.PreproEventDataModule.ArtefactRejection = true;
-AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = []; % Empty for all Channel, otherwise char with two channel i.e. '1,10'
-AutorunConfig.PreproEventDataModule.EventsToReject = []; % Empty for all Events, otherwise char with two channel i.e. '1,10'
-AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent = '-0.1,0.2'; % char in seconds
-AutorunConfig.PreproEventDataModule.Method = 'Linear Interpolation';
 
 %% 4.3 Analyse event related signal
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.DataSource = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
-AutorunConfig.AnalyseEventDataModule.EventSelection = []; % Empty for all Events, otherwise format is char: 'Event1,Event2' like '1,20' for events 1 to 20 
-AutorunConfig.AnalyseEventDataModule.ChannelSelection = []; % Empty for all channel, otherwise format is char: 'Channel1,Channel2' like '1,20' for channel 1 to 20
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
+% ERP Settings
+AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '7'; % How much is CSD data smoothed in time and space domain? Format: Char
 % CSD Settings
-AutorunConfig.AnalyseEventDataModule.CSDChannelSpacing = AutorunConfig.ExtractRawRecording.ChannelSpacing; % ChannelSpacing in um - autopopulated
 AutorunConfig.AnalyseEventDataModule.CSDHammWindow = '7'; % How much is CSD data smoothed in time and space domain? Format: Char
-AutorunConfig.AnalyseEventDataModule.CSDSurfaceChannel = '14'; % If top channel is surface channel leave at 1. Otherwise specify first channel within brain, so that channel above surface are not plotted in CSD; Format: Char
 AutorunConfig.AnalyseEventDataModule.tempcolorMap = "parula"; 
+% Event Static Spectrum Settings
+AutorunConfig.AnalyseEventDataModule.SpectrumPlotType = ["Band Power Individual Channel","Band Power over Depth"]; % string, either "Band Power Individual Channel" and/or "Band Power over Depth"
+AutorunConfig.AnalyseEventDataModule.SpectrumDataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
+AutorunConfig.AnalyseEventDataModule.SpectrumDataSource = "Raw Event Related Data"; % "Raw Event Related Data" or "Preprocessed Event Related Data"
+AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange = '0,1000'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
+AutorunConfig.AnalyseEventDataModule.SpectrumChannel = '64'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 % Time Freqency Power Settings
 AutorunConfig.AnalyseEventDataModule.TFFrequencyRange = '2,120,120'; % Frequency range being displayed, input as char in the format: Lowest Frequency, Highest Frequency, Steps
+AutorunConfig.AnalyseEventDataModule.TFChannelSelection = '10'; % char, channel to show the Time freuency power plot for
 AutorunConfig.AnalyseEventDataModule.TFCycleWidth = '5,9'; % Cycle width as char in format : Lowest Width, Highest Width
 AutorunConfig.AnalyseEventDataModule.TFPlotType = ["TF","ITPC"]; % 'Time Frequency' OR 'Intertrial Phase Clustering'; If just one: format is char!
 AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonPhaseLocked"]; % 'Phase independent' OR 'Phase locked' OR 'Non-phase locked'; If just one: format is char!
@@ -200,9 +201,8 @@ AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonP
 % Standard Settings
 AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.depth_bin_size = []; %if empty: channelspacing is taken
 AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.time_bin_size = 0.006; % app.GeneralSettings.Time bin size in seconds; % false if you dont want this step to be executed
-AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map"]; %"Spike Map" OR "Spike Rate Heatmap"
+AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map","Spike Rate Heatmap","Spike Triggered Average"]; %"Spike Map" OR "Spike Rate Heatmap" OR "Spike Triggered Average"
 AutorunConfig.AnalyseEventSpikesModule.SelectedEvents = []; % Empty for all Events, otherwise format is char: 'Event1,Event2' like '1,20' for events 1 to 20
-AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot = '14,32'; % Empty for all Channel, otherwise format is char: 'Channel1,Channel2' like '1,20' for chnanel 1 to 20
 AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins = '200'; % Number of bins for the spike rate plots
 AutorunConfig.AnalyseEventSpikesModule.Normalize = true; % Only for Heatmap and applicable if heatmap as plot type selected
 AutorunConfig.AnalyseEventSpikesModule.BaselineWindow = '-0.2,-0.05'; % Window of event related data used to normalize (Before the event trigger)
@@ -238,16 +238,28 @@ AutorunConfig.InternalSpikeDetection.FilterArtefactDepth = '200';
 AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform = true; % false for no Filtering
 AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices = '0.001'; % in s
 
-AutorunConfig.InternalSpikeDetection.SpikeSortingType = 'AllChannelTogether'; %% 'AllChannelTogether' OR IndividualChannel
-%% 5.2 Save for Kilosort
+%% Spike Sorting
+AutorunConfig.CreateSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: Kilosort4' OR 'Mountainsort 5' OR 'SpykingCircus 2' OR 'WaveClus 3'
+AutorunConfig.CreateSpikeSorting.OpenSpikeInterface = '1';
+AutorunConfig.CreateSpikeSorting.Preprocess = '1';
+AutorunConfig.CreateSpikeSorting.PlotTraces = '0';
+AutorunConfig.CreateSpikeSorting.PlotSortingResults = '0';
+AutorunConfig.CreateSpikeSorting.LoadSorting = '0';
+AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = '0';
+%%%%%%%%%%%%%%%%%%%%%%%%%%% For Spike Sorting Settings see below!! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% JUST for WaveClus 3!!!!!
+AutorunConfig.InternalSpikeDetection.WaveClus3_SpikeSortingType = 'AllChannelTogether'; %% 'AllChannelTogether' OR IndividualChannel
+
+%% 5.2 Save for SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.SaveforKilosort.FileFormat = '.dat'; % '.dat' or '.bin'
-AutorunConfig.SaveforKilosort.SaveFormat = 'int32'; % 'int32' or 'int16' or "double" as char
-%% 5.2 Load from Kilosort
+AutorunConfig.SaveforSpikeSorting.Sorter = 'Kilosort'; % which Spike sorter was used to analyze your data? Options: Kilosort' OR 'SpikeInterface'
+AutorunConfig.SaveforSpikeSorting.SaveFormat = 'int32'; % 'int32' or 'int16' for Kilosort OR "double" as char for SpikeInterface
+AutorunConfig.SaveforSpikeSorting.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data'
+%% 5.2 Load from SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromKilosort.Sorter = 'Kilosort4'; % which Spike sorter was used to analyze your data? Options: Kilosort' OR 'SpikeInterface'
-AutorunConfig.LoadfromKilosort.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data'
-AutorunConfig.LoadfromKilosort.ScalingFactor = []; % char, This is the 'int32' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
+AutorunConfig.LoadfromSpikeSorting.Sorter = 'Kilosort4'; % which Spike sorter was used to analyze your data? Options: Kilosort4' OR 'Mountainsort 5' OR 'SpykingCircus 2'
+AutorunConfig.LoadfromSpikeSorting.ScalingFactor = []; % ONLY FOR KILOSORT: char, This is the 'int32' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and aplied when you saved data for kilosort before.
 
@@ -255,3 +267,68 @@ AutorunConfig.LoadfromKilosort.ScalingFactor = []; % char, This is the 'int32' s
 if strcmp(DisplayOrder,"Get Settings")
     AutorunConfig.FunctionOrder = AutorunConfig.FunctionOrder';
 end
+
+%% Spike Sorter Settings
+%% Mountainsort 5
+AutorunConfig.CreateSpikeSorting.ParameterStructure = struct('scheme', '2', ...
+                      'detect_threshold', 5.5, ...
+                      'detect_sign', -1, ...
+                      'detect_time_radius_msec', 0.5, ...
+                      'snippet_T1', 20, ...
+                      'snippet_T2', 20, ...
+                      'npca_per_channel', 3, ...
+                      'npca_per_subdivision', 10, ...
+                      'snippet_mask_radius', 250, ...
+                      'scheme1_detect_channel_radius', 150, ...
+                      'scheme2_phase1_detect_channel_radius', 200, ...
+                      'scheme2_detect_channel_radius', 50, ...
+                      'scheme2_max_num_snippets_per_training_batch', 200, ...
+                      'scheme2_training_duration_sec', 300, ...
+                      'scheme2_training_recording_sampling_mode', 'uniform', ...
+                      'scheme3_block_duration_sec', 1800, ...
+                      'freq_min', 300, ...
+                      'freq_max', 6000, ...
+                      'filter', false, ...
+                      'whiten', true, ...
+                      'delete_temporary_recording', true, ...
+                      'n_jobs', 4, ...
+                      'chunk_duration', '1s', ...
+                      'progress_bar', true, ...
+                      'mp_context', 'None', ...
+                      'max_threads_per_process', 1);
+%% SpykingCircus 2
+AutorunConfig.CreateSpikeSorting.ParameterStructure = struct('general', struct('ms_before', 2, ...
+                                        'ms_after', 2, ...
+                                        'radius_um', 100), ...
+                      'sparsity', struct('method', 'snr', ...
+                                         'amplitude_mode', 'peak_to_peak', ...
+                                         'threshold', 0.25), ...
+                      'filtering', struct('freq_min', 150, ...
+                                          'freq_max', 7000, ...
+                                          'ftype', 'bessel', ...
+                                          'filter_order', 2), ...
+                      'detection', struct('peak_sign', 'neg', ...
+                                          'detect_threshold', 5), ...
+                      'selection', struct('method', 'uniform', ...
+                                          'n_peaks_per_channel', 5000, ...
+                                          'min_n_peaks', 100000, ...
+                                          'select_per_channel', false, ...
+                                          'seed', 42), ...
+                      'apply_motion_correction', true, ...
+                      'motion_correction', struct('preset', 'nonrigid_fast_and_accurate'), ...
+                      'merging', struct('similarity_kwargs', struct('method', 'cosine', ...
+                                                                    'support', 'union', ...
+                                                                    'max_lag_ms', 0.2), ...
+                                        'correlograms_kwargs', struct(), ...
+                                        'auto_merge', struct('min_spikes', 10, ...
+                                                             'corr_diff_thresh', 0.25)), ...
+                      'clustering', struct('legacy', true), ...
+                      'matching', struct('method', 'wobble'), ...
+                      'apply_preprocessing', true, ...
+                      'matched_filtering', true, ...
+                      'cache_preprocessing', struct('mode', 'memory', ...
+                                                     'memory_limit', 0.5, ...
+                                                     'delete_cache', true), ...
+                      'multi_units_only', false, ...
+                      'job_kwargs', struct('n_jobs', 0.8), ...
+                      'debug', false);

@@ -399,6 +399,24 @@ File: Utility_Save_Load_Delete_Plot_Appearance.m
 
  ###################################################### 
 
+File: Utility_Set_ToolTips.m
+%________________________________________________________________________________________
+%% Function show or disable tooltips in all opened app windows.
+% all app windows are saved as a property of the GUI main window
+
+% Inputs:
+% 1: app: main window app object
+% 2: Activated: double, 1 or 0 whether to activate tooltips
+% 3. Window: string, name of the window that opened and for which tooltips
+% should be shwon or not
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Utility_Show_Info_Loaded_Data.m
 %________________________________________________________________________________________
 %% Function to show all contents of the Data.Info object in the textarea on the bottom left of the main window 

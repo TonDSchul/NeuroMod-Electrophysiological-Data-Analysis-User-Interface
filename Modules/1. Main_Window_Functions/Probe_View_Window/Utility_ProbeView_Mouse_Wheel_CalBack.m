@@ -1,5 +1,21 @@
 function app = Utility_ProbeView_Mouse_Wheel_CalBack(app,event,NrChannel)
 
+%________________________________________________________________________________________
+%% Function to change zoomed channel shown on the right when the user scrolls with the mouse wheel while hovering over the probe view plot
+
+% Inputs: 
+% 1. app: probe view window object
+% 2. event: event structure from mouse wheel scroll
+% 3. NrChannel: double, from Data.Info 
+
+% Outputs:
+% 1. app: probe view window object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 CurrentZoomChannel = app.FirstZoomChannel;
  % Get the current mouse position
 currentPoint = app.UIAxes.CurrentPoint;

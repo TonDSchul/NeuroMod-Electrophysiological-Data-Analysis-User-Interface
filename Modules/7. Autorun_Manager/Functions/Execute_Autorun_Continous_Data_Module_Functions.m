@@ -81,6 +81,14 @@ end
 if strcmp(FunctionOrder,'Static_Power_Spectrum')
     for i = 1:length(AutorunConfig.StaticPowerSpectrum.PlotType)
         if strcmp(AutorunConfig.StaticPowerSpectrum.PlotType(i),"Band Power Individual Channel ")
+
+            if strcmp(AutorunConfig.StaticPowerSpectrum.DataSource,"Preprocessed Data")
+                if ~isfield(Data,'Preprocessed')
+                    disp("No preprocecssed data available for static spectrum. Please change 'AutorunConfig.StaticPowerSpectrum.DataSource' to 'Raw Data' or preprocess before that step. Skipping");
+                    return;
+                end
+            end
+
             StaticPowerSpectrumfig = figure();
             StaticPowerSpectrumFigure = axes;
 
@@ -97,15 +105,7 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
             BandPower = [];
             PowerSpecResults = [];
 
-            if isempty(AutorunConfig.StaticPowerSpectrum.DepthChannel)
-                DepthChannel = Data.Info.ProbeInfo.ActiveChannel;
-            else
-                commaindidcie = find(AutorunConfig.StaticPowerSpectrum.DepthChannel);
-                Ch(1) = AutorunConfig.StaticPowerSpectrum.DepthChannel(1:commaindidcie(1)-1);
-                Ch(2) = AutorunConfig.StaticPowerSpectrum.DepthChannel(commaindidcie(1)+1:end);
-
-                DepthChannel = Data.Info.ProbeInfo.ActiveChannel(DepthChannel(1):DepthChannel(2));
-            end
+            DepthChannel = AutorunConfig.StaticPowerSpectrum.DepthChannel;
 
             [~,~,AutorunConfig.CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,AutorunConfig.StaticPowerSpectrum.DataSource,PowerSpecResults,BandPower,AutorunConfig.StaticPowerSpectrum.FrequencyRange,UIAxes,UIAxes_2,TextArea,"All",AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,DepthChannel);
 
@@ -131,15 +131,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
     
     if Execute == 1
 
-        if isempty(AutorunConfig.ContSpikeAnalysis.ChannelSelection)
-            DepthChannel = Data.Info.ProbeInfo.ActiveChannel;
-        else
-            commaindidcie = find(AutorunConfig.ContSpikeAnalysis.ChannelSelection);
-            Ch(1) = AutorunConfig.ContSpikeAnalysis.ChannelSelection(1:commaindidcie(1)-1);
-            Ch(2) = AutorunConfig.ContSpikeAnalysis.ChannelSelection(commaindidcie(1)+1:end);
-
-            DepthChannel = Data.Info.ProbeInfo.ActiveChannel(DepthChannel(1):DepthChannel(2));
-        end
+        DepthChannel = AutorunConfig.ContSpikeAnalysis.ChannelSelection;
 
         if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort") || isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"SpikeInterface")
             AverageWaveforms = [];

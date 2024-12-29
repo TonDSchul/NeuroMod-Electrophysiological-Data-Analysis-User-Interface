@@ -1,5 +1,23 @@
-
 function [Struc] = Spike_Module_ConvertTextToParameterStruc(Text,Sorter,StartStruc)
+
+%________________________________________________________________________________________
+%% Function to convert text containing all fields and values of spike sorting parameter strcucture back to a strcuture
+
+%% cleans quotes from values
+
+% Inputs:
+% 1. Text: text containing all spike sorting parameter settings 
+% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpykingCircus 2"
+% OR "Kilosort 4"
+% 3. StartStruc: only when sorter = "SpykingCircus 2"; standard spike sorting settings structure --> only values
+% that changed are interchanged!
+
+% Outputs
+% 1. Struc: spike sorting parameter structure
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 if strcmp(Sorter,"Mountainsort 5")  
     % Get the updated Text

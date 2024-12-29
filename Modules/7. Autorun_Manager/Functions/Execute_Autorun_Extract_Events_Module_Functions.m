@@ -45,6 +45,8 @@ if strcmp(FunctionOrder,'Extract_Events')
 
     SelectedNode = []; % in case of OE data this is filled
 
+    EventInfo.EventType = AutorunConfig.ExtractEventDataModule.EventType;
+
     %% Start Event Extraction
     if strcmp(Data.Info.RecordingType,"Open Ephys")
         [stringArray] = Utility_Extract_Contents_of_Folder(DataPath);
@@ -115,7 +117,7 @@ end
 
 if isfield(Data,'Events')
     %% ERP
-    if strcmp(FunctionOrder,'Event_Analysis_ERP') || strcmp(FunctionOrder,'Event_Analysis_CSD') || strcmp(FunctionOrder,'Event_Analysis_TimeFrequencyPower')
+    if strcmp(FunctionOrder,'Event_Analysis_ERP') || strcmp(FunctionOrder,'Event_Analysis_CSD') || strcmp(FunctionOrder,'Event_Analysis_TimeFrequencyPower') || strcmp(FunctionOrder,'Event_Static_Power_Spectrum')
         tempcolorMapset = eval(strcat(AutorunConfig.AnalyseEventDataModule.tempcolorMap,"(size(Data.Raw,1))")); % Example colormap: You can use any other colormap
         
         spaceindicie = strfind(Data.Info.EventRelatedDataTimeRange," ");
@@ -129,27 +131,17 @@ if isfield(Data,'Events')
         end
     
         % Handle Events to show
-        if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
+        if isempty(AutorunConfig.EventRange)
             TempEventSelection = strcat('1,',num2str(size(Data.EventRelatedData,2)));
         else
-            TempEventSelection = AutorunConfig.AnalyseEventDataModule.EventSelection;
+            TempEventSelection = AutorunConfig.EventRange;
         end
     
         commaindicie = strfind(TempEventSelection,',');
-        AutorunConfig.AnalyseEventDataModule.EventSelection(1) = str2double(TempEventSelection(1:commaindicie-1));
-        AutorunConfig.AnalyseEventDataModule.EventSelection(2) = str2double(TempEventSelection(commaindicie+1:end));
-    
-        % Handle Channel to show
-        if isempty(AutorunConfig.AnalyseEventDataModule.ChannelSelection)
-            TempChannel = strcat('1,',num2str(size(Data.EventRelatedData,1)));
-        else
-            TempChannel = AutorunConfig.AnalyseEventDataModule.ChannelSelection;
-        end
-    
-        commaindicie = strfind(TempChannel,',');
-        AutorunConfig.AnalyseEventDataModule.ChannelSelection(1) = str2double(TempChannel(1:commaindicie-1));
-        AutorunConfig.AnalyseEventDataModule.ChannelSelection(2) = str2double(TempChannel(commaindicie+1:end));
-    
+        AutorunConfig.EventRange = [];
+        AutorunConfig.EventRange(1) = str2double(TempEventSelection(1:commaindicie-1));
+        AutorunConfig.EventRange(2) = str2double(TempEventSelection(commaindicie+1:end));
+        
         % ERP
         if strcmp(FunctionOrder,'Event_Analysis_ERP')
            
@@ -158,10 +150,12 @@ if isfield(Data,'Events')
             UIAxes_2 = subplot(2,1,2);
             UIAxes.NextPlot = "add";
             
+            SelectedChannel = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
+            
             if strcmp(AutorunConfig.AnalyseEventDataModule.DataSource,'Raw Event Related Data')
-                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.EventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,AutorunConfig.AnalyseEventDataModule.ChannelSelection,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.EventRelatedData(:,AutorunConfig.EventRange(1):AutorunConfig.EventRange(2),:),EventTime,SelectedChannel,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel);
             else
-                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.PreprocessedEventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,AutorunConfig.AnalyseEventDataModule.ChannelSelection,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.PreprocessedEventRelatedData(:,AutorunConfig.EventRange(1):AutorunConfig.EventRange(2),:),EventTime,SelectedChannel,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel);
             end
     
             %% Plot Results if turned on
@@ -177,15 +171,14 @@ if isfield(Data,'Events')
             UIAxes = axes;
             UIAxes.NextPlot = "add";
             
-            CSD.ChannelSpacing = AutorunConfig.AnalyseEventDataModule.CSDChannelSpacing;
+            CSD.ChannelSpacing = Data.Info.ChannelSpacing;
             CSD.HammWindow = str2double(AutorunConfig.AnalyseEventDataModule.CSDHammWindow);
-            CSD.SurfaceChannel = str2double(AutorunConfig.AnalyseEventDataModule.CSDSurfaceChannel);
-            CSD.SelectedChannel = Data.Info.ProbeInfo.ActiveChannel(CSD.SurfaceChannel:end);
+            CSD.SelectedChannel = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
             
             if strcmp(AutorunConfig.AnalyseEventDataModule.DataSource,'Raw Event Related Data')
-                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.EventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.EventRelatedData(:,AutorunConfig.EventRange(1):AutorunConfig.EventRange(2),:),EventTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel);
             else
-                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.PreprocessedEventRelatedData(:,AutorunConfig.AnalyseEventDataModule.EventSelection(1):AutorunConfig.AnalyseEventDataModule.EventSelection(2),:),EventTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.PreprocessedEventRelatedData(:,AutorunConfig.EventRange(1):AutorunConfig.EventRange(2),:),EventTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel);
             end
     
             %% Plot Results if turned on
@@ -193,6 +186,93 @@ if isfield(Data,'Events')
                 Execute_Autorun_Save_Figure(CSDFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Event_Related_Current_Source_Density", DataPath, "CSD", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "CSD")
             end
     
+        end
+
+        if strcmp(FunctionOrder,'Event_Static_Power_Spectrum')
+            for i = 1:length(AutorunConfig.AnalyseEventDataModule.SpectrumPlotType)
+                
+                if strcmp(AutorunConfig.AnalyseEventDataModule.SpectrumDataSource,"Preprocessed Event Related Data")
+                    if ~isfield(Data,'PreprocessedEventRelatedData')
+                        disp("No preprocecssed event related data available for static spectrum. Please change 'AutorunConfig.AnalyseEventDataModule.SpectrumDataSource' to 'Raw Event Related Data' or preprocess before that step. Skipping");
+                        return;
+                    end
+                end
+
+                if strcmp(AutorunConfig.AnalyseEventDataModule.SpectrumPlotType(i),"Band Power Individual Channel")
+    
+                    EventSpectrumFigure = figure();
+                    UIAxes = axes;
+                    UIAxes.NextPlot = "add";
+
+                    SelectedChannel = str2double(AutorunConfig.AnalyseEventDataModule.SpectrumChannel);           
+
+                    if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+                        TempActiveChannel = (str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows)+1)-sort(Data.Info.ProbeInfo.ActiveChannel);
+                        [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,SelectedChannel,'MainWindow');
+                    else
+                        [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,SelectedChannel,'MainWindow');
+                    end
+
+                    if ~ischar(AutorunConfig.EventRange)
+                        if ~isempty(AutorunConfig.EventRange)
+                            SelectedEvents = AutorunConfig.EventRange;
+                        else
+                            SelectedEvents = [1,size(Data.EventRelatedData,2)];
+                        end
+                    else
+                        if ~isempty(AutorunConfig.EventRange)
+                            SelectedEvents = str2double(split(AutorunConfig.EventRange,','));
+                        else
+                            SelectedEvents = [1,size(Data.EventRelatedData,2)];
+                        end
+                    end
+
+                    set(UIAxes, 'YDir', 'normal');
+                    cb = colorbar(UIAxes);   % Create a colorbar (if it exists)
+                    if ~isempty(cb)
+                        delete(cb);                  % Delete the colorbar
+                    end
+    
+                    [AutorunConfig.CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,UIAxes,AutorunConfig.AnalyseEventDataModule.SpectrumDataType,AutorunConfig.AnalyseEventDataModule.SpectrumDataSource,SelectedChannel,AutorunConfig.AnalyseEventDataModule.SpectrumChannel,AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,SelectedEvents);
+    
+                elseif strcmp(AutorunConfig.AnalyseEventDataModule.SpectrumPlotType(i),"Band Power over Depth")
+                    
+                    EventSpectrumFigure = figure();
+                    UIAxes = subplot(1,2,1);
+                    UIAxes_2 = subplot(1,2,2);
+                    UIAxes.NextPlot = "add";
+                    UIAxes_2.NextPlot = "add";
+
+                    UIAxes.YScale = 'linear';
+                           
+                    if ~ischar(AutorunConfig.EventRange)
+                        if ~isempty(AutorunConfig.EventRange)
+                            SelectedEvents = AutorunConfig.EventRange;
+                        else
+                            SelectedEvents = [1,size(Data.EventRelatedData,2)];
+                        end
+                    else
+                        if ~isempty(AutorunConfig.EventRange)
+                            SelectedEvents = str2double(split(AutorunConfig.EventRange,','))';
+                        else
+                            SelectedEvents = [1,size(Data.EventRelatedData,2)];
+                        end
+                    end
+            	    
+                    DepthChannel = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
+                    
+                    BandPower = [];
+
+                    [~,BandPower,~] = Event_Power_Spectrum_Over_Depth(Data,AutorunConfig.AnalyseEventDataModule.SpectrumDataSource,BandPower,AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange,UIAxes,UIAxes_2,[],'All',AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,SelectedEvents,DepthChannel);    
+                end
+
+                %% Plot Results if turned on
+                if strcmp(AutorunConfig.SaveFigures,"on")
+                    Execute_Autorun_Save_Figure(EventSpectrumFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.AnalyseEventDataModule.SpectrumPlotType(i), DataPath, "Event_Related_Spectrum", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "Event_Related_Spectrum")
+                end
+
+            end
+
         end
     
         if strcmp(FunctionOrder,'Event_Analysis_TimeFrequencyPower')
@@ -203,8 +283,9 @@ if isfield(Data,'Events')
                     UIAxes = axes;
                     UIAxes.NextPlot = "add";
         
-                    ChannelSelection = strcat(num2str(AutorunConfig.AnalyseEventDataModule.ChannelSelection(1)),',',num2str(AutorunConfig.AnalyseEventDataModule.ChannelSelection(2)));
-                    EventSelection = strcat(num2str(AutorunConfig.AnalyseEventDataModule.EventSelection(1)),',',num2str(AutorunConfig.AnalyseEventDataModule.EventSelection(2)));
+                    ChannelSelection = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
+            
+                    EventSelection = strcat(num2str(AutorunConfig.EventRange(1)),',',num2str(AutorunConfig.EventRange(2)));
                     
                     [~,DataChannelSelected,EventNrRange,~,TF] = Event_Module_Organize_TF_Window_Inputs(Data,"Moorlet Wavelets",ChannelSelection,EventSelection,AutorunConfig.AnalyseEventDataModule.TFFrequencyRange,AutorunConfig.AnalyseEventDataModule.TFCycleWidth,[],[]);
             
@@ -299,9 +380,8 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
 
     %% Channel Rejection
     if AutorunConfig.PreproEventDataModule.ChannelRejection == true
-        indicesep = find(AutorunConfig.PreproEventDataModule.ChannelToReject == ',');
-        RejectChannel(1,1) = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject(1:indicesep(1)-1));
-        RejectChannel(1,2) = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject(indicesep+1:end));
+
+        RejectChannel = AutorunConfig.PreproEventDataModule.ChannelToReject;
     
         EventTime = [];
         if strcmp(Data.Info.EventRelatedDataType,'Raw')
@@ -326,67 +406,6 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
     
     end
 
-    %% Artefact Rejection
-    if AutorunConfig.PreproEventDataModule.ArtefactRejection == true
-        if isempty(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject)
-            if isfield(Data,'PreprocessedEventRelatedData')
-                AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,1)));
-            else
-                AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = strcat('1,',num2str(size(Data.EventRelatedData,1)));
-            end
-        end
-    
-        if isempty(AutorunConfig.PreproEventDataModule.EventsToReject)
-            if isfield(Data,'PreprocessedEventRelatedData')
-                AutorunConfig.PreproEventDataModule.EventsToReject = strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,2)));
-            else
-                AutorunConfig.PreproEventDataModule.EventsToReject = strcat('1,',num2str(size(Data.EventRelatedData,2)));
-            end
-        end
-
-        EventTime = [];
-        
-        if strcmp(Data.Info.EventRelatedDataType,'Raw')
-            EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
-        else
-            if isfield(Data.Info,"DownsampleFactor")
-                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.DownsampledSampleRate:EventRelatedDataTimeRange(2);
-            else
-                EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
-            end
-        end
-    
-        indicesep = find(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent == ',');
-        TimeWindin(1,1) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(1:indicesep(1)-1));
-        TimeWindin(1,2) = str2double(AutorunConfig.PreproEventDataModule.TimeWindowAroundEvent(indicesep+1:end));
-        
-        %Channel
-        indicesep = find(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject == ',');
-        Channel(1,1) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1:indicesep(1)-1));
-        Channel(1,2) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(indicesep+1:end));
-        if Channel(1,2) > size(Data.EventRelatedData,1)
-            msgbox("Last channel bigger than channel number. Autosetting to all channel");
-            Channel(1,2) = size(Data.EventRelatedData,1);
-            AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = strcat("1,",num2str(size(Data.EventRelatedData,1)));
-        end
-    
-        indicesep = find(AutorunConfig.PreproEventDataModule.EventsToReject == ',');
-        Trials(1,1) = str2double(AutorunConfig.PreproEventDataModule.EventsToReject(1:indicesep(1)-1));
-        Trials(1,2) = str2double(AutorunConfig.PreproEventDataModule.EventsToReject(indicesep+1:end));
-    
-        %ChanneltoPlot = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject);
-        
-        %% Extract Data and Plot
-    
-        if isfield(Data,'PreprocessedEventRelatedData')
-            [Data.PreprocessedEventRelatedData,~,~] = Preprocessing_Events_Reject_and_Plot_Artefacts(Data.PreprocessedEventRelatedData,Channel,Trials,EventTime,TimeWindin,[],[],[],AutorunConfig.PreproEventDataModule.ArtefactChannelToReject,[],AutorunConfig.PreproEventDataModule.Method,'Interpolating',[],'No Plot');
-        else
-            [Data.PreprocessedEventRelatedData,~,~] = Preprocessing_Events_Reject_and_Plot_Artefacts(Data.EventRelatedData,Channel,Trials,EventTime,TimeWindin,[],[],[],AutorunConfig.PreproEventDataModule.ArtefactChannelToReject,[],AutorunConfig.PreproEventDataModule.Method,'Interpolating',[],'No Plot');
-        end
-    
-        [Data] = Preprocessing_Events_Add_Preprocessing_Info(Data,'Artefact Rejection',Channel,Trials,TimeWindin);
-    
-    end
 end
 %______________________________________________________________________________________________________
 % 4.3 Event Related Spike Analysis
@@ -395,16 +414,8 @@ end
 if isfield(Data,'Events')
     if strcmp(FunctionOrder,'Event_Spike_Analysis')
 
-        if isempty(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot)
-            DepthChannel = Data.Info.ProbeInfo.ActiveChannel;
-        else
-            commaindidcie = find(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot==',');
-            Ch(1) = str2double(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(1:commaindidcie(1)-1));
-            Ch(2) = str2double(AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot(commaindidcie(1)+1:end));
-
-            DepthChannel = Data.Info.ProbeInfo.ActiveChannel(Ch(1):Ch(2));
-        end
-
+        DepthChannel = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot;
+        
         if ~isfield(Data,'Spikes')
         
             msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
@@ -412,7 +423,7 @@ if isfield(Data,'Events')
         elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort") || isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"SpikeInterface")   
         
             % Handle Events to show
-            if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
+            if isempty(AutorunConfig.EventRange)
                 Events = strcat('1,',num2str(size(Data.EventRelatedData,2)));
             else
                 Events = AutorunConfig.AnalyseEventSpikesModule.SelectedEvents;
@@ -533,7 +544,7 @@ if isfield(Data,'Events')
            
             %if Error == 0
                 % Handle Events to show
-                if isempty(AutorunConfig.AnalyseEventDataModule.EventSelection)
+                if isempty(AutorunConfig.EventRange)
                     Events = strcat('1,',num2str(size(Data.EventRelatedData,2)));
                 else
                     Events = AutorunConfig.AnalyseEventSpikesModule.SelectedEvents;

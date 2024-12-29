@@ -1,5 +1,52 @@
 function [yPoint,yLimits,ActiveChannel,yLimitsSquares,squareHeight] = Utility_Plot_Probe_Scheme(Figure,GrayProbeFilling,ProbeLines,ChannelViewLeft,NrChannel,ChannelSpacing,ActiveChannel,VerOffset,ChannelRows,LeftProbeChanged,AllActiveChannel,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,FirstZoomChannel)
 
+%________________________________________________________________________________________
+%% Function to plot the complete probe scheme on the right of the probe view windows
+
+% Inputs: 
+% 1. Figure: figure object of probe view window
+% 2. GrayProbeFilling: vector with handles to gray patch plots -- empty
+% when not necessray to plot or update
+% 3. ProbeLines: array with line objects of the probe on the left -- empty
+% when not necessray to plot or update
+% 4. ChannelViewLeft: array with rectangle objects of the probe on the left (for all channel plotted) -- empty
+% when not necessray to plot or update
+% 5. NrChannel: double, from Data.Info structure or create probe view window
+% 6. ChannelSpacing: double, from Data.Info structure in um
+% 7. ActiveChannel: double, vector with currently active channel the userselected
+% 8. VerOffset: Vertical offset in um between channel rows (0 if 1 channel
+% row) --> affects right row only. Positive and negative possible
+% 9. ChannelRows: double, 1 or 2 from Data.Info structure or create probe view window
+% 10. LeftProbeChanged: double, 1 or 0 - if the left probe plot has to be
+% updated -- saves time if not
+% 11. AllActiveChannel: double, vector with active channel  from Data.Info
+% structure
+% 12. CreateProbeWindow: double, 1 or 0, if plot is for create probe window
+% or probe view window
+% 13. ChannelActivation: double, 1 or 0, if user activated/deactivated a
+% channel (comes from ClickCallbacks), but also 1 if initialy created!!
+% 14. ChannelClicked: double, channel the user clicked on if he did so,
+% empty if not
+% 15. OffSetRows: logical, 1 or 0, if left and right row have an offset (only if two channelrows)
+% 16. RowClicked: 0 if clicked on a row on the left
+% 17. FirstZoomChannel: First Channel shown in zoomed channel view on the
+% right (lowest channel) - comes from ClickCallback functions
+
+% Outputs:
+% 1. yPoint: y value of grey probe tip (warning: most likely negative!)
+% 2. yLimits: double 1x2 vector with min and max value of plotted probe on
+% the left - for y scale and detection where user clicked on
+% 3. ActiveChannel: currently selected active channel
+% 4. yLimitsSquares: double 1x2 vector with min and max value of plotted channel rectangles on
+% the left, used as limit to plot black lines of channel zoomed on the
+% right
+% 5. squareHeight: double, Height of each square plotted in the left side
+% (in um)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 %% Prepare
 if ~isempty(ActiveChannel)
     if ismatrix(ActiveChannel) && ~iscell(ActiveChannel)

@@ -60,6 +60,9 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
         
         if strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Raw_Recording') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_Data')
             [Data,AutorunConfig] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,Channelorder,executableFolder);
+            
+            [AutorunConfig] = Execute_Autorun_Convert_ConfigChannel_to_ActiveChannel(AutorunConfig,Data.Info.ProbeInfo.ActiveChannel);
+
             %% Skip this folder when no data found
             if isempty(Data)
                 disp("No Data found, skipping folder.");
@@ -83,14 +86,14 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
             end
             %% 4. Event Data Module
             %______________________________________________________________________________________________________
-            if strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Events') || strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Event_Related_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Spike_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_ERP') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_CSD') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_TimeFrequencyPower') || strcmp(FunctionOrder(nCurrentModuleIteration),'PreproEventDataModule') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Unit_Analysis')
+            if strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Events') || strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Event_Related_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Spike_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_ERP') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_CSD') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_TimeFrequencyPower') || strcmp(FunctionOrder(nCurrentModuleIteration),'PreproEventDataModule') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Unit_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Static_Power_Spectrum') 
                 [Data] = Execute_Autorun_Extract_Events_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData,executableFolder);
             end
             %______________________________________________________________________________________________________
             %% 5. Spike Module Functions
             %______________________________________________________________________________________________________
-            if strcmp(FunctionOrder(nCurrentModuleIteration),'Internal_Spike_Detection') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_from_Kilosort') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_for_Kilosort') || strcmp(FunctionOrder(nCurrentModuleIteration),'Create_Internal_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Internal_Spike_Sorting')
-                [Data] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings);
+            if strcmp(FunctionOrder(nCurrentModuleIteration),'Internal_Spike_Detection') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_from_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_for_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Create_Internal_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Internal_Spike_Sorting')
+                [Data] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,executableFolder);
             end
             %______________________________________________________________________________________________________
         end

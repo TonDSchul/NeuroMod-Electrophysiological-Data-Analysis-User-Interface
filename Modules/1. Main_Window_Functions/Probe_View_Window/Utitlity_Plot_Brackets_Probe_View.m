@@ -1,7 +1,38 @@
 function [yLimitBracktes] = Utitlity_Plot_Brackets_Probe_View(Figure,BracketLine,NrChannel,ChannelSpacing,yPoint,yLimits,yLimitsSquares,squareHeightLeftProbe,FirstZoomChannel,NrRows,CreateProbeWindow,ChannelActivation)
 
-%% Plot bracket
-% Plot horizontal lines to the left
+%________________________________________________________________________________________
+%% Function to plot the black bracket on the right for the zoomed channel selection
+
+% Inputs: 
+% 1. Figure: figure object of probe view window
+% 2. BracketLine: array with line objects of brackets
+% 3. NrChannel: double, from Data.Info structure or create probe view window
+% 4. ChannelSpacing: double, from Data.Info structure in um
+% 5. yPoint: y value of grey probe tip (warning: most likely negative!)
+% 6. yLimits: double 1x2 vector with min and max value of plotted probe on
+% the left - for y scale and detection where user clicked on
+% 7. yLimitsSquares: double 1x2 vector with min and max value of plotted channel rectangles on
+% the left, used as limit to plot black lines of channel zoomed on the
+% right
+% 8. squareHeightLeftProbe: double, Height of each square plotted in the left side
+% (in um)
+% 9. FirstZoomChannel: First Channel shown in zoomed channel view on the
+% right (lowest channel) - comes from ClickCallback functions
+% 10. NrRows: double, 1 or 2 from Data.Info structure or create probe view window
+% 11. CreateProbeWindow: double, 1 or 0, if plot is for create probe window
+% or probe view window
+% 12. ChannelActivation: double, 1 or 0, if user activated/deactivated a
+% channel (comes from ClickCallbacks), but also 1 if initialy created!!
+
+% Outputs:
+% 1. yLimitBracktes: double, vector with min and max value of the plotted
+% bracket
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+%% Plot horizontal lines to the left
 %%%%%% Changed in callback
 
 % Upper limit

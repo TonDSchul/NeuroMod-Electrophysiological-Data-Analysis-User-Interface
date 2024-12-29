@@ -1,5 +1,21 @@
 function app = Spike_Module_Check_Bin_Dat_Files(app,Type,filepath)
 
+%________________________________________________________________________________________
+%% Function to check whether a .bin file for spikeinterface sorting was found in the selected path
+
+% Inputs:
+% 1. app: Spike detection and sorting window object
+% 2. Type: string ,"Auto" OR "Manual"; Auto on app startup for auto search,
+% manual if user seleted folder manually
+% 3. filepath: char with path to the folder to search in
+
+% Outputs
+% 1. app: Spike detection and sorting window object 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if strcmp(Type,"Auto")
     %% Check if SpikeInterface standard folder found
     if ~strcmp(app.SorterDropDown.Value,"Kilosort 4")

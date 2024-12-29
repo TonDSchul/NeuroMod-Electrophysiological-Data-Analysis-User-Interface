@@ -1,5 +1,40 @@
 function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom)
 
+%________________________________________________________________________________________
+%% Function to plot the zoomed channel selection on the right.
+
+% Inputs: 
+% 1. Figure: figure object of probe view window
+% 2. ChannelViewRight: array with rectangle objects of the probe on the right (for all channel plotted) -- empty
+% when not necessray to plot or update
+% 3. NrChannel: double, from Data.Info structure or create probe view window
+% 4. ChannelSpacing: double, from Data.Info structure in um
+% 5. ShowChannelSpacing double, 1 or 0 if channel spacing between
+% rectangles should be plotted (using the checkbox in the probe view window)
+% 6. ChannelRows: double, 1 or 2 from Data.Info structure or create probe view window
+% 7. VerOffset: Vertical offset in um between channel rows (0 if 1 channel
+% row) --> affects right row only. Positive and negative possible
+% 8. FirstZoomChannel: First Channel shown in zoomed channel view on the
+% right (lowest channel) - comes from ClickCallback functions
+% 9. ActiveChannel: double, vector with currently active channel the userselected
+% 10. NrRows: not used
+% 11. yLimitBracktes: ymax and ymin of the black brackets in the right
+% 12. AllActiveChannel: double, vector with active channel  from Data.Info
+% structure
+% 13. OffSetRows: logical, 1 or 0, if left and right row have an offset (only if two channelrows)
+% 14. SwitchTopBottom: logical, 1 or 0, if upper and lower channel names
+% are switched
+
+% Outputs:
+% 1. numSquares: double, number of channel squares plotted
+% squareHeight : double, height of channel squares plotted
+% lowylimits: double, height of channel squares plotted
+% CorrrectedVerOffset: Vertical Offset in plot between left and right
+% channelrow for the actual plot
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 ChannelLeft = [];
 ChannelRight = [];

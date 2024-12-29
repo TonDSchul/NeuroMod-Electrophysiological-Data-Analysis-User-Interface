@@ -1,5 +1,36 @@
 function Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation,PlotChannelSpacing,VerOffset,ChannelSpacing,SwitchTopBottom)
 
+%________________________________________________________________________________________
+%% Function to plot channel names on the zoomed channel on the right 
+
+% Inputs: 
+% 1. Figure: figure object of probe view window
+% 2. ChannelText: array of text objects that show the channel name
+% 3. NrChannel: double, from Data.Info structure or create probe view window
+% 4. ChannelRows: double, 1 or 2 from Data.Info structure or create probe view window
+% 5. FirstZoomChannel: First Channel shown in zoomed channel view on the
+% right (lowest channel) - comes from ClickCallback functions
+% 6. numSquares: double, number of channel sqaures plotted on the right
+% 7. squareHeight: double, height of squares plotted on the right
+% 8. lowylimits: lowest plot limit of channel plot on the right
+% 9. CorrrectedVerOffset: double, vertical offset of channel rows plotted
+% one the right in the actual plot (comes from Utitlity_Plot_Zoomed_Channel_Right_Side)
+% 10. CreateProbeWindow: double, 1 or 0, if plot is for create probe window
+% or probe view window
+% 11. ChannelActivation: double, 1 or 0, if user activated/deactivated a
+% channel (comes from ClickCallbacks), but also 1 if initialy created!!
+% 12. PlotChannelSpacing: 1 or 0 if channel spacing between channel squares
+% should be plotted on the right side
+% 13. VerOffset: Vertical offset in um between channel rows (0 if 1 channel
+% row) --> affects right row only. Positive and negative possible
+% 14. ChannelSpacing: double, from Data.Info structure in um
+% 15. SwitchTopBottom: 1 or 0 if upper and lower channel names are switched
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 Squareplots = 0;
 
 if ~ChannelActivation || CreateProbeWindow

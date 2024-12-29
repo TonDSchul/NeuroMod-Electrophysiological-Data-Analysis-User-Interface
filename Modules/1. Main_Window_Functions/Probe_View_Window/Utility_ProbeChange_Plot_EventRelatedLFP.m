@@ -1,5 +1,21 @@
 function [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,Window)
 
+%________________________________________________________________________________________
+%% Function to update event related LFP analysis plots when the user changed the active channel selection
+
+% Executed only when the user changes the channelselection and event related LFP analysis windows are supposed to be updated (in the dropdown menu of the probe view window)
+
+% Inputs: 
+% 1. app: probe view window object
+% 2. Window: string, either "ERP" OR "CSD" OR "EventSpectrum" OR "TF" (time frequency power window)
+
+% Outputs:
+% 1. app: probe view window object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if strcmp(Window,"ERP")
     spaceindicie = strfind(app.Mainapp.Data.Info.EventRelatedDataTimeRange," ");
     TimearoundEvent(1) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)-1));
