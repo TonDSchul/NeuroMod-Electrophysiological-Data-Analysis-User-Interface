@@ -35,7 +35,6 @@ Module{3}.Items{1} = 'Extract Events and Data';
 Module{3}.Items{2} = 'Preprocessing';
 Module{3}.Items{3} = 'LFP Analysis';
 Module{3}.Items{4} = 'Spike Analysis';
-Module{3}.Items{5} = 'Unit Analysis';
 %% Spike Module
 Module{4}.Title = 'Spike Module';
 Module{4}.Function = 'RUN_Spike_Module';

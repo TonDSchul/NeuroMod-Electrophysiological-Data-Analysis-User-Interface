@@ -71,7 +71,7 @@ if strcmp(FunctionOrder,'Extract_Events')
         if ~isempty(Data.Events)
             disp("Successfully extracted Events.");
         else
-            disp("No Events could be extracted.");
+            warning("No Events could be extracted.");
             msgbox("No Events could be extracted.");
         end
     end
@@ -88,8 +88,8 @@ if isfield(Data,'Events')
             end
         
             if strcmp(AutorunConfig.ExtractEventRelatedDataModule.DataSource,"Preprocessed") && isempty(Data.Preprocessed)
-                msgbox("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extrac event related from raw data. Skipping step.")
-                disp("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extrac event related from raw data. Skipping step.")
+                msgbox("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extract event related from raw data.")
+                warning("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extract event related from raw data.")
                 return;
             end
 
@@ -104,20 +104,28 @@ if isfield(Data,'Events')
             end
         end
     else
-        disp("No Events found, skipping step.");
+        warning("No Events found, skipping step.");
         msgbox("No Events found, skipping step.");
     end
 else % if isfield(Data,'Events')
-    disp("No Events found, skipping step.");
+    warning("No Events found, skipping step.");
     msgbox("No Events found, skipping step.");
 end
 %______________________________________________________________________________________________________
 % 4.1 Event Related Signal Analysis
 %______________________________________________________________________________________________________
 
-if isfield(Data,'Events')
+if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
+
     %% ERP
     if strcmp(FunctionOrder,'Event_Analysis_ERP') || strcmp(FunctionOrder,'Event_Analysis_CSD') || strcmp(FunctionOrder,'Event_Analysis_TimeFrequencyPower') || strcmp(FunctionOrder,'Event_Static_Power_Spectrum')
+        if strcmp(AutorunConfig.AnalyseEventDataModule.DataSource,'Preprocessed Event Related Data')
+            if ~isfield(Data,'PreprocessedEventRelatedData')
+                warning("Preprocessed event related data selected for analysis, but not present in dataset. Skipping step to analyse lfp.")
+                return;
+            end
+        end
+
         tempcolorMapset = eval(strcat(AutorunConfig.AnalyseEventDataModule.tempcolorMap,"(size(Data.Raw,1))")); % Example colormap: You can use any other colormap
         
         spaceindicie = strfind(Data.Info.EventRelatedDataTimeRange," ");
@@ -131,8 +139,13 @@ if isfield(Data,'Events')
         end
     
         % Handle Events to show
+
         if isempty(AutorunConfig.EventRange)
-            TempEventSelection = strcat('1,',num2str(size(Data.EventRelatedData,2)));
+            if strcmp(AutorunConfig.AnalyseEventDataModule.DataSource,'Raw Event Related Data')
+                TempEventSelection = strcat('1,',num2str(size(Data.EventRelatedData,2)));
+            else
+                TempEventSelection = strcat('1,',num2str(size(Data.PreprocessedEventRelatedData,2)));
+            end
         else
             TempEventSelection = AutorunConfig.EventRange;
         end
@@ -322,14 +335,16 @@ if isfield(Data,'Events')
     end
 
 else % if isfield(Data,'Events')
-    disp("No Events found, skipping step.");
-    msgbox("No Events found, skipping step.");
+    if strcmp(FunctionOrder,'Event_Analysis_ERP') || strcmp(FunctionOrder,'Event_Analysis_CSD') || strcmp(FunctionOrder,'Event_Analysis_TimeFrequencyPower') || strcmp(FunctionOrder,'Event_Static_Power_Spectrum')
+        warning("No Events found, skipping step.");
+        msgbox("No Events found, skipping step.");
+    end
 end
 
 %______________________________________________________________________________________________________
 % 4.2 Prepro event related data
 %______________________________________________________________________________________________________
-if strcmp(FunctionOrder,'PreproEventDataModule')
+if strcmp(FunctionOrder,'PreproEventDataModule') && isfield(Data,'EventRelatedData')
     %% Trial Rejection
     if AutorunConfig.PreproEventDataModule.TrialRejection == true
     
@@ -352,9 +367,9 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
     
         if ~isempty(EventTime)
             if isfield(Data,'PreprocessedEventRelatedData')
-                [EventRelatedData,Error,~] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data.PreprocessedEventRelatedData,EventTime,'OnlyReject',[],[],[],AutorunConfig.PreproEventDataModule.TrialsToReject);
+                [EventRelatedData,Error,~] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,Data.PreprocessedEventRelatedData,EventTime,'OnlyReject',[],[],1:size(Data.Raw,1),AutorunConfig.PreproEventDataModule.TrialsToReject);
             else
-                [EventRelatedData,Error,~] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data.EventRelatedData,EventTime,'OnlyReject',[],[],[],AutorunConfig.PreproEventDataModule.TrialsToReject);
+                [EventRelatedData,Error,~] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,Data.EventRelatedData,EventTime,'OnlyReject',[],[],1:size(Data.Raw,1),AutorunConfig.PreproEventDataModule.TrialsToReject);
             end
 
             if Error == 0
@@ -383,7 +398,13 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
 
         RejectChannel = AutorunConfig.PreproEventDataModule.ChannelToReject;
     
+        EventRelatedDataTimeRange = [];
         EventTime = [];
+
+        spaceindicie = find(Data.Info.EventRelatedDataTimeRange == ' ');
+        EventRelatedDataTimeRange(1) = str2double(Data.Info.EventRelatedDataTimeRange(1:spaceindicie));
+        EventRelatedDataTimeRange(2) = str2double(Data.Info.EventRelatedDataTimeRange(spaceindicie+1:end));
+
         if strcmp(Data.Info.EventRelatedDataType,'Raw')
             EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
         else
@@ -393,11 +414,13 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
                 EventTime = 0-EventRelatedDataTimeRange(1):1/Data.Info.NativeSamplingRate:EventRelatedDataTimeRange(2);
             end
         end
+        
+        RejectChannel = RejectChannel(1):RejectChannel(2);
 
         if isfield(Data,'PreprocessedEventRelatedData')
-            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Channel_Rejection(Data.PreprocessedEventRelatedData,EventTime,RejectChannel,[],[],"InterpolatedOnly");
+            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Channel_Rejection(Data,Data.PreprocessedEventRelatedData,EventTime,RejectChannel,Data.Info.ChannelSpacing,[],"InterpolatedOnly",Data.Info.ProbeInfo.ActiveChannel);
         else
-            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Channel_Rejection(Data.EventRelatedData,EventTime,RejectChannel,[],[],"InterpolatedOnly");
+            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Channel_Rejection(Data,Data.EventRelatedData,EventTime,RejectChannel,Data.Info.ChannelSpacing,[],"InterpolatedOnly",Data.Info.ProbeInfo.ActiveChannel);
         end
     
         Trials = [1,size(Data.PreprocessedEventRelatedData,2)];
@@ -405,13 +428,16 @@ if strcmp(FunctionOrder,'PreproEventDataModule')
         [Data] = Preprocessing_Events_Add_Preprocessing_Info(Data,'Channel Rejection',RejectChannel,Trials,[]);
     
     end
-
+else
+    if strcmp(FunctionOrder,'PreproEventDataModule')
+        warning("No event ralted data found. Skipping preprocessing of event related data.");
+    end
 end
 %______________________________________________________________________________________________________
 % 4.3 Event Related Spike Analysis
 %______________________________________________________________________________________________________
 
-if isfield(Data,'Events')
+if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
     if strcmp(FunctionOrder,'Event_Spike_Analysis')
 
         DepthChannel = AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot;
@@ -426,7 +452,7 @@ if isfield(Data,'Events')
             if isempty(AutorunConfig.EventRange)
                 Events = strcat('1,',num2str(size(Data.EventRelatedData,2)));
             else
-                Events = AutorunConfig.AnalyseEventSpikesModule.SelectedEvents;
+                Events = AutorunConfig.EventRange;
             end
             % Handle Channel to show
             if isempty(AutorunConfig.AnalyseEventDataModule.ChannelSelection)
@@ -519,19 +545,23 @@ if isfield(Data,'Events')
                         
                         % Dont know why thats necessary, but it is,
                         % just when units plotted 
-                        if UnitIterations > 1
+                        if TotalIterations > 1
                             yyaxis(UIAxes_3, 'left');
                             UIAxes_3.YDir = 'reverse';
                         end
 
-                        if UnitIterations > 1
+                        if TotalIterations > 1 && TotalIts == 2
                             %% Plot Results if turned on
                             if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,strcat(" Kilosort Event Spikes Unit ",num2str(nunits)," "), DataPath,AutorunConfig.AnalyseEventSpikesModule.Plottype(i) , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventIteration")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,strcat(" Event Spikes Unit ",num2str(nunits)," "), DataPath,AutorunConfig.AnalyseEventSpikesModule.Plottype(i) , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventIteration")
+                            end
+                        elseif TotalIterations > 1 && TotalIts == 1
+                            if strcmp(AutorunConfig.SaveFigures,"on")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.AnalyseEventSpikesModule.Plottype(i), DataPath, " Event Spikes " , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventSpikes")
                             end
                         else
                             if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.AnalyseEventSpikesModule.Plottype(i), DataPath, " Kilosort Event Spikes " , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventSpikes")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.AnalyseEventSpikesModule.Plottype(i), DataPath, " Event Spikes " , AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortEventSpikes")
                             end
                         end
 
@@ -547,7 +577,7 @@ if isfield(Data,'Events')
                 if isempty(AutorunConfig.EventRange)
                     Events = strcat('1,',num2str(size(Data.EventRelatedData,2)));
                 else
-                    Events = AutorunConfig.AnalyseEventSpikesModule.SelectedEvents;
+                    Events = AutorunConfig.EventRange;
                 end
                 % Handle Channel to show
                 if isempty(AutorunConfig.AnalyseEventDataModule.ChannelSelection)
@@ -657,7 +687,7 @@ if isfield(Data,'Events')
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
                             
-                            if UnitIterations > 1
+                            if TotalIterations > 1
                                 %% Plot Results if turned on
                                 if strcmp(AutorunConfig.SaveFigures,"on")
                                     Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(" Internal Event Spikes Unit ",num2str(nunits)," ") , DataPath,AutorunConfig.AnalyseEventSpikesModule.Plottype(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "InternalEventIteration")
@@ -676,11 +706,13 @@ if isfield(Data,'Events')
         end
     end
 else % if isfield(Data,'Events')
-    disp("No Events found, skipping step.");
-    msgbox("No Events found, skipping step.");
+    if strcmp(FunctionOrder,'Event_Spike_Analysis')
+        warning("No Events found, skipping step.");
+        msgbox("No Events found, skipping step.");
+    end
 end
 
-if strcmp(FunctionOrder,'Event_Unit_Analysis')
+if strcmp(FunctionOrder,'Event_Unit_Analysis') && isfield(Data,'EventRelatedData')
     Execute = 1;
 
     if ~isfield(Data,'Spikes')
@@ -747,5 +779,9 @@ if strcmp(FunctionOrder,'Event_Unit_Analysis')
                 end
             end
         end
+    end
+else
+    if strcmp(FunctionOrder,'Event_Unit_Analysis')
+        warning("No event ralted data found. Skipping unit analysis");
     end
 end

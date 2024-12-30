@@ -54,7 +54,7 @@ end
 % 5.2 Internal Spike Clustering
 %______________________________________________________________________________________________________
 
-if strcmp(FunctionOrder,'Create_Internal_Spike_Sorting') 
+if strcmp(FunctionOrder,'Create_Spike_Sorting') 
     
     if ~strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"WaveClus 3")
 
@@ -108,16 +108,28 @@ if strcmp(FunctionOrder,'Create_Internal_Spike_Sorting')
         end
 
         % Save JSON to a temporary file
-        if isfile(fullfile(file_path, 'sorting_parameters.json'))
-            delete(fullfile(file_path, 'sorting_parameters.json'))
+        Tempfilepath = convertStringsToChars(file_path);
+        filePathDash = find(Tempfilepath=='\');
+        Tempfilepath = Tempfilepath(1:filePathDash(end)-1);
+
+        if isfile(fullfile(Tempfilepath, 'sorting_parameters.json'))
+            delete(fullfile(Tempfilepath, 'sorting_parameters.json'))
         end
-        jsonFilePath = fullfile(file_path, 'sorting_parameters.json');
+        jsonFilePath = fullfile(Tempfilepath, 'sorting_parameters.json');
         fid = fopen(jsonFilePath, 'w');
         fwrite(fid, SortingParameters, 'char');
         fclose(fid);
+        
+        AutorunConfig.CreateSpikeSorting.OpenSpikeInterface = str2double(AutorunConfig.CreateSpikeSorting.OpenSpikeInterface);
+        AutorunConfig.CreateSpikeSorting.Preprocess = str2double(AutorunConfig.CreateSpikeSorting.Preprocess);
+        AutorunConfig.CreateSpikeSorting.PlotTraces = str2double(AutorunConfig.CreateSpikeSorting.PlotTraces);
+        AutorunConfig.CreateSpikeSorting.PlotSortingResults = str2double(AutorunConfig.CreateSpikeSorting.PlotSortingResults);
+        AutorunConfig.CreateSpikeSorting.LoadSorting = str2double(AutorunConfig.CreateSpikeSorting.LoadSorting);
+        AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = str2double(AutorunConfig.CreateSpikeSorting.KeepConsoleOpen);
+        AutorunConfig.CreateSpikeSorting.MultipleRecordings = str2double(AutorunConfig.CreateSpikeSorting.MultipleRecordings);
 
         command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d', ...
-            pythonPath, SpikeInterfaceScriptPath, file_path, AutorunConfig.CreateSpikeSorting.MultipleRecordings, AutorunConfig.CreateSpikeSorting.Sorter, ...
+            pythonPath, SpikeInterfaceScriptPath, Tempfilepath, AutorunConfig.CreateSpikeSorting.MultipleRecordings, AutorunConfig.CreateSpikeSorting.Sorter, ...
             AutorunConfig.CreateSpikeSorting.Preprocess, AutorunConfig.CreateSpikeSorting.LoadSorting, AutorunConfig.CreateSpikeSorting.OpenSpikeInterface, ...
             AutorunConfig.CreateSpikeSorting.PlotSortingResults, AutorunConfig.CreateSpikeSorting.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, AutorunConfig.CreateSpikeSorting.KeepConsoleOpen, AutorunConfig.CreateSpikeSorting.PlotTraces);
         
@@ -138,9 +150,9 @@ if strcmp(FunctionOrder,'Create_Internal_Spike_Sorting')
 
         SpikeSortingPath = strcat(Data.Info.Data_Path,'\Wave_Clus');
 
-        if strcmp(AutorunConfig.InternalSpikeDetection.SpikeSortingType,'AllChannelTogether')
+        if strcmp(AutorunConfig.InternalSpikeDetection.WaveClus3_SpikeSortingType,'AllChannelTogether')
             SortingType = "AllChannelTogether";
-        elseif strcmp(AutorunConfig.InternalSpikeDetection.SpikeSortingType,'IndividualChannel')
+        elseif strcmp(AutorunConfig.InternalSpikeDetection.WaveClus3_SpikeSortingType,'IndividualChannel')
             SortingType = "IndividualChannel";
         end
     
@@ -168,6 +180,8 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
     elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpykingCircus 2")
         SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
         SelectedFolder = strcat(SelectedFolder,"SpykingCircus 2");
+    elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")
+        SelectedFolder = strcat(Data.Info.Data_Path,"\Wave_Clus\");
     end
     
     if ~exist(SelectedFolder,'dir')
@@ -250,6 +264,10 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
         [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor);
     end
 
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")
+        [Data] = Spike_Module_Internal_Spike_Sorting(Data,SelectedFolder,"Loading");
+    end
+
 end
 
 %______________________________________________________________________________________________________
@@ -263,6 +281,13 @@ if strcmp(FunctionOrder,'Save_for_SpikeSorting')
     end
 
     if Execute == 1
+
+        if strcmp(AutorunConfig.SaveforSpikeSorting.Dataset,"Preprocessed Data")
+            if ~isfield(Data,'Preprocessed')
+                warning("Selected preprocessed data to save for spike sorting but its not part of the dataset yet. Skipping step.")
+                return;
+            end
+        end
         
         if strcmp(AutorunConfig.SaveforSpikeSorting.Sorter,"Kilosort")
             AutorunConfig.SaveforSpikeSorting.FileFormat = '.dat'; % '.dat' for Kilosort OR '.bin' for SpikeInterface

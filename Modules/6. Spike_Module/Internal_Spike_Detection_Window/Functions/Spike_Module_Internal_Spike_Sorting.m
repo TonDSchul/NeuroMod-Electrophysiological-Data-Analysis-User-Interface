@@ -1,4 +1,4 @@
-function [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,WhatToDo,ClusterType)
+function [Data,SaveFilter] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,WhatToDo,ClusterType)
 
 %________________________________________________________________________________________
 

@@ -65,14 +65,14 @@ else % If same event --> no mean
 end
 
 %% Compute Spectrum over Depth 
-if strcmp(DataSource,"Raw Event Related Data")
+if strcmp(Data.Info.EventRelatedDataType,"Raw")
     nChansInFile = size(DataToAnalyse,1);  
     [BandPower.lfpByChannel, BandPower.allPowerEst, BandPower.F, BandPower.allPowerVar] = ...
     lfpBandPower([], Data.Info.NativeSamplingRate, nChansInFile, [], DataToAnalyse,TextArea);
     BandPower.allPowerEst = BandPower.allPowerEst';
     BandPower.marginalChans = 1;
     BandPower.freqBands = {[1.5 4], [4 10], [10 30], [30 80], [80 200]};
-elseif strcmp(DataSource,"Preprocessed Event Related Data")
+elseif strcmp(Data.Info.EventRelatedDataType,"Preprocessed")
     nChansInFile = size(DataToAnalyse,1);  
     if ~isfield(Data.Info,'DownsampleFactor')
         [BandPower.lfpByChannel, BandPower.allPowerEst, BandPower.F, BandPower.allPowerVar] = ...

@@ -42,19 +42,19 @@ else
     AutorunConfig.PreproEventDataModule.ChannelToReject(1) = 1;
     AutorunConfig.PreproEventDataModule.ChannelToReject(2) = length(ActiveChannel);
 end
-% Preprocess Event related Data Artefact rejection channel
-if ~isempty(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject)
-    commaindidcie = find(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject);
-    Ch(1) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1:commaindidcie(1)));
-    Ch(2) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(commaindidcie(1)+1:end));
-
-    AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = [];
-    AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1) = Ch(1);
-    AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(2) = Ch(2);
-else
-    AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1) = 1;
-    AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(2) = length(ActiveChannel);
-end
+% % Preprocess Event related Data Artefact rejection channel
+% if ~isempty(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject)
+%     commaindidcie = find(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject);
+%     Ch(1) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1:commaindidcie(1)));
+%     Ch(2) = str2double(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(commaindidcie(1)+1:end));
+% 
+%     AutorunConfig.PreproEventDataModule.ArtefactChannelToReject = [];
+%     AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1) = Ch(1);
+%     AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(2) = Ch(2);
+% else
+%     AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(1) = 1;
+%     AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(2) = length(ActiveChannel);
+% end
 % Event LFP Analyse
 if ~isempty(AutorunConfig.ChannelRange)
     Ch = str2double(strsplit(AutorunConfig.ChannelRange,','));

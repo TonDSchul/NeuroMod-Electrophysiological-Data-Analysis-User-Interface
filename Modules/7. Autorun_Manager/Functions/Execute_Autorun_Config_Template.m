@@ -92,7 +92,7 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
             %______________________________________________________________________________________________________
             %% 5. Spike Module Functions
             %______________________________________________________________________________________________________
-            if strcmp(FunctionOrder(nCurrentModuleIteration),'Internal_Spike_Detection') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_from_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_for_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Create_Internal_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Internal_Spike_Sorting')
+            if strcmp(FunctionOrder(nCurrentModuleIteration),'Internal_Spike_Detection') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_from_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_for_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Create_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Internal_Spike_Sorting')
                 [Data] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,executableFolder);
             end
             %______________________________________________________________________________________________________

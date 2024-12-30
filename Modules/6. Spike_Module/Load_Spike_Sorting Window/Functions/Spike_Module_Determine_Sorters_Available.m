@@ -22,7 +22,7 @@ if ManualSelection == 0
             CurrentSorter = "Kilosort3";
             Sorter = [Sorter,2];
         end
-    else
+    elseif isfolder(SorterFolders(3)) || isfolder(SorterFolders(4))
         if isfolder(SorterFolders(3)) || isfolder(SorterFolders(4))
             if isfolder(SorterFolders(3))
                 [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(3));
@@ -38,9 +38,17 @@ if ManualSelection == 0
                 Path = SorterFolders(4);
                 CurrentSorter = "SpykingCircus2";
                 Sorter = [Sorter,4];
-            end
-        else  
-            [stringArray] = Utility_Extract_Contents_of_Folder(Data.Info.Data_Path);
+            end                     
+        end
+    elseif isfolder(SorterFolders(5))
+            [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(5));
+            InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(5));
+            InfoText = [InfoText;"";"Searching for sorting output results (spikes.mat and spike_times.mat)."];
+            Path = SorterFolders(5);
+            CurrentSorter = "WaveClus";
+            Sorter = [Sorter,5];
+    else
+        [stringArray] = Utility_Extract_Contents_of_Folder(Data.Info.Data_Path);
     
             IndicieToDelete = [];
             for i = 1:length(SorterFolders)
@@ -62,31 +70,60 @@ if ManualSelection == 0
             else
                 Path = [];
             end
-        end
     end
 
-    % Filter files with .npy extension
-    npyFiles = stringArray(endsWith(stringArray, '.npy'));
-    
-    if isempty(npyFiles)
-        InfoText = ["Warning: No .npy sorter output files found in auto-searched folder. Please select a different folder."; ""; InfoText];
-    else
-        SorterNames = [];
-        for i = 1:length(Sorter)
-            if Sorter == 1
-                SorterNames = [SorterNames,"Kilosort4"];
-            elseif Sorter == 2
-                SorterNames = [SorterNames,"Kilosort3"];
-            elseif Sorter == 3
-                SorterNames = [SorterNames,"Mountainsort 5"];
-            elseif Sorter == 4
-                SorterNames = [SorterNames,"SpykingCircus 2"];
+    if ~strcmp(CurrentSorter,"WaveClus")
+        % Filter files with .npy extension
+        npyFiles = stringArray(endsWith(stringArray, '.npy'));
+        
+        if isempty(npyFiles)
+            InfoText = ["Warning: No .npy sorter output files found in auto-searched folder. Please select a different folder."; ""; InfoText];
+        else
+            SorterNames = [];
+            for i = 1:length(Sorter)
+                if Sorter == 1
+                    SorterNames = [SorterNames,"Kilosort4"];
+                elseif Sorter == 2
+                    SorterNames = [SorterNames,"Kilosort3"];
+                elseif Sorter == 3
+                    SorterNames = [SorterNames,"Mountainsort 5"];
+                elseif Sorter == 4
+                    SorterNames = [SorterNames,"SpykingCircus 2"];
+                elseif Sorter == 5
+                    SorterNames = [SorterNames,"WaveClus 3"];
+                end
+                if i ~=length(Sorter)
+                    SorterNames = [SorterNames,","];
+                end
             end
-            if i ~=length(Sorter)
-                SorterNames = [SorterNames,","];
-            end
+            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
         end
-        InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+    else
+        % Filter files with .npy extension
+        npyFiles = stringArray(endsWith(stringArray, '.mat'));
+        
+        if isempty(npyFiles)
+            InfoText = ["Warning: No .mat sorter output files found in auto-searched folder. Please select a different folder."; ""; InfoText];
+        else
+            SorterNames = [];
+            for i = 1:length(Sorter)
+                if Sorter == 1
+                    SorterNames = [SorterNames,"Kilosort4"];
+                elseif Sorter == 2
+                    SorterNames = [SorterNames,"Kilosort3"];
+                elseif Sorter == 3
+                    SorterNames = [SorterNames,"Mountainsort 5"];
+                elseif Sorter == 4
+                    SorterNames = [SorterNames,"SpykingCircus 2"];
+                elseif Sorter == 5
+                    SorterNames = [SorterNames,"WaveClus 3"];
+                end
+                if i ~=length(Sorter)
+                    SorterNames = [SorterNames,","];
+                end
+            end
+            InfoText = [strcat(".mat output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+        end
     end
 
 else % If manual Folderselection
@@ -185,6 +222,28 @@ else % If manual Folderselection
                     InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
                 end
 
+            elseif ChangedSelectedSorter == 4 % Waveclus
+                % Filter files with .npy extension
+                npyFiles = stringArray(endsWith(stringArray, '.mat'));
+
+                if ~isempty(npyFiles)
+                    CurrentSorter = [];
+                    if sum(contains(stringArray,"spikes.mat"))>0
+                        if sum(contains(stringArray,"spc_log.txt"))>0
+                            CurrentSorter = "WaveClus"; 
+                            SorterNames = "WaveClus 3";
+                            InfoText = [strcat(".output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                        else
+                            InfoText = ["Warning: .mat file present but no spc_log.txt found."; ""; InfoText];
+                        end
+                    else
+                        CurrentSorter = "WaveClus"; 
+                            SorterNames = "WaveClus 3";
+                        InfoText = [strcat("Warning: No sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
+                    end
+                else
+                    InfoText = ["Warning: No sorter output files for WaveClus 3 found in manually selected Path folder. Please select a different folder."; ""; InfoText];
+                end
 
             end
         end

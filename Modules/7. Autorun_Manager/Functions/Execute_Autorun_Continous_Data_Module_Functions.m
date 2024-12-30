@@ -50,6 +50,13 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
             ArtefactRejectionInfo.TimeAroundEvents(2) = str2double(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact(commaindicie(1)+1:end));
             % Conver to samples
             ArtefactRejectionInfo.TimeAroundEvents = round(ArtefactRejectionInfo.TimeAroundEvents.*Data.Info.NativeSamplingRate);
+            
+            if isempty(AutorunConfig.PreprocessCont.ArtefactRejetction.ChannelSelection)
+                ArtefactRejectionInfo.ChannelSelection = 1:size(Data.Raw,1);
+            else
+                TempChannelSelection = str2double(strsplit(AutorunConfig.PreprocessCont.ArtefactRejetction.ChannelSelection,','));
+                ArtefactRejectionInfo.ChannelSelection = TempChannelSelection(1):TempChannelSelection(2);
+            end
         end
 
         [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),PreproInfo,PreprocessingSteps,0,AutorunConfig.PreprocessCont.FilterMethod{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterType{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.CuttoffFrequency{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterDirection{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterOrder{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.DownsampleRate,Data.Info.NativeSamplingRate,ArtefactRejectionInfo);
@@ -188,6 +195,16 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                     KilosortPlotType.Value = AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i);
 
                     for nunits = 1:UnitIterations
+                        if strcmp(Data.Info.SpikeType,"SpikeInterface")
+                            if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Waveform Templates")
+                                disp("Waveform Templates no available yet for Spikeinterface data. Skipping");
+                                continue;
+                            elseif strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Template from Max Amplitude Channel")
+                                disp("Template from Max Amplitude Channel no available yet for Spikeinterface data. Skipping");
+                                continue;
+                            end
+                        end
+
                         if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
                             if str2double(ClusterToPlot(nunits))<=numCluster
                                 CurrentClusterToPlot.Value = num2str(ClusterToPlot(nunits));
@@ -325,14 +342,18 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
                         [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
         
-                        if UnitIterations > 1
+                        if TotalIterations > 1 && TotalIts == 2
                             %% Plot Results if turned on
                             if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(" Cont. Kilosort Spikes Unit ",num2str(nunits)," "), DataPath, AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinousIteration")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(" Cont. Spikes Unit ",num2str(nunits)," "), DataPath, AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinousIteration")
+                            end
+                        elseif TotalIterations > 1 && TotalIts == 1
+                            if strcmp(AutorunConfig.SaveFigures,"on")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), DataPath, " Cont. Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
                             end
                         else
                             if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), DataPath, " Cont. Kilosort Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), DataPath, " Cont. Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
                             end
                         end
                     end % nunits
@@ -542,10 +563,14 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
                         [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
         
-                        if UnitIterations > 1
+                        if TotalIterations > 1 && TotalIts == 2
                             %% Plot Results if turned on
                             if strcmp(AutorunConfig.SaveFigures,"on")
                                 Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(" Cont. Internal Spikes Unit ",num2str(nunits)," "), DataPath, AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "InternalContinousIteration")
+                            end
+                        elseif TotalIterations > 1 && TotalIts == 1
+                            if strcmp(AutorunConfig.SaveFigures,"on")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i) , DataPath, "Cont. Internal Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContInternalSpikes")
                             end
                         else
                             if strcmp(AutorunConfig.SaveFigures,"on")
@@ -616,7 +641,7 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
             if strcmp(Data.Info.SpikeType,"Internal")
                 Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Internal Spikes Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
             else
-                Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Kilosort Spikes Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
+                Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Spikes Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
             end
         end
     end
