@@ -1,5 +1,29 @@
 function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder)
 
+%________________________________________________________________________________________
+
+%% This function shows the info about selected path and probe info in the extract data window
+
+% gets called whenever the user selects a new probe desing or folder
+
+% Input:
+% 1. app: extract data window object
+% Load_Data_Window_Info: structure with info about selected folder and probe.
+% ProbeInfoOrFolder: string, specifies what to do when, either "ProbeInfo" OR
+% "FolderSelection" OR "AutorunFolderSelection", deoending on which info
+% the user changed
+
+% Output: 
+% 1. Load_Data_Window_Info: same as input struvture
+% 2. ProbeInfoText: Text to sho in window
+% 3. FolderContentsText: Folder contents found
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 if strcmp(ProbeInfoOrFolder,"ProbeInfo")
     
     FolderContentsText = []; % not needed here but got to be defined as a output argument

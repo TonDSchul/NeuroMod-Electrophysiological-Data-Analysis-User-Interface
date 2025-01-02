@@ -31,7 +31,8 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 % inplemented yet, but prb necesary in future to delete channel in the
 % middle of the probe (not beginning with first or ending with last channel)
 % 9. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
-% 10. ChannelSpacing: in um as double
+% 10. Load_Data_Window_Info: structure holding probe info like
+% channelspacing or nrchannel
 
 % Output:
 % 1. app: object with initialized values

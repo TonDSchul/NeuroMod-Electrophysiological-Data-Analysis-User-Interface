@@ -2,7 +2,7 @@ function PlotAppearance = Utility_Save_Load_Delete_Plot_Appearance(PlotAppearanc
 
 %________________________________________________________________________________________
 
-%% Function to Manage savinf, loading and deleting then plot appearance variable
+%% Function to Manage saving, loading and deleting then plot appearance variable
 % This function is called in any window the user can modify the plot
 % appearance and saves the costum appearance or deletes previosuly saved
 % costum appearances. It is also called in the Organize_Initialize_GUI.m

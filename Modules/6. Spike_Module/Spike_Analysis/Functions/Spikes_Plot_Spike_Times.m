@@ -205,9 +205,9 @@ if strcmp(Type,"Eventrelated")
     end
 
     if isempty(Event_handles)
-        eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,ChannelPositions(end,2)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure, 'Tag', 'Event');
+        eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,((size(ChannelPositions,1)-1)*ChannelSpacing)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure, 'Tag', 'Event');
     else
-        set(Event_handles(1), 'XData', [Time(Time==0),Time(Time==0)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'YData', [0,ChannelPositions(end,2)], 'Parent', Figure, 'Tag', 'Event');
+        set(Event_handles(1), 'XData', [Time(Time==0),Time(Time==0)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'YData', [0,((size(ChannelPositions,1)-1)*ChannelSpacing)], 'Parent', Figure, 'Tag', 'Event');
         eventLine = Event_handles(1);
     end
     
@@ -229,7 +229,7 @@ elseif strcmp(Type,"Continous")
         delete(Event_handles(:));
 
         for i = 1:length(EventIndicies)
-            line(Figure,[EventIndicies(i),EventIndicies(i)],[0,ChannelPositions(end,2)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Tag', 'Event');
+            line(Figure,[EventIndicies(i),EventIndicies(i)],[0,((size(ChannelPositions,1)-1)*ChannelSpacing)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Tag', 'Event');
             Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
             eventLine = Event_handles(1);
         end

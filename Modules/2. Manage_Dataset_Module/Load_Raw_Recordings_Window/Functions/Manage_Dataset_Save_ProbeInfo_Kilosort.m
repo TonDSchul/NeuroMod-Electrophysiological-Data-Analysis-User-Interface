@@ -1,5 +1,32 @@
 function Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,VerOffsetSecondRow,VerOffsetDistanceSecondRow,VerOffsetRows,HorOffset)
 
+%________________________________________________________________________________________
+
+%% This function saves the current probelayout for external use in Kilosort (saves as .mat file)
+
+% Input:
+% 1. executableFolder: path the GUI is executed/saved in
+% 2. ChannelRowsDropDown: char; Dropdownmenu value from probe window specifying
+% number of channelrows.
+% 3. NrChannelEditField: char, editfield value from probe window specifying
+% number of channels.
+% 4. ChannelSpacingumEditField: char, editfield value from probe window specifying
+% channel spacing.
+% 5. ActiveChannelField: single cell containing char, editfield value from probe window specifying
+% all active channel.
+% 6. VerOffsetSecondRow: double, 1 or 0 if true or false to set veroffset
+% 7. VerOffsetDistanceSecondRow: double, editfield value from probe window specifying
+% vertical offset between both rows.
+% 8. VerOffsetRows: double, vertical offset between rows
+% 9. HorOffset: char, editfield value from probe window specifying
+% horizontal offset between channel rows.
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 cd(strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
 
 if isempty(ActiveChannelField{1})

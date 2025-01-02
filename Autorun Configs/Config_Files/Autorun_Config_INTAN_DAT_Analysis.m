@@ -43,13 +43,16 @@ AutorunConfig.EventRange = []; % Only necessary if events are extracted and anal
 
 % General Information
 AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";
-AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
 AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
-AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
+
+%AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
+%AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
+
 % Figures
-AutorunConfig.SaveFigures = "on";
-AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
-AutorunConfig.DeleteFigureAfterSaving = "on";
+% AutorunConfig.SaveFigures = "on";
+% AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
+% AutorunConfig.DeleteFigureAfterSaving = "on";
+
 AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD"
 
 AutorunConfig.AdditionalAmpFactor = []; % Additional signal amplification factor; empty for non, otherwise factor raw data gets multiplied with
@@ -68,8 +71,8 @@ end
 %% 1.1 Extract Data from Raw Recordings
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
-AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. Either "Intan" OR "Open Ephys" 
-AutorunConfig.ExtractRawRecording.FileType = "Intan .dat"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
+AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. 
+AutorunConfig.ExtractRawRecording.FileType = "Intan .dat"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; 
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -117,7 +120,7 @@ AutorunConfig.StaticPowerSpectrum.PlotType = ["Band Power Individual Channel ","
 AutorunConfig.StaticPowerSpectrum.DataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
 AutorunConfig.StaticPowerSpectrum.DataSource = "Raw Data"; % "Raw Data" or "Preprocessed Data"
 AutorunConfig.StaticPowerSpectrum.FrequencyRange = '0,1000'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
-AutorunConfig.StaticPowerSpectrum.Channel = '64'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
+AutorunConfig.StaticPowerSpectrum.Channel = '5'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 %% 3.3 Analyse Spike Data
 %______________________________________________________________________________________________________
 % Kilosort Plots
@@ -159,7 +162,7 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'DIN Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; For Open Ephys Recordings: name of node of interest as a char like "Record Node 101"
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'DIN Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; 
 AutorunConfig.ExtractEventDataModule.EventType = 'Event Onset'; % char, Either 'Event Onset' or 'Event Offset' to determine whether rising or falling edge should be detected
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.02'; % Threshold of event signal at which events are extracted as char
@@ -170,15 +173,15 @@ AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" 
 %% 4.2 Prepro event related data
 %______________________________________________________________________________________________________
 % Trial/Event Deletion
-AutorunConfig.PreproEventDataModule.TrialRejection = true; % false if you dont want this step to be executed
-AutorunConfig.PreproEventDataModule.TrialsToReject = '1,48'; % char, specify events/trials to be deleted, i.e. '1,10' for trials 1 to 10
+AutorunConfig.PreproEventDataModule.TrialRejection = false; % false if you dont want this step to be executed
+AutorunConfig.PreproEventDataModule.TrialsToReject = '1,4'; % char, specify events/trials to be deleted, i.e. '1,10' for trials 1 to 10
 % Channel Deletion and Interpolation
-AutorunConfig.PreproEventDataModule.ChannelRejection = true;
-AutorunConfig.PreproEventDataModule.ChannelToReject = '1,50'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
+AutorunConfig.PreproEventDataModule.ChannelRejection = false;
+AutorunConfig.PreproEventDataModule.ChannelToReject = '1,5'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
 
 %% 4.3 Analyse event related signal
 %______________________________________________________________________________________________________
-AutorunConfig.AnalyseEventDataModule.DataSource = 'Preprocessed Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
+AutorunConfig.AnalyseEventDataModule.DataSource = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 % ERP Settings
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
 AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '7'; % How much is CSD data smoothed in time and space domain? Format: Char
@@ -190,7 +193,7 @@ AutorunConfig.AnalyseEventDataModule.SpectrumPlotType = ["Band Power Individual 
 AutorunConfig.AnalyseEventDataModule.SpectrumDataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
 AutorunConfig.AnalyseEventDataModule.SpectrumDataSource = "Raw Event Related Data"; % "Raw Event Related Data" or "Preprocessed Event Related Data"
 AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange = '0,1000'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
-AutorunConfig.AnalyseEventDataModule.SpectrumChannel = '64'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
+AutorunConfig.AnalyseEventDataModule.SpectrumChannel = '7'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 % Time Freqency Power Settings
 AutorunConfig.AnalyseEventDataModule.TFFrequencyRange = '2,120,120'; % Frequency range being displayed, input as char in the format: Lowest Frequency, Highest Frequency, Steps
 AutorunConfig.AnalyseEventDataModule.TFChannelSelection = '10'; % char, channel to show the Time freuency power plot for
@@ -229,7 +232,7 @@ AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform = true; % false f
 AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices = '0.001'; % in s
 
 %% Spike Sorting
-AutorunConfig.CreateSpikeSorting.Sorter = 'WaveClus 3'; % which Spike sorter was used to analyze your data? Options: Kilosort4' OR 'Mountainsort 5' OR 'SpykingCircus 2' OR 'WaveClus 3'
+AutorunConfig.CreateSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: Kilosort4' OR 'Mountainsort 5' OR 'SpykingCircus 2' OR 'WaveClus 3'
 AutorunConfig.CreateSpikeSorting.OpenSpikeInterface = '1';
 AutorunConfig.CreateSpikeSorting.Preprocess = '1';
 AutorunConfig.CreateSpikeSorting.PlotTraces = '0';
@@ -247,7 +250,7 @@ AutorunConfig.SaveforSpikeSorting.SaveFormat = 'double'; % 'int32' or 'int16' fo
 AutorunConfig.SaveforSpikeSorting.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data'
 %% 5.2 Load from SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromSpikeSorting.Sorter = 'WaveClus 3'; % which Spike sorter was used to analyze your data? Options: Kilosort4' OR 'Mountainsort 5' OR 'SpykingCircus 2' OR 'WaveClus 3'
+AutorunConfig.LoadfromSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: Kilosort4' OR 'Mountainsort 5' OR 'SpykingCircus 2' OR 'WaveClus 3'
 AutorunConfig.LoadfromSpikeSorting.ScalingFactor = []; % ONLY FOR KILOSORT: char, This is the 'int32' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and aplied when you saved data for kilosort before.

@@ -218,7 +218,13 @@ end
 if strcmp(Data.Info.SpikeType,'Internal')
     [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
 elseif strcmp(Data.Info.SpikeType,'Kilosort') || strcmp(Data.Info.SpikeType,"SpikeInterface")
-    [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+    UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
+
+    if numel(UinquePos)>=2
+        [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.DataCorrectedSpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+    else
+        [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+    end
 end
 
 if isempty(SpikeTimes)

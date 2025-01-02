@@ -19,6 +19,7 @@ function Organize_Set_MainWindow_TimeRange(app,CurrentTimeRange,TimeLimit,Operat
 % is allowed to show.
 % 4. Operation: Specifies whether time is increased or decreased, Either
 % "Plus" OR "Minus"
+% 5. event: event strcuture from callback, used to get previousvalue
 
 % Output:
 % app object with updated app.CurrentTimePoints value capturing the first time

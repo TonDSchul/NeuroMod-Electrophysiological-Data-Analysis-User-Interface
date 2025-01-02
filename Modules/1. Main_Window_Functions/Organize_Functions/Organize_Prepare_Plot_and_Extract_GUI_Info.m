@@ -110,15 +110,29 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
         SpikeDataIndex = app.Data.Spikes.SpikeTimes >= StartIndex & app.Data.Spikes.SpikeTimes <= StopIndex;
         SpikeData.Indicie = app.Data.Spikes.SpikeTimes(SpikeDataIndex) - StartIndex; % Spike Times are indicies of whole datastream. To get indicie within shown time window substract start time
     end
-    SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
+
     SpikeData.Indicie(SpikeData.Indicie==0) = 1;
     SpikeData.ChannelPosition = app.Data.Spikes.ChannelPosition;
+
     %% If doesnt start with 0 um rescale so that its correctly shown in main window plot
     if strcmp(app.Data.Info.SpikeType,"Kilosort") || strcmp(app.Data.Info.SpikeType,"SpikeInterface")
-        if app.Data.Spikes.ChannelPosition(1,2) ~= 0
+
+        UinquePos = unique(app.Data.Spikes.ChannelPosition(:,1));
+    
+        if numel(UinquePos)>=2
+            SpikeData.Position = app.Data.Spikes.DataCorrectedSpikePositions(SpikeDataIndex,2); 
+        else
+            SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
+        end
+
+        if app.Data.Spikes.ChannelPosition(1,2) ~= 0 && numel(UinquePos)<2
             %disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are therefore substracted by the channelspacing to rescale to 0um.")
             SpikeData.Position = SpikeData.Position - app.Data.Info.ChannelSpacing;
         end
+    else
+   
+       SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
+
     end
 end
 

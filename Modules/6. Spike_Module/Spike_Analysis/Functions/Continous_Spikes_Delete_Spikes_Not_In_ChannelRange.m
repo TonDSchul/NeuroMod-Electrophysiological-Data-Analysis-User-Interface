@@ -120,3 +120,5 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
     end
 end
 
+%% Now correct spikes are always?! selected based on this
+%--> just too many, namely twice as much per depth

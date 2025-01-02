@@ -66,6 +66,7 @@ Data.EventRelatedSpikes.SpikeEvents = [];
 Data.EventRelatedSpikes.SpikeAmps = [];
 Data.EventRelatedSpikes.SpikeChannel = [];
 Data.EventRelatedSpikes.SpikeWaveforms = [];
+Data.EventRelatedSpikes.DataCorrectedSpikePositions = [];
 
 Events = Data.Events{EventtoShow};
 SpikeTimes = Data.Spikes.SpikeTimes;
@@ -96,7 +97,13 @@ for nevents = 1:size(Data.EventRelatedData,2)
         Data.EventRelatedSpikes.SpikeEvents = [Data.EventRelatedSpikes.SpikeEvents;zeros(sum(SpikeIndicieWithinCurrentEvent),1)+nevents];
         Data.EventRelatedSpikes.SpikeChannel = [Data.EventRelatedSpikes.SpikeChannel;Data.Spikes.SpikeChannel(SpikeIndicieWithinCurrentEvent==1)];
         Data.EventRelatedSpikes.SpikeWaveforms = [Data.EventRelatedSpikes.SpikeWaveforms;Data.Spikes.Waveforms(SpikeIndicieWithinCurrentEvent==1,:)];
-    
+        
+        UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
+
+        if numel(UinquePos)>=2
+            Data.EventRelatedSpikes.DataCorrectedSpikePositions = [Data.EventRelatedSpikes.DataCorrectedSpikePositions;Data.Spikes.DataCorrectedSpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
+        end
+
         if strcmp(SpikeType,"Kilosort")
             Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
         else

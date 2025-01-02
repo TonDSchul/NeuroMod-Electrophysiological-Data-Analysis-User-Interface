@@ -78,6 +78,12 @@ Data.Spikes.ChannelMap = [];
 Data.Spikes.ChannelPosition = [];
 Data.Spikes.SpikePositions = [];
 
+% Number of unique channelrows
+Uniquex = str2double(Data.Info.ProbeInfo.NrRows);
+if Data.Info.ProbeInfo.OffSetRows == 1
+    Uniquex = 4;
+end
+
 % Initiate waitbar 
 h = waitbar(0, 'Extracting Spike Indicies...', 'Name','Extracting Spike Indicies...');
 cN  = size(Data.Preprocessed,1);
@@ -169,7 +175,18 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
             SpikeTimes = SpikeIndiciesBiggestWaveform;
             Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
             Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
-            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+
+            %% Add X Position of spikes
+            if Uniquex == 2
+                if mod(nchannel,2) == 0 % even
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes))+str2double(Data.Info.ProbeInfo.HorOffset),zeros(1,length(SpikeTimes))+nchannel];
+                else % odd
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+                end
+            elseif Uniquex == 1
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+            end
+
         end  
     end 
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
@@ -243,7 +260,7 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
                     % minimum = spike peak for current sequence
                     [~,BiggestSequenceAmplitudes] = min(Data.Preprocessed(nchannel,TempSequences(nSequences,1):TempSequences(nSequences,2)));
                     % indicie is in respect to range the minimum was searched
-                    % for. Has to be adjusted to the total recording legnth
+                    % for. Has to be adjusted to the total recording length
                     BiggestSequenceAmplitudes = TempSequences(nSequences,1)+(BiggestSequenceAmplitudes);
                     
                     SpikeIndiciesBiggestWaveform(nSequences) = BiggestSequenceAmplitudes;
@@ -262,7 +279,17 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
             SpikeTimes = SpikeIndiciesBiggestWaveform;
             Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
             Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
-            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+
+            %% Add X Position of spikes
+            if Uniquex == 2
+                if mod(nchannel,2) == 0 % even
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes))+str2double(Data.Info.ProbeInfo.HorOffset),zeros(1,length(SpikeTimes))+nchannel];
+                else % odd
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+                end
+            elseif Uniquex == 1
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+            end
         end
             
     end
@@ -353,7 +380,18 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
             SpikeTimes = SpikeIndiciesBiggestWaveform;
             Data.Spikes.SpikeTimes = [Data.Spikes.SpikeTimes;SpikeTimes];
             Data.Spikes.SpikeAmps = [Data.Spikes.SpikeAmps,abs(Data.Preprocessed(nchannel,SpikeTimes))];
-            Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions,zeros(1,length(SpikeTimes))+nchannel];
+            
+            %% Add X Position of spikes
+            if Uniquex == 2
+                if mod(nchannel,2) == 0 % even
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1)+str2double(Data.Info.ProbeInfo.HorOffset),zeros(length(SpikeTimes),1)+nchannel];
+                else % odd
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
+                end
+            elseif Uniquex == 1
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
+            end
+
         end
     end
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
@@ -381,10 +419,6 @@ Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps';
 Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
 Data.Spikes.ChannelMap = 1:size(Data.Preprocessed,1);
 Data.Spikes.ChannelMap = Data.Spikes.ChannelMap';
-TempSpikePositions = Data.Spikes.SpikePositions';
-Data.Spikes.SpikePositions = [];
-Data.Spikes.SpikePositions(1:length(TempSpikePositions),1) = 0;
-Data.Spikes.SpikePositions(1:length(TempSpikePositions),2) = TempSpikePositions;
 
 %% Filter Spike Data if selected
 ToKeep = [];

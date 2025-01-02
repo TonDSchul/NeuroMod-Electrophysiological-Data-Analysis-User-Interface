@@ -5,7 +5,7 @@ function [app] = Change_Modules_Apply_Module_Change_To_MainWindow(app)
 %% Function to apply the module changes the user selected in the manage modules window
 % This function is called when the user presses the button to switch the
 % module selected on the left with the module seleced in the
-% dropdown menu of the manage modules window. it applies this change the
+% dropdown menu of the manage modules window. it applies this change to the
 % the main window
 
 % Inputs:

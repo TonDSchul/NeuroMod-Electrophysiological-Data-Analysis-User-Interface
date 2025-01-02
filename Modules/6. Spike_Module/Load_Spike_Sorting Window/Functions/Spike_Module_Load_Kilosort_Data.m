@@ -115,15 +115,18 @@ if sum(contains(stringArray,".npy")) == 0
 end
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
 
-
 [Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel ,Data.Spikes.BiggestAmplWaveform, c] = ksDriftmap(folderPath,KSversion);
 
 Data.Spikes.SpikeChannel = double(Data.Spikes.SpikeChannel);
 
 if KSversion == 3
-    %load(stringArray(foundrez),'rez');
-    Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
-    Data.Spikes.SpikePositions(:,2) = SpikePositions;
+    if size(SpikePositions,2)==1
+        %load(stringArray(foundrez),'rez');
+        Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
+        Data.Spikes.SpikePositions(:,2) = SpikePositions;
+    else
+        Data.Spikes.SpikePositions = SpikePositions;
+    end
 end
 
 %% Apply ScalingFactor if available (Kilosort works with int format and saves results as such 
@@ -184,7 +187,10 @@ if Data.Spikes.ChannelPosition(1,2) ~= 0
     Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing;
 end
 
-if Data.Spikes.ChannelPosition(2,2)-Data.Spikes.ChannelPosition(1,2) ~= Data.Info.ChannelSpacing
+UinquePos = unique(Data.Spikes.ChannelPosition(:,2));
+PosDiff = UinquePos(2)-UinquePos(1);
+
+if PosDiff ~= Data.Info.ChannelSpacing
     msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
     warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
 end
@@ -356,6 +362,16 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1); 
     Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
     Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
+end
+
+% Now if we have two rows we have to adjust the actual channel to a data
+% channel which goes from 1 to 64. This ensures porper scaling in the main
+% window plot, but is not valid for any computations down the line!
+
+UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
+
+if numel(UinquePos)>=2
+    [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data);
 end
 
 if KSversion == 3

@@ -2,7 +2,7 @@ function [Data,Header,SampleRate] = Manage_Dataset_Extract_Open_Ephys_Data(DATA_
 
 %________________________________________________________________________________________
 
-%% This is the main function to extract Open Ephys TempData 
+%% This is the main function to extract Open Ephys Data 
 % This function utilizes functions and some analysis workflows as well as
 % example data from the analysis-tools Github project from jsiegle
 % available at https://github.com/open-ephys/analysis-tools as well as the open-ephys-matlab-tools
