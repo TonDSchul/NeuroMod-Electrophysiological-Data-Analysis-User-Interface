@@ -284,8 +284,8 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.ProbeInfo.SwitchLeftRightChannel = Load_Data_Window_Info.SwitchLeftRightChannel;
     app.Data.Info.ProbeInfo.FlipLoadedData = Load_Data_Window_Info.FlipLoadedData;
 
-    app.Data.Info.ProbeInfo.OffSetRows = sort(Load_Data_Window_Info.OffSetRows);
-    app.Data.Info.ProbeInfo.OffSetRowsDistance = sort(Load_Data_Window_Info.OffSetRowsDistance);
+    app.Data.Info.ProbeInfo.OffSetRows = double(Load_Data_Window_Info.OffSetRows);
+    app.Data.Info.ProbeInfo.OffSetRowsDistance = Load_Data_Window_Info.OffSetRowsDistance;
 
     if isfield(Load_Data_Window_Info,'ProbeTrajectoryInfo')
         app.Data.Info.ProbeInfo.CompleteAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesLong;

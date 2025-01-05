@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder)
+function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,CurrentSorter)
 
 %% only spikingcircus2 and mountainsort5 tested
 
@@ -25,6 +25,18 @@ if isfield(Data,'Spikes')
     end
     if isfield(Data.Info,'SpikeSorting')
         fieldsToDelete = {'SpikeSorting'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'SpikeSorting')
+        fieldsToDelete = {'SpikeSorting'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'Sorter')
+        fieldsToDelete = {'Sorter'};
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
@@ -101,7 +113,13 @@ for i = 1:length(fileNames)
         Data.Spikes.pc_feature_ind = readNPY(fullfile(SelectedFolder,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'kept_spikes')
         Data.Spikes.kept_spikes = readNPY(fullfile(SelectedFolder,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'SpikePositions')
+    end
+end
+
+UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
+
+for i = 1:length(fileNames)
+    if strcmp(fileNames{i}(1:end-4),'SpikePositions')
         TempPositions = load(fullfile(SelectedFolder,fileNames{i}));
         % Get the list of field names
         fields = fieldnames(TempPositions.SpikePositions);
@@ -118,8 +136,12 @@ for i = 1:length(fileNames)
             for j = 1:numel(fields)
                 fieldName = fields{j};
                 
-                resultMatrix(idx, 1) = TempPositions.SpikePositions(idx).(fieldName);
-                resultMatrix(idx, 2) = TempPositions.SpikePositions(idx).(fieldName);
+                if isscalar(UinquePos)
+                    resultMatrix(idx, 1) = TempPositions.SpikePositions(idx).(fieldName);
+                    resultMatrix(idx, 2) = TempPositions.SpikePositions(idx).(fieldName);
+                else
+                    resultMatrix(idx, j) = TempPositions.SpikePositions(idx).(fieldName);
+                end
             end
         end
         Data.Spikes.SpikePositions = resultMatrix;
@@ -161,7 +183,10 @@ if Data.Spikes.ChannelPosition(1,2) ~= 0
     Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing;
 end
 
-if Data.Spikes.ChannelPosition(2,2)-Data.Spikes.ChannelPosition(1,2) ~= Data.Info.ChannelSpacing
+UinquePos = unique(Data.Spikes.ChannelPosition(:,2));
+PosDiff = UinquePos(2)-UinquePos(1);
+
+if PosDiff ~= Data.Info.ChannelSpacing
     msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
     warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
 end
@@ -207,6 +232,7 @@ end
 
 %% Specify SpikeType
 Data.Info.SpikeType = 'SpikeInterface';
+Data.Info.Sorter = CurrentSorter;
 
 %% Extract Waveforms
 % For Kilosort we dont have channel information to extract from raw or
@@ -308,6 +334,16 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1); 
     Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
     %Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
+end
+
+% Now if we have two rows we have to adjust the actual channel to a data
+% channel which goes from 1 to 64. This ensures porper scaling in the main
+% window plot, but is not valid for any computations down the line!
+
+UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
+
+if numel(UinquePos)>=2
+    [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data);
 end
 
 msgbox("SpikeInterface Sorting successfully loaded.");

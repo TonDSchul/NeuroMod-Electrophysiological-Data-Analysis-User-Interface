@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,WhatToDo,ClusterType)
+function [Data,SaveFilter] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,WhatToDo,ClusterType,CurrentSorter)
 
 %________________________________________________________________________________________
 
@@ -184,7 +184,7 @@ if isfile(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')))
 
     Data.Spikes.SpikeCluster = cluster_class(:,1);
     Data.Info.SpikeType = "Internal";
-    Data.Info.SpikeSorting = "WaveClus";
+    Data.Info.Sorter = CurrentSorter;
 
     msgbox("Spike Sorting Data succesfully loaded.");
 
@@ -256,7 +256,7 @@ elseif isfile(strcat(strcat(SpikeSortingPath,'\Ch1_spikes.mat')))
     end
 
     Data.Info.SpikeType = "Internal";
-    Data.Info.SpikeSorting = "WaveClus";
+    Data.Info.Sorter = CurrentSorter;
 
     msgbox("Spike Sorting Data succesfully loaded.");
 

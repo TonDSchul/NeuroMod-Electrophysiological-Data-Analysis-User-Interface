@@ -57,8 +57,15 @@ function [Data,CurrentPlotData] = Continous_Kilosort_Spikes_Manage_Analysis_Plot
 % When an error occured before plotting, spike times will be a string
 % saying "Error"
 if isstring(SpikeTimes)
-    msgbox("No Spikes found with selected Parameter. Nothing is plotted.")
+    msgbox("No Spikes found with selected parameter and channel. Nothing is plotted.")
     return;
+end
+
+if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
+    if sum(CluterPositions== PlotInfo.Units)==0
+        msgbox("No Spikes found for selected parameter and channel! Nothing is plotted.");
+        return;
+    end
 end
 
 if strcmp(TypeofAnalysis,"Spike Map")
@@ -145,7 +152,7 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     
     if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         % Select Units
-        ClusterToPlot = CluterPositions==PlotInfo.Units;
+        ClusterToPlot = CluterPositions== PlotInfo.Units;
         if strcmp(Data.Info.SpikeType,"SpikeInterface")
             SpikeAmps = abs(SpikeAmps(ClusterToPlot==1));
         else

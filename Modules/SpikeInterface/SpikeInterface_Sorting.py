@@ -66,6 +66,12 @@ def main(subfolders,file_path):
     ypitch = sys.argv[11]  # Second argument
     PlotTraces = sys.argv[13]  # Second argument
     
+    VerChannelOffset = sys.argv[14]  
+    HorChannelOffset = sys.argv[15]  
+    NumberRows = sys.argv[16]  
+    RowOffset = sys.argv[17]  
+    RowOffsetDistance = sys.argv[18]  
+    
     # Read the JSON file
     #json_file_path = sys.argv[12]  # Assume it's the last argument
     JsonFilename = file_path+"/sorting_parameters.json"
@@ -79,6 +85,12 @@ def main(subfolders,file_path):
     JustOpenSpikeInterfaceGUI = int(JustOpenSpikeInterfaceGUI);
     Plot_Results = int(Plot_Results);
     PlotTraces = int(PlotTraces);
+    
+    VerChannelOffset = int(VerChannelOffset);
+    HorChannelOffset = int(HorChannelOffset);
+    NumberRows = int(NumberRows);
+    RowOffset = int(RowOffset);
+    RowOffsetDistance = int(RowOffsetDistance);
     
     num_elec = int(num_elec)
     ypitch = int(ypitch)
@@ -116,8 +128,9 @@ def main(subfolders,file_path):
         print(CompletePath)
         
         #if Sorter in ['Kilosort 4']:
-        #     BinFiles = get_dat_files(CompletePath)
+        #    BinFiles = get_dat_files(CompletePath)
         #else:
+            
         BinFiles = get_bin_files(CompletePath)
             
         PathToLoad = CompletePath+"/"+BinFiles[0]
@@ -137,14 +150,13 @@ def main(subfolders,file_path):
             
         Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter)
         
-        Probe = Create_Probe(num_elec,ypitch,PlotTraces,Recording)
+        Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording)
         
         Recording = Recording.set_probe(Probe)
         
         DumpedRecording = Preprocessing(Recording,Probe,Apply_Preprocessing);
         
         if PlotTraces == 1:
-            print("Not plotting traces...")
             combined_plot(Recording,DumpedRecording,ypitch)
         
         """ ################################################################ Start/Load Sorting ###################################################################### """

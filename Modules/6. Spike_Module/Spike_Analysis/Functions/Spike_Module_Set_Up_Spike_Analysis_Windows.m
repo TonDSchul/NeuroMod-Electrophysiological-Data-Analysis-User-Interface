@@ -84,7 +84,7 @@ if strcmp(EventWindow,"Non")
         texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
     else
-        if isfield(app.Mainapp.Data.Info,'SpikeSorting')
+        if strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
             texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
             strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
         else
@@ -97,7 +97,7 @@ else
         texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
     else
-        if isfield(app.Mainapp.Data.Info,'SpikeSorting')
+        if strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
             texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
             strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
         else
@@ -128,7 +128,7 @@ end
 if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"Non") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface") && strcmp(EventWindow,"Non")
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
-elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && isfield(app.Mainapp.Data.Info,'SpikeSorting')
+elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
     % Exatract number of spike clusters Kilosort found
     app.numCluster = numel(unique(app.Mainapp.Data.Spikes.SpikeCluster));
 elseif strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") && strcmp(EventWindow,"EventWindow") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface") && strcmp(EventWindow,"EventWindow")
@@ -140,7 +140,7 @@ if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data
     % Define unique color for each cluster
     app.rgbMatrix = lines(app.numCluster);
 else
-    if isfield(app.Mainapp.Data.Info,'SpikeSorting')
+    if strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
         app.rgbMatrix = lines(app.numCluster);
     else
         app.rgbMatrix = lines(1);
@@ -151,7 +151,7 @@ end
 if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
     texttoshow = {};
     
-    if strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~isfield(app.Mainapp.Data.Info,'SpikeSorting')
+    if strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
         texttoshow{1} = 'Non';
     else
         texttoshow{1} = 'Non';

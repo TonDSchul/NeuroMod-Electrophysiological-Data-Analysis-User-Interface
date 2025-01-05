@@ -11,6 +11,7 @@ import spikeinterface.sorters as ss
 import spikeinterface.widgets as sw
 import numpy as np
 from probeinterface import generate_linear_probe
+from probeinterface import Probe
 from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
 #from kilosort import io
@@ -18,51 +19,102 @@ import time
 import os
 import shutil
 from scipy.io import savemat
-
+from scipy.io import loadmat
 
 """ ################################################################ Load Binary file Function ####### """
 def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sorter):
     
     num_channels = int(num_channels)
+
+    time_axis = 1
     
-    """"Parallel Proc
-    essing"""
+    """"Parallel Processing"""
     global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
     si.set_global_job_kwargs(**global_job_kwargs)
     
     print("Reading .bin file")
     """  Define recording parameters """
-    #sampling_frequency = 20_000.0  # Adjust according to your MATLAB dataset
-    #num_channels = 16  # Adjust according to your MATLAB dataset
+
+    print(file_path)
+
     if Sorter in ['Kilosort 4']:
-        dtype = "float32"  # MATLAB's double corresponds to Python's float64
+                
+        dtype = "float64"  # MATLAB's double corresponds to Python's float64
+        """  Load data using SpikeInterface """
+        recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
+                                   num_channels=num_channels, dtype=dtype)
     else:
         dtype = "float64"  # MATLAB's double corresponds to Python's float64
-    
-    """  Load data using SpikeInterface """
-    recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
-                               num_channels=num_channels, dtype=dtype)
-    
+        """  Load data using SpikeInterface """
+        recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
+                                   num_channels=num_channels, dtype=dtype)
+        
     recording.annotate(is_filtered=False)
     
     return recording 
     return dtype
 
 """ ################################################################ Generate Probe Desing ####### """
-def Create_Probe(num_elec,ypitch,PlotTraces,Recording):
-    
+def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording):
+        
     print("Creating and attaching Probe")
     
-    probe = generate_linear_probe(num_elec=num_elec, ypitch=ypitch, contact_shapes='circle', contact_shape_params={'radius': 6})
+    if NumberRows == 2:
+        # Validation
+        if num_elec % 2 != 0:
+            raise ValueError("num_elec must be divisible by 2.")
+        
+        # Initialize positions array
+        positions = np.zeros((num_elec, 2))
+        
+        # Number of electrodes per row
+        num_elec_per_row = num_elec // 2
+        
+        # X Positions
+        positions[:num_elec_per_row, 0] = 0  # First row
+        positions[num_elec_per_row:, 0] = HorChannelOffset  # Second row
+        
+        # Apply RowOffset if enabled
+        if RowOffset == 1:
+            for row in range(1, num_elec, 2):  # Start from second row, step by 2
+                positions[row:row+1, 0] += RowOffsetDistance
+            
+        print(positions)
+        # Y Positions
+        positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
+        positions[num_elec_per_row:, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch) + VerChannelOffset  # Second row
+
+    else:
+        positions = np.zeros((num_elec, NumberRows))
+        
+    # create an empty probe object with coordinates in um
+    probe = Probe(ndim=2, si_units='um')
+    # set contacts
+    probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
+
+    # Create the first sequence: 0, 2, 4, ..., num_elec/2 - 2
+    first_half = np.arange(0, num_elec, step=2)
+    
+    # Create the second sequence: 2, 4, ..., num_elec
+    second_half = np.arange(1, num_elec + 1, step=2)
+    
+    # Combine both sequences
+    ChannelIDS = np.concatenate((first_half, second_half))
+
+    print(ChannelIDS)
+    probe.set_device_channel_indices(ChannelIDS)
+    probe.set_contact_ids(ChannelIDS)
+        
+    #probe = generate_linear_probe(num_elec=num_elec, ypitch=ypitch, contact_shapes='circle', contact_shape_params={'radius': 6})
     # the probe has to be wired to the recording
-    probe.set_device_channel_indices(np.arange(num_elec))
-    probe.set_contact_ids(np.arange(num_elec))
+    #probe.set_device_channel_indices(np.arange(num_elec))
+    #probe.set_contact_ids(np.arange(num_elec))
     
     if PlotTraces == 1:
         print("Plotting Traces...")
         plot_probe(probe, with_contact_id=True)
     
-    probe.to_dataframe(complete=True).loc[:, ["contact_ids", "shank_ids", "device_channel_indices"]]
+    probe.to_dataframe(complete=True).loc[:, ["shank_ids", "device_channel_indices"]]
     
     Recording = Recording.set_probe(probe)
 
@@ -75,18 +127,16 @@ def Preprocessing(Recording,Probe,Apply_Preprocessing):
             
     if Apply_Preprocessing == 1:
         print("Preprocessing Data...")
-        Recording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000)
-        Recording = spre.whiten(recording=Recording)
+        PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000)
+        PreProRecording = spre.whiten(recording=PreProRecording)
     else:
        print("Not Preprocessing Data...")
            
-    Recording = Recording.set_probe(Probe)
+    PreProRecording = PreProRecording.set_probe(Probe)
     
-    Recording_Dumped = Recording
-    
-    Recording_Dumped = Recording_Dumped.set_probe(Probe)
-    
-    return Recording_Dumped
+    PreProRecording.annotate(is_filtered=True)
+        
+    return PreProRecording
     
 """ ################################################################ Subplot ####### """
 
@@ -187,6 +237,8 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
 """ ################################################################ Kilosort 4 ####### """
 def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,SortingParameter):
     
+    IntegerRecording = spre.astype(recording, dtype='int16')
+    
     print("Starting Spike Sorting with Kilosort 4")
     
     """"Parallel Processing"""
@@ -196,10 +248,17 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
     default_KS4_params = ss.Kilosort4Sorter.default_params()
     print(default_KS4_params)
     
-    #default_KS4_params = update_standards(default_KS4_params, SortingParameter)
-    #print(default_KS4_params)
+    costum_KS4_params = update_standards(default_KS4_params, SortingParameter)
+    print(costum_KS4_params)
+    
+    if Apply_Preprocessing == 1:
+        costum_KS4_params['skip_kilosort_preprocessing'] = False
+        print("No Prepro in KS4")
+    else:
+        costum_KS4_params['skip_kilosort_preprocessing'] = True
+        print("Prepro in KS4")
         
-    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **default_KS4_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costum_KS4_params, recording=IntegerRecording,output_folder=Sorting_output_folder, remove_existing_folder=True)
     return sortingKS4
     
 """ ################################################################ Sorting Analyzer ####### """

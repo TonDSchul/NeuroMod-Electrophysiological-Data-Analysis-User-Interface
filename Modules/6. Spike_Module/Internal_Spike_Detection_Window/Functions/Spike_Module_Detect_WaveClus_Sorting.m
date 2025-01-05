@@ -20,7 +20,7 @@ end
 if SpikePresent == 0 % No sorting found
     textboxx = strcat("Spike data not found. Please first use the 'Spike Detection and Sorting' window to detect spikes using thresholding!");
     app.TextArea_3.Value = textboxx;
-    app.Label.Text = "Folder does not exist and times_spikes.mat not found!";
+    app.Label.Text = "No internally extracted spike data found!";
     app.Label.FontColor = [1.00,0.00,0.00];
 else
 
@@ -30,3 +30,4 @@ else
 end
 
 app.TextArea_3.Value = textboxx;
+

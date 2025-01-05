@@ -53,6 +53,12 @@ if strcmp(ComponentToDelete,"Spikes")
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
+    if isfield(Data.Info,'Sorter')
+        fieldsToDelete = {'Sorter'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
     if isfield(Data.Info,'SpikeDetectionNrStd')
         fieldsToDelete = {'SpikeDetectionNrStd'};
         % Delete fields

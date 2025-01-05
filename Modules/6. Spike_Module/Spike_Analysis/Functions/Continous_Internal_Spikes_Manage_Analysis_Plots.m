@@ -60,6 +60,13 @@ if isstring(SpikeTimes)
     return;
 end
 
+if ~isnan(PlotInfo.Units)
+    if sum(CluterPositions== PlotInfo.Units)<2
+        msgbox("No Spikes found for selected parameter and channel! Nothing is plotted.");
+        return;
+    end
+end
+
 % If no spike clustering with internal spikes available
 if ~isempty(Data.Spikes.SpikeCluster)
     numCluster = length(unique(Data.Spikes.SpikeCluster));

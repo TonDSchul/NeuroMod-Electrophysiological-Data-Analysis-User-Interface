@@ -47,7 +47,7 @@ end
 % end
 
 if size(rgbMatrix,1) < size(Datatoplot,2)
-    rgbMatrix = lines(size(Datatoplot,2));
+    rgbMatrix = lines(size(Data.Raw,1));
 end
 
 if strcmp(Data.Info.SpikeType,"Kilosort")

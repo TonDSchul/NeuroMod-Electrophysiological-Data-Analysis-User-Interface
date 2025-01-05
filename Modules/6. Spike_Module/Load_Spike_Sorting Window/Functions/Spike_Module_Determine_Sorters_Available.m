@@ -6,6 +6,7 @@ Sorter = [];
 CurrentSorter = [];
 
 if ManualSelection == 0
+    % External Kilsoort
     if isfolder(SorterFolders(1)) || isfolder(SorterFolders(2))
         if isfolder(SorterFolders(1))
             [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(1));
@@ -17,7 +18,7 @@ if ManualSelection == 0
         else
             [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(2));
             InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(2));
-            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+            InfoText = [InfoText;"";"Searching for sorting output results (.npy and .mat files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
             Path = SorterFolders(2);
             CurrentSorter = "Kilosort3";
             Sorter = [Sorter,2];
@@ -40,16 +41,225 @@ if ManualSelection == 0
                 Sorter = [Sorter,4];
             end                     
         end
-    elseif isfolder(SorterFolders(5))
+    elseif isfolder(SorterFolders(5)) % Waveclus
             [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(5));
             InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(5));
             InfoText = [InfoText;"";"Searching for sorting output results (spikes.mat and spike_times.mat)."];
             Path = SorterFolders(5);
             CurrentSorter = "WaveClus";
             Sorter = [Sorter,5];
+            % SpikeInterface Kilsoort
+    elseif isfolder(SorterFolders(6))
+            [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(6));
+            InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(6));
+            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+            Path = SorterFolders(6);
+            CurrentSorter = "SpikeInterface Kilosort";
+            Sorter = [Sorter,6];
     else
         [stringArray] = Utility_Extract_Contents_of_Folder(Data.Info.Data_Path);
-    
+        
+        IndicieToDelete = [];
+        for i = 1:length(SorterFolders)
+            if strcmp(SorterFolders(i),"")
+                IndicieToDelete = [IndicieToDelete,i];
+            end
+        end
+
+        if ~isempty(IndicieToDelete)
+            SorterFolders(IndicieToDelete) = [];
+        end
+
+        JoinedSoterFolders = join(SorterFolders, ";     AND     ;");
+        InfoText = strcat("Auto-searched Path for sorting output files (Original Recording Folder): ", JoinedSoterFolders);
+        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+        
+        if isfolder(Data.Info.Data_Path)
+            Path = Data.Info.Data_Path;
+        else
+            Path = [];
+        end
+    end
+
+    if ~strcmp(CurrentSorter,"WaveClus")
+        % Filter files with .npy extension
+        npyFiles = stringArray(endsWith(stringArray, '.npy'));
+        
+        if isempty(npyFiles)
+            InfoText = ["Warning: No .npy sorter output files found in auto-searched folder. Please select a different folder."; ""; InfoText];
+        else
+            SorterNames = [];
+            for i = 1:length(Sorter)
+                if Sorter == 1
+                    SorterNames = [SorterNames,"External Kilosort GUI"];
+                elseif Sorter == 2
+                    SorterNames = [SorterNames,"External Kilosort GUI"];
+                elseif Sorter == 3
+                    SorterNames = [SorterNames,"Mountainsort 5"];
+                elseif Sorter == 4
+                    SorterNames = [SorterNames,"SpykingCircus 2"];
+                elseif Sorter == 5
+                    SorterNames = [SorterNames,"WaveClus 3"];
+                elseif Sorter == 6
+                    SorterNames = [SorterNames,"SpikeInterface Kilosort"];
+                end
+                if i ~=length(Sorter)
+                    SorterNames = [SorterNames,","];
+                end
+            end
+            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+        end
+    else
+        % Filter files with .npy extension
+        npyFiles = stringArray(endsWith(stringArray, '.mat'));
+        
+        if isempty(npyFiles)
+            InfoText = ["Warning: No .mat sorter output files found in auto-searched folder. Please select a different folder."; ""; InfoText];
+        else
+            SorterNames = [];
+            for i = 1:length(Sorter)
+                if Sorter == 1
+                    SorterNames = [SorterNames,"External Kilosort GUI"];
+                elseif Sorter == 2
+                    SorterNames = [SorterNames,"External Kilosort GUI"];
+                elseif Sorter == 3
+                    SorterNames = [SorterNames,"Mountainsort 5"];
+                elseif Sorter == 4
+                    SorterNames = [SorterNames,"SpykingCircus 2"];
+                elseif Sorter == 5
+                    SorterNames = [SorterNames,"WaveClus 3"];
+                elseif Sorter == 6
+                    SorterNames = [SorterNames,"SpikeInterface Kilosort"];
+                end
+                if i ~=length(Sorter)
+                    SorterNames = [SorterNames,","];
+                end
+            end
+            InfoText = [strcat(".mat output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+        end
+    end
+
+else % If manual Folderselection
+
+    if isfolder(SorterFolders(1))
+        [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(1));
+        InfoText = strcat("Manually selected Path: ", SorterFolders(1));
+        InfoText = [InfoText;"";"Searching for sorting output results (.npy files for SpikeInterface and Kilosort, .mat file for Waveclus) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+        Path = SorterFolders(1);
+
+        % Filter files with .npy extension
+        npyFiles = stringArray(endsWith(stringArray, '.npy'));
+
+        if ChangedSelectedSorter == 1
+            if ~isempty(npyFiles)
+                CurrentSorter = [];
+                if sum(contains(stringArray,"cluster_KSLabel.tsv"))>0
+                    SorterFolders(1) = strcat(Data.Info.Data_Path,"\Kilosort\kilosort4");
+                    if sum(contains(stringArray,"rez.mat"))>0
+                        CurrentSorter = "Kilosort3"; 
+                        SorterNames = "External Kilosort GUI"; 
+                        InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                    else
+                        CurrentSorter = "Kilosort4"; 
+                        SorterNames = "External Kilosort GUI"; 
+                        InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                    end
+                end
+            else
+                InfoText = ["Warning: No .npy sorter output files found in manually selected Path folder. Please select a different folder."; ""; InfoText];
+            end
+                       
+        elseif ChangedSelectedSorter == 2 % SpikeInterface Mountainsort 5
+            if ~isempty(npyFiles)
+                CurrentSorter = [];
+                if sum(contains(stringArray,"cluster_KSLabel.tsv"))==0
+                    if sum(contains(stringArray,"SpikePositions.mat"))>0
+                        CurrentSorter = "Mountainsort5"; 
+                        SorterNames = "Mountainsort5";
+                        InfoText = [strcat(".npy output files for sorter ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                    else
+                        InfoText = ["Warning: .npy file present but no SpikePosition.mat from SpikeInterface found."; ""; InfoText];
+                    end
+                else
+                    CurrentSorter = "Mountainsort5"; 
+                    SorterNames = "Mountainsort5";
+                    InfoText = [strcat("Warning: No .npy sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
+                end
+            else
+                InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
+            end
+        elseif ChangedSelectedSorter == 3 % SpikeInterface SpykingCircus 2
+            if ~isempty(npyFiles)
+                CurrentSorter = [];
+                if sum(contains(stringArray,"cluster_KSLabel.tsv"))==0
+                    if sum(contains(stringArray,"SpikePositions.mat"))>0
+                        CurrentSorter = "SpykingCircus2"; 
+                        SorterNames = "SpykingCircus2";
+                        InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                    else
+                        InfoText = ["Warning: .npy file present but no SpikePosition.mat from SpikeInterface found."; ""; InfoText];
+                    end
+                else
+                    CurrentSorter = "SpykingCircus2"; 
+                    SorterNames = "SpykingCircus2";
+                    InfoText = [strcat("Warning: No .npy sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
+                end
+            else
+                InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
+            end
+
+        elseif ChangedSelectedSorter == 4 % Waveclus
+            % Filter files with .npy extension
+            npyFiles = stringArray(endsWith(stringArray, '.mat'));
+
+            if ~isempty(npyFiles)
+                CurrentSorter = [];
+                if sum(contains(stringArray,"spikes.mat"))>0
+                    if sum(contains(stringArray,"spc_log.txt"))>0
+                        CurrentSorter = "WaveClus"; 
+                        SorterNames = "WaveClus 3";
+                        InfoText = [strcat(".output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                    else
+                        InfoText = ["Warning: .mat file present but no spc_log.txt found."; ""; InfoText];
+                    end
+                else
+                    CurrentSorter = "WaveClus"; 
+                    SorterNames = "WaveClus 3";
+                    InfoText = [strcat("Warning: No sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
+                end
+            else
+                InfoText = ["Warning: No sorter output files for WaveClus 3 found in manually selected Path folder. Please select a different folder."; ""; InfoText];
+            end
+        
+        elseif ChangedSelectedSorter == 5 % SpikeInterface Kilosort
+            if ~isempty(npyFiles)
+                CurrentSorter = [];
+                if sum(contains(stringArray,"cluster_KSLabel.tsv"))==0
+                    if sum(contains(stringArray,"SpikePositions.mat"))>0
+                        CurrentSorter = "SpikeInterface Kilosort"; 
+                        SorterNames = "SpikeInterface Kilosort";
+                        InfoText = [strcat(".npy output files for sorter ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
+                    else
+                        InfoText = ["Warning: .npy file present but no SpikePosition.mat from SpikeInterface found."; ""; InfoText];
+                    end
+                else
+                    CurrentSorter = "SpikeInterface Kilosort"; 
+                    SorterNames = "SpikeInterface Kilosort";
+                    InfoText = [strcat("Warning: No .npy sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
+                end
+            else
+                InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
+            end
+        end
+
+        if isempty(CurrentSorter)
+            SorterFolders(1) = strcat(Data.Info.Data_Path,"\Kilosort\kilosort4");
+            SorterFolders(2) = strcat(Data.Info.Data_Path,"\Kilosort\kilosort3");
+            SorterFolders(3) = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\Mountainsort 5");
+            SorterFolders(4) = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\SpykingCircus 2");
+            SorterFolders(5) = strcat(Data.Info.Data_Path,"\Wave_Clus");
+            SorterFolders(6) = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\Kilosort 4");
+            
             IndicieToDelete = [];
             for i = 1:length(SorterFolders)
                 if strcmp(SorterFolders(i),"")
@@ -70,189 +280,36 @@ if ManualSelection == 0
             else
                 Path = [];
             end
-    end
-
-    if ~strcmp(CurrentSorter,"WaveClus")
-        % Filter files with .npy extension
-        npyFiles = stringArray(endsWith(stringArray, '.npy'));
-        
-        if isempty(npyFiles)
-            InfoText = ["Warning: No .npy sorter output files found in auto-searched folder. Please select a different folder."; ""; InfoText];
-        else
-            SorterNames = [];
-            for i = 1:length(Sorter)
-                if Sorter == 1
-                    SorterNames = [SorterNames,"Kilosort4"];
-                elseif Sorter == 2
-                    SorterNames = [SorterNames,"Kilosort3"];
-                elseif Sorter == 3
-                    SorterNames = [SorterNames,"Mountainsort 5"];
-                elseif Sorter == 4
-                    SorterNames = [SorterNames,"SpykingCircus 2"];
-                elseif Sorter == 5
-                    SorterNames = [SorterNames,"WaveClus 3"];
-                end
-                if i ~=length(Sorter)
-                    SorterNames = [SorterNames,","];
-                end
-            end
-            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
         end
+
     else
-        % Filter files with .npy extension
-        npyFiles = stringArray(endsWith(stringArray, '.mat'));
+        SorterFolders(1) = strcat(app.Mainapp.Data.Info.Data_Path,"\Kilosort\kilosort4");
+        SorterFolders(2) = strcat(app.Mainapp.Data.Info.Data_Path,"\Kilosort\kilosort3");
+        SorterFolders(3) = strcat(app.Mainapp.Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\Mountainsort 5");
+        SorterFolders(4) = strcat(app.Mainapp.Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\SpykingCircus 2");
+        SorterFolders(5) = strcat(app.Mainapp.Data.Info.Data_Path,"\Wave_Clus");
+        SorterFolders(6) = strcat(app.Mainapp.Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\Kilosort 4");
         
-        if isempty(npyFiles)
-            InfoText = ["Warning: No .mat sorter output files found in auto-searched folder. Please select a different folder."; ""; InfoText];
-        else
-            SorterNames = [];
-            for i = 1:length(Sorter)
-                if Sorter == 1
-                    SorterNames = [SorterNames,"Kilosort4"];
-                elseif Sorter == 2
-                    SorterNames = [SorterNames,"Kilosort3"];
-                elseif Sorter == 3
-                    SorterNames = [SorterNames,"Mountainsort 5"];
-                elseif Sorter == 4
-                    SorterNames = [SorterNames,"SpykingCircus 2"];
-                elseif Sorter == 5
-                    SorterNames = [SorterNames,"WaveClus 3"];
-                end
-                if i ~=length(Sorter)
-                    SorterNames = [SorterNames,","];
-                end
-            end
-            InfoText = [strcat(".mat output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-        end
-    end
-
-else % If manual Folderselection
-
-    if isfolder(SorterFolders(1))
-        [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(1));
-        InfoText = strcat("Manually selected Path: ", SorterFolders(1));
-        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
-        Path = SorterFolders(1);
-
-        % Filter files with .npy extension
-        npyFiles = stringArray(endsWith(stringArray, '.npy'));
-
-        if ChangedSelectedSorter == 0
-            if ~isempty(npyFiles)
-                CurrentSorter = [];
-                if sum(contains(stringArray,"cluster_KSLabel.tsv"))>0
-                    if sum(contains(stringArray,"rez.mat"))>0
-                        CurrentSorter = "Kilosort3"; 
-                        SorterNames = "Kilosort3"; 
-                        InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                    else
-                        CurrentSorter = "Kilosort4"; 
-                        SorterNames = "Kilosort4"; 
-                        InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                    end
-                end
-                if isempty(CurrentSorter)
-                    if sum(contains(stringArray,"SpikePositions.mat"))>0
-                        CurrentSorter = "Mountainsort5"; 
-                        SorterNames = "Mountainsort5 or SpykingCircus2";
-                        InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                    else
-                        InfoText = ["Warning: .npy file present but no Kilosort data or SpikePosition.mat from SpikeInterface found."; ""; InfoText];
-                    end
-                end
-            else
-                InfoText = ["Warning: No .npy sorter output files found in manually selected Path folder. Please select a different folder."; ""; InfoText];
-            end
-        else
-            if ChangedSelectedSorter == 1 % Kilosort
-                if ~isempty(npyFiles)
-                    CurrentSorter = [];
-                    if sum(contains(stringArray,"cluster_KSLabel.tsv"))>0
-                        if sum(contains(stringArray,"rez.mat"))>0
-                            CurrentSorter = "Kilosort3"; 
-                            SorterNames = "Kilosort3"; 
-                            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                        else
-                            CurrentSorter = "Kilosort4"; 
-                            SorterNames = "Kilosort4"; 
-                            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                        end
-                    else
-                        InfoText = ["Warning: No .npy sorter output files for Kilosort found in manually selected Path folder. Please select a different folder."; ""; InfoText];
-                    end
-                else
-                    InfoText = ["Warning: No .npy sorter output files for Kilosort found in manually selected Path folder. Please select a different folder."; ""; InfoText];
-                end
-            elseif ChangedSelectedSorter == 2 % SpikeInterface Mountainsort 5
-                if ~isempty(npyFiles)
-                    CurrentSorter = [];
-                    if sum(contains(stringArray,"cluster_KSLabel.tsv"))==0
-                        if sum(contains(stringArray,"SpikePositions.mat"))>0
-                            CurrentSorter = "Mountainsort5"; 
-                            SorterNames = "Mountainsort5";
-                            InfoText = [strcat(".npy output files for sorter ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                        else
-                            InfoText = ["Warning: .npy file present but no SpikePosition.mat from SpikeInterface found."; ""; InfoText];
-                        end
-                    else
-                        CurrentSorter = "Mountainsort5"; 
-                        SorterNames = "Mountainsort5";
-                        InfoText = [strcat("Warning: No .npy sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
-                    end
-                else
-                    InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
-                end
-            elseif ChangedSelectedSorter == 3 % SpikeInterface SpykingCircus 2
-                if ~isempty(npyFiles)
-                    CurrentSorter = [];
-                    if sum(contains(stringArray,"cluster_KSLabel.tsv"))==0
-                        if sum(contains(stringArray,"SpikePositions.mat"))>0
-                            CurrentSorter = "SpykingCircus2"; 
-                            SorterNames = "SpykingCircus2";
-                            InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                        else
-                            InfoText = ["Warning: .npy file present but no SpikePosition.mat from SpikeInterface found."; ""; InfoText];
-                        end
-                    else
-                        CurrentSorter = "SpykingCircus2"; 
-                        SorterNames = "SpykingCircus2";
-                        InfoText = [strcat("Warning: No .npy sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
-                    end
-                else
-                    InfoText = ["Warning: No .npy sorter output files for SpikeInterface found in manually selected Path folder. Please select a different folder."; ""; InfoText];
-                end
-
-            elseif ChangedSelectedSorter == 4 % Waveclus
-                % Filter files with .npy extension
-                npyFiles = stringArray(endsWith(stringArray, '.mat'));
-
-                if ~isempty(npyFiles)
-                    CurrentSorter = [];
-                    if sum(contains(stringArray,"spikes.mat"))>0
-                        if sum(contains(stringArray,"spc_log.txt"))>0
-                            CurrentSorter = "WaveClus"; 
-                            SorterNames = "WaveClus 3";
-                            InfoText = [strcat(".output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
-                        else
-                            InfoText = ["Warning: .mat file present but no spc_log.txt found."; ""; InfoText];
-                        end
-                    else
-                        CurrentSorter = "WaveClus"; 
-                            SorterNames = "WaveClus 3";
-                        InfoText = [strcat("Warning: No sorter output files found for ",SorterNames," in manually selected Path folder. Please select a different folder."); ""; InfoText];
-                    end
-                else
-                    InfoText = ["Warning: No sorter output files for WaveClus 3 found in manually selected Path folder. Please select a different folder."; ""; InfoText];
-                end
-
+        IndicieToDelete = [];
+        for i = 1:length(SorterFolders)
+            if strcmp(SorterFolders(i),"")
+                IndicieToDelete = [IndicieToDelete,i];
             end
         end
-    else
-        InfoText = strcat("Manually selected Path: ", SorterFolders(1));
-        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
 
-        InfoText = ["Warning: No .npy sorter output files found in manually selected Path folder. Please select a different folder."; ""; InfoText];
-        Path = [];
+        if ~isempty(IndicieToDelete)
+            SorterFolders(IndicieToDelete) = [];
+        end
+
+        JoinedSoterFolders = join(SorterFolders, ";     AND     ;");
+        InfoText = strcat("Auto-searched Path for sorting output files (Original Recording Folder): ", JoinedSoterFolders);
+        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+        
+        if isfolder(Data.Info.Data_Path)
+            Path = Data.Info.Data_Path;
+        else
+            Path = [];
+        end
     end
 end
             

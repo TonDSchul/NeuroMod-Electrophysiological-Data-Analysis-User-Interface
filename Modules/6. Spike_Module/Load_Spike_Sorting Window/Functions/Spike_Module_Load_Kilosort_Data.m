@@ -55,6 +55,18 @@ if isfield(Data,'Spikes')
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
+    if isfield(Data.Info,'SpikeSorting')
+        fieldsToDelete = {'SpikeSorting'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'Sorter')
+        fieldsToDelete = {'Sorter'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
     if isfield(Data.Info,'SpikeDetectionThreshold')
         fieldsToDelete = {'SpikeDetectionThreshold'};
         % Delete fields
@@ -261,6 +273,7 @@ end
 
 %% Specify SpikeType
 Data.Info.SpikeType = 'Kilosort';
+Data.Info.Sorter = 'External Kilosort GUI';
 
 %% Extract Waveforms
 % For Kilosort we dont have channel information to extract from raw or

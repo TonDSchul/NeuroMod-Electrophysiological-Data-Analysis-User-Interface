@@ -131,7 +131,7 @@ if ~isempty(SelectedChannelIndicies)
             TempSpikeCluster = TempSpikeCluster+1;
         end
     else
-         if isfield(Data.Info,'SpikeSorting')
+         if strcmp(Data.Info.Sorter,'WaveClus')
             TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster(SelectedChannelIndicies==0);
             if min(Data.EventRelatedSpikes.SpikeCluster)==0 
                 TempSpikeCluster = TempSpikeCluster+1;
@@ -150,7 +150,7 @@ else
             TempSpikeCluster = TempSpikeCluster+1;
         end
     else
-         if isfield(Data.Info,'SpikeSorting')
+         if strcmp(Data.Info.Sorter,'WaveClus')
             TempSpikeCluster = Data.EventRelatedSpikes.SpikeCluster;
             if min(Data.EventRelatedSpikes.SpikeCluster)==0 
                 TempSpikeCluster = TempSpikeCluster+1;
