@@ -88,50 +88,34 @@ elseif strcmp(Sorter,"SpykingCircus 2")
     end
 
 elseif strcmp(Sorter,"Kilosort 4") 
-    % Initialize an empty structure
+    
+    % Get the current content of the TextArea
+    lines = Text;
+
+    % Initialize the structure
     Struc = struct();
-    
-    % Get the content from the TextArea as a string
-    textContent = Text;
-    
-    % Split the text into lines (one line per field-value pair)
-    lines = strsplit(textContent, '\n');
-    
-    % Loop through each line and extract the field and value
+
+    % Process each line
     for i = 1:numel(lines)
-        line = strtrim(lines{i});
-        
-        % Skip empty lines
-        if isempty(line)
-            continue;
-        end
-        
-        % Split each line at the first colon to separate field and value
-        idx = find(line == ':', 1);
-        if ~isempty(idx)
-            field = strtrim(line(1:idx-1));  % Extract field name
-            value_str = strtrim(line(idx+1:end));  % Extract value
-            
-            % Convert the value string back to the appropriate type
-            if strcmp(value_str, 'true')
-                value = true;
-            elseif strcmp(value_str, 'false')
-                value = false;
-            elseif strcmp(value_str, 'None')
-                value = [];
+        line = strtrim(lines{i}); % Get the line and trim whitespace
+        if contains(line, ':') % Check if the line contains a colon
+            parts = split(line, ':'); % Split into name and value
+            name = strtrim(parts{1}); % Variable name
+            value = strtrim(parts{2}); % Corresponding value
+
+            % Convert the value to the appropriate type
+            if strcmpi(value, 'true') || strcmpi(value, 'false')
+                Struc.(name) = double(strcmpi(value, 'true')); % Logical to double
+            elseif ~isempty(regexp(value, '^\d+(\.\d+)?$', 'once'))
+                Struc.(name) = str2double(value); % Numeric
+            elseif startsWith(value, '[') && endsWith(value, ']')
+                Struc.(name) = str2num(value); %#ok<ST2NM> % Convert array
+            elseif strcmpi(value, 'None')
+                Struc.(name) = 'None'; % Treat 'None' as empty
+                %Struc.(name) = []; % Treat 'None' as empty
             else
-                try
-                    value = str2double(value_str);  % Try to convert to number
-                    if isnan(value)
-                        value = value_str;  % If it's not a number, keep it as a string
-                    end
-                catch
-                    value = value_str;  % In case of error, treat as string
-                end
+                Struc.(name) = value; % Leave as string
             end
-            
-            % Assign the value to the structure
-            Struc.(field) = value;
         end
     end
 end

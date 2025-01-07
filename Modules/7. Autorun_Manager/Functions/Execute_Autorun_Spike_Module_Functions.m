@@ -93,20 +93,88 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
         ypitch = Data.Info.ChannelSpacing;
 
         % Build the command string
-        VerChannelOffset = Data.Info.ProbeInfo.VertOffset;
-        HorChannelOffset = Data.Info.ProbeInfo.HorOffset;
+        VerChannelOffset = str2double(Data.Info.ProbeInfo.VertOffset);
+        HorChannelOffset = str2double(Data.Info.ProbeInfo.HorOffset);
+        NumberRows = str2double(Data.Info.ProbeInfo.NrRows);
+        RowOffset = double(Data.Info.ProbeInfo.OffSetRows);
+        RowOffsetDistance = str2double(Data.Info.ProbeInfo.OffSetRowsDistance);
 
         if strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"Mountainsort 5")
-            % Convert Sorter Parameter into dictionary
-            SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure);
-        elseif strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"SpykingCircus 2")
-            % Convert Sorter Parameter into dictionary
-            SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure);
-        elseif strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"Kilosort 4")
-            % Convert Sorter Parameter into dictionary
-            SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure);
-        end
+            % Loop over all fields
+            fields = fieldnames(AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5);
+            for i = 1:numel(fields)
+                field = fields{i}; % Get the field name
+                value = AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5.(field); % Get the field value
+                
+                if ischar(value) % Only process strings
+                    % Remove leading and trailing single/double quotes
+                    value = strip(value, '"');
+                    value = strip(value, '''');
+                    
+                    % Check if the value is 'None'
+                    if strcmpi(value, 'None')
+                        AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5.(field) = []; % Convert to empty
+                    else
+                        AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5.(field) = value; % Assign the cleaned value back
+                    end
+                end
+            end
 
+            % Convert Sorter Parameter into dictionary
+            SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5);
+
+        elseif strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"SpykingCircus 2")
+            AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = Spike_Module_cleanStructureQuotes(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
+            AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = Spike_Module_convertTrueFalseStrings(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
+            
+            % Loop over all fields
+            fields = fieldnames(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
+            for i = 1:numel(fields)
+                field = fields{i}; % Get the field name
+                value = AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2.(field); % Get the field value
+                
+                if ischar(value) % Only process strings
+                    % Remove leading and trailing single/double quotes
+                    value = strip(value, '"');
+                    value = strip(value, '''');
+                    
+                    % Check if the value is 'None'
+                    if strcmpi(value, 'None')
+                        AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2.(field) = []; % Convert to empty
+                    else
+                        AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2.(field) = value; % Assign the cleaned value back
+                    end
+                end
+            end
+            
+            % Convert Sorter Parameter into dictionary
+            SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
+
+        elseif strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"Kilosort 4")
+            % Loop over all fields
+            fields = fieldnames(AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4);
+            for i = 1:numel(fields)
+                field = fields{i}; % Get the field name
+                value = AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4.(field); % Get the field value
+                
+                if ischar(value) % Only process strings
+                    % Remove leading and trailing single/double quotes
+                    value = strip(value, '"');
+                    value = strip(value, '''');
+                    
+                    % Check if the value is 'None'
+                    if strcmpi(value, 'None')
+                        AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4.(field) = []; % Convert to empty
+                    else
+                        AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4.(field) = value; % Assign the cleaned value back
+                    end
+                end
+            end
+    
+            % Convert Sorter Parameter into dictionary
+            SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4);
+        end
+        
         % Save JSON to a temporary file
         Tempfilepath = convertStringsToChars(file_path);
         filePathDash = find(Tempfilepath=='\');
@@ -128,10 +196,10 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
         AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = str2double(AutorunConfig.CreateSpikeSorting.KeepConsoleOpen);
         AutorunConfig.CreateSpikeSorting.MultipleRecordings = str2double(AutorunConfig.CreateSpikeSorting.MultipleRecordings);
 
-        command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d', ...
+        command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d', ...
             pythonPath, SpikeInterfaceScriptPath, Tempfilepath, AutorunConfig.CreateSpikeSorting.MultipleRecordings, AutorunConfig.CreateSpikeSorting.Sorter, ...
             AutorunConfig.CreateSpikeSorting.Preprocess, AutorunConfig.CreateSpikeSorting.LoadSorting, AutorunConfig.CreateSpikeSorting.OpenSpikeInterface, ...
-            AutorunConfig.CreateSpikeSorting.PlotSortingResults, AutorunConfig.CreateSpikeSorting.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, AutorunConfig.CreateSpikeSorting.KeepConsoleOpen, AutorunConfig.CreateSpikeSorting.PlotTraces);
+            AutorunConfig.CreateSpikeSorting.PlotSortingResults, AutorunConfig.CreateSpikeSorting.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, AutorunConfig.CreateSpikeSorting.KeepConsoleOpen, AutorunConfig.CreateSpikeSorting.PlotTraces,VerChannelOffset,HorChannelOffset,NumberRows,RowOffset,RowOffsetDistance);
         
         % Execute the Python script
         [status, cmdout] = system(command);
@@ -155,25 +223,32 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
         elseif strcmp(AutorunConfig.InternalSpikeDetection.WaveClus3_SpikeSortingType,'IndividualChannel')
             SortingType = "IndividualChannel";
         end
-    
-        [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Clustering",SortingType);
+        if isfield(Data,'Spikes')
+            [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Clustering",SortingType,'WaveClus');
+        else
+            warning("No spikes extracted for Waveclus clustering. Please first add the Spike Detection step to the pipeline. Skipping Step")
+            return;
+        end
     end
 elseif strcmp(FunctionOrder,'Load_Internal_Spike_Sorting')
     SpikeSortingPath = strcat(Data.Info.Data_Path,'\Wave_Clus');
-    [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Loading");
+    [Data] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSortingPath,"Loading",[],'WaveClus');
 end
 
 %______________________________________________________________________________________________________
 % 5.3 Load from SpikeSorting
 %______________________________________________________________________________________________________
 if strcmp(FunctionOrder,'Load_from_SpikeSorting')
-    
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort4")
+
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort external GUI")
         SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
         SelectedFolder = strcat(SelectedFolder,"kilosort4");
     elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort3")
         SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
         SelectedFolder = strcat(SelectedFolder,"kilosort3");
+    elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort SpikeInterface")
+        SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
+        SelectedFolder = strcat(SelectedFolder,"Kilosort 4");
     elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5")
         SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
         SelectedFolder = strcat(SelectedFolder,"Mountainsort 5");
@@ -200,7 +275,7 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
         msgbox("Warning: End time of current dataset was cut. Please ensure, that Kilosort results are based on the same dataset");
     end
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort4") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort3")
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort external GUI")
         %% Autoseach scalingfactor
         if ~isempty(AutorunConfig.LoadfromSpikeSorting.ScalingFactor)
             ScalingFactor = str2double(AutorunConfig.LoadfromSpikeSorting.ScalingFactor);
@@ -255,17 +330,17 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
         ScalingFactor = [];
     end
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpykingCircus 2")
-        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder);
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpykingCircus 2") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort SpikeInterface")
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,AutorunConfig.LoadfromSpikeSorting.Sorter);
     end
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort4") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort3")
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort external GUI")
         % Function to load all relevant npy and .mat files Kilosort outputs
         [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor);
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")
-        [Data] = Spike_Module_Internal_Spike_Sorting(Data,SelectedFolder,"Loading");
+        [Data] = Spike_Module_Internal_Spike_Sorting(Data,SelectedFolder,"Loading",[],'WaveClus');
     end
 
 end

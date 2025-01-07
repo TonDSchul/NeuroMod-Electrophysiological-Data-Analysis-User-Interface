@@ -71,29 +71,33 @@ elseif strcmp(CutType,"CutEnd")
         Data.Raw = Data.Raw(:,1:index);
     end
 end
-%% Cut preprocessed data and downsampled data 
+%% Cut preprocessed  data 
 if isfield(Data,'Preprocessed')
-    if isfield(Data,'TimeDownsampled') && Downsamplingflag == 0
-        [~, index] = min(abs(Data.TimeDownsampled - CutTime));
+    if ~isempty(Data.Preprocessed)
+        if isfield(Data,'TimeDownsampled') && Downsamplingflag == 0
+            [~, index] = min(abs(Data.TimeDownsampled - CutTime));
+            if strcmp(CutType,"CutStart")
+                Data.TimeDownsampled = Data.TimeDownsampled(index+1:end)-CutTime;
+            elseif strcmp(CutType,"CutEnd")
+                Data.TimeDownsampled = Data.TimeDownsampled(1:index-1);
+            end
+        elseif Downsamplingflag == 1
+            [~, index] = min(abs(Data.TimeDownsampled - CutTime));
+            if strcmp(CutType,"CutStart")
+                Data.TimeDownsampled = Data.TimeDownsampled(index+1:end)-CutTime;
+            elseif strcmp(CutType,"CutEnd")
+                Data.TimeDownsampled = Data.TimeDownsampled(1:index-1);
+            end
+        else
+            [~, index] = min(abs(Data.Time - CutTime));  
+        end 
         if strcmp(CutType,"CutStart")
-            Data.TimeDownsampled = Data.TimeDownsampled(index+1:end)-CutTime;
+            Data.Preprocessed = Data.Preprocessed(:,index+1:end);
         elseif strcmp(CutType,"CutEnd")
-            Data.TimeDownsampled = Data.TimeDownsampled(1:index-1);
-        end
-    elseif Downsamplingflag == 1
-        [~, index] = min(abs(Data.TimeDownsampled - CutTime));
-        if strcmp(CutType,"CutStart")
-            Data.TimeDownsampled = Data.TimeDownsampled(index+1:end)-CutTime;
-        elseif strcmp(CutType,"CutEnd")
-            Data.TimeDownsampled = Data.TimeDownsampled(1:index-1);
+            Data.Preprocessed = Data.Preprocessed(:,1:index);
         end
     else
-        [~, index] = min(abs(Data.Time - CutTime));  
-    end 
-    if strcmp(CutType,"CutStart")
-        Data.Preprocessed = Data.Preprocessed(:,index+1:end);
-    elseif strcmp(CutType,"CutEnd")
-        Data.Preprocessed = Data.Preprocessed(:,1:index);
+        Data.Preprocessed = Data.Raw;
     end
 
 else % Add as prepro data when empty at this point

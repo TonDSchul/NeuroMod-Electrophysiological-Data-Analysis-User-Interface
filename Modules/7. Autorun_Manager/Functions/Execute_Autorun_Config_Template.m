@@ -31,7 +31,6 @@ function Execute_Autorun_Config_Template(AutorunConfig,FunctionOrder,executableF
 
 Data = [];
 Data.Raw = [];
-Data.Preprocessed = [];
 
 if find(FunctionOrder=='Load_Data')
     LoadedData = true;

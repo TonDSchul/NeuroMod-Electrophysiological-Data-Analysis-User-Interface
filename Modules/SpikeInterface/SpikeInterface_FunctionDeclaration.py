@@ -22,37 +22,23 @@ from scipy.io import savemat
 from scipy.io import loadmat
 
 """ ################################################################ Load Binary file Function ####### """
-def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sorter):
+def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sorter,CompletePath):
     
     num_channels = int(num_channels)
 
-    time_axis = 1
-    
-    """"Parallel Processing"""
-    global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
-    si.set_global_job_kwargs(**global_job_kwargs)
-    
     print("Reading .bin file")
     """  Define recording parameters """
 
     print(file_path)
 
-    if Sorter in ['Kilosort 4']:
-                
-        dtype = "float64"  # MATLAB's double corresponds to Python's float64
-        """  Load data using SpikeInterface """
-        recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
-                                   num_channels=num_channels, dtype=dtype)
-    else:
-        dtype = "float64"  # MATLAB's double corresponds to Python's float64
-        """  Load data using SpikeInterface """
-        recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
-                                   num_channels=num_channels, dtype=dtype)
+    dtype = "float64"  # MATLAB's double corresponds to Python's float64
+    """  Load data using SpikeInterface """
+    recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
+                               num_channels=num_channels, dtype=dtype)
         
     recording.annotate(is_filtered=False)
     
     return recording 
-    return dtype
 
 """ ################################################################ Generate Probe Desing ####### """
 def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording):
@@ -83,33 +69,30 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
         # Y Positions
         positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
         positions[num_elec_per_row:, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch) + VerChannelOffset  # Second row
+        
+        # create an empty probe object with coordinates in um
+        probe = Probe(ndim=NumberRows, si_units='um')
+        # set contacts
+        probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
+        # Create the first sequence: 0, 2, 4, ..., num_elec/2 - 2
+        first_half = np.arange(0, num_elec, step=2)
+        # Create the second sequence: 2, 4, ..., num_elec
+        second_half = np.arange(1, num_elec + 1, step=2)
+        
+        # Combine both sequences
+        ChannelIDS = np.concatenate((first_half, second_half))
 
+        print(ChannelIDS)
+        probe.set_device_channel_indices(ChannelIDS)
+        probe.set_contact_ids(ChannelIDS)
+        
     else:
         positions = np.zeros((num_elec, NumberRows))
+        probe = generate_linear_probe(num_elec=num_elec, ypitch=ypitch, contact_shapes='circle', contact_shape_params={'radius': 6})
+        # the probe has to be wired to the recording
+        probe.set_device_channel_indices(np.arange(num_elec))
+        probe.set_contact_ids(np.arange(num_elec))
         
-    # create an empty probe object with coordinates in um
-    probe = Probe(ndim=2, si_units='um')
-    # set contacts
-    probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
-
-    # Create the first sequence: 0, 2, 4, ..., num_elec/2 - 2
-    first_half = np.arange(0, num_elec, step=2)
-    
-    # Create the second sequence: 2, 4, ..., num_elec
-    second_half = np.arange(1, num_elec + 1, step=2)
-    
-    # Combine both sequences
-    ChannelIDS = np.concatenate((first_half, second_half))
-
-    print(ChannelIDS)
-    probe.set_device_channel_indices(ChannelIDS)
-    probe.set_contact_ids(ChannelIDS)
-        
-    #probe = generate_linear_probe(num_elec=num_elec, ypitch=ypitch, contact_shapes='circle', contact_shape_params={'radius': 6})
-    # the probe has to be wired to the recording
-    #probe.set_device_channel_indices(np.arange(num_elec))
-    #probe.set_contact_ids(np.arange(num_elec))
-    
     if PlotTraces == 1:
         print("Plotting Traces...")
         plot_probe(probe, with_contact_id=True)
@@ -122,13 +105,11 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
 
 """ ################################################################ Preprocessing ####### """
 def Preprocessing(Recording,Probe,Apply_Preprocessing):
-
-    print("Preprocessing data and dump into cache")
-            
+    
     if Apply_Preprocessing == 1:
         print("Preprocessing Data...")
-        PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000)
-        PreProRecording = spre.whiten(recording=PreProRecording)
+        PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000, dtype=np.float64)
+        PreProRecording = spre.common_reference(recording=PreProRecording, dtype=np.float64)
     else:
        print("Not Preprocessing Data...")
            
@@ -165,16 +146,11 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
     """"Parallel Processing"""
     global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
     si.set_global_job_kwargs(**global_job_kwargs)
-    
-    
+
     default_SC2_params = ss.Spykingcircus2Sorter.default_params()
-    
-    print(default_SC2_params)
-    
-    default_SC2_params = update_standards(default_SC2_params, SortingParameter)
         
-    print(default_SC2_params)
-        
+    costume_SC2_params = update_standards(default_SC2_params, SortingParameter)
+
     folder_path = Sorting_output_folder
 
     try:
@@ -184,7 +160,15 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
     except Exception as e:
         print(f"An error occurred: {e}")
     
-    sorting_SC  = ss.run_sorter(sorter_name='spykingcircus2', **default_SC2_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    if Apply_Preprocessing == 1:
+        costume_SC2_params['apply_preprocessing'] = False
+    else:
+        costume_SC2_params['apply_preprocessing'] = True
+    
+    print("Costume_SC2_params:")
+    print(costume_SC2_params)
+        
+    sorting_SC  = ss.run_sorter(sorter_name='spykingcircus2', **costume_SC2_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
     return sorting_SC 
 
 """ ################################################################ MountainSort 5 ####### """
@@ -197,13 +181,9 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     si.set_global_job_kwargs(**global_job_kwargs)
     
     default_MS5_params =  si.get_default_sorter_params('mountainsort5')
-    #default_MS5_params = ss.Mountainsort5Sorter.default_params()
-    print(default_MS5_params)
+  
+    Costume_MS5_params = update_standards(default_MS5_params, SortingParameter)
     
-    Costum_MS5_params = update_standards(default_MS5_params, SortingParameter)
-    
-    print(Costum_MS5_params)
-
     """ 100 um  
     default_MS5_params['scheme2_training_duration_sec'] = 30
     default_MS5_params['scheme3_block_duration_sec'] = 50
@@ -225,13 +205,16 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     """
     
     if Apply_Preprocessing == 1:
-        Costum_MS5_params['filter'] = False
+        Costume_MS5_params['filter'] = False
         print("No Prepro in MS5")
     else:
-        Costum_MS5_params['filter'] = True
+        Costume_MS5_params['filter'] = True
         print("Prepro in MS5")
+        
+    print("Costume_MS5_params:")
+    print(Costume_MS5_params)
     
-    sorting_MS5  = ss.run_sorter(sorter_name='mountainsort5', **Costum_MS5_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    sorting_MS5  = ss.run_sorter(sorter_name='mountainsort5', **Costume_MS5_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
     return sorting_MS5
 
 """ ################################################################ Kilosort 4 ####### """
@@ -246,25 +229,25 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
     si.set_global_job_kwargs(**global_job_kwargs)
     
     default_KS4_params = ss.Kilosort4Sorter.default_params()
-    print(default_KS4_params)
     
-    costum_KS4_params = update_standards(default_KS4_params, SortingParameter)
-    print(costum_KS4_params)
+    costume_KS4_params = update_standards(default_KS4_params, SortingParameter)
     
     if Apply_Preprocessing == 1:
-        costum_KS4_params['skip_kilosort_preprocessing'] = False
+        costume_KS4_params['skip_kilosort_preprocessing'] = False
         print("No Prepro in KS4")
     else:
-        costum_KS4_params['skip_kilosort_preprocessing'] = True
+        costume_KS4_params['skip_kilosort_preprocessing'] = False
         print("Prepro in KS4")
         
-    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costum_KS4_params, recording=IntegerRecording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    print(costume_KS4_params)
+    
+    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costume_KS4_params, recording=IntegerRecording,output_folder=Sorting_output_folder, remove_existing_folder=True)
     return sortingKS4
     
 """ ################################################################ Sorting Analyzer ####### """
 def CreateSortingAnalyzer(recording,sorting,Save_Sorting_Folder):
     
-    analyzer = si.create_sorting_analyzer(sorting=sorting, recording=recording, format='memory', folder=None)
+    analyzer = si.create_sorting_analyzer(sorting=sorting, recording=recording, format="memory", folder='None')
     print(analyzer)
 
     # which is equivalent to this:
@@ -391,7 +374,7 @@ def update_standards(standsorting_parameters, sorting_parameters):
                 converted_value = expected_type(value)
             except (ValueError, TypeError):
                 # If conversion fails, skip the update and log an error
-                print(f"Warning: Could not convert value for key '{key}' to {expected_type.__name__}")
+                print(f"Warning: Could not convert value for key '{key}' to {expected_type.__name__}. Check in the conda command window to see sorting settings. KEys should be set to 'None'")
                 continue
             
             # Update the standard dictionary only if the value has changed

@@ -58,6 +58,18 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
                 ArtefactRejectionInfo.ChannelSelection = TempChannelSelection(1):TempChannelSelection(2);
             end
         end
+        
+        if strcmp(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),"CutStart")
+            PreproInfo.CutStart = str2double(AutorunConfig.PreprocessCont.CutTimeFromStart);
+        end
+        if strcmp(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),"CutEnd")
+            PreproInfo.CutEnd = str2double(AutorunConfig.PreprocessCont.CutTimeFromEnd);
+        end
+        
+        if strcmp(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),"ChannelDeletion")
+            AutorunConfig.PreprocessCont.DeleteChannel = str2double(strsplit(AutorunConfig.PreprocessCont.DeleteChannel,','));
+            PreproInfo.ChannelDeletion = AutorunConfig.PreprocessCont.DeleteChannel;
+        end
 
         [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),PreproInfo,PreprocessingSteps,0,AutorunConfig.PreprocessCont.FilterMethod{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterType{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.CuttoffFrequency{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterDirection{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterOrder{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.DownsampleRate,Data.Info.NativeSamplingRate,ArtefactRejectionInfo);
     
@@ -380,12 +392,21 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                 AutorunConfig.ContSpikeAnalysis.ChannelSelection = strcat('1,',num2str(size(Data.Raw,1)));
             end
             
-            if isfield(Data.Info,'SpikeSorting')
-                if ~isempty(Data.Spikes.Waveforms)
-                    % Exatract number of spike clusters Kilosort found
-                    numCluster = numel(unique(Data.Spikes.SpikeCluster));
+            if isfield(Data.Info,'Sorter')
+                if strcmp(Data.Info.Sorter,'WaveClus')
+                    if ~isempty(Data.Spikes.Waveforms)
+                        % Exatract number of spike clusters Kilosort found
+                        numCluster = numel(unique(Data.Spikes.SpikeCluster));
+                        % Define unique color for each cluster
+                        rgbMatrix = lines(numCluster);
+                    end
+                else
+                    if strcmp(AutorunConfig.ContSpikeAnalysis.Clustertoshow,"All") % When no cluster present
+                        AutorunConfig.ContSpikeAnalysis.Clustertoshow = "Non";
+                    end
+                    numCluster = 1;
                     % Define unique color for each cluster
-                    rgbMatrix = lines(numCluster);
+                    rgbMatrix = lines(1);
                 end
             else
                 if strcmp(AutorunConfig.ContSpikeAnalysis.Clustertoshow,"All") % When no cluster present
@@ -408,11 +429,16 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
             if isempty(UnitsToPlot.Value)
                 TotalIterations = 1;
             else
-                if ~isfield(Data.Info,'SpikeSorting')
+                if isfield(Data.Info,'Sorter')
+                    if ~strcmp(Data.Info.Sorter,'WaveClus')
+                        TotalIterations = 1;
+                        disp("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
+                    else
+                        TotalIterations = 2;
+                    end
+                else
                     TotalIterations = 1;
                     disp("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
-                else
-                    TotalIterations = 2;
                 end
             end
 
@@ -538,7 +564,11 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         end
     
                         %% Plot
-                        if ~isfield(Data.Info,'SpikeSorting')
+                        if isfield(Data.Info,'Sorter')
+                            if ~strcmp(Data.Info.Sorter,'WaveClus')
+                                PlotInfo.Units = NaN;
+                            end
+                        else
                             PlotInfo.Units = NaN;
                         end
     
@@ -593,7 +623,12 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
         Execute = 0;
     else
         if strcmp(Data.Info.SpikeType,"Internal")
-            if ~isfield(Data.Info,'SpikeSorting')
+            if isfield(Data.Info,'Sorter')
+                if ~strcmp(Data.Info.Sorter,'WaveClus')
+                    disp("Warning: No spike clustering found for internal spikes, skipping step.");
+                    Execute = 0;
+                end
+            else
                 disp("Warning: No spike clustering found for internal spikes, skipping step.");
                 Execute = 0;
             end

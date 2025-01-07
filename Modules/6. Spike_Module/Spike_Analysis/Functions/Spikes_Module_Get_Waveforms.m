@@ -92,6 +92,10 @@ else
         startIdx = SpikeTimes(nwaves) - TimePoints;
         endIdx = SpikeTimes(nwaves) + TimePoints;
         
+        if isnan(SpikeTimes(nwaves))
+            disp("Now")
+        end
+
         % Extract data of time points, mark non-NaN waveform with 1 in BiggestSpikeIndicies
         if startIdx > 0 && endIdx <= size(Data.(DataField), 2)
             Waveforms(nwaves, :) = Data.(DataField)(SpikePositions(nwaves), startIdx:endIdx);

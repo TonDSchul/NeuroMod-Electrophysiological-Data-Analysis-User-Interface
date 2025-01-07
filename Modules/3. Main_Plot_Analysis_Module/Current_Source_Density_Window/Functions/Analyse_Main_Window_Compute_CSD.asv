@@ -41,7 +41,8 @@ dat=interp1(dat',(1-ceil(hamwidth/2)):s2+ceil(hamwidth/2),'linear','extrap')'; %
 
 %% Hamming Smoothing
 
-dat=filter(hamming(hamwidth)/sum(hamming(hamwidth)),1,dat')';
+%dat=filter(hamming(hamwidth)/sum(hamwidth),1,dat')';
+%dat=filter(hamming(hamwidth)/sum(hamming(hamwidth)),1,dat')';
 dat=dat(:,hamwidth:end); %delete tails
 
 %% Calculate second derivative

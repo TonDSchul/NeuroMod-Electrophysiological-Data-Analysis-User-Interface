@@ -45,7 +45,9 @@ if strcmp(FunctionOrder,'Extract_Events')
 
     SelectedNode = []; % in case of OE data this is filled
 
-    EventInfo.EventType = AutorunConfig.ExtractEventDataModule.EventType;
+    if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"Spike2") || strcmp(Data.Info.RecordingType,"IntanRHD")
+        EventInfo.EventType = AutorunConfig.ExtractEventDataModule.EventType;
+    end
 
     %% Start Event Extraction
     if strcmp(Data.Info.RecordingType,"Open Ephys")
@@ -88,9 +90,10 @@ if isfield(Data,'Events')
             end
         
             if strcmp(AutorunConfig.ExtractEventRelatedDataModule.DataSource,"Preprocessed") && isempty(Data.Preprocessed)
-                msgbox("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extract event related from raw data.")
-                warning("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please first preprocess data or extract event related from raw data.")
-                return;
+                msgbox("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please preprocess data or extract event related from raw data.")
+                warning("Error: Event related data supposed to be extracted from preprocessed data, which is not part of the dataset yet. Please preprocess data or extract event related from raw data.")
+                warning("PROCEEDING WITH RAW DATA INSTEAD!!")
+                AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Raw";
             end
 
             [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse,AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent,AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent,AutorunConfig.ExtractEventRelatedDataModule.DataSource);
@@ -588,12 +591,22 @@ if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
     
                 BaselineWindow.Value = AutorunConfig.AnalyseEventSpikesModule.BaselineWindow;
 
-                if isfield(Data.Info,'SpikeSorting')
-                    if ~isempty(Data.Spikes.Waveforms)
-                        % Exatract number of spike clusters Kilosort found
-                        numCluster = numel(unique(Data.Spikes.SpikeCluster));
+                if isfield(Data.Info,'Sorter')
+                    if strcmp(Data.Info.Sorter,'WaveClus')
+                        if ~isempty(Data.Spikes.Waveforms)
+                            % Exatract number of spike clusters Kilosort found
+                            numCluster = numel(unique(Data.Spikes.SpikeCluster));
+                            % Define unique color for each cluster
+                            rgbMatrix = lines(numCluster);
+                        end
+                    else
+                        if strcmp(AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions,"All") % When no cluster present
+                            AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = "Non";
+                        end
+                        
+                        numCluster = 1;
                         % Define unique color for each cluster
-                        rgbMatrix = lines(numCluster);
+                        rgbMatrix = lines(1);
                     end
                 else
                     if strcmp(AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions,"All") % When no cluster present
@@ -610,11 +623,16 @@ if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
                 if isempty(UnitsToPlot.Value)
                     TotalIterations = 1;
                 else
-                    if ~isfield(Data.Info,'SpikeSorting')
+                    if isfield(Data.Info,'Sorter')
+                        if ~strcmp(Data.Info.Sorter,'WaveClus')
+                            TotalIterations = 1;
+                            disp("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
+                        else
+                            TotalIterations = 2;
+                        end
+                    else
                         TotalIterations = 1;
                         disp("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
-                    else
-                        TotalIterations = 2;
                     end
                 end
 
@@ -720,7 +738,12 @@ if strcmp(FunctionOrder,'Event_Unit_Analysis') && isfield(Data,'EventRelatedData
         Execute = 0;
     else
         if strcmp(Data.Info.SpikeType,"Internal")
-            if ~isfield(Data.Info,'SpikeSorting')
+            if isfield(Data.Info,'Sorter')
+                if ~strcmp(Data.Info.Sorter,'WaveClus')
+                    disp("Warning: No spike clustering found for internal spikes, skipping step.");
+                    Execute = 0;
+                end
+            else
                 disp("Warning: No spike clustering found for internal spikes, skipping step.");
                 Execute = 0;
             end

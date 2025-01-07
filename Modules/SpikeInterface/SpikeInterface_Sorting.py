@@ -5,19 +5,13 @@ Spyder Editor
 This is a temporary script file.
 """
 import spikeinterface.full as si
-import spikeinterface.preprocessing as spre
-import spikeinterface.sorters as ss
-import spikeinterface.sortingcomponents as so
+
+
 import spikeinterface.widgets as sw
-from spikeinterface import create_sorting_analyzer, load_sorting_analyzer
-import numpy as np
-from probeinterface import generate_linear_probe
-from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
-from pprint import pprint
+
 from spikeinterface import load_extractor
-from pathlib import Path
-from spikeinterface.preprocessing import common_reference
+
 from spikeinterface.exporters import export_to_phy
 import shutil
 import json
@@ -40,6 +34,7 @@ from SpikeInterface_FunctionDeclaration import SortWithKilosort
 
 from DeletePermissionErrorHandle import DeletePermittedHandle
 
+import time
 import os
 import sys
 import pyuac
@@ -135,6 +130,8 @@ def main(subfolders,file_path):
             
         PathToLoad = CompletePath+"/"+BinFiles[0]
         
+        PathToSaveCached = CompletePath+"/Chached Recording"
+        
         PathForPhy = CompletePath + "/SpikeInterface_Sorting_Phy_Results/"+Sorter
         ### Path to save sorting results in to load later
         Save_Sorting_Folder = CompletePath + "/SpikeInterface_Saved_Sorting/"+Sorter
@@ -145,16 +142,38 @@ def main(subfolders,file_path):
             print(Save_Sorting_Folder)
             DeleteFolderContents(PathForPhy)
             DeleteFolderContents(Save_Sorting_Folder)
+            
+        DeleteFolderContents(PathToSaveCached)
         
         """ ################################################################ Start Processing ###################################################################### """
             
-        Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter)
-        
+        Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter,CompletePath)
+                
         Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording)
         
         Recording = Recording.set_probe(Probe)
         
-        DumpedRecording = Preprocessing(Recording,Probe,Apply_Preprocessing);
+        if Sorter in ['Kilosort 4']:
+            CachedRecording = Recording.save(format='binary', dtype = 'int32', folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording.annotate(is_filtered=False)
+            CachedRecording = CachedRecording.set_probe(Probe)
+        if Sorter in ['SpykingCircus 2']:
+            CachedRecording = Recording.save(format='binary', dtype = 'float32', folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording.annotate(is_filtered=False)
+            CachedRecording = CachedRecording.set_probe(Probe)
+        if Sorter in ['Mountainsort 5']:
+            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording.annotate(is_filtered=False)
+            CachedRecording = CachedRecording.set_probe(Probe)
+            
+        if Apply_Preprocessing == 1:
+            DumpedRecording = Preprocessing(CachedRecording,Probe,Apply_Preprocessing);
+            DumpedRecording.annotate(is_filtered=True)
+            DumpedRecording = DumpedRecording.set_probe(Probe)
+        else:
+            DumpedRecording = CachedRecording
+            DumpedRecording.annotate(is_filtered=False)
+            DumpedRecording = DumpedRecording.set_probe(Probe)
         
         if PlotTraces == 1:
             combined_plot(Recording,DumpedRecording,ypitch)
@@ -179,6 +198,8 @@ def main(subfolders,file_path):
             print("Creating new sorting...")
             
             if Sorter in ['SpykingCircus 2']:
+                DumpedRecording = DumpedRecording.set_probe(Probe)
+                
                 sorting = SortWithSpikingCircus(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
                 
                 try:
@@ -191,6 +212,7 @@ def main(subfolders,file_path):
                 #sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 
             if Sorter in ['Mountainsort 5']:
+                DumpedRecording = DumpedRecording.set_probe(Probe)
                 sorting = SortWithMountainSort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
                 try:
                     shutil.rmtree(Save_Sorting_Folder)
@@ -199,9 +221,10 @@ def main(subfolders,file_path):
                 except Exception as e:
                     print(f"An error occurred: {e}")
                 
-                sorting.save(folder=Save_Sorting_Folder,overwrite=True)
+                sorting = sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 
             if Sorter in ['Kilosort 4']:
+                                
                 sorting = SortWithKilosort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
                 try:
                     shutil.rmtree(Save_Sorting_Folder)
@@ -252,7 +275,7 @@ def main(subfolders,file_path):
             except Exception as e:
                 print(f"An error occurred: {e}")
                
-            export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy)
+            export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=False)
     
         """ ################################################################ Save SpikePositions as .mat###################################################################### """
         if LoadSpikeSorting == 0:
@@ -263,7 +286,10 @@ def main(subfolders,file_path):
         if OpenSpikeInterface_GUI == 1:   
            
             sw.plot_sorting_summary(Analyzer, backend="spikeinterface_gui")
-            
+                
+        #### Warp up by deleting cached recording
+        CachedRecording = None
+        DeleteFolderContents(PathToSaveCached)
     
 if __name__ == "__main__":
     

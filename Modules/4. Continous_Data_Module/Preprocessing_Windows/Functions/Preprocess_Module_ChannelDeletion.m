@@ -27,7 +27,9 @@ waitbar(1/4, h, msg);
 
 %% Delete Continous Data points
 if isfield(Data,'Preprocessed')
-    Data.Preprocessed(ChannelDeletion,:) = [];
+    if ~isempty(Data.Preprocessed)
+        Data.Preprocessed(ChannelDeletion,:) = [];
+    end
 end
 if isfield(Data,'Raw')
     Data.Raw(ChannelDeletion,:) = [];

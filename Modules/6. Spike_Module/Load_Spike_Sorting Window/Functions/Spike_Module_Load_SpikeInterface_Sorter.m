@@ -210,7 +210,6 @@ if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     Data.Spikes.SpikeTimes(SpikeAboveTime==1) = [];
     Data.Spikes.SpikePositions(SpikeAboveTime==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeAboveTime==1) = [];
-    Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
 
@@ -223,7 +222,6 @@ if sum(SpikeTimesSmaller0)>0
     Data.Spikes.SpikeTimes(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikePositions(SpikeTimesSmaller0==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeTimesSmaller0==1) = [];
-    Data.Spikes.SpikeChannel(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikeCluster(SpikeTimesSmaller0==1) = [];
     Data.Spikes.SpikeTemplates(SpikeTimesSmaller0==1) = [];
 
@@ -237,6 +235,14 @@ Data.Info.Sorter = CurrentSorter;
 %% Extract Waveforms
 % For Kilosort we dont have channel information to extract from raw or
 % preprocessed data --> Therefore we take channel closest to position
+
+if sum(isnan(Data.Spikes.SpikePositions(:,2)))>0
+    Data.Spikes.SpikeTimes(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+    Data.Spikes.SpikePositions(isnan(Data.Spikes.SpikePositions(:,2)),:) = [];
+    Data.Spikes.SpikeAmps(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+    Data.Spikes.SpikeCluster(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+    Data.Spikes.SpikeTemplates(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+end
 
 SpikePositions = Data.Spikes.SpikePositions(:,2);
 SpikePositions = SpikePositions./Data.Info.ChannelSpacing;

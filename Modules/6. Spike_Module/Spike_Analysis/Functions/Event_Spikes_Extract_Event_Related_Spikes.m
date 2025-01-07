@@ -104,10 +104,10 @@ for nevents = 1:size(Data.EventRelatedData,2)
             Data.EventRelatedSpikes.DataCorrectedSpikePositions = [Data.EventRelatedSpikes.DataCorrectedSpikePositions;Data.Spikes.DataCorrectedSpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
         end
 
-        if strcmp(SpikeType,"Kilosort")
+        if strcmp(SpikeType,"Kilosort") || isfield(Data.Info,'SpikeSorting')
             Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
-        else
-            if isfield(Data.Info,'SpikeSorting')
+        elseif strcmp(SpikeType,"Internal")
+            if strcmp(Data.Info.Sorter,'WaveClus')
                 Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
             else
                 Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;zeros(sum(SpikeIndicieWithinCurrentEvent),1)]; 
