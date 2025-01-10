@@ -24,6 +24,8 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
+
+  - [How to Install SpikeInterface Packages to use in Neuromod](#how-to-install-spikeInterface-packages-to-use-in-neuromod)
  
   - [General Remarks](#general-remarks)
     
@@ -170,7 +172,7 @@ https://github.com/cortex-lab/spikes
 
 - Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
 
-> ### **How to install SpikeInterface to use it in the Matlab GUI**
+> ### **How to Install SpikeInterface Packages to Use in Neuromod**
 
 First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to always with admin rights. Next create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands:
 ```python
