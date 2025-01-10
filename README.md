@@ -3,7 +3,7 @@
 <img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
 
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
-It seamlessly integrates established toolboxes such as Kilosort, Open Ephys Tools, Fieldtrip and SpikeInterface for a wide range of LFP and spike analyses methods, support various data formats in a code free user interface and to bridge the gap between matlab and python packages.
+It seamlessly integrates established toolboxes such as Kilosort, Open Ephys Tools, Fieldtrip and SpikeInterface for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between matlab and python packages.
 
 The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance while still having full control over the analysis.
