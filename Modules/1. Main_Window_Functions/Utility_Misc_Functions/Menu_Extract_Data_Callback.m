@@ -94,25 +94,30 @@ end
 
 %% Fill UI Text field accordingly
 if strcmp(Window,"Extract Data")
-    % 
-    if ~isempty(app.ProbeInfoandPath .Channelorder) && sum(isnan(app.ProbeInfoandPath .Channelorder))==0
+    if strcmp(app.ProbeTrajectoryInfo,"Loaded")
+        trajectorText = "Succesfully loaded Probe Trajectory";
+    else
+        trajectorText = "";
+    end
 
+    if ~isempty(app.ProbeInfoandPath .Channelorder) && sum(isnan(app.ProbeInfoandPath .Channelorder))==0
+        
         ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.ProbeInfoandPath .NrChannel);strcat("Channel Spacing: ",app.ProbeInfoandPath .ChannelSpacing);strcat("Nr Channel Rows: ",app.ProbeInfoandPath .NumberChannelRows);"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(app.ProbeInfoandPath.OffSetRows));strcat("Nr Active Channel: ",num2str(length(app.ProbeInfoandPath .ActiveChannel)))];
 
         if isempty(app.ProbeInfoandPath.selectedFolder)
-            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
+            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText;"";trajectorText];
             app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText];
+            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText;"";trajectorText];
         end
     else
         ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.ProbeInfoandPath .NrChannel);strcat("Channel Spacing: ",app.ProbeInfoandPath .ChannelSpacing);strcat("Nr Channel Rows: ",app.ProbeInfoandPath .NumberChannelRows);"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(app.ProbeInfoandPath.OffSetRows));strcat("Nr Active Channel: ",num2str(length(app.ProbeInfoandPath .ActiveChannel)))];
 
         if isempty(app.ProbeInfoandPath .selectedFolder)
-            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText];
+            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText;"";trajectorText];
             app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText];
+            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText;"";trajectorText];
         end
     end
 end

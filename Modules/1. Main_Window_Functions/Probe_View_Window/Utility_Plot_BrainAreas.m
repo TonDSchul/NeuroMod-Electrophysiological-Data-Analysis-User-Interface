@@ -1,4 +1,4 @@
-function Utility_Plot_BrainAreas(Figure,ProbeBrainAreas)
+function Utility_Plot_BrainAreas(Figure,ProbeBrainAreas,ActiveChannel,SwitchTopBottomChannel,ChannelSpacing,ChannelRows,NumChannel)
 
 %________________________________________________________________________________________
 %% Function to plot brain areas from trajectory explorer in probe view window
@@ -15,10 +15,36 @@ function Utility_Plot_BrainAreas(Figure,ProbeBrainAreas)
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
+% Areas only for active Channel range!
+
+FirstChannel = (NumChannel*ChannelRows)-max(ActiveChannel);
+StartDepth = (FirstChannel/ChannelRows) * ChannelSpacing;
+
 if isfield(ProbeBrainAreas,'AreaDistanceFromTip') 
     ProbeBrainAreas.AreaTipDistance = ProbeBrainAreas.AreaDistanceFromTip;
     ProbeBrainAreas.AreaNamesShort = ProbeBrainAreas.ShortAreaNames;
+
+    %% Some Areas outside of probe --> negative distance to probe
+    SmallerZero = ProbeBrainAreas.AreaTipDistance(:,1)<0;
+    
+    %% Some Areas outside of probe --> longer than activechanneldepth
+    NumChannelSingleRow = ((length(ActiveChannel)/ChannelRows)) * ChannelSpacing;
+
+    SmallerZero = ProbeBrainAreas.AreaTipDistance(:,1)<0;
+    BiggerThanActive = ProbeBrainAreas.AreaTipDistance(:,2)>NumChannelSingleRow/1000;
+    CombinedIndiciesToDelete = SmallerZero+BiggerThanActive;
+    CombinedIndiciesToDelete(CombinedIndiciesToDelete>1) = 1;
+
+    if sum(CombinedIndiciesToDelete)>0
+        ProbeBrainAreas.CompleteAreaNames(CombinedIndiciesToDelete==1) = [];
+        ProbeBrainAreas.ShortAreaNames(CombinedIndiciesToDelete==1) = [];
+        ProbeBrainAreas.AreaDistanceFromTip(CombinedIndiciesToDelete==1,:) = [];
+        ProbeBrainAreas.AreaTipDistance(CombinedIndiciesToDelete==1,:) = [];
+        ProbeBrainAreas.AreaNamesShort(CombinedIndiciesToDelete==1) = [];
+    end
 end
+
+
 
 if ~isempty(ProbeBrainAreas)
     if isfield(ProbeBrainAreas,'AreaTipDistance')
@@ -45,8 +71,8 @@ if ~isempty(ProbeBrainAreas)
         end
         
         for nareas = 1:size(ProbeBrainAreas.AreaTipDistance,1)
-            Startdepth = ProbeBrainAreas.AreaTipDistance(nareas,2) * 1000; % convert into um
-            Stopdepth = ProbeBrainAreas.AreaTipDistance(nareas,1) * 1000; % convert into um
+            Startdepth = StartDepth + (ProbeBrainAreas.AreaTipDistance(nareas,2) * 1000); % convert into um
+            Stopdepth = StartDepth +(ProbeBrainAreas.AreaTipDistance(nareas,1) * 1000); % convert into um
     
             if Startdepth>=0
                 Xposition = [0 2];

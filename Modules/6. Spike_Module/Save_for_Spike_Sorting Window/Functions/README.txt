@@ -17,7 +17,11 @@ File: Spike_Module_Save_for_Kilosort.m
 % called from autorun, something else as a string whe not
 % 3. SelectedFolder: Folder from whioch data was extracted/loaded, as char
 % 4. Format: Int Format for saving Data; Options: 'int16' OR 'int32' as
-% char -- doesnt make a qualitative difference
+% char for .dat files AND 'double' as char for .bin file type
+% 4. FileType: Data type to save data in; Options: '.dat' OR '.bin'; .bin
+% can only be saved in format 'double'
+% 5. DatasetType: char, either 'Raw Data' or 'Preprocessed Data' to take to
+% corresponding dataset component and save it
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

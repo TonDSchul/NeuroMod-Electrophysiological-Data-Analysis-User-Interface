@@ -2,6 +2,47 @@ This folder contains the following functions with respective Header:
 
  ###################################################### 
 
+File: Organize_Convert_ActiveChannel_to_DataChannel.m
+%________________________________________________________________________________________
+%% Function to convert active channel selection to a data channel.
+% This function is necessary bc. the active channel can have interruptions
+% (i.e. 1,2,4,5,6,8..) which can not be used to index the data matrix. Therefore this has to be changed to an index within the data channel range 
+
+% Input Arguments:
+% 1. AllActiveChannel: vector, all active channel the user set when
+% specifying probe design
+% 2. SelectedActiveChannel: vector, all channel the user currently selected
+% in the probe view window
+% 3. Type: char, either 'Spikes' or someting else, 'Spikes' for spike analysis 
+
+% Output Arguments:
+% 1. DataChannel: vector, contains selected data channel indices 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Organize_Delete_All_Open_Windows.m
+%________________________________________________________________________________________
+%% Function to close all related app widows when app is closed or new data is loaded
+
+% Input Arguments:
+% 1. app: main app window object containing all app windows as property (or empty if not opened)
+% 2. DeleteProbeView: double, 1 or 0, specify whether the probe window is
+% supposed to be closed
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Organize_Delete_Dataset_Components.m
 %________________________________________________________________________________________
 
@@ -62,8 +103,9 @@ File: Organize_Initialize_GUI.m
 % 8. PreviousChannelDeletetion: 1 if channel were deleted, 0 if not. Not
 % inplemented yet, but prb necesary in future to delete channel in the
 % middle of the probe (not beginning with first or ending with last channel)
-% 7. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
-% 8. ChannelSpacing: in um as double
+% 9. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
+% 10. Load_Data_Window_Info: structure holding probe info like
+% channelspacing or nrchannel
 
 % Output:
 % 1. app: object with initialized values
@@ -138,6 +180,41 @@ File: Organize_Prepare_Plot_and_Extract_GUI_Info.m
 
  ###################################################### 
 
+File: Organize_Reset_Main_Plot.m
+%________________________________________________________________________________________
+
+%% Function to reset the data and/or time plot of the main window 
+
+% This function gets called whenever data is extracted/chnaged that might be shown
+% in the main window like events and spikes and preprocessing as well as
+% when new data is loaded or the user selects the reset plots button
+
+% Input:
+% 1. app: app object of the extract data window to access the
+% Load_Data_Window_Info variable which holds the loaded channel order and
+% channelspacing 
+% 2. DeleteChannelData: double, 1 or 0, determines whether main data plot
+%channeldata is deleted. Can be set to 0 if only event or spike data
+%changes
+% 3. DeleteTimePlot: double, 1 or 0, determines whether time plot is
+% deleted and plotted again - set to 1 if events are extracted
+% 4: KeepEvents: double, 1 or 0, determines whether events lines should continue to be shown
+% when they were already selected - set 1 when spikes are extracted to keep
+% event line plots, set to 0 to delete event line plots
+% 5: KeepSpikes: double, 1 or 0, determines whether spikes should continue to be shown
+% when they were already selected - set 1 when events are extracted to keep
+% spike plots, set to 0 to delete spike plots
+% 6: ReplaceDataType: double, 1 or 0, set to 1 the set plotted datatype to
+% 'Raw Data', otherwise userselection is not changed
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Organize_Set_MainWindow_TimeRange.m
 %________________________________________________________________________________________
 
@@ -147,7 +224,7 @@ File: Organize_Set_MainWindow_TimeRange.m
 % The amount the time range is changed by is based on the checkboxes of the
 % time control panel
 
-%NOTE: app.sCheckBox are the check box fields in the GUI time control
+%NOTE: app.TimeSpanControlDropDown are the check box fields in the GUI time control
 %specifying the amount of data to plot
 
 % Inputs: 
@@ -158,6 +235,7 @@ File: Organize_Set_MainWindow_TimeRange.m
 % is allowed to show.
 % 4. Operation: Specifies whether time is increased or decreased, Either
 % "Plus" OR "Minus"
+% 5. event: event strcuture from callback, used to get previousvalue
 
 % Output:
 % app object with updated app.CurrentTimePoints value capturing the first time

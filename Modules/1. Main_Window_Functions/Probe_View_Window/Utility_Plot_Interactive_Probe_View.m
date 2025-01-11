@@ -165,7 +165,7 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
 
     % Position based on distance to tip
     if ~isempty(ProbeBrainAreas)
-        Utility_Plot_BrainAreas(Figure,ProbeBrainAreas);
+        Utility_Plot_BrainAreas(Figure,ProbeBrainAreas,AllActiveChannel,SwitchTopBottom,ChannelSpacing,ChannelRows,NrChannel);
     end
     
     

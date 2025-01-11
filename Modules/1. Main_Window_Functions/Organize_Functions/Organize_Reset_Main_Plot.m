@@ -1,5 +1,36 @@
 function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvents,KeepSpikes,ReplaceDataType)
 
+%________________________________________________________________________________________
+
+%% Function to reset the data and/or time plot of the main window 
+
+% This function gets called whenever data is extracted/chnaged that might be shown
+% in the main window like events and spikes and preprocessing as well as
+% when new data is loaded or the user selects the reset plots button
+
+% Input:
+% 1. app: app object of the extract data window to access the
+% Load_Data_Window_Info variable which holds the loaded channel order and
+% channelspacing 
+% 2. DeleteChannelData: double, 1 or 0, determines whether main data plot
+%channeldata is deleted. Can be set to 0 if only event or spike data
+%changes
+% 3. DeleteTimePlot: double, 1 or 0, determines whether time plot is
+% deleted and plotted again - set to 1 if events are extracted
+% 4: KeepEvents: double, 1 or 0, determines whether events lines should continue to be shown
+% when they were already selected - set 1 when spikes are extracted to keep
+% event line plots, set to 0 to delete event line plots
+% 5: KeepSpikes: double, 1 or 0, determines whether spikes should continue to be shown
+% when they were already selected - set 1 when events are extracted to keep
+% spike plots, set to 0 to delete spike plots
+% 6: ReplaceDataType: double, 1 or 0, set to 1 the set plotted datatype to
+% 'Raw Data', otherwise userselection is not changed
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 % delte data plots
 if DeleteChannelData
     app.UIAxes.NextPlot = "replace"; 

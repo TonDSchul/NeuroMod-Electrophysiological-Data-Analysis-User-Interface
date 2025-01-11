@@ -81,6 +81,8 @@ File: Continous_Power_Spectrum_Over_Depth.m
 % 10. TwoORThreeD: string, "TwoD" to show 2D plots OR "ThreeD" to show 3
 % dimensional plots
 % 11. CurrentPlotData: structure saving results to export.
+% 12. ActiveChannel: double vector containing channel active in the probe
+% view window
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed

@@ -12,6 +12,8 @@ License files of thos toolboxes are saved in 'GUI_Path/Modules/MISC/LICENSES'.
 
 (Note: Functions are save in their respective module folder, not here)
 
+NOTE: in 6. Modified/Open Ephys Tools the BinaryRecording.m function was fixed (wrong index in a loop)
+
 *****************
 
 General Remarks:
@@ -28,9 +30,7 @@ Open Ephys analysis tool functions are used for:
 1. Extracting raw - and event data from all open ephys formats (.nwb, .dat and .continous)
 2. Open/Read .npy files.
 
-Spike repository from the cortex lab is used for:
-
-1. Extraction of SpikeTimes, SpikeAmps and biggest amplitude Waveform (Note: for internal spike thresholding a different biggest amplitude waveform function is used)
+Spike repository from the cortex lab where used as a template for:
 
 2. Plot Kilosort drift map with amplitude color coding (modified)
 

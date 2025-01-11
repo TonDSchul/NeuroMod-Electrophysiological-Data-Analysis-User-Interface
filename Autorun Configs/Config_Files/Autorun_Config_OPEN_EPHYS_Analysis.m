@@ -38,24 +38,23 @@ function [AutorunConfig] = Autorun_Config_OPEN_EPHYS_Analysis(DisplayOrder)
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Create_Spike_Sorting","Load_from_SpikeSorting","Continous_Spike_Analysis","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Preprocess_Continous_Data","Extract_Event_Related_Data","Event_Analysis_ERP","Event_Analysis_CSD"];
 
 % Channel and Events to Analyze
-AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range = 1:NrChannel (NOT based on active channel names but number of available channel number!)
+AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
 AutorunConfig.EventRange = []; % Only necessary if events are extracted and analyzed, Empty for all events, otherwise char, '1,10' for events 1:10; (only two numbers allowed, '1','2','3','4' will not work!)
 
 % General Information
-AutorunConfig.AutorunConfigName = "OE LFP and Spike Analysis";
-AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
-
-%AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
-%AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
+AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
+AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
 
 % Figures
-% AutorunConfig.SaveFigures = "on";
-% AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
-% AutorunConfig.DeleteFigureAfterSaving = "on";
+AutorunConfig.SaveFigures = "on";
+AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
+AutorunConfig.DeleteFigureAfterSaving = "on";
 
+AutorunConfig.AutorunConfigName = "Open Ephys LFP and Spike Analysis";
+AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
 AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD"
-
 AutorunConfig.AdditionalAmpFactor = []; % Additional signal amplification factor; empty for non, otherwise factor raw data gets multiplied with
+
 
 % When Autorun window is openend, just the above information are taken to populate
 % the fields that can be changed in the autorun window 
@@ -72,7 +71,7 @@ end
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Open Ephys"; % "Open Ephys" 
-AutorunConfig.ExtractRawRecording.FileType = "Record Node 105"; %For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
+AutorunConfig.ExtractRawRecording.FileType = "Record Node 104"; %For "Open Ephys": Name of recording Node to be extract, i.e. "Record Node 101" (Standard folder names within the recording)
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -177,13 +176,16 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 % Warning: ChannelOfInterest is the node in which you saved events.
 % EventChannelSelection is the line number holding events. Multiple are possible,seperated by a comma (see event extraction window info about events)
 % Threshold for open ephys is the state, either 1 or 0
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 105'; % name of node that holds event data as a char like "Record Node 101". Nodes can contain multiple input lines. Which one is analyzed is specified in AutorunConfig.ExtractEventDataModule.EventChannelSelection. 
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 104'; % name of node that holds event data as a char like "Record Node 101". Nodes can contain multiple input lines. Which one is analyzed is specified in AutorunConfig.ExtractEventDataModule.EventChannelSelection. 
+% ##### not used for open ephys:
 AutorunConfig.ExtractEventDataModule.EventType = 'Event Onset'; % char, Either 'Event Onset' or 'Event Offset' to determine whether rising or falling edge should be detected
-AutorunConfig.ExtractEventDataModule.EventChannelSelection = '2,3'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
-AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % Threshold of event signal at which events are extracted as char
-AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
+% ###############################
+AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1,3'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+% ##### This equals the event state you want to extract, either 1 or 0 to detect the event turning to 1 or to 0:
+AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % char, event state to extract, either 1 or 0!!!
+AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = 'Event Input Line 1'; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "Event Input Line 3"
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
-AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
+AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.7'; %Time in seconds extracted after events as char
 AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" OR "Preprocessed" as char
 %% 4.2 Prepro event related data
 %______________________________________________________________________________________________________

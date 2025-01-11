@@ -132,34 +132,41 @@ for RecordingIndex = 1:NumRecordingIndex
         disp("Neuropixels recording detected")
         APIndex = [];
         LFPIndex = [];
+        NP2Recording = 0;
         for i = 1:length(streamNames)
             if contains(streamNames{i},"AP")
                 APIndex = i;
             elseif contains(streamNames{i},"LFP")
                 LFPIndex =  i;
+            else % Has to be NP 2 recording otherwise
+                NP2Recording = 1;
             end
         end
 
-        if isempty(APIndex) && isempty(LFPIndex)
-            error('No AP or LFP data found. At this point only Neuropixels 1.0 is supported.');
+        if isempty(APIndex) && isempty(LFPIndex) && NP2Recording == 0
+            error('Neuropix stream name found but NP 1 or NP 2 recording could not be properly detected.');
         else
             Neuropixrecording = 1;
             % ask if AP or LFP data has to be extracted
-            NPRecordings = Neuropixels1_LFP_or_AP(Neuropixrecording);
-    
-            uiwait(NPRecordings.SelectRecordingWindowUIFigure);
-            
-            if isvalid(NPRecordings)
-                streamIndex = NPRecordings.SelectedRecordings; % == 1 if LFP data selected, == 2 if AP data selected
-                delete(NPRecordings);
-            else
-                disp("Error: Selection of either AP or LFP data failed. LFP data is exctracted by default. Rename 'SelectedStream' variable in Open_Ephys_Load_All_Formats.m")
-                streamIndex = 1; % == 1 if LFP data selected, == 2 if AP data selected
+            if NP2Recording == 0 % NP 1
+                NPRecordings = Neuropixels1_LFP_or_AP(Neuropixrecording);
+        
+                uiwait(NPRecordings.SelectRecordingWindowUIFigure);
+                
+                if isvalid(NPRecordings)
+                    streamIndex = NPRecordings.SelectedRecordings; % == 1 if LFP data selected, == 2 if AP data selected
+                    delete(NPRecordings);
+                else
+                    disp("Error: Selection of either AP or LFP data failed. LFP data is exctracted by default. Rename 'SelectedStream' variable in Open_Ephys_Load_All_Formats.m")
+                    streamIndex = 1; % == 1 if LFP data selected, == 2 if AP data selected
+                end
+            else % NP 2
+                Neuropixrecording = []; % no LFP/AP distinction, empty bc set to 1 when empty downstream (in else of next if statement)
             end
         end
     end
 
-    % just if no NP recordig
+    % just if no NP recording
     if length(streamNames)>1 && isempty(Neuropixrecording)
         disp("Can not handle multiple Processor ID's yet!! Taking first processor ID only.")
         streamIndex = 1;
@@ -171,10 +178,14 @@ for RecordingIndex = 1:NumRecordingIndex
     
     for k = 1:1 % over streams
         if Neuropixrecording == 1
-            if streamIndex == 1
-                streamName = streamNames{LFPIndex};
-            elseif streamIndex == 2
-                streamName = streamNames{APIndex};
+            if NP2Recording == 0 % NP 1
+                if streamIndex == 1
+                    streamName = streamNames{LFPIndex};
+                elseif streamIndex == 2
+                    streamName = streamNames{APIndex};
+                end
+            else % NP 2
+                streamName = streamNames{streamIndex};
             end
         else
             streamName = streamNames{streamIndex};
@@ -210,8 +221,8 @@ for RecordingIndex = 1:NumRecordingIndex
             NoDataChannel = [];
             for i = 1:length(ContinousStream.metadata.names)
                 %% NP recording
-                if Neuropixrecording == 1
-
+                if Neuropixrecording == 1 
+                    % NP 1
                     TempHeader.NeuropixelProbe = "Neuropixels 1.0";
 
                     if streamIndex == 1 % LFP stream selected
@@ -223,16 +234,25 @@ for RecordingIndex = 1:NumRecordingIndex
                             DataChannel = [DataChannel,i];
                         end
                     end
-                %% Non NP recording
+
+                %% Non NP or NP 2 recording
                 elseif isempty(Neuropixrecording)
                     if contains(ContinousStream.metadata.names{i},'CH')
                         DataChannel = [DataChannel,i];
                     else
                         NoDataChannel = [NoDataChannel,i];
                     end
+
+                    if NP2Recording == 1 
+                        TempHeader.NeuropixelProbe = "Neuropixels 2.0";
+                    end
                 end
             end
-  
+            
+            if NP2Recording == 1 
+                Neuropixrecording = 1;
+            end
+
             disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel and ",num2str(length(DataChannel))," data channel"));
             TempData = single(ContinousStream.samples(DataChannel,:));
     
@@ -241,7 +261,7 @@ for RecordingIndex = 1:NumRecordingIndex
 
             if isprop(Temp,'info')
                 %% NP recording
-                if Neuropixrecording == 1
+                if Neuropixrecording == 1 
                     
                     if isfield(Temp.info.continuous(RecordingIndex).channels,'bit_volts')
                         disp(strcat("Bit_Volts Property for AD conversion to mV found."));

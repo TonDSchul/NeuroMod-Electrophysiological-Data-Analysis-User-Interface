@@ -492,7 +492,7 @@ Data.Spikes.ChannelMap = Data.Spikes.ChannelMap';
 
 tempactchannel{1} = Data.Info.ProbeInfo.ActiveChannel;
 % Create proper channelmap
-[Data.Spikes.ChannelPosition(:,1),Data.Spikes.ChannelPosition(:,2),Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+[Data.Spikes.ChannelPosition(:,1),Data.Spikes.ChannelPosition(:,2),Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,num2str(Data.Info.NrChannel),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
 
 %% Filter Spike Data if selected
 ToKeep = [];

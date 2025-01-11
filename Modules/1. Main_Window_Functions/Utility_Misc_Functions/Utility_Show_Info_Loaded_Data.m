@@ -51,9 +51,15 @@ for i = 1:numel(fields)
                 fieldName = ProbeInfofields{k};
                 fieldValue = app.Data.Info.ProbeInfo.(fieldName);
                 if isnumeric(fieldValue)
-                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+                    if length(fieldValue)<32
+                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+                    else
+                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, strcat(num2str(length(fieldValue)),' Elements'));
+                    end
                 else
-                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                    if ~iscell(fieldValue)
+                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                    end
                 end
             end
         end

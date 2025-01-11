@@ -631,6 +631,9 @@ File: Event_Spikes_Prepare_Plots.m
 % otherwise
 % 8. SpikeTriggeredAverageField: field of app window holding time range for
 % spiked triggered average, as char, i.e. '-0.05,0.2'
+% 9. SpikeBinSettings: structure, save numbins in time and depth domain for spike
+% rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
+% standard. 
 
 %Outputs:
 
@@ -766,6 +769,9 @@ File: Events_Kilosort_Spikes_Manage_Analysis_Plots.m
 % 16. TwoORThreeDchar, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 17. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 18. SpikeBinSettings: structure, save numbins in time and depth domain for spike
+% rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
+% standard. 
 
 % Outputs:
 % 1. Data: main app data structure 
@@ -873,6 +879,8 @@ File: Spike_Module_Prepare_WaveForm_Window_and_Analysis.m
 % second and so on
 % 4. SpikeWindow: "EventWindow" when started from the event module,
 % "ContinousWindow" when started from the continous module
+% 5. TimeLagField: App widnow field with user input of time lag range in ms -
+% single char, i.e. '20' for -20:20ms time lag
 
 % Outputs
 
@@ -1050,6 +1058,7 @@ File: Spikes_Module_AutoCorrelogram.m
 % 8. NumBins: nr bins for ISI, as double
 % 9. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 10. TimeLag: double, Time lag in ms. I.e. 20 for -20 to 20ms
 
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in

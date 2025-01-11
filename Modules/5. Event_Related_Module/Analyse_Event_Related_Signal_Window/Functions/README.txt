@@ -100,6 +100,7 @@ File: Event_Module_Compute_and_Plot_ERP_CSD.m
 % case user wants to export them
 % 13. PlotAppearance: structure holding info about plot appearances the user
 % might have modified.
+% 14. ERPChannel: char, Channel for ERP Plot on top
 
 % Outputs:
 % 1. CSDClim

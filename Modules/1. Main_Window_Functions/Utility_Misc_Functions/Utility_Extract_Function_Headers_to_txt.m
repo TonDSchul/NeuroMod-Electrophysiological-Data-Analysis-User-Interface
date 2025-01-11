@@ -80,6 +80,8 @@ for i = 1:length(files)
             fprintf(fidOut, '%s\n', headerLines{j});
         end
         fprintf(fidOut, '\n\n ###################################################### \n\n');
+    else
+        warning(strcat("Could not identitfy header for ",files(i).name));
     end
 end
 

@@ -21,14 +21,14 @@ File: All_Module_Items.m
 %% Main Plot Analysis Module
 Module{1}.Title = 'Main Plot Analysis Module';
 Module{1}.Function = 'RUN_Main_Plot_Analysis_Module';
-Module{1}.Items{1} = 'Spike Rate';
-Module{1}.Items{2} = 'Power Estimate';
-Module{1}.Items{3} = 'Current Source Density';
+Module{1}.Items{1} = 'Live Spike Rate';
+Module{1}.Items{2} = 'Live Power Estimate';
+Module{1}.Items{3} = 'Live Current Source Density';
 %% Continous Data Module
-Module{2}.Title = 'Continous Data Module';
+Module{2}.Title = 'Continuous Data Module';
 Module{2}.Function = 'RUN_Continous_Data_Module';
 Module{2}.Items{1} = 'Preprocessing';
-Module{2}.Items{2} = 'Band Power Analysis';
+Module{2}.Items{2} = 'Static Spectrum Analysis';
 Module{2}.Items{3} = 'Spike Analysis';
 Module{2}.Items{4} = 'Unit Analysis';
 %% Event Data Module
@@ -38,15 +38,14 @@ Module{3}.Items{1} = 'Extract Events and Data';
 Module{3}.Items{2} = 'Preprocessing';
 Module{3}.Items{3} = 'LFP Analysis';
 Module{3}.Items{4} = 'Spike Analysis';
-Module{3}.Items{5} = 'Unit Analysis';
 %% Spike Module
 Module{4}.Title = 'Spike Module';
 Module{4}.Function = 'RUN_Spike_Module';
-Module{4}.Items{1} = 'Internal Spike Detection';
-Module{4}.Items{2} = 'Save for Kilosort';
-Module{4}.Items{3} = 'Load from Kilosort';
+Module{4}.Items{1} = 'Spike Detection and Sorting';
+Module{4}.Items{2} = 'Save for Spike Sorting';
+Module{4}.Items{3} = 'Load Spike Sorting Results';
 %% Example Module -- this could be yours!
-Module{5}.Title = 'Example Module';
+Module{5}.Title = 'Example Module - this could be yours!';
 Module{5}.Function = 'RUN_Example';
 Module{5}.Items{1} = 'Example App 1';
 
@@ -61,7 +60,7 @@ File: Change_Modules_Apply_Module_Change_To_MainWindow.m
 %% Function to apply the module changes the user selected in the manage modules window
 % This function is called when the user presses the button to switch the
 % module selected on the left with the module seleced in the
-% dropdown menu of the manage modules window. it applies this change the
+% dropdown menu of the manage modules window. it applies this change to the
 % the main window
 
 % Inputs:

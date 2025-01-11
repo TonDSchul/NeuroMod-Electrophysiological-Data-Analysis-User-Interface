@@ -37,7 +37,7 @@ function [Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Data,Pa
 % this would be [1,2,3] to extract indicies of all 3 of them
 % 7. StateSelection: char with a number (either '1' or '0', events can have state of 0 or 1).
 % User can specify this in the event extraction window
-% 8. FirstTimeStampinSample: double in seconds, TimeStamp of start of recording respective to
+% 8. FirstTimeStampinSample: double in samples, TimeStamp of start of recording respective to
 % the aquisition start. Found in Data.Info
 % 9. AllRecordingIndicies: vector of recording indicies selected at data
 % extraction. Basically holds which recordings the user wanted to
@@ -92,12 +92,12 @@ if strcmp(WhatToDo,"Get Information")
         if strcmp(node.name,Data.Info.RecordingNode) 
             NrRecordingsinNode = AllRecordingIndicies;
              if length(node.recordings)>1
-                disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recordings ", num2str(AllRecordingIndicies)," which got define when data was extracted."))
+                disp(strcat("Found ",num2str(length(node.recordings))," Recordings. Taking recording(s) ", num2str(AllRecordingIndicies)," which got defined when data was extracted."))
             end
         else
             NrRecordingsinNode = 1:length(node.recordings);
             if ~isequal(NrRecordingsinNode, AllRecordingIndicies)
-                warning('Selected number of recordings for extracted node not the same as for current node. Proceeding to extract all recordings from that node. If you extracted data from another node and only selected a subset of recordings, time scales between node events can be different!! The exception CAN be .nwb format. Multiple recordings will always be extracted together and only be visible as a single recording! In doubt, extract all recordings found and repeat.')
+                warning('Number of recordings for selected node not the same as for node data was extracted from. If you extracted data from another node and only selected a subset of recordings, event time scales between node events can be different!! The exception CAN be .nwb format. Multiple recordings will always be extracted together and only be visible as a single recording! In doubt, extract all recordings found and repeat.')
                 disp(strcat("Found ",num2str(length(node.recordings))," recordings. Taking all of them for event extraction."));
             else
                 if length(node.recordings)>1
@@ -154,12 +154,23 @@ if strcmp(WhatToDo,"Get Information")
                 events = recording.ttlEvents(eventProcessors);
                 
                 if ~isempty(FirstTimeStampinSample) && ~isempty(events.sample_number)
-                    events.sample_number = double(events.sample_number) - FirstTimeStampinSample(nrrecordings);
-                    events.timestamp = events.timestamp - (FirstTimeStampinSample(nrrecordings)/Data.Info.NativeSamplingRate);
-                    if nrrecordings >= 2
-                        RecordingTimeSamples = Data.Info.RecordingTime*Data.Info.NativeSamplingRate;
-                        events.sample_number = double(events.sample_number) + sum(RecordingTimeSamples(1:nrrecordings-1));
-                        events.timestamp = events.timestamp + sum(Data.Info.RecordingTime(1:nrrecordings-1));
+                    if length(FirstTimeStampinSample)>=nrrecordings
+                        events.sample_number = double(events.sample_number) - FirstTimeStampinSample(nrrecordings);
+                        events.timestamp = events.timestamp - (FirstTimeStampinSample(nrrecordings)/Data.Info.NativeSamplingRate);
+                        if nrrecordings >= 2
+                            RecordingTimeSamples = Data.Info.RecordingTime*Data.Info.NativeSamplingRate;
+                            events.sample_number = double(events.sample_number) + sum(RecordingTimeSamples(1:nrrecordings-1));
+                            events.timestamp = events.timestamp + sum(Data.Info.RecordingTime(1:nrrecordings-1));
+                        end
+                    else
+                        warning("Node for data extraction contains less start time stamps for event aquisition than node that was selected has. This prb leads to wrong event times! In doubt extract data from the other node.")
+                        events.sample_number = double(events.sample_number) - FirstTimeStampinSample(end);
+                        events.timestamp = events.timestamp - (FirstTimeStampinSample(end)/Data.Info.NativeSamplingRate);
+                        if nrrecordings >= 2
+                            RecordingTimeSamples = Data.Info.RecordingTime*Data.Info.NativeSamplingRate;
+                            events.sample_number = double(events.sample_number) + sum(RecordingTimeSamples(1:nrrecordings-1));
+                            events.timestamp = events.timestamp + sum(Data.Info.RecordingTime(1:nrrecordings-1));
+                        end
                     end
                 else
                     disp("Warning: Could not substract first timestamp of recording start from event times. This is normal if recording was started immediately or doesn not contain events. If this is not the reason, event times can lie outside of time limits without the first timestamp correction!")
@@ -295,7 +306,7 @@ if strcmp(WhatToDo,"All")
     else
         NrRecordingsinNode = 1:length(node.recordings);
         if ~isequal(NrRecordingsinNode, AllRecordingIndicies)
-            warning('Selected number of recordings for extracted node not the same as for current node. Proceeding to extract all recordings from that node. If you extracted data from another node and only selected a subset of recordings, time scales between node events can be different!! The exception CAN be .nwb format. Multiple recordings will always be extracted together and only be visible as a single recording! In doubt, extract all recordings found and repeat.')
+            warning('Number of recordings for selected node not the same as for node data was extracted from. If you extracted data from another node and only selected a subset of recordings, time scales between node events can be different!! The exception CAN be .nwb format. Multiple recordings will always be extracted together and only be visible as a single recording! In doubt, extract all recordings found and repeat.')
             disp(strcat("Found ",num2str(length(node.recordings))," recordings. Taking all of them for event extraction."));
         else
             if length(node.recordings)>1

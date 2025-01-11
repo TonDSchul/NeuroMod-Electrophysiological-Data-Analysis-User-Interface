@@ -93,6 +93,31 @@ File: Execute_Autorun_Continous_Data_Module_Functions.m
 
  ###################################################### 
 
+File: Execute_Autorun_Convert_ConfigChannel_to_ActiveChannel.m
+%________________________________________________________________________________________
+%% Function to convert the channel selection in the autorun config into active channel for further analysis
+
+% This function is called in the Execute_Autorun_Config_Template function
+% in the Manage Dataset Module Functions
+
+% Inputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected
+% 2. ActiveChannel: 1 x n double with all active channel defined in the
+% probe information (Data.Info.ProbeInfo.ActiveChannel)
+
+% Outputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected -- channel info for individual
+% analysis parts where added and converted.
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Execute_Autorun_Extract_Events_Module_Functions.m
 %________________________________________________________________________________________
 %% This is the main function to execute event module autorun analysis 

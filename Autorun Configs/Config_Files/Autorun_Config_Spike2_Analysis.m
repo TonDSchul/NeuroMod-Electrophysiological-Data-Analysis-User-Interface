@@ -37,24 +37,23 @@ function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Create_Spike_Sorting","Load_from_SpikeSorting","Continous_Spike_Analysis","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Preprocess_Continous_Data","Extract_Event_Related_Data","Event_Analysis_ERP","Event_Analysis_CSD"];
 
 % Channel and Events to Analyze
-AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range = 1:NrChannel (NOT based on active channel names but number of available channel number!)
+AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
 AutorunConfig.EventRange = []; % Only necessary if events are extracted and analyzed, Empty for all events, otherwise char, '1,10' for events 1:10; (only two numbers allowed, '1','2','3','4' will not work!)
 
 % General Information
-AutorunConfig.AutorunConfigName = "Spike2 LFP and Spike Analysis";
-AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
-
-%AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
-%AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
+AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
+AutorunConfig.ExtractMultipleRecordings = "on"; % "on" OR "off"; Set "on" to loop over multiple recordings in a folder (each recording in its own folder within the destination folder selected)
 
 % Figures
-% AutorunConfig.SaveFigures = "on";
-% AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
-% AutorunConfig.DeleteFigureAfterSaving = "on";
+AutorunConfig.SaveFigures = "on";
+AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
+AutorunConfig.DeleteFigureAfterSaving = "on";
 
+AutorunConfig.AutorunConfigName = "Spike2 LFP and Spike Analysis";
+AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
 AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD"
-
 AutorunConfig.AdditionalAmpFactor = []; % Additional signal amplification factor; empty for non, otherwise factor raw data gets multiplied with
+
 
 % When Autorun window is openend, just the above information are taken to populate
 % the fields that can be changed in the autorun window 
@@ -106,15 +105,15 @@ AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 
 % AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter"]
 % NOTE: 
 
-AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter","Downsample"]; % Preprocessing method to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
-AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter"]; % Preprocessing method to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter","Downsample"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR StimArtefactRejection OR multiple Inputs like ["Filter","Downsample"]
 % Only if "Filter" is selected as one of the PreproMethods
-AutorunConfig.PreprocessCont.FilterMethod{1} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
-AutorunConfig.PreprocessCont.FilterMethod{2} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
+AutorunConfig.PreprocessCont.FilterMethod{1} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
+AutorunConfig.PreprocessCont.FilterMethod{2} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
 AutorunConfig.PreprocessCont.FilterType{1} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
 AutorunConfig.PreprocessCont.FilterType{2} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
-AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
-AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "300"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
+AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "200"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
+AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
 AutorunConfig.PreprocessCont.FilterDirection{1} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterDirection{2} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterOrder{1} = "3"; % Filter order for applied filter. Input as char. This only is required when a filter is selected as the methods field.
@@ -179,9 +178,9 @@ AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Spike2 Channel'; %DO N
 AutorunConfig.ExtractEventDataModule.EventType = 'Event Onset'; % char, Either 'Event Onset' or 'Event Offset' to determine whether rising or falling edge should be detected
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '9,10'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3'; If event channel came from data channel 10, then the first number must be 10!
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.2'; % Threshold of event signal at which events are extracted as char
-AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
+AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = 'Data Channel 1'; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "Data Channel 1"
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
-AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
+AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.7'; %Time in seconds extracted after events as char
 AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" OR "Preprocessed" as char
 
 %% 4.2 Prepro event related data

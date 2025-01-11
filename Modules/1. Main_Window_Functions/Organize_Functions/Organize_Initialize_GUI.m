@@ -274,12 +274,12 @@ elseif strcmp(Type,"VariableDefinition")
         app.Data.Info.ChannelSpacing = Load_Data_Window_Info.ChannelSpacing;
     end
     
-    app.Data.Info.ProbeInfo.NrChannel = num2str(length(Load_Data_Window_Info.ActiveChannel));
+    app.Data.Info.ProbeInfo.NrChannel = num2str(Load_Data_Window_Info.NrChannel);
     app.Data.Info.ProbeInfo.NrRows = num2str(Load_Data_Window_Info.NumberChannelRows);
     app.Data.Info.ProbeInfo.VertOffset = num2str(Load_Data_Window_Info.VerticalOffsetum);
     app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
     app.Data.Info.ProbeInfo.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
-
+    
     app.Data.Info.ProbeInfo.SwitchTopBottomChannel = Load_Data_Window_Info.SwitchTopBottomChannel;
     app.Data.Info.ProbeInfo.SwitchLeftRightChannel = Load_Data_Window_Info.SwitchLeftRightChannel;
     app.Data.Info.ProbeInfo.FlipLoadedData = Load_Data_Window_Info.FlipLoadedData;

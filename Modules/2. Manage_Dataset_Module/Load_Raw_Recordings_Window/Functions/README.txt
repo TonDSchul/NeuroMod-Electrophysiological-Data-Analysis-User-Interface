@@ -100,7 +100,7 @@ File: LoadIntanRHDFiles.m
 
  ###################################################### 
 
-File: Main_Extract_Intan_Data.m
+File: Manage_Dataset_Extract_Intan_Data.m
 %________________________________________________________________________________________
 
 %% This is the main function organizing data extraction of Intan data
@@ -121,6 +121,49 @@ File: Main_Extract_Intan_Data.m
 % 3. SampleRate: Sample Rate as double in Hz
 % 4. RecordingType: string, either "IntanDat" OR "IntanRHD", capturing the
 % recording format
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Extract_Open_Ephys_Data.m
+%________________________________________________________________________________________
+
+%% This is the main function to extract Open Ephys Data 
+% This function utilizes functions and some analysis workflows as well as
+% example data from the analysis-tools Github project from jsiegle
+% available at https://github.com/open-ephys/analysis-tools as well as the open-ephys-matlab-tools
+% Matlab file exchange project https://de.mathworks.com/matlabcentral/fileexchange/122372-open-ephys-matlab-tools
+
+% functions necessary from these sources that are used here were not modified, this code is
+% self written based on the load_all_formats function in the example
+% folder
+% functions used: 1. Session
+
+% This gets called in the
+% 'Manage_Dataset_Module_Extract_Raw_Recording_Main' function when Open Ephys is
+% identified as the recording system
+
+% Input:
+% 1. DATA_PATH: path as char to folder containing the recording
+% 2: nRecordNodes: double number of recording nodes found in the selected
+% recordingfolder (basically nr of folder contents of open ephys recording folder)
+% 3. SelectedRecordNode: Index number as double, which recording node was
+% selected for analysis. This is basically the index of folder contents
+% that are supposed to be analysed
+% i.e.: foldercontents = ["Record Node 101", "Record Node 105", "Record
+% Node 113"] --> nRecordNodes = 3
+% If user selects Record Node 105 as the node to analyze in the extract raw
+% data app window, SelectedRecordNode = 2
+
+% Output: 
+% 1. TempData: nchannel x ntimespoints single matrix with extracted raw data
+% 2. TempHeader: structure containing header infos of recording. This get TempData.Info later
+% 3. SampleRate: Sample Rate as double in Hz
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -155,36 +198,10 @@ File: Manage_Dataset_Module_Apply_ChannelOrder.m
 
  ###################################################### 
 
-File: Manage_Dataset_Module_Extract_Raw_Recording_Main.m
+File: Manage_Dataset_Module_Apply_DataFlip.m
 %________________________________________________________________________________________
 
-%% Main Function coordinating data extraction from raw data
-
-% Saving is performed in chunks to increase performance and values get
-% converted to binaries,w hich also increases loading performance 
-
-% Input:
-% 1. RecordingSystem: char/string with recordingsystem the recording was
-% recorded with. Options: "Intan", "Spike2", "Open Ephys", "Neuralynx"
-% 2. FileType: format of recording files. Options: for Intan: Intan .dat,
-% Intan .rhd; For Open Ephys: node name of node you want to extract (equals standard folder name of node, like Record Node 101)
-% For Spike2: ".smrx"; For Neuralynx: .ncs 
-% 3. SelectedFolder: folder as char holding the recording (For open ephys: also recording folder, NOT node folder!)
-% 4. TextArea: Textarea object of Extract Raw Data window to show progress of
-% loading, empty when called outside of GUI
-% 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
-
-% Output: 
-% 1. Data: nchannel x ntimepoints matrix as single 
-% 2. HeaderInfo: All infos from the header of the recordings that are later
-% saved as Data.Info
-% 3. SampleRate: Smaple Rate of the loaded recording in Hz as double+
-% 4. RecordingType: char specyfiying the recording system the recording
-% comes from. Either "Intan" OR "Open Ephys" OR "Spike2" OP "Neuralynx".
-% Basically the same as RecordingSystem, but gets only set correctly when data
-% extraction is succesfull. 
-% 5. Time: 1 x timepoints double vector with a time in seconds for each data
-% sample
+%% This function just flips the dataset
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -194,7 +211,7 @@ File: Manage_Dataset_Module_Extract_Raw_Recording_Main.m
 
  ###################################################### 
 
-File: Manage_Dataset_Module_LoadRecordingCheckFolderContents.m
+File: Manage_Dataset_Module_CheckFolderContents.m
 %________________________________________________________________________________________
 
 %% This function gets called when the user selects a folder in the Extract_Data_Window app window and checks the folder contents
@@ -225,7 +242,7 @@ File: Manage_Dataset_Module_LoadRecordingCheckFolderContents.m
 % named Record Node when open ephys is the format.
 % 2. TextAreaText: Text area of Extract_Data_Window app window to show info
 % when no proper data was found
-% 3. TextArea_3Text: Text area of Extract_Data_Window app window to show
+% 3. ProbeInfoText: Text area of Extract_Data_Window app window to show
 % folder contens and channelorder
 % 4. RecordingSystemDropDownItems: Items shown in Extract_Data_Window app
 % window capturing the recording system that was found. Cell array containg
@@ -246,40 +263,99 @@ File: Manage_Dataset_Module_LoadRecordingCheckFolderContents.m
 
  ###################################################### 
 
-File: Open_Ephys_Load_All_Formats.m
+File: Manage_Dataset_Module_Extract_Raw_Recording_Main.m
 %________________________________________________________________________________________
 
-%% This is the main function to extract Open Ephys Data 
-% This function utilizes functions and some analysis workflows as well as
-% example data from the analysis-tools Github project from jsiegle
-% available at https://github.com/open-ephys/analysis-tools as well as the open-ephys-matlab-tools
-% Matlab file exchange project https://de.mathworks.com/matlabcentral/fileexchange/122372-open-ephys-matlab-tools
+%% Main Function coordinating data extraction from raw data
 
-% functions necessary from these sources that are used here were not modified, this code is
-% self written based on the load_all_formats function in the example
-% folder
-% functions used: 1. Session
-
-% This gets called in the
-% 'Manage_Dataset_Module_Extract_Raw_Recording_Main' function when Open Ephys is
-% identified as the recording system
+% Saving is performed in chunks to increase performance and values get
+% converted to binaries,w hich also increases loading performance 
 
 % Input:
-% 1. DATA_PATH: path as char to folder containing the recording
-% 2: nRecordNodes: double number of recording nodes found in the selected
-% recordingfolder (basically nr of folder contents of open ephys recording folder)
-% 3. SelectedRecordNode: Index number as double, which recording node was
-% selected for analysis. This is basically the index of folder contents
-% that are supposed to be analysed
-% i.e.: foldercontents = ["Record Node 101", "Record Node 105", "Record
-% Node 113"] --> nRecordNodes = 3
-% If user selects Record Node 105 as the node to analyze in the extract raw
-% data app window, SelectedRecordNode = 2
+% 1. RecordingSystem: char/string with recordingsystem the recording was
+% recorded with. Options: "Intan", "Spike2", "Open Ephys", "Neuralynx"
+% 2. FileType: format of recording files. Options: for Intan: Intan .dat,
+% Intan .rhd; For Open Ephys: node name of node you want to extract (equals standard folder name of node, like Record Node 101)
+% For Spike2: ".smrx"; For Neuralynx: .ncs 
+% 3. SelectedFolder: folder as char holding the recording (For open ephys: also recording folder, NOT node folder!)
+% 4. TextArea: Textarea object of Extract Raw Data window to show progress of
+% loading, empty when called outside of GUI
+% 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
+% 6. AdditionalAmpFactor: double, additional amplification raw data is
+% multiplied by
+% 7. NrChannel: from probe layout windoiw, just for spike2
 
 % Output: 
-% 1. Data: nchannel x ntimespoints single matrix with extracted raw data
-% 2. Header: structure containing header infos of recording. This get Data.Info later
-% 3. SampleRate: Sample Rate as double in Hz
+% 1. Data: nchannel x ntimepoints matrix as single 
+% 2. HeaderInfo: All infos from the header of the recordings that are later
+% saved as Data.Info -- no filed necessary for later. All necessary fields
+% are defined manually (ouputs below)
+% 3. SampleRate: Sample Rate of the loaded recording in Hz as double+
+% 4. RecordingType: char specyfiying the recording system the recording
+% comes from. Either "Intan" OR "Open Ephys" OR "Spike2" OP "Neuralynx".
+% Basically the same as RecordingSystem, but gets only set correctly when data
+% extraction is succesfull. 
+% 5. Time: 1 x timepoints double vector with a time in seconds for each data
+% sample
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Module_Show_ProbeInfo_and_Path.m
+%________________________________________________________________________________________
+
+%% This function shows the info about selected path and probe info in the extract data window
+
+% gets called whenever the user selects a new probe desing or folder
+
+% Input:
+% 1. app: extract data window object
+% Load_Data_Window_Info: structure with info about selected folder and probe.
+% ProbeInfoOrFolder: string, specifies what to do when, either "ProbeInfo" OR
+% "FolderSelection" OR "AutorunFolderSelection", deoending on which info
+% the user changed
+
+% Output: 
+% 1. Load_Data_Window_Info: same as input struvture
+% 2. ProbeInfoText: Text to sho in window
+% 3. FolderContentsText: Folder contents found
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Save_ProbeInfo_Kilosort.m
+%________________________________________________________________________________________
+
+%% This function saves the current probelayout for external use in Kilosort (saves as .mat file)
+
+% Input:
+% 1. executableFolder: path the GUI is executed/saved in
+% 2. ChannelRowsDropDown: char; Dropdownmenu value from probe window specifying
+% number of channelrows.
+% 3. NrChannelEditField: char, editfield value from probe window specifying
+% number of channels.
+% 4. ChannelSpacingumEditField: char, editfield value from probe window specifying
+% channel spacing.
+% 5. ActiveChannelField: single cell containing char, editfield value from probe window specifying
+% all active channel.
+% 6. VerOffsetSecondRow: double, 1 or 0 if true or false to set veroffset
+% 7. VerOffsetDistanceSecondRow: double, editfield value from probe window specifying
+% vertical offset between both rows.
+% 8. VerOffsetRows: double, vertical offset between rows
+% 9. HorOffset: char, editfield value from probe window specifying
+% horizontal offset between channel rows.
+% 10. SaveProbe: double, 1 or 0 to specify whether map should be saved or
+% not
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

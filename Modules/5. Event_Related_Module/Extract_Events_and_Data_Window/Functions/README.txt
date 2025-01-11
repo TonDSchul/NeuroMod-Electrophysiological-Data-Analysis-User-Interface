@@ -115,7 +115,8 @@ File: Extract_Events_Module_Extract_Event_Indicies_Intan.m
 % 4. Threshold: double representing threshold for idientifying events -->
 % signal has to be >= threshold
 % 5. InputChannelData: 1 x ntime data for each event channel of the specified InputChannelType
-
+% 6. EventInfoType: char, Either 'Event Onset' or 'Event Offset' to
+% determine whether rising or falling edge should be detected
 % Outputs:
 % 1. Data: Data structure with added field:
 % Data.Events{1:neventchannelfound} containing a 1 x nevents vector with
@@ -158,6 +159,8 @@ File: Extract_Events_Module_Extract_Events_Intan.m
 % to be loaded earlier already to know what can be shown as otions in the
 % GUI. --> not as nicely doable as with individual .dat files for each
 % event
+% 8. EventInfoType: char, Either 'Event Onset' or 'Event Offset' to
+% determine whether rising or falling edge should be detected
 
 % Outputs:
 % 1. Data: Data structure with added field:
@@ -220,18 +223,25 @@ File: Extract_Events_Module_Extract_Open_Ephys_Events.m
 % extraction window and open ephys is recording format
 
 % Input:
-% 1. Path: path as char to folder containing the recording
-% 2: WhatToDo: as string detetmines mode, see above, Otions: "Get
+% 1. Data: Data structure from main dataset
+% 2. Path: path as char to folder containing the recording
+% 3: WhatToDo: as string detetmines mode, see above, Otions: "Get
 % Information" OR "All" (also extract events)
-% 3. NodeNr: Indicie of recording node the user selects; indicie = position in
+% 4. NodeNr: Indicie of recording node the user selects; indicie = position in
 % folder --> with three nodes, content of folder has 3 string elements.
 % Indicie is the indice of these 3 elements that was seleceted
-% 4. NoddeID: Not used yet, maybe necessary in future (saves node nr as double, i.e. 101)
-% 5. InputChannelSelection: 1 x n double with indicie of which events that
+% 5. NoddeID: Not used yet, maybe necessary in future (saves node nr as double, i.e. 101)
+% 6. InputChannelSelection: 1 x n double with indicie of which events that
 % were identified should be analyzed. if 3 event lines saved (3 events),
 % this would be [1,2,3] to extract indicies of all 3 of them
-% 6. StateSelection: char with a number (either '1' or '0', events can have state of 0 or 1).
+% 7. StateSelection: char with a number (either '1' or '0', events can have state of 0 or 1).
 % User can specify this in the event extraction window
+% 8. FirstTimeStampinSample: double in samples, TimeStamp of start of recording respective to
+% the aquisition start. Found in Data.Info
+% 9. AllRecordingIndicies: vector of recording indicies selected at data
+% extraction. Basically holds which recordings the user wanted to
+% concatonate
+
 
 % Output: 
 % 1. Events: 1 x nevents cell array with each cell containing a
@@ -315,6 +325,9 @@ File: Extract_Events_Module_Main_Function.m
 % event
 % 11. executablefolder: char with the path to the currently execute GUI
 % instance, comes from public property in main window
+% 12. startTimestamp: Only for open ephys!! start time of recording in
+% seconds to substract from event times which are present in respect to
+% aquisition start, not recording start
 
 % Outputs:
 % 1. Data: Data structure with added field:

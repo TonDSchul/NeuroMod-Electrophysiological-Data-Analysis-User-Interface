@@ -10,6 +10,8 @@ Variables are:
 This variable is autosaved and updated automatically if necessary.
 2. Template_PlotAppearance.mat: saves to standrad plot appearances of the GUI (when the user resets to default, those are the settings taken) - read if no PlotAppearance.mat is saved (costume plot appearance)
 3. Template_ModuleOrder.mat: saves default modules shown on startup of the main window. This is called when the user presses the button to reset module order to default. - read if no ModuleOrder.mat is saved (costume module order)
+4. Python_Conda_Path.mat: saves the path to the python.exe for the conda environment SpikeInterface is installed in
+5. ShowToolTipsSetting.mat: saves whether tooltips should be shown for next startup
 
 Optionally: 
 1. PlotAppearance: saves the costume plot appearances the user saved. Only if they where modified and saved as new default
@@ -24,6 +26,6 @@ Also, there are files in the Default(do not edit!) folder containing templates f
 4. Autorun_Config_TEMPLATE_OPEN_EPHYS_Analysis
 5. Autorun_Config_TEMPLATE_Spike2_Analysis
 
-They should not be modified, since they serve as the default templates you can select when resetting a config file to default. 
+They should not be modified, since they serve as the default templates you can select when resetting a config file to default. However,yo can of cours add your own Templates 
 
-This folder also contains the Logo and the pictures for the readme file and Licenses of other toolboxes.
+This folder also contains the Logo and the pictures for the readme file and Licenses of other toolboxes used.

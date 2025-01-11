@@ -21,18 +21,28 @@ function [Data] =  Manage_Dataset_Module_Apply_ChannelOrder (Data,ChannelOrder)
 
 %________________________________________________________________________________________
 
-%% Create Channel Order
-% If the user selcted a costum channel order
+
 if ~isempty(ChannelOrder) && length(ChannelOrder) == size(Data.Raw,1) 
     % If first channel is designated with a 0, we cant loop
     % over it. So we add +1 to every channel number
     if find(ChannelOrder == 0)
         ChannelOrder = ChannelOrder+1;
     end
-    %% Reorder data according to loaded Channelorder
 
-    Data.Raw = Data.Raw(ChannelOrder, :); % reorder 
-   
+    %% Create Channel Order
+    %If the user selcted a costum channel order
+    if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+        InversedChannelOrder = zeros(size(ChannelOrder))+length(ChannelOrder);
+        InversedChannelOrder = (InversedChannelOrder - ChannelOrder)+1;
+        %% Reorder data according to loaded Channelorder
+
+        Data.Raw = Data.Raw(InversedChannelOrder, :); % reorder 
+    else
+        % Reorder data according to loaded Channelorder
+
+        Data.Raw = Data.Raw(ChannelOrder, :); % reorder 
+    end
+
     Data.Info.Channelorder = ChannelOrder;
     
     disp("Costum Channel Order loaded.")

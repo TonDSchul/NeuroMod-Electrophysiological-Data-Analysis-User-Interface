@@ -1,5 +1,26 @@
 function [AutorunConfig] = Execute_Autorun_Convert_ConfigChannel_to_ActiveChannel(AutorunConfig,ActiveChannel)
 
+%________________________________________________________________________________________
+%% Function to convert the channel selection in the autorun config into active channel for further analysis
+
+% This function is called in the Execute_Autorun_Config_Template function
+% in the Manage Dataset Module Functions
+
+% Inputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected
+% 2. ActiveChannel: 1 x n double with all active channel defined in the
+% probe information (Data.Info.ProbeInfo.ActiveChannel)
+
+% Outputs:
+% 1. AutorunConfig: Structure containing all analysis parameter
+% specified in the config file selected -- channel info for individual
+% analysis parts where added and converted.
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 %% Function to convert channel from 1 to whatever how many channel you have to the actual active channel selected when extracting data
 
 if ~isempty(AutorunConfig.ChannelRange)

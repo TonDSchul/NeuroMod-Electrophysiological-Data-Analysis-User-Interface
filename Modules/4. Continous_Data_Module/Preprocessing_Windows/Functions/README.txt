@@ -59,7 +59,7 @@ File: Preprocess_Extract_and_Plot_Stimulation_Artefact.m
 % 2. StimArtefactInfo: strcuture holding info necessray to apply artefact
 % rejection to the dataset when the user adds it to the preprocessing
 % pipeline. Fields are: StimArtefactInfo.SelectedEventChannelName (char)
-% and StimArtefactInfo.TimeAroundEvents (1 x 2 double in )
+% and SamplesToPlot (1 x 2 double in )
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
