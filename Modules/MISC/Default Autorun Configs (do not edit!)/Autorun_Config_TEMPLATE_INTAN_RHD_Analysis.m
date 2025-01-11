@@ -164,12 +164,9 @@ AutorunConfig.ContinousUnitAnalysis.MaxTImeISI = "0.15";
 
 AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1 = '20';
 AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2 = '20';
-AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3 = '20';
 
 AutorunConfig.ContinousUnitAnalysis.UnitsPlot1 = '1,2,3';
 AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
-AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4. Event Data Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

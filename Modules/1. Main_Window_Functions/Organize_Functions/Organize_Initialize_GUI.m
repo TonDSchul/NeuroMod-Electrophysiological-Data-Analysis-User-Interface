@@ -274,7 +274,7 @@ elseif strcmp(Type,"VariableDefinition")
         app.Data.Info.ChannelSpacing = Load_Data_Window_Info.ChannelSpacing;
     end
     
-    app.Data.Info.ProbeInfo.NrChannel = num2str(Load_Data_Window_Info.NrChannel);
+    app.Data.Info.ProbeInfo.NrChannel = num2str(length(Load_Data_Window_Info.ActiveChannel));
     app.Data.Info.ProbeInfo.NrRows = num2str(Load_Data_Window_Info.NumberChannelRows);
     app.Data.Info.ProbeInfo.VertOffset = num2str(Load_Data_Window_Info.VerticalOffsetum);
     app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
@@ -292,7 +292,7 @@ elseif strcmp(Type,"VariableDefinition")
         app.Data.Info.ProbeInfo.ShortAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort;
         app.Data.Info.ProbeInfo.AreaDistanceFromTip = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance;
     end
-
+    
     if app.Data.Time(end)<3
         if app.Data.Time(end)<1
             TimeRangeText = strcat(num2str(app.Data.Time(end)),"s");
@@ -314,6 +314,7 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.ChannelChange = "ProbeView";
 
+    % first plot after loading data: max 100 channel shown
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
         app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
     end

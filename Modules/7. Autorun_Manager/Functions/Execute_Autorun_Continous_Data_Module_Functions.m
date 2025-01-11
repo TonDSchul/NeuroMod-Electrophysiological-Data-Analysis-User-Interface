@@ -637,15 +637,12 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
 
     if Execute == 1
         UnitAnalysisFigure = figure();
-        UIAxes_1 = subplot(3,3,1);
-        UIAxes_2 = subplot(3,3,2);
-        UIAxes_3 = subplot(3,3,3);
-        UIAxes_4 = subplot(3,3,4);
-        UIAxes_5 = subplot(3,3,5);
-        UIAxes_6 = subplot(3,3,6);
-        UIAxes_7 = subplot(3,3,7);
-        UIAxes_8 = subplot(3,3,8);
-        UIAxes_9 = subplot(3,3,9);
+        UIAxes_1 = subplot(3,2,1);
+        UIAxes_2 = subplot(3,2,2);
+        UIAxes_3 = subplot(3,2,3);
+        UIAxes_4 = subplot(3,2,4);
+        UIAxes_5 = subplot(3,2,5);
+        UIAxes_6 = subplot(3,2,6);
 
         UIAxes_1.NextPlot = "add";
         UIAxes_2.NextPlot = "add";
@@ -653,11 +650,8 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
         UIAxes_4.NextPlot = "add";
         UIAxes_5.NextPlot = "add";
         UIAxes_6.NextPlot = "add";
-        UIAxes_7.NextPlot = "add";
-        UIAxes_8.NextPlot = "add";
-        UIAxes_9.NextPlot = "add";
-        
-        [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel,AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.ContinousUnitAnalysis.UnitsPlot1,AutorunConfig.ContinousUnitAnalysis.UnitsPlot2,AutorunConfig.ContinousUnitAnalysis.UnitsPlot3,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,UIAxes_7,UIAxes_8,UIAxes_9,"StartUp","ContinousWindow",AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram);
+
+        [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel,AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,AutorunConfig.ContinousUnitAnalysis.UnitsPlot1,AutorunConfig.ContinousUnitAnalysis.UnitsPlot2,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1,AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2,UIAxes_1,UIAxes_2,UIAxes_3,UIAxes_4,UIAxes_5,UIAxes_6,"StartUp","ContinousWindow",AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram);
 
         %% Plot Waveforms
         

@@ -1,5 +1,33 @@
 function [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data)
 
+%________________________________________________________________________________________
+
+%% Function to convert spike positions for a probe design with 2 rows. This is becuase spike depths of the neighbouring channel are the same.
+%% However, to display all channel in the GUI from top to bottom, spike depths have to be adjusted
+
+% This basically just takes spikes from the second to the last channel and
+% adds Channelspacing to them.
+%For Channelspacing = 20um:
+% Ch 0 +0um
+% Ch 1 + 20um
+% Ch 2 + 20um
+% Ch 3 + 40um
+% Ch 4 + 40um and so on....
+% 
+% Input:
+% 1. Data = structure containing all data. 
+
+% Output:
+% 1. Data structure of toolbox with added field:
+% Data.Spikes.DataCorrectedSpikePositions with adjusted spikepositions and
+% Data.Spikes.SpikeChannel to save the corresponding spike channel indices
+% used for adjustments
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 %% First assign a unique channel from 1 to 64 to each channel based on x and y coordinate
 
 Data.Spikes.DataCorrectedSpikePositions = Data.Spikes.SpikePositions;

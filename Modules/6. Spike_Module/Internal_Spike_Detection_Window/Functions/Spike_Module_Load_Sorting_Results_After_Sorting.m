@@ -1,5 +1,18 @@
 function Spike_Module_Load_Sorting_Results_After_Sorting(app,Sorter,Path)
 
+%________________________________________________________________________________________
+%% Function to autoload spike sorting results after sorting was succesfully finished
+
+% Inputs:
+% 1 app: Spike Detection and Sorting window app object
+% 2. Sorter: string, name of the sorter for which results should be loaded,
+% either "Mountainsort 5" OR "SpykingCircus 2" or "Kilosort 4" OR "WaveClus 3"
+% 3. Path: string , Recording path with SpikeInterface or Kilosort folders
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if ~strcmp(Sorter,"WaveClus 3")
 
     if strcmp(Sorter,"Mountainsort 5")
@@ -57,18 +70,6 @@ if ~strcmp(Sorter,"WaveClus 3")
     %     [app.Mainapp.Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(app.Mainapp.Data,"No",Path,KilosortScalingFactor);
     % end
     
-    app.Mainapp.UIAxes.NextPlot = "replace"; 
-    plot(app.Mainapp.UIAxes,0,0);
-    app.Mainapp.UIAxes.NextPlot = "add"; 
-    app.Mainapp.UIAxes_2.NextPlot = "replace"; 
-    plot(app.Mainapp.UIAxes_2,0,0);
-    app.Mainapp.UIAxes_2.NextPlot = "add"; 
-    
-    %Take care of potentially changed backgroundcolor
-    app.Mainapp.UIAxes.Color = app.Mainapp.PlotAppearance.MainWindow.Data.Color.MainBackground;
-    app.Mainapp.UIAxes_2.Color = app.Mainapp.PlotAppearance.MainWindow.Data.Color.TimeBackground;
-    app.Mainapp.UIAxes.FontSize = app.Mainapp.PlotAppearance.MainWindow.Data.MainFontSize;
-    app.Mainapp.UIAxes_2.FontSize = app.Mainapp.PlotAppearance.MainWindow.Data.TimeFontSize;
     
     if ~isfield(app.Mainapp.Data,'Events')
         if strcmp(app.Mainapp.PlotEvents,"Events")
@@ -107,22 +108,14 @@ if ~strcmp(Sorter,"WaveClus 3")
             app.Mainapp.DropDown_2.Value = 'Non';
         end
     end
-    
-    if strcmp(app.Mainapp.Plotspikes,"Spikes")
-        SpikeHandles = findobj(app.Mainapp.UIAxes, 'Type', 'line', 'Tag', 'Spikes');
-        if ~isempty(SpikeHandles)
-            delete(SpikeHandles(:));
-        end
-        app.Mainapp.Plotspikes = "No";
-    end
-    
+        
     Utility_Show_Info_Loaded_Data(app.Mainapp);
     
     if strcmp(SaveFilter,"Yes")
         [app.Mainapp] = Organize_Initialize_GUI (app.Mainapp,"Preprocessing",app.Mainapp.Data,[],[],[],[],[]);
     end
     
-    Organize_Prepare_Plot_and_Extract_GUI_Info(app.Mainapp,1,"Initial","SpikeExtraction",app.Mainapp.PlotEvents,app.Mainapp.Plotspikes);
+    Organize_Reset_Main_Plot(app.Mainapp,0,0,1,0,0);
 
 else
 

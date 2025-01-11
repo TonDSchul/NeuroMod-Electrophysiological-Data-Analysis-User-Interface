@@ -1,4 +1,4 @@
-function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,STDThreshold,DepthFilter,Tolerance, ArtefactDepth, TimeOffSetFilter, TimeOffset)
+function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,STDThreshold,DepthFilter,Tolerance, ArtefactDepth, TimeOffSetFilter, TimeOffset, executableFolder)
 %________________________________________________________________________________________
 
 %% Function to extract Data.Spikes from preprocessed (high pass filtered) data using thresholding
@@ -17,6 +17,10 @@ function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,
 % 6. Tolerance: Tolerance of vertical spike artefacts in samples as double. For example 3 means: spike time +/- 3 samples to the left and right over specified depth are counted as artefacts 
 % 7. ArtefactDepth: Depth over which same spike times have to occur to count
 % as a artefact, in um and as double
+% 8. TimeOffSetFilter: double, either 1 OR 0, 1 if Filter spikes in same
+% waveforms should be execited
+% 9. TimeOffset: double, waveform time (in seconds) around each spike to detect other
+% spikes within
 
 % Output: 
 % 1. Data structure with added field 'Spikes' (Data.Spikes), called
@@ -191,12 +195,30 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
             %% Add X Position of spikes
             if Uniquex == 2
                 if mod(nchannel,2) == 0 % even
-                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes))+str2double(Data.Info.ProbeInfo.HorOffset),zeros(1,length(SpikeTimes))+nchannel];
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1)+str2double(Data.Info.ProbeInfo.HorOffset),zeros(length(SpikeTimes),1)+nchannel];
                 else % odd
-                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
                 end
             elseif Uniquex == 1
-                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
+            elseif Uniquex == 4
+                NumChannel = size(Data.Preprocessed,1);
+                AllChannel1 = 1:4:NumChannel;
+                AllChannel2 = 3:4:NumChannel;
+                AllChannel3 = 2:4:NumChannel;
+                AllChannel4 = 4:4:NumChannel;
+                
+                if sum(nchannel==AllChannel1)>0
+                    XPosition = zeros(length(SpikeTimes),1);
+                elseif sum(nchannel==AllChannel2)>0
+                    XPosition = zeros(length(SpikeTimes),1)+str2double(Data.Info.ProbeInfo.OffSetRowsDistance);
+                elseif sum(nchannel==AllChannel3)>0
+                    XPosition = zeros(length(SpikeTimes),1)+Data.Info.ChannelSpacing;
+                elseif sum(nchannel==AllChannel4)>0
+                    XPosition = zeros(length(SpikeTimes),1)+(Data.Info.ChannelSpacing+str2double(Data.Info.ProbeInfo.OffSetRowsDistance));
+                end
+
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;XPosition,zeros(length(SpikeTimes),1)+nchannel];
             end
 
         end  
@@ -295,12 +317,30 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
             %% Add X Position of spikes
             if Uniquex == 2
                 if mod(nchannel,2) == 0 % even
-                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes))+str2double(Data.Info.ProbeInfo.HorOffset),zeros(1,length(SpikeTimes))+nchannel];
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1)+str2double(Data.Info.ProbeInfo.HorOffset),zeros(length(SpikeTimes),1)+nchannel];
                 else % odd
-                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+                    Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
                 end
             elseif Uniquex == 1
-                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(1,length(SpikeTimes)),zeros(1,length(SpikeTimes))+nchannel];
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
+            elseif Uniquex == 4
+                NumChannel = size(Data.Preprocessed,1);
+                AllChannel1 = 1:4:NumChannel;
+                AllChannel2 = 3:4:NumChannel;
+                AllChannel3 = 2:4:NumChannel;
+                AllChannel4 = 4:4:NumChannel;
+                
+                if sum(nchannel==AllChannel1)>0
+                    XPosition = zeros(length(SpikeTimes),1);
+                elseif sum(nchannel==AllChannel2)>0
+                    XPosition = zeros(length(SpikeTimes),1)+str2double(Data.Info.ProbeInfo.OffSetRowsDistance);
+                elseif sum(nchannel==AllChannel3)>0
+                    XPosition = zeros(length(SpikeTimes),1)+Data.Info.ChannelSpacing;
+                elseif sum(nchannel==AllChannel4)>0
+                    XPosition = zeros(length(SpikeTimes),1)+(Data.Info.ChannelSpacing+str2double(Data.Info.ProbeInfo.OffSetRowsDistance));
+                end
+
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;XPosition,zeros(length(SpikeTimes),1)+nchannel];
             end
         end
             
@@ -402,6 +442,24 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
                 end
             elseif Uniquex == 1
                 Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
+            elseif Uniquex == 4
+                NumChannel = size(Data.Preprocessed,1);
+                AllChannel1 = 1:4:NumChannel;
+                AllChannel2 = 3:4:NumChannel;
+                AllChannel3 = 2:4:NumChannel;
+                AllChannel4 = 4:4:NumChannel;
+                
+                if sum(nchannel==AllChannel1)>0
+                    XPosition = zeros(length(SpikeTimes),1);
+                elseif sum(nchannel==AllChannel2)>0
+                    XPosition = zeros(length(SpikeTimes),1)+str2double(Data.Info.ProbeInfo.OffSetRowsDistance);
+                elseif sum(nchannel==AllChannel3)>0
+                    XPosition = zeros(length(SpikeTimes),1)+Data.Info.ChannelSpacing;
+                elseif sum(nchannel==AllChannel4)>0
+                    XPosition = zeros(length(SpikeTimes),1)+(Data.Info.ChannelSpacing+str2double(Data.Info.ProbeInfo.OffSetRowsDistance));
+                end
+
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;XPosition,zeros(length(SpikeTimes),1)+nchannel];
             end
 
         end
@@ -432,6 +490,10 @@ Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
 Data.Spikes.ChannelMap = 1:size(Data.Preprocessed,1);
 Data.Spikes.ChannelMap = Data.Spikes.ChannelMap';
 
+tempactchannel{1} = Data.Info.ProbeInfo.ActiveChannel;
+% Create proper channelmap
+[Data.Spikes.ChannelPosition(:,1),Data.Spikes.ChannelPosition(:,2),Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+
 %% Filter Spike Data if selected
 ToKeep = [];
 if DepthFilter == true
@@ -442,6 +504,7 @@ end
 Data.Info.SpikeDetectionThreshold = Threshold;
 Data.Info.SpikeDetectionNrStd = STDThreshold;
 Data.Info.SpikeType = 'Internal';
+Data.Info.Sorter = 'Non';
 
 %% Lastly extract Waveforms
 % Extract Waveforms

@@ -57,6 +57,8 @@ end
 %% Loop over all three plots
 for nplots = 1:length(Units)
     
+    legendEntries = {}; % Cell array to store legend entries
+    LegendHandles = [];
     if isempty(Units{nplots})
         continue;
     end
@@ -88,7 +90,10 @@ for nplots = 1:length(Units)
                 
                 for i = 1:size(TempWaves,1)
                     NrUnitPlots = NrUnitPlots+1;
-                    line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:), 'Tag', 'Waveforms','LineWidth',0.01);
+                    h = line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:), 'Tag', 'Waveforms','LineWidth',0.01);
+                    if i==1
+                        LegendHandles = [LegendHandles,h];
+                    end
                 end
             else
                 
@@ -96,8 +101,14 @@ for nplots = 1:length(Units)
                     NrUnitPlots = NrUnitPlots+1;
                     if length(Waveformhandles)>= NrUnitPlots % enough plot handles
                         set(Waveformhandles(NrUnitPlots),'XData',Time,'YData',TempWaves(i,:),'Color',colorMatrix(nindividualunits,:),'LineWidth',0.01, 'Tag', 'Waveforms');
+                        if i==1
+                            LegendHandles = [LegendHandles,Waveformhandles(NrUnitPlots)];
+                        end
                     elseif length(Waveformhandles) < NrUnitPlots % enough plot handles
-                        line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:),'LineWidth',0.01, 'Tag', 'Waveforms')
+                        h = line(Figurename,Time,TempWaves(i,:),'Color',colorMatrix(nindividualunits,:),'LineWidth',0.01, 'Tag', 'Waveforms');
+                        if i==1
+                            LegendHandles = [LegendHandles,h];
+                        end
                     end
                 end
 
@@ -132,9 +143,15 @@ for nplots = 1:length(Units)
 
             CurrentPlotData.UnitAnalyisWaveformsXTicks{nplots,nindividualunits} = Figurename.XTickLabel;
 
+            legendEntries{end + 1} = [strcat("Unit ",num2str(Units{nplots}(nindividualunits)))];
+
+            % Waveformhandles = findobj(Figurename, 'Tag', 'Waveforms');
+            % legendEntries = legend(Figurename,Waveformhandles(1),strcat("Unit ",num2str(Units{nplots}(nindividualunits))));
+
         end
     end % individual units
     
+    legend(Figurename, LegendHandles, legendEntries);
     Waveformhandles = findobj(Figurename, 'Tag', 'Waveforms');
     MeanWaveformhandles = findobj(Figurename, 'Tag', 'MeanWaveforms');
 
@@ -145,7 +162,7 @@ for nplots = 1:length(Units)
     if length(MeanWaveformhandles)>NrMeanPlots
         delete(MeanWaveformhandles(NrMeanPlots+1:end));
     end
-
+    
     drawnow;
 
 end % 3 plots

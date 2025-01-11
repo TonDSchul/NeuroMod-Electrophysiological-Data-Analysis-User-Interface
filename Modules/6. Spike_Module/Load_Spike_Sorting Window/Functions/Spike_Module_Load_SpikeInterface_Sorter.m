@@ -1,6 +1,28 @@
 function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,CurrentSorter)
 
-%% only spikingcircus2 and mountainsort5 tested
+%________________________________________________________________________________________
+
+%% Function to load .npy and .mat files SpikeInterface ouputs for Mountainsort 5, Spykingcircus 2 and Kilosort 4
+
+% Note: NPY files are read using the respective readNPY function from the Open Ephys Analysis Tools from Github. 
+
+% Input:
+% 1. Data = structure containing all data. After loading, field Data.Spikes is added with
+% several subfields. Those include most importantly a vector for SpikeTimes, SpikePositions,
+% SpikeAmplitudes and SpikeCluster. Therefore, to plot/access specific spikes, logical
+% indexing can be used.
+% 2. SelectedFolder: char, folder location containing spike results
+% 4. CurrentSorter: char, name of the sorter to load, used for
+% Data.Info.Sorter, either 'Mountainsort5' or 'Spykingcircus2' or 'SpikeInterface Kilosort'
+
+% Output:
+% 1. Data structure of toolbox with added field: Data.Spikes, called
+% using app.Data.Spikes in GUI
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 
 %% First detect KS version -- only 3 has rez.mat file and params.py
 [stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);

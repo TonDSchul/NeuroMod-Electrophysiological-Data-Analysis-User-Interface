@@ -1,5 +1,34 @@
 function [Path,CurrentSorter,AmplitudeScalingFactorEditField,InfoText] = Spike_Module_Determine_Sorters_Available(Data,SorterFolders,ManualSelection,ChangedSelectedSorter)
 
+%________________________________________________________________________________________
+
+%% Function to determine (automatically) which sorter outputs are available folder specified in SorterFolders
+
+% Note: order of folder locations in SorterFolders is relevant!
+% 
+% Input:
+% 1. Data = structure containing all data. 
+% 2. SorterFolders: string array with each indicie containing a path to
+% search spike sorting data in. First indicie is path to external Kilosort 4 GUI, second indicie is Kilosort3, third is Mpuntainsort 5, then
+% SpykingCircus 2 and Kilpsort 4 from SpikeInterface as last -- when
+% autosearch: path = recording_path/Kilosort or recording_path/SpikeInterface with their respective sunfolders
+% 3. ManualSelection: NOT USED ANYMORE! double, either 1 or 0 to indicate whether input paths
+% come from autodetection (recording path/Kilosort) or where manually
+% selcted (auto adds subfolder extensions like /Kilosort/kilosort4)
+% 4. ChangedSelectedSorter: NOT USED ANYMORE! double, either 1,2,3,4 or 5. Each number stands
+% for a sorter thas was selected. This is used to search for just a single
+% sorter (when the user selects a different folder in the GUI) to indicate
+% which is searche for; 1 = external KS3 and 4; 2 = MS5; 3 = SC2; 4 = KS4
+% SpikeInterface; 5=Waveclus
+
+% Output:
+% 1. Data structure of toolbox with added field: Data.Spikes, called
+% using app.Data.Spikes in GUI
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 InfoText = [];
             
 Sorter = [];
@@ -150,16 +179,17 @@ else % If manual Folderselection
         % Filter files with .npy extension
         npyFiles = stringArray(endsWith(stringArray, '.npy'));
 
-        if ChangedSelectedSorter == 1
+        if ChangedSelectedSorter == 1 % external Kilsoort guis (kilosort 3 and 4)
             if ~isempty(npyFiles)
                 CurrentSorter = [];
                 if sum(contains(stringArray,"cluster_KSLabel.tsv"))>0
-                    SorterFolders(1) = strcat(Data.Info.Data_Path,"\Kilosort\kilosort4");
                     if sum(contains(stringArray,"rez.mat"))>0
+                        SorterFolders(1) = strcat(Data.Info.Data_Path,"\Kilosort\kilosort3");
                         CurrentSorter = "Kilosort3"; 
                         SorterNames = "External Kilosort GUI"; 
                         InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];
                     else
+                        SorterFolders(1) = strcat(Data.Info.Data_Path,"\Kilosort\kilosort4");
                         CurrentSorter = "Kilosort4"; 
                         SorterNames = "External Kilosort GUI"; 
                         InfoText = [strcat(".npy output files for sorter(s) ",SorterNames," found.");"";InfoText;""; "Folder contents are:"; stringArray];

@@ -186,7 +186,7 @@ if ExecuteInGUI == 1
         if strcmp(ClustertoshowDropDown.Value,"All") || strcmp(ClustertoshowDropDown.Value,"Non")
             ClustertoshowDropDown.Value = '1';
             PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value);
-            msgbox("Warning: Template from Max Amplitude Channel only available for specific units. Unit Seelction was autoadjusted to the first one.")
+            msgbox("Warning: Template from Max Amplitude Channel only available for specific units. Unit Selection was autoadjusted to the first one.")
         end
     end
     
@@ -197,7 +197,7 @@ if ExecuteInGUI == 1
         if strcmp(ClustertoshowDropDown.Value,"All") || strcmp(ClustertoshowDropDown.Value,"Non")
             ClustertoshowDropDown.Value = '1';
             PlotInfo.Units(1) = str2double(ClustertoshowDropDown.Value);
-            msgbox("Warning: Template from Max Amplitude Channel only available for specific units. Unit Seelction was autoadjusted to the first one.")
+            msgbox("Warning: Template from Max Amplitude Channel only available for specific units. Unit Selection was autoadjusted to the first one.")
         end
     end
     

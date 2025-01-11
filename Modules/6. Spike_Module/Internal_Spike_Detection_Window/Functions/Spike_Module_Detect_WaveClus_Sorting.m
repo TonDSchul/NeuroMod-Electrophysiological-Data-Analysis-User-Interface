@@ -1,4 +1,22 @@
 function app = Spike_Module_Detect_WaveClus_Sorting(app,Path,Manual)
+
+%________________________________________________________________________________________
+%% Function to check waveclus sorting results are found within the Path specified
+
+% Inputs:
+% 1. app: Spike detection and sorting window object
+% 2. Path: string ,Path to check for waveclus cluster results
+% 3. Manual: double or logical, either 1 or 0, whether waveclus results
+% folder was specified manually or not in the GUI; 1 will add '\Wave_Clus'
+% to the end of the path
+
+% Outputs
+% 1. app: Spike detection and sorting window object 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 % Check if spike sorting was already saved
 % Check if the folder exists
 if Manual

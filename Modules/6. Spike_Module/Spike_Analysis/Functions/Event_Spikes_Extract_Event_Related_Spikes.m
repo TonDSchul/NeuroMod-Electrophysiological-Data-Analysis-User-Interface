@@ -100,8 +100,12 @@ for nevents = 1:size(Data.EventRelatedData,2)
         
         UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
 
-        if numel(UinquePos)>=2
-            Data.EventRelatedSpikes.DataCorrectedSpikePositions = [Data.EventRelatedSpikes.DataCorrectedSpikePositions;Data.Spikes.DataCorrectedSpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
+        if isfield(Data.Info,'Sorter')
+            if ~strcmp(Data.Info.Sorter,"Non")
+                if numel(UinquePos)>=2 
+                    Data.EventRelatedSpikes.DataCorrectedSpikePositions = [Data.EventRelatedSpikes.DataCorrectedSpikePositions;Data.Spikes.DataCorrectedSpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
+                end
+            end
         end
 
         if strcmp(SpikeType,"Kilosort") || isfield(Data.Info,'SpikeSorting')

@@ -141,6 +141,11 @@ if strcmp(TypeofAnalysis,"Spike Waveforms")
 end
 
 if strcmp(TypeofAnalysis,"Waveform Templates")
+    if ~strcmp(Data.Info.Sorter,"SpikeInterface Kilosort") && ~strcmp(Data.Info.Sorter,"External Kilosort GUI")
+        msgbox("Waveform Templates plots currently not available for sorters other than kilosort.")
+        return;
+    end
+
     if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         CurrentPlotData = Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units,rgbMatrix,CurrentPlotData);
     else
@@ -229,6 +234,11 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
 end
 
 if strcmp(TypeofAnalysis,"Template from Max Amplitude Channel")
+    if ~strcmp(Data.Info.Sorter,"SpikeInterface Kilosort") && ~strcmp(Data.Info.Sorter,"External Kilosort GUI")
+        msgbox("Template from Max Amplitude Channel plots currently not available for sorters other than kilosort.")
+        return;
+    end
+
     CurrentPlotData = Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,PlotInfo.Units,rgbMatrix,CurrentPlotData);
 end
 

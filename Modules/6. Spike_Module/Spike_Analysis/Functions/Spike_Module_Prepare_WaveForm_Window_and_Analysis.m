@@ -1,4 +1,4 @@
-function [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel,TimeLagField] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,U1,U2,U3,W1,W2,W3,F1,F2,F3,F4,F5,F6,F7,F8,F9,Type,SpikeWindow,TimeLagField)
+function [Units,Waves,Wavefigs,ISIfigs,AutoCfigs,SpikeTimes,SpikePositions,SpikeCluster,SpikeWaveforms,SpikeChannel,TimeLagField] = Spike_Module_Prepare_WaveForm_Window_and_Analysis(Data,U1,U2,W1,W2,F1,F2,F4,F5,F7,F8,Type,SpikeWindow,TimeLagField)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot the selected number of waveforms to plot
@@ -75,9 +75,9 @@ end
 MaxNrUnits = length(unique(Data.Spikes.SpikeCluster));
 %% Prepare inputs
 
-Units = cell(1,3);
+Units = cell(1,2);
 
-for nUnits = 1:3
+for nUnits = 1:2
     commaindex = eval(strcat("find(U",num2str(nUnits),"==',')"));
     Unitvalue = eval(strcat("U",num2str(nUnits)));
     % Unit 1
@@ -124,23 +124,13 @@ end % Unit loop
 %% Plot Waveforms
 Waves{1} = str2double(W1);
 Waves{2} = str2double(W2);
-Waves{3} = str2double(W3);
 
 if strcmp(Type,"U1") || strcmp(Type,"W1")
     Units{2} = [];
-    Units{3} = [];
     Waves{2} = [];
-    Waves{3} = [];
 elseif strcmp(Type,"U2") || strcmp(Type,"W2")
     Units{1} = [];
-    Units{3} = [];
     Waves{1} = [];
-    Waves{3} = [];
-elseif strcmp(Type,"U3") || strcmp(Type,"W3")
-    Units{1} = [];
-    Units{2} = [];
-    Waves{1} = [];
-    Waves{2} = [];
 elseif strcmp(Type,"BinSize")
 
 elseif strcmp(Type,"ISIMaxTime")
@@ -152,12 +142,9 @@ end
 %% Figures
 Wavefigs.UIAxes_1 = F1;
 Wavefigs.UIAxes_2 = F2;
-Wavefigs.UIAxes_3 = F3;
 
 ISIfigs.UIAxes_1 = F4;
 ISIfigs.UIAxes_2 = F5;
-ISIfigs.UIAxes_3 = F6;
 
 AutoCfigs.UIAxes_1 = F7;
 AutoCfigs.UIAxes_2 = F8;
-AutoCfigs.UIAxes_3 = F9;

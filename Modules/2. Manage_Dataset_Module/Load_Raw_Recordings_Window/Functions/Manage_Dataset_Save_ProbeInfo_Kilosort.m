@@ -1,4 +1,4 @@
-function Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,VerOffsetSecondRow,VerOffsetDistanceSecondRow,VerOffsetRows,HorOffset)
+function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,VerOffsetSecondRow,VerOffsetDistanceSecondRow,VerOffsetRows,HorOffset,SaveProbe)
 
 %________________________________________________________________________________________
 
@@ -20,7 +20,8 @@ function Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,ChannelRowsDrop
 % 8. VerOffsetRows: double, vertical offset between rows
 % 9. HorOffset: char, editfield value from probe window specifying
 % horizontal offset between channel rows.
-
+% 10. SaveProbe: double, 1 or 0 to specify whether map should be saved or
+% not
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -29,11 +30,17 @@ function Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,ChannelRowsDrop
 
 cd(strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
 
-if isempty(ActiveChannelField{1})
-    NrChannel = str2double(NrChannelEditField)*str2double(ChannelRowsDropDown);
-else
-    NrChannel = length(str2double(strsplit(ActiveChannelField{1})));
-end
+NrChannel = str2double(NrChannelEditField);
+
+% if ischar(ActiveChannelField{1})
+%     if isempty(ActiveChannelField{1})
+%         NrChannel = str2double(NrChannelEditField)*str2double(ChannelRowsDropDown);
+%     else
+%         NrChannel = length(str2double(strsplit(ActiveChannelField{1})));
+%     end
+% else
+%     NrChannel = length(ActiveChannelField{1});
+% end
 
 %% 1 Channel Row
 if str2double(ChannelRowsDropDown) == 1
@@ -43,7 +50,11 @@ if str2double(ChannelRowsDropDown) == 1
     if isempty(ActiveChannelField{1})
         connected = true(size(chanMap,1),size(chanMap,2));
     else
-        activeChannels = str2double(strsplit(ActiveChannelField{1},','));
+        if ischar(ActiveChannelField{1})
+            activeChannels = str2double(strsplit(ActiveChannelField{1},','));
+        else
+            activeChannels = ActiveChannelField{1};
+        end
         connected = false(size(chanMap,1),size(chanMap,2));
         connected(activeChannels) = true;
     end
@@ -76,7 +87,11 @@ if str2double(ChannelRowsDropDown) == 2
     if isempty(ActiveChannelField{1})
         connected = true(size(chanMap,1),size(chanMap,2));
     else
-        activeChannels = str2double(strsplit(ActiveChannelField{1},','));
+        if ischar(ActiveChannelField{1})
+            activeChannels = str2double(strsplit(ActiveChannelField{1},','));
+        else
+            activeChannels = ActiveChannelField{1};
+        end
         connected = false(size(chanMap,1),size(chanMap,2));
         connected(activeChannels) = true;
     end
@@ -126,17 +141,19 @@ if str2double(ChannelRowsDropDown) == 2
 
 end
 
-% Prompt user for file save location and name
-[file, path] = uiputfile('*.mat', 'Save as');
-
-if isequal(file,0) || isequal(path,0)
-    disp('User canceled the operation.');
-    return;
+if SaveProbe
+    % Prompt user for file save location and name
+    [file, path] = uiputfile('*.mat', 'Save as');
+    
+    if isequal(file,0) || isequal(path,0)
+        disp('User canceled the operation.');
+        return;
+    end
+    
+    % Construct the full file path
+    filepath = fullfile(path, file);
+    % Save the variables to the .mat file
+    save(filepath, 'chanMap', 'chanMap0ind', 'connected', 'kcoords', 'xcoords', 'ycoords');
+    stringtoshow = ['Kilosort channel map saved to: ' filepath];
+    msgbox(stringtoshow);
 end
-
-% Construct the full file path
-filepath = fullfile(path, file);
-% Save the variables to the .mat file
-save(filepath, 'chanMap', 'chanMap0ind', 'connected', 'kcoords', 'xcoords', 'ycoords');
-stringtoshow = ['Kilosort channel map saved to: ' filepath];
-msgbox(stringtoshow);

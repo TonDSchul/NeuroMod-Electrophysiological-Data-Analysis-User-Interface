@@ -2,14 +2,14 @@
 
 <img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
 
-Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from linear single shank probe designs with arbitrary geometry. 
-It seamlessly integrates established toolboxes such as Kilosort and Fieldtrip, to bring together a wide range of analyses methods and support for various data formats in a code free user interface.
+Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
+It seamlessly integrates established toolboxes such as Kilosort, Open Ephys Tools, Fieldtrip and SpikeInterface for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between matlab and python packages.
 
 The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance while still having full control over the analysis.
 
 Since the requirements for analysis and visualization can be wastly different and should be editable, the modular design philosophy of the user interface enables you to easily integrate your own analysis module into the GUI. All you have to do is to open the Matlab App Designer and copy a few lines of code from the manual, giving real time access to the whole dataset. When your app window is ready, it can be activated with a few clicks in the GUI, integrating it into the rest of the analysis ecosystem. 
-Lastly an autorun functionality can be used to apply all analysis and visulatzation methods available in the GUI to multiple recordings in a folder and save analysis plots and results independent of the GUI.   
+Lastly an autorun functionality can be used to automatically apply all analysis and visulatzation methods available in the GUI to multiple recordings in a folder and save analysis plots and results independent of the GUI.   
 
 As a result of this design, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings with your own pipeline. 
 
@@ -24,6 +24,8 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
   - [Overview of Required MATLAB Toolboxes](#overview-of-required-matlab-toolboxes)
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
+
+  - [How to Install SpikeInterface Packages to use in Neuromod](#how-to-install-spikeInterface-packages-to-use-in-neuromod)
  
   - [General Remarks](#general-remarks)
     
@@ -38,20 +40,21 @@ As a result of this design, Neuromod is not only ideal for teaching and evaluati
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 probes as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx files.
+The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 probes as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
 (Open Ephys GUI recordings were tested with the National Instruments PXIe-1083 chassis and Neuropixel basestations acquisition board, all Intan recordings were tested with the Intan USB Interface Board)
 
-In addition to channel data, the GUI can also extract event data from all recording formats mentioned (e.g., TTL signals to the recording system), enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
-Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components.
+Besides the continous data stream, event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analyzed, enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
+Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components as well as event related spike analysis.
 
-Since the supported recording systems are used with a wide range of probes designs, a fully interactive probe design and probe view window enable to set arbitrary probe designs while always having an overview and full control over which channel are used to analyse your data. Even Neuropixel probe design and hundreds of recording channels arbitarrily distributed over the whole shank can be analysed without loosing sight over which brain area the currently viewed data stems from.
+Since the supported recording systems are used with a wide range of probes designs, a fully interactive probe design and probe view window enables to set arbitrary probe designs while always having an overview and full control over which channel are used for the analysis. Even Neuropixel probe designs with hundreds of recording channels almost freely distributed over the whole shank can be analysed without loosing oversight.
 
 <img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
 
-Additionally, the toolbox fully supports Kilosort 3 and 4, allowing users to save recording data for Kilosort, create channel maps, and load Kilosort result files for interactive spike data (and unit analysis) visualization within the GUI.
-If Kilosort can’t be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3 (which does not has to be installed). Since every analysis is shown and editable in a seperate window, spike and lfp analysis results can be easily compared and correlated. 
+Lastly, the toolbox fully supports Kilosort, Mountainsort 5 and SpykingCircus 2 spike sorting. This includes saving the dataset and probe desgin for external use in one of the sorting packages with your own code/the respective GUI provided with it, as well as automatic spike sorting using SpikeInterface in the Matlab GUI. You just have to install the respective python packages (see below for instructions) and everything else is taken care of for you in the NeuroMod Matlab GUI, while still having full control over sorting parameters. In any case, spike sorting results from these sorters can be loaded for further analysis (see below for details).
+NOTE: Loading sorting results is supported for Kilosort versions 3 and 4, while the automatic sorting via SpikeInterface is only available for Kilosort version 4.
+If these sorters cant be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3 (which does not has to be installed). Since every analysis is shown and editable in a seperate window, spike and LFP analysis results can be easily compared and correlated. 
 
-__NOTE:__ Currently only Kilosort 3 and Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
+__NOTE:__ Currently only external (SpikeInterface independent) Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
 ```python
 conda activate kilosort
 ```
@@ -62,10 +65,6 @@ python -m pip install "kilosort[gui]"==4.0.8
 For a guide how to installed Kilosort 4 and for more information visit:
 
 https://github.com/MouseLand/Kilosort
-
-To download Kilsort 3 visit: 
-
-https://github.com/MouseLand/Kilosort/releases/tag/v3.0.2
 
 More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
 
@@ -85,7 +84,7 @@ Neuromod_Toolbox_GUI
 
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in the corresponding folder of the toolbox. Following along the descriptions in the window that opens, specify the folder and channelspacing or read the manual to learn what to do. In most cases, if you click on something or do something that is not supported or does not work (i.e. loading without specifying a channelspacing or selecting a folder without a supported recording file), you will get a message what the issue is.
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in Path_to_GUI/Recording Data/Example Data. Select a folder containing your recording and specify your probe design. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is.
 
 > ### **Overview of required Matlab toolboxes**
 
@@ -153,6 +152,12 @@ Check out the **Open Ephys Matlab Tools**:
 
 https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
 
+Spike sorting with Mountainsort 5, SpykingCircus 2 and Kilosort 4 in the GUI is implemented via a costume python script that uses the SpikeInterface library. 
+
+Check out the **SpikeInterface**: 
+
+https://github.com/SpikeInterface/spikeinterface
+
 Spike Sorting for internally detected spikes (with thresholding) is done using the Wave_clus 3 Toolbox from Github.
 
 Check out the **Wave_clus 3 Toolbox**: 
@@ -167,10 +172,55 @@ https://github.com/cortex-lab/spikes
 
 - Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
 
+> ### **How to Install SpikeInterface Packages to Use in Neuromod**
+
+First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to always with admin rights. Next create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands:
+```python
+pip install "spikeinterface[full]"
+pip install --upgrade mountainsort5
+python -m pip install kilosort[gui]
+pip install spyking-circus
+pip install Hdbscan
+pip install sortingviewp
+pip install spikeinterface[widgets]
+pip install matplotlib
+pip install matplotlib ipympl ipywidgets
+pip install PySide6 ephyviewer
+conda install pyqt=5
+pip install ephyviewer
+pip install pyvips
+pip install psutil
+pip install scipy
+pip install numba
+pip install pyuac
+pip install pypiwin32
+```
+You also need to install Visual Studios C++. To use Kilosort 4 GPU support, you might need to enter the following commmands (see https://github.com/MouseLand/Kilosort): 
+```python
+pip uninstall torch
+conda install pytorch pytorch-cuda=11.8 -c pytorch -c nvidia
+```
+
+To load sorting results from SpikeInterface spike sorting that you create with your own code or the respective package GUI's OUTSIDE of Neuromod, you need to save the results as .npy files with the export_to_phy function (like the native Kilosort output) and you additionally need to save a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface: 
+```python
+compute_dict = {
+        .......
+        'spike_locations':{},
+        ......
+    }
+analyzer.compute(compute_dict)
+ext_SpikeLocations = Analyzer.get_extension("spike_locations")
+SpikePositions = ext_SpikeLocations.get_data()
+savemat('YourFolder', mdic)
+export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=False)
+```
+
+If you install Kilosort in your SpikeInterface environment and the error occurs: invalid literal for int() with base 10: 'KMeans is known to have a memory leak on Windows with MKL', follow these instructions to change your environmental variables in windows: https://stackoverflow.com/questions/69596239/how-to-avoid-memory-leak-when-dealing-with-kmeans-for-example-in-this-code-i-am
+
 > ### **General Remarks**
 
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
-- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\5. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
+- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\6. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
 - If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
   

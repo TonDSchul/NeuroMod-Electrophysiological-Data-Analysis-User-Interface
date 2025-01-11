@@ -109,11 +109,11 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
     else
         if strcmp(app.Data.Info.SpikeType,'Kilosort') || strcmp(app.Data.Info.SpikeType,'SpikeInterface')
             if isfield(app.Data.Spikes,"Waveforms")
-                app.UnitAnalysis = Continous_Waveform_Analysis_Window(app,"ContinousWindow");
+                app.UnitAnalysis = Continous_Unit_Analysis_Window(app,"ContinousWindow");
             end
         elseif strcmp(app.Data.Info.SpikeType,'Internal')
             if isfield(app.Data.Info,'SpikeSorting')
-                app.UnitAnalysis = Continous_Waveform_Analysis_Window(app,"ContinousWindow");
+                app.UnitAnalysis = Continous_Unit_Analysis_Window(app,"ContinousWindow");
             else
                 msgbox("No Spike Sorting Data found for Internal Spike Analysis.");
             end

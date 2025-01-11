@@ -35,7 +35,10 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Create_Spike_Sorting","Load_from_SpikeSorting","Continous_Spike_Analysis","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Preprocess_Continous_Data","Extract_Event_Related_Data","Event_Analysis_ERP","Event_Analysis_CSD"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Continous_Unit_Analysis"];
+
+
+%AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Create_Spike_Sorting","Load_from_SpikeSorting","Continous_Spike_Analysis","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Preprocess_Continous_Data","Extract_Event_Related_Data","Event_Analysis_ERP","Event_Analysis_CSD"];
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
@@ -163,11 +166,9 @@ AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram = "20";
 
 AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot1 = '20';
 AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot2 = '20';
-AutorunConfig.ContinousUnitAnalysis.NumberWaveformsPlot3 = '20';
 
 AutorunConfig.ContinousUnitAnalysis.UnitsPlot1 = '1,2,3';
 AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
-AutorunConfig.ContinousUnitAnalysis.UnitsPlot3 = '5,6,8';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4. Event Data Module

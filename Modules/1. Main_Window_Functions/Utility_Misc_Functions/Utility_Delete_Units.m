@@ -37,6 +37,10 @@ if sum(SpikeIndiciesToDelete)>0
     Data.Spikes.SpikeChannel(SpikeIndiciesToDelete)= [];
     Data.Spikes.Waveforms(SpikeIndiciesToDelete,:)= [];
     Data.Spikes.SpikeAmps(SpikeIndiciesToDelete)= [];
+    
+    if isfield(Data.Spikes,'DataCorrectedSpikePositions')
+        Data.Spikes.DataCorrectedSpikePositions(SpikeIndiciesToDelete)= [];
+    end
 
     % When spike cluster 10 deleted, cluster afterwards have to be
     % substarcted by 1 to ensure continoues spike cluster indicies
@@ -46,8 +50,10 @@ if sum(SpikeIndiciesToDelete)>0
     
     %% The following only applies to Kilosort
     if isfield(Data.Spikes,'SpikeTemplates')
-        if ~isempty(Data.Spikes.SpikeTemplates)
-            Data.Spikes.SpikeTemplates(SpikeIndiciesToDelete) = [];
+        if strcmp(Data.Info.Sorter,"SpikeInterface Kilosort") || strcmp(Data.Info.Sorter,"External Kilosort GUI")
+            if ~isempty(Data.Spikes.SpikeTemplates)
+                Data.Spikes.SpikeTemplates(SpikeIndiciesToDelete) = [];
+            end
         end
     end
 

@@ -16,6 +16,7 @@ function [Data,SaveFilter] = Spike_Module_Internal_Spike_Sorting(Data,SpikeSorti
 % 3. WhatToDo: string, either "Clustering" to perform new spike sorting OR
 % "Loading" to only load spike cluserting results (actually the string doesnt matter, spike sorting results have to be loaded in any case. Only determines if wave clus 3 is executed)
 % 4. ClusterType: string, either "AllChannelTogether" OR "IndividualChannel"
+% 5. CurrentSorter: string, currently only "Waveclus" (sets the Info.Sorter value)
 
 % Output: 
 % 1. Data structure with added field 'Spikes' (Data.Spikes); Now

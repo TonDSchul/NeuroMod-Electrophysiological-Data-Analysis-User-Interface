@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor)
+function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor,KSVersion)
 
 %________________________________________________________________________________________
 
@@ -23,6 +23,8 @@ function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,Select
 % 4. ScalingFactor: single value as double specfying the scalingfactor used
 % to transform raw data to int. This is used to compute real amplitude values of
 % spikes from kilosort
+% 5. KSVersion: string, either "Kilosort 4 external GUI" or "Kilosort 3
+% external GUI" to set which version should be loaded
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -31,6 +33,10 @@ function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,Select
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
+
+if nargin<5
+    KSVersion = "Kilosort 4 external GUI";
+end
 
 %% Check for existing spike data
 SaveFilter = "No";
@@ -105,13 +111,17 @@ end
 [stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
 KSversion = [];
 
-foundrez = find(stringArray == "rez.mat");
-foundparams = find(stringArray == "params.py");
-
-if isempty(foundrez) || isempty(foundparams)
+if strcmp(KSVersion,"Kilosort 4 external GUI")
     KSversion = 4;
 else
     KSversion = 3;
+
+    foundrez = find(stringArray == "rez.mat");
+    foundparams = find(stringArray == "params.py");
+    if isempty(foundrez) || isempty(foundparams)
+        msgbox("Could not find rez.mat output file from kilosort. Returning");
+        return;
+    end
 end
 
 if isempty(KSversion)

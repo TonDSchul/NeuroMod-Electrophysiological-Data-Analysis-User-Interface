@@ -1,5 +1,25 @@
 function [ParameterStructure,Text] = Spike_Module_ShowSpikeSortingSettings(Sorter,ParameterStructure,ParameterPresent)
 
+%________________________________________________________________________________________
+%% Function to save and set the standard parameter struture for available sorters as well as converting them into a text to show in the GUI
+% Standard parameter came from SpikeInterface, last updated 08.01.2025
+
+% Inputs:
+% 1. Sorter: string, name of the sorter to output settings for, either
+% "Mountainsort 5" OR "SpykingCircus 2" OR "Kilosort 4"
+% 2. ParameterStructure: stucture holding sufields for different sorters
+% 3. ParameterPresent: string, only "ParameterNOTPresent" when parameter
+% were not set yet and should be created. Some other string to only convert
+% to text
+
+% Outputs
+% 1. ParameterStructure: Current structure holding spikesorting parameter
+% 2. Text: char, holding all structure data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 Text = [];
 
 if strcmp(Sorter,"Mountainsort 5")  

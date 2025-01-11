@@ -43,7 +43,7 @@ if strcmp(EventWindow,"EventWindow")
     %% Manage Basline Normalization Time Window of event related spike windows
     app.BaselineWindowStartStopinsEditField.Enable = "on";
     app.TimeWindowSpiketriggredLFPEditField.Enable = "on";
-    app.BaselineWindowStartStopinsEditField.Value = strcat(num2str(-0.002),',',num2str(0.1)); 
+    app.BaselineWindowStartStopinsEditField.Value = strcat(num2str(-0.002),',',num2str(0)); 
 
     % Standard Settings
     app.SpikeBinSettings.depth_bin_size = app.Mainapp.Data.Info.ChannelSpacing; %20; % Depth bin size
@@ -59,7 +59,7 @@ if strcmp(EventWindow,"EventWindow")
         [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Internal",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings,app.Mainapp.ActiveChannel);
     end
     
-    app.BaselineWindowStartStopinsEditField.Value = strcat(num2str(-PlotInfo.TimearoundEvent(1)),',',num2str(0.1)); 
+    app.BaselineWindowStartStopinsEditField.Value = strcat(num2str(-PlotInfo.TimearoundEvent(1)),',',num2str(0)); 
 
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         [~,SpikeTimes,~,~,SpikeCluster,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings,app.Mainapp.ActiveChannel);
@@ -84,12 +84,14 @@ if strcmp(EventWindow,"Non")
         texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
     else
-        if strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
-            texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
-            strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
-        else
-            texttoshow = strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));
-        end
+        %if isfield(app.Mainapp.Data.Info,'Sorter')
+            if strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
+                texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));...
+                strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
+            else
+                texttoshow = strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.Spikes.SpikeTimes)));
+            end
+        %end
     end
 else
     %% Manage TextField
