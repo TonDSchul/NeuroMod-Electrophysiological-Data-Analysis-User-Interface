@@ -6,26 +6,29 @@ ______________________________________________
 This Module contains app windows and functions for:
 1. Internal spike detection using thresholding. 
 2. Apply or load spike sorting of this internal spike detection with the Wave_Clus 3 MATLAB Toolbox from https://github.com/csn-le/wave_clus.
-3. Save Raw data for Kilosort and load Kilosort results.
+3. Save raw or preprocessed GUI data for Kilosort and/or SpikeInterface.
 4. All spike analysis functions and windows (also for event spike analysis). 
 
-Internal spike detection and Kilosort spike data are mutually exclusive - you can only have one at a time. The representation in the Data.Spikes field are the same for Kilosort and internal spikes (same field names, same variable dimensions...). Kilosort and internal spike analysis (for event and continuous data) have different app windows - this is a left over from earlier versions and will be addressed in future by only having a single window.
+Internal spike detection Kilosort and SpikeInterface spike data are mutually exclusive - you can only have one at a time. The representation in the Data.Spikes field are the same for Kilosort, SpikeInterface and internal spikes (same field names, same variable dimensions...). Kilosort and SpikeInterface have different app windows than internal spike analysis (for event and continuous data)  - this is a left over from earlier versions and will be addressed in future by only having a single window.
 Functions of Wave_Clus 3 remain unchanged. Only a compatiblity function is used called Spike_Module_Internal_Spike_Sorting.m
 
 IMPORTANT: 
-When loading Kilosort or Wave_Clus spike sorting data, always make sure, that the current dataset of the GUI is the same one as Kilosort or Wave_Clus analysed!
+
+SpikeInterface is run via compatibility functions in the 'SpikeInterface' module folder of the GUI.
+
+For smooth operation and one-click loading, saving and execution of spike sorting with any of the sorters, use the automatically created/suggested folders when saving for spike sorting.
 
 *****************
 
-All about Kilosort data save folder structure:
+All about Kilosort and SpikeInterface data save folder structure:
 
 Kilosort output data is loaded through a costume function calling the ksDriftmap.m function from the spike repository of the Cortex Lab on Github at https://github.com/cortex-lab/spikes. 
 
-When saving data for Kilosort, the 'Save for Kilosort' window will automatically suggest a folder and name to save it as. This is the standard file structure the autorun config functions use too and creates a .dat file in 'Path_to_your_recording/Kilosort'
+When saving data, the 'Save for Sorting' window will automatically suggest a folder and name to save it as. This is the standard file structure the autorun config functions use too and creates a .dat file in 'Path_to_your_recording/Kilosort' OR a .bin file in 'Path_to_your_recording/SpikeInterface'
 
-When you load this previously saved file into Kilosort and analyse the data, at standard, Kilosort output data is saved in a folder called kilosort4 within the Kilosort folder created before (Kilosort/kilosort4, or in other words in the folder of the file you loaded into Kilosort). Don't change this name and structure, otherwise auto detections of Kilosort data can have trouble and you have to select a folders manually and the workflow wont be as smooth.
+When you load this previously saved file into Kilosort and analyse the data, at standard, Kilosort output data is saved in a folder called kilosort4 within the Kilosort folder created before (Kilosort/kilosort4 or Kilosort/kilosort3, or in other words in the folder of the file you loaded into Kilosort). Don't change this name and structure, otherwise auto detections of Kilosort data can have trouble and you have to select a folders manually and the workflow wont be as smooth. SpikeInterface sorting results are autosaved in folder with the selected sorter as name, i.e 'Path_to_your_recording/SpikeInterface/Mountainsort 5' or SpykingCircus 2 or Kilosort 4.
  
-This means, all your Kilosort data is (supposed to be) saved in a file named Kilosort/kilosort4, that is located in the path of the recording you are analysing. When opening the 'Load from Kilosort' window, Kilosort data is auto searched in that location too, so you just have to click on load (and in the autorun functions, so you dont have to do any additional steps there). 
+This means, all your sorting data is (supposed to be) saved in a file named Kilosort/kilosort4 or SpikeInterface/Sorter, that is located in the path of the recording you are analysing. When opening the 'Load Spike Sorting' window, sorting data is auto searched in those locations too, so you just have to click on load (and in the autorun functions, so you dont have to do any additional steps there). Currently only loading of output .npy files is supported. For SpikeInterface they are obtained through the export_to_phy function.
 
 When saving data for Kilosort, along with the .dat file a .mat file is saved that holds the scaling factor used to convert your recoding data into int16 or int32 which Kilosort requires. When you load Kilosort output files, this scaling factor is auto searched in the directory 'Path_to_your_recording/Kilosort' and applied to your data, so that spikes amplitudes are converted back from integers into mV.
 
@@ -52,8 +55,7 @@ Each folder in this module contains one (or more) app windows for the respective
 Each analysis the user can pick in this module is made out of an app window that is called in the main window when the user clicks in RUN of this module. 
 NOTE: Some functionalities for running the app windows require utility and organize functions from the "1. Main_Window_Functions" folder.
 
-All necessary functions for preprocessing and computing/plotting the static spectrum are designed in a way that you can also use them outside the GUI. You just have to specify the parameters of the app window manually. See AutorunConfig variable in the Autonrun_Config files.
-The following workflows stem from the GUI. What is used outside the GUI is specified. The autorun functionality involves all aspects of the Toolbox possible and feasible to do outside of the GUI. Refer to those functions to get into more detail.
+All necessary functions are designed in a way that you can also use them outside the GUI. You just have to specify the parameters of the app window manually. See AutorunConfig variable in the Autonrun_Config files.
 
 TIP:
 All spike data is represented as a 1 x nspikes vector. There is a vector for spike time points, spike positions, spike cluster and so on.
@@ -67,6 +69,8 @@ Note: Some functions are used across all windows. They dont have continous or ev
 *****************
 
 Workflow for all spike extraction, spike loading or saving only contains a single function without necessary support functions.
+
+NOTE: ALL FUNCTIONS WITH KILOSORT IN THEIR NAME ALSO WORK FOR SPIKEINTERFACE -- just a legacy naming scheme that has to be fixed
 
 Workflow for Spike Analysis:
 
