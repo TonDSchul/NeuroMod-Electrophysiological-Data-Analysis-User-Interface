@@ -37,7 +37,6 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
 
 > ## **Data Formats and Capabilities**
 
-
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
 The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 probes as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
@@ -69,7 +68,10 @@ https://github.com/MouseLand/Kilosort
 More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
 
 > ## **How to use the GUI** ##
+-  The GUI is available as a standalone version, for which you dont need a valid Matlab license and just need to install a Matlab runtime version:
+  1. Download the Neuromod_Standalone folder. Install the Matlab runtime version by executing the file in the 'Matlab_Runtime_Install' folder. Once installed, you can start the GUI from the folder 'Neuromod_GUI'. 
 
+If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder strcuture and execute it within Matlab:
 - Download and unpack the toolbox files, then run them using a verified and installed version of MATLAB. You have several options to launch the GUI:
   1. Double-click the 'Neuromod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
   2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
@@ -78,6 +80,9 @@ More information about the other toolboxes used are available in the section 'Ov
 ```matlab
 Neuromod_Toolbox_GUI
 ```
+
+- The GUI was created using Matlab version 2024b. In order for Matlab to be able to execute python code for the SpikeInterface spike sorting via this GUI, make sure your Matlab version is compatible with your python version!
+  
 > ### **Get Started With Example Data**
 
 <img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="50%" />
