@@ -68,11 +68,10 @@ https://github.com/MouseLand/Kilosort
 More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
 
 > ## **How to use the GUI** ##
--  The GUI is available as a standalone version, for which you dont need a valid Matlab license and just need to install a Matlab runtime version:
+- The GUI is available as a standalone version, for which you dont need a valid Matlab license and just need to install a Matlab runtime version:
   1. Download the Neuromod_Standalone folder. Install the Matlab runtime version by executing the file in the 'Matlab_Runtime_Install' folder. Once installed, you can start the GUI from the folder 'Neuromod_GUI'. 
 
-If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder strcuture and execute it within Matlab:
-- Download and unpack the toolbox files, then run them using a verified and installed version of MATLAB. You have several options to launch the GUI:
+- If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder strcuture and execute it within Matlab, download and unpack the toolbox files, then run them using a verified and installed version of MATLAB. You have several options to launch the GUI:
   1. Double-click the 'Neuromod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
   2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
   3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window after navigating (cd) to the folder containing the GUI:
