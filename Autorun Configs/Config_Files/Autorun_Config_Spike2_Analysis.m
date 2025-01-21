@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_Spike2_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_TEMPLATE_Spike2_Analysis(DisplayOrder)
 
 %% Options What to Execute
 %______________________

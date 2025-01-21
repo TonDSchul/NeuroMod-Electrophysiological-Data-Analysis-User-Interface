@@ -53,7 +53,7 @@ if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes") % XData = Non - s
     DataToSave.Type =  PlottedData.Type;
     DataToSave.XData =  PlottedData.XData;
     DataToSave.YData =  PlottedData.YData;
-    if isfield(DataToSave,'CData')
+    if isfield(PlottedData,'CData')
         if ~isempty(PlottedData.CData)
             DataToSave.CData =  PlottedData.CData;
         end

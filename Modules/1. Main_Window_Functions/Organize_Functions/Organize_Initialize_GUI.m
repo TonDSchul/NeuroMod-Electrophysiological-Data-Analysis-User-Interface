@@ -42,10 +42,6 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 
 %________________________________________________________________________________________
 
-
-% cd into GUI Folder to make loading easier
-cd(app.executableFolder);
-
 if strcmp(Type,"Initial")
     
     warning('off', 'MATLAB:modes:mode:InvalidPropertySet'); % warning that buttondown on data plot doesnt work when the user selected an interactive option within the plot (like zoom or moving the plot)
@@ -237,8 +233,6 @@ elseif strcmp(Type,"Extracting")
 elseif strcmp(Type,"VariableDefinition")
 
     Organize_Delete_All_Open_Windows(app,1);
-    
-    cd(app.executableFolder);
 
     %% Define all important Variables based on extracted dat files
     if ~isa(Data, 'single')

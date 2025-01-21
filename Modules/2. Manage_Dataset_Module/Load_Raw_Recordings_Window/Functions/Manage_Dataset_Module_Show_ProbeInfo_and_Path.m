@@ -1,4 +1,4 @@
-function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder)
+function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder,PathToOpen)
 
 %________________________________________________________________________________________
 
@@ -8,10 +8,12 @@ function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Datas
 
 % Input:
 % 1. app: extract data window object
-% Load_Data_Window_Info: structure with info about selected folder and probe.
-% ProbeInfoOrFolder: string, specifies what to do when, either "ProbeInfo" OR
+% 2. Load_Data_Window_Info: structure with info about selected folder and probe.
+% 3. ProbeInfoOrFolder: string, specifies what to do when, either "ProbeInfo" OR
 % "FolderSelection" OR "AutorunFolderSelection", deoending on which info
 % the user changed
+% 4: PathToOpen: char, path to auto-open when windows file explorer is used
+% to get folder selection from user
 
 % Output: 
 % 1. Load_Data_Window_Info: same as input struvture
@@ -137,7 +139,7 @@ end
 if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"AutorunFolderSelection")
     
 
-    [Formatsfound,FolderContentsText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(app.ProbeInfoandPath);
+    [Formatsfound,FolderContentsText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(app.ProbeInfoandPath,PathToOpen);
 
     if SelectedFolder == 0
         FolderContentsText = strcat("No folder selected!");

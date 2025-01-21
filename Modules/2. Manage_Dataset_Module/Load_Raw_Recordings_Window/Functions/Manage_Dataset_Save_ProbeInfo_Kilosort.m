@@ -28,7 +28,7 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(exec
 
 %________________________________________________________________________________________
 
-cd(strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
+PathToSave = (strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
 
 NrChannel = str2double(NrChannelEditField);
 
@@ -143,8 +143,12 @@ end
 
 if SaveProbe
     % Prompt user for file save location and name
-    [file, path] = uiputfile('*.mat', 'Save as');
-    
+    if ~isfolder(PathToSave)
+        [file, path] = uiputfile('*.mat', 'Save as');
+    else
+        [file, path] = uiputfile(fullfile(PathToSave, '*.mat'), 'Save as');
+    end
+   
     if isequal(file,0) || isequal(path,0)
         disp('User canceled the operation.');
         return;

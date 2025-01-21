@@ -1,4 +1,4 @@
-function [Formatsfound,TextAreaText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(ProbeInfo)
+function [Formatsfound,TextAreaText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(ProbeInfo,PathToOpen)
 
 %________________________________________________________________________________________
 
@@ -22,6 +22,8 @@ function [Formatsfound,TextAreaText,ProbeInfoText,RecordingSystemDropDownItems,F
 
 % Input:
 % 1. ChannelOrder: To display channelorder in the textarea of the Extract_Data_Window app window
+% 2. PathToOpen: char, path to auto-open when windows file explorer is used
+% to get folder selection from user
 
 % Output: 
 % 1. Formatsfound: string array saving the format from AllFormats variable
@@ -63,7 +65,13 @@ stringArray = [];
 
 %% Get user selected folder and save as SelectedFolder
 % Prompt the user to select a folder
-SelectedFolder = uigetdir('Select a folder with your recording data');
+
+if isfolder(PathToOpen)
+    SelectedFolder = uigetdir(PathToOpen,'Select a folder with your recording data');
+else
+    SelectedFolder = uigetdir('Select a folder with your recording data');
+end
+
 if SelectedFolder == 0
     disp('No folder selected. Exiting.');
 

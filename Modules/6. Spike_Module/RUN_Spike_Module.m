@@ -12,8 +12,6 @@ if strcmp(ModuleFunctionName,"Spike Detection and Sorting")
     
 elseif strcmp(ModuleFunctionName,"Save for Spike Sorting")
     
-    cd(app.executableFolder);
-
     app.SaveforKilosortWindowWindow = Save_for_Spike_Sorting_Window(app);
     
 elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
@@ -25,8 +23,6 @@ elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
     if isfield(app.Data.Info,'CutEnd') 
         msgbox("Warning: End time of current dataset was cut. Please ensure, that spike sorting results are based on the same dataset");
     end
-
-    cd(app.executableFolder);
 
     app.LoadfromKilosortWindowWindow = Load_Spike_Sorting_Window(app);
            

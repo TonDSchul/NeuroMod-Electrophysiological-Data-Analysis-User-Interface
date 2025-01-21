@@ -43,8 +43,6 @@ if sum(Whattosave) == 0
     return;
 end
 
-cd(executablefolder);
-
 if Whattosave(1) == 0 && Whattosave(2) == 0
     msgbox("Warning: When not saving raw and/or preprocessed data, the file cannot be loaded in the Toolbox! Use the 'Manage Dataset Window' export function to export dataset components other then raw and preprocessed data! Returning.");
     return;
@@ -371,12 +369,18 @@ else
     end
 end
 
+PathToSave = (strcat(executablefolder,'\Recording Data\Saved GUI Data\'));
+
 if ~isempty(Data)
     if strcmp(Type,".mat")
-
+        
         if Autorun == "No" || Autorun == "SingleFolder"
-            % Prompt user for file save location and name
-            [file, path] = uiputfile('*.mat', 'Save as');
+
+            if ~isfolder(PathToSave)
+                [file, path] = uiputfile('*.mat', 'Save as');
+            else
+                [file, path] = uiputfile(fullfile(PathToSave, '*.mat'), 'Save as');
+            end
             
             if isequal(file,0) || isequal(path,0)
                 disp('User canceled the operation.');
@@ -407,8 +411,12 @@ if ~isempty(Data)
         int16Max = int16(2^15 - 1);
 
         if Autorun == "No" || Autorun == "SingleFolder"
-            [filename, filepath] = uiputfile('*.dat', 'Save File');
-                
+            if ~isfolder(PathToSave)
+                [filename, filepath] = uiputfile('*.dat', 'Save as');
+            else
+                [filename, filepath] = uiputfile(fullfile(PathToSave, '*.dat'), 'Save as');
+            end
+               
             if isequal(filename,0) || isequal(filepath,0)
                 disp('User canceled the operation.');
                 Error = 1;

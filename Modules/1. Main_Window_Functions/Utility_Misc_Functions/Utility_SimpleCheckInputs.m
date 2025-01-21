@@ -8,7 +8,7 @@ function [Corrected_Input] = Utility_SimpleCheckInputs(Input,Type,StandardValues
 
 % Input Arguments:
 % 1. Input: input to be checked as char. I diretly pass the app.Button.Value
-% 2. Type: string, options: "One" to chekc format of a single number, "Two"
+% 2. Type: string, options: "One" to check format of a single number, "Two"
 % for two numbers seperated by a comma
 % 3. StandardValues: char containing a value the original input gets
 % replaced by when the format is violated

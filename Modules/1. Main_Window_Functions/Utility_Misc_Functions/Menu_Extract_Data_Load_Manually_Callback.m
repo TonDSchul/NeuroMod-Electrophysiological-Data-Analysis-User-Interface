@@ -126,7 +126,7 @@ if strcmp(Window,"ProbeLayout")
         texttoshow(end-1:end) = [];
         app.ChannelOrderField.Value = texttoshow;
     else
-        app.ChannelOrderField.Value = [];
+        app.ChannelOrderField.Value = '';
     end
     %Active Channel
     if ~isempty(app.ProbeInfoandPath .ActiveChannel) && sum(isnan(app.ProbeInfoandPath .ActiveChannel))==0
@@ -135,7 +135,7 @@ if strcmp(Window,"ProbeLayout")
         texttoshow(end-1:end) = [];
         app.ActiveChannelField.Value = texttoshow;
     else
-        app.ActiveChannelField.Value = [];
+        app.ActiveChannelField.Value = '';
     end
 
     app.NrChannelEditField.Value = app.ProbeInfoandPath .NrChannel;

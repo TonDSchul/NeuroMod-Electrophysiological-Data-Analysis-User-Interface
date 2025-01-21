@@ -27,6 +27,10 @@ if strcmp(ModuleFunctionName,"Live Spike Rate")
     app.PSTHApp = Spike_Rate_Window(app);
     
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveSpikeRate");
+    
+    if ~isvalid(app.PSTHApp)
+        app.PSTHApp = [];
+    end
 
 elseif strcmp(ModuleFunctionName,"Live Power Estimate")
 

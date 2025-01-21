@@ -1,4 +1,4 @@
-function [AutorunConfig,NumIterations,LoadedData] = Execute_Autorun_Window_Check_Selected_Folder_and_Channel_Order(AutorunConfig,FunctionOrder)
+function [AutorunConfig,NumIterations,LoadedData] = Execute_Autorun_Window_Check_Selected_Folder_and_Channel_Order(AutorunConfig,FunctionOrder,PathToOpen)
 
 %________________________________________________________________________________________
 %% This function lets the user select a folder, check its contents and save it along with other variables 
@@ -18,7 +18,8 @@ function [AutorunConfig,NumIterations,LoadedData] = Execute_Autorun_Window_Check
 % 2. NumIterations: double, max number of folder and therefore iterations
 % found, when multiple folder are suppossed to be analyzed
 % 3. LoadedData: true if data is loaded, false if not (not loaded here!)
-
+% 4. PathToOpen: char, path that is opened in windows file explorer to
+% select a path
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
@@ -40,8 +41,12 @@ if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
 
     %% Ask for Folder
     % Prompt the user to select a folder
-    selected_folder = uigetdir;
-    
+    if isfolder(PathToOpen)
+        selected_folder = uigetdir(PathToOpen);
+    else
+        selected_folder = uigetdir;
+    end
+
     % Check if the user pressed the "Cancel" button
     if selected_folder == 0
         disp('User pressed cancel');
@@ -70,7 +75,11 @@ else
 
         %% Ask for Folder
         % Prompt the user to select a folder
-        selected_folder = uigetdir;
+        if isfolder(PathToOpen)
+            selected_folder = uigetdir(PathToOpen);
+        else
+            selected_folder = uigetdir;
+        end
         
         % Check if the user pressed the "Cancel" button
         if selected_folder == 0

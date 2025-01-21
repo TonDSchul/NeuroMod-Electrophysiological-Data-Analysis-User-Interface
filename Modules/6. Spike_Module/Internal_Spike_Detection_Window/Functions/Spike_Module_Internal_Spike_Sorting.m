@@ -91,8 +91,6 @@ if strcmp(WhatToDo,"Clustering")
         
         disp('Starting Spike Sorting.');
 
-        cd(SpikeSortingPath);
-
         close(h);
 
         %% Call wave clus
@@ -140,8 +138,6 @@ if strcmp(WhatToDo,"Clustering")
         disp('Spike Data succesfully saved for Sorting.');
         
         disp('Starting Spike Sorting.');
-
-        cd(SpikeSortingPath);
 
         %% Call wave clus
     

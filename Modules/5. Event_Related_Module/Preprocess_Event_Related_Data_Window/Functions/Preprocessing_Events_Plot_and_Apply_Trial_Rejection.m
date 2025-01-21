@@ -1,4 +1,4 @@
-function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject)
+function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject,EventsToPlot)
 
 %________________________________________________________________________________________
 %% Function to apply and plot event/trial rejection
@@ -22,6 +22,9 @@ function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plo
 % is done for all channel automatically
 % 7. TrialsToReject: char with trial selection of preprocessing window, as
 % char, i.e. '1,10' for events 1 to 10
+% 8. EventsToPlot: double vector, sets events to plot since plotting can slow down
+% everything considerably when having a lot of events. Format: [1,10] for
+% events 1 to 10 
 
 % Outputs: 
 % 1. EventRelatedData: nchannel x ntrials x ntime single matrix with modified event
@@ -101,7 +104,7 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
 
     Trialselectionfield = TrialsToReject; 
 
-    ERP = mean(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1);
+    ERP = mean(squeeze(EventRelatedData(str2double(ChannelSelection),EventsToPlot(1):EventsToPlot(2),:)),1);
 
     %% Plot Broadband
     hold(TopFigure, 'on' )
@@ -128,6 +131,8 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
     hold(TopFigure, 'off' )
 
     %% ERP
+    TrialstoPlot = EventsToPlot(1):EventsToPlot(2);
+
     TrialsHandle = findobj(BottomFigure, 'Tag', 'Trials');
     ERPHandle = findobj(BottomFigure, 'Tag', 'ERP');
     EventHandle = findobj(BottomFigure, 'Tag', 'Eventline');
@@ -140,8 +145,8 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
         delete(EventHandle(2:end));
         EventHandle = findobj(BottomFigure, 'Tag', 'Eventline');
     end
-    if length(TrialsHandle)>size(EventRelatedData,2)
-        delete(TrialsHandle(size(EventRelatedData,2)+1:end));
+    if length(TrialsHandle)>length(TrialstoPlot)
+        delete(TrialsHandle(length(TrialstoPlot)+1:end));
         TrialsHandle = findobj(BottomFigure, 'Tag', 'Trials');
     end
 
@@ -159,30 +164,30 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
         MeanERP = ERPHandle(1);
     end
     
-    for i = 1:size(EventRelatedData,2) % loop over trials
+    for i = 1:length(TrialstoPlot) % loop over trials
         if isempty(TrialsHandle)
-            h = line(BottomFigure,Time,squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),'LineWidth',.5,'Tag','Trials');
+            h = line(BottomFigure,Time,squeeze(EventRelatedData(str2double(ChannelSelection),TrialstoPlot,:)),'LineWidth',.5,'Tag','Trials');
             set(h,'color',[1 1 1]*.75);
         else
             if i<=length(TrialsHandle)
-                set(TrialsHandle(i), 'XData', Time, 'YData',squeeze(EventRelatedData(str2double(ChannelSelection),i,:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
+                set(TrialsHandle(i), 'XData', Time, 'YData',squeeze(EventRelatedData(str2double(ChannelSelection),TrialstoPlot(i),:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
                 h(1) = TrialsHandle(1);
             else
-                line(BottomFigure,Time,squeeze(EventRelatedData(str2double(ChannelSelection),i,:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
+                line(BottomFigure,Time,squeeze(EventRelatedData(str2double(ChannelSelection),TrialstoPlot(i),:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
             end
         end
     end
     
     % Bring Event Line to the front
+
     uistack(MeanERP, 'top');
     uistack(eventline, 'top');
 
     BottomFigure.FontSize = 11;
-    
     titlestring = strcat("ERP Channel ",OriginalChannelSelection);
     title(BottomFigure,titlestring);
     xlim(BottomFigure,[min(Time) max(Time)]);
-    ylim(BottomFigure,[min(min(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)))) max(max(squeeze(EventRelatedData(str2double(ChannelSelection),:,:))))]);
+    ylim(BottomFigure,[min(min(squeeze(EventRelatedData(str2double(ChannelSelection),TrialstoPlot,:)))) max(max(squeeze(EventRelatedData(str2double(ChannelSelection),TrialstoPlot,:))))]);
     xlabel(BottomFigure,'Time [s]');
     ylabel(BottomFigure,'Potential [mV]');
 
@@ -194,4 +199,5 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
     end
 
     hold(BottomFigure, 'off' );
+
 end

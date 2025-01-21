@@ -17,7 +17,7 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
 > 
 - [Data Formats and Capabilities](#data-formats-and-capabilities)
   
-- [How to use the GUI](#how-to-use-the-gui)
+- [How to install the GUI](#how-to-install-the-gui)
   
   - [Get Started With Example Data](#get-started-with-example-data)
   
@@ -25,18 +25,17 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
 
-  - [How to Install SpikeInterface Packages to use in Neuromod](#how-to-install-spikeInterface-packages-to-use-in-neuromod)
- 
+  - [How to Install SpikeInterface for Spike Sorting in Neuromod](#how-to-install-spikeinterface-for-spike-sorting-in-neuromod)
+
+  - [About Performance](#about-performance)
+
   - [General Remarks](#general-remarks)
-    
-  - [Autorun Functionality](#autorun-functionality) 
     
 - [Rules and Philosophy of the Toolbox](#rules-and-philosophy-of-the-toolbox)
   
 - [Disclaimer, License and Contact](#disclaimer-license-and-contact)
 
 > ## **Data Formats and Capabilities**
-
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
@@ -50,11 +49,12 @@ Since the supported recording systems are used with a wide range of probes desig
 
 <img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
 
-Lastly, the toolbox fully supports Kilosort, Mountainsort 5 and SpykingCircus 2 spike sorting. This includes saving the dataset and probe desgin for external use in one of the sorting packages with your own code/the respective GUI provided with it, as well as automatic spike sorting using SpikeInterface in the Matlab GUI. You just have to install the respective python packages (see below for instructions) and everything else is taken care of for you in the NeuroMod Matlab GUI, while still having full control over sorting parameters. In any case, spike sorting results from these sorters can be loaded for further analysis (see below for details).
-NOTE: Loading sorting results is supported for Kilosort versions 3 and 4, while the automatic sorting via SpikeInterface is only available for Kilosort version 4.
-If these sorters cant be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3 (which does not has to be installed). Since every analysis is shown and editable in a seperate window, spike and LFP analysis results can be easily compared and correlated. 
+Lastly, the toolbox fully supports Kilosort, Mountainsort 5 and SpykingCircus 2 spike sorting. This includes saving the dataset and probe desgin for external use in one of the sorting packages with your own code/the respective GUI provided with it, as well as automatic spike sorting using SpikeInterface in the Matlab GUI. You just have to install the respective python packages (see below for instructions) and everything else is taken care of for you in the NeuroMod Matlab GUI, while still having full control over sorting parameters. In any case, spike sorting results from these sorters can be loaded for further analysis (see below for details). If these sorters cant be used, the toolbox also offers spike detection using different thresholding methods as well as spike clustering using Wave_clus 3 (which does not has to be installed). Since every analysis is shown and editable in a seperate window, spike and LFP analysis results can be easily compared and correlated. 
 
-__NOTE:__ Currently only external (SpikeInterface independent) Kilosort 4 versions up to 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already install a newer version, install legacy version by typing in your anaconda promt: 
+**NOTE:** Loading sorting results is supported for Kilosort versions 3 and 4, while the automatic sorting via SpikeInterface is only available for Kilosort version 4.
+
+**NOTE:** Currently only external (SpikeInterface independent) Kilosort 4 versions up to version 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already installed a newer version, install legacy version by typing in your anaconda promt:
+
 ```python
 conda activate kilosort
 ```
@@ -68,9 +68,15 @@ https://github.com/MouseLand/Kilosort
 
 More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
 
-> ## **How to use the GUI** ##
+> ## **How to install the GUI** ##
 
-- Download and unpack the toolbox files, then run them using a verified and installed version of MATLAB. You have several options to launch the GUI:
+> **NOTE:** If you want to use the standalone app and install the supplied Matlab runtime version, it will ask you if you want to create a shortcut from the GUI to the Desktop. If you execute this shortcut, the GUI probably won't run !! This is because the execution folder of the application will be a temporary folder and not the downloaded GUI folder. Some required varaibles to start with will thererfore not be found at the expected locations. Always start from the application file in the 'Neuromod_GUI' folder!
+
+- The GUI is available as a standalone version, for which you dont need a valid Matlab license and just need to install a Matlab runtime version:
+  1. Download the Neuromod_Standalone folder. Install the Matlab runtime version by executing the file in the 'Matlab_Runtime_Install' folder.
+  2. Once installed, you can start the GUI from the folder 'Neuromod_GUI' by double clicking the 'Neuromod_Toolbox_GUI' application (to be able to modify and save files you might have to execute the application as an administrator. This partly dependends on were you save the GUI files).
+    
+- If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder structure, 'cd' into the directory within Matlab and launch the Neuromod_Toolbox_GUI.mlapp file. You have several options to launch the GUI:
   1. Double-click the 'Neuromod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
   2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
   3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window after navigating (cd) to the folder containing the GUI:
@@ -78,13 +84,18 @@ More information about the other toolboxes used are available in the section 'Ov
 ```matlab
 Neuromod_Toolbox_GUI
 ```
+
+- The GUI was created using Matlab version 2024b. In order for Matlab to be able to execute python code for the SpikeInterface spike sorting via this GUI, make sure your Matlab version is compatible with your python version!
+  
 > ### **Get Started With Example Data**
 
 <img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="50%" />
 
+In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
+
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in Path_to_GUI/Recording Data/Example Data. Select a folder containing your recording and specify your probe design. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is.
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in Path_to_GUI/Recording Data/Example Data. Select a folder containing your recording and specify your probe design. Some probe designs (also the ones for the example dataset) are already available to load using the menu on top of the window. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is.
 
 > ### **Overview of required Matlab toolboxes**
 
@@ -172,9 +183,10 @@ https://github.com/cortex-lab/spikes
 
 - Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
 
-> ### **How to Install SpikeInterface Packages to Use in Neuromod**
+> ### **How to Install SpikeInterface for Spike Sorting in Neuromod**
 
 First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to always with admin rights. Next create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands:
+
 ```python
 pip install "spikeinterface[full]"
 pip install --upgrade mountainsort5
@@ -195,13 +207,16 @@ pip install numba
 pip install pyuac
 pip install pypiwin32
 ```
+
 You also need to install Visual Studios C++. To use Kilosort 4 GPU support, you might need to enter the following commmands (see https://github.com/MouseLand/Kilosort): 
+
 ```python
 pip uninstall torch
 conda install pytorch pytorch-cuda=11.8 -c pytorch -c nvidia
 ```
 
 To load sorting results from SpikeInterface spike sorting that you create with your own code or the respective package GUI's OUTSIDE of Neuromod, you need to save the results as .npy files with the export_to_phy function (like the native Kilosort output) and you additionally need to save a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface: 
+
 ```python
 compute_dict = {
         .......
@@ -217,34 +232,38 @@ export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=F
 
 If you install Kilosort in your SpikeInterface environment and the error occurs: invalid literal for int() with base 10: 'KMeans is known to have a memory leak on Windows with MKL', follow these instructions to change your environmental variables in windows: https://stackoverflow.com/questions/69596239/how-to-avoid-memory-leak-when-dealing-with-kmeans-for-example-in-this-code-i-am
 
+> ### **About Performance**
+> 
+Everything was developed and tested with the following system: AM5 platform; CPU: AMD Ryzen 7 7800X3D, 32GB 4600Mhz DDR5 Ram, 1TB SSD, NVIDIA GeForce GTX 1660 and B650 AORUS ELITE AX mainboard. Since all relevant GUI information (raw and preprocessed data, spikes, event related data etc.) are saved in RAM, it is recommended to have at least 32GB of RAM. This allows to comfortably do everything with recordings lengths of up to 600 seconds and 32 channel. 
+
+The main window plot runs in 'Movie' mode with 1 seconds time range, 64 channel and 30000 Hz sample rate at 40-50 frames a second (without spike or event plots activated). If you have a comparable system but worse performance, check the Matlab graphics renderer by typing in the Matlab command window: info = rendererinfo. It should show something similar to:
+
+```python
+GraphicsRenderer: 'OpenGL Hardware'
+          Vendor: 'NVIDIA Corporation'
+         Version: '4.6.0 NVIDIA 560.94'
+  RendererDevice: 'NVIDIA GeForce GTX 1660/PCIe/SSE2'
+         Details: [1×1 struct]
+```
+
+When saving your dataset for later use in the GUI, raw and preprocessed is saved as a .dat file in binary format independent of the format of the original dataset. This saves not only memory, but also enables to load the raw and preprocessed dataset within seconds (given they are saved on a SSD)
+
 > ### **General Remarks**
 
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
 - First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\6. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
 - If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
-  
-> ### **Autorun Functionality**
-
-- If you have multiple recordings and want to apply a fixed analysis pipeline using the GUI, you can automate the process with the Autorun function. This feature eliminates the need to manually navigate the GUI for each recording. Instead, it automatically processes each recording, applying all the data extraction, processing, and analysis steps offered by the GUI while being independent from it. All visualizations and analysis specified are then saved automatically in the respective recording folder.
-- You can modify the specific processing steps and parameters using the configuration file located in GUI_Path\Autorun_Configs\Config_Files(do not edit!). However, there’s no need to navigate to this directory or make manual changes, as everything is managed through the 'Autorun Manager Window'. You can access this window from the menu in the top left corner of the GUI’s main window. Simply start the GUI and open the Autorun Manager—no additional steps are required.
-- In the Autorun Manager, you can select a configuration file to open directly within the GUI or in MATLAB for editing. To help you get started, a template configuration file is available for each recording system.
-- Once you are satisfied with the configuration file, select a folder containing your recording(s), specify your probe properties (channel spacing and optionally channel order) and start the pipeline. The pipeline will run through and give messages about the progress in the matlab command window.
-- For more information, see the documentation:
-  
-[NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
-
-- Or see the README file in each folder containing functions, summarizing all function headers.
-  
+    
 > ## **Rules and Philosophy of the Toolbox**
 > 
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
 - All relevant analysis and data parts are saved in a single structure with a limited and clear amount of fields that every window shares. Changes in one window are automatically available in another window.
 - All interactive parts like buttons, checkboxes and so on that are disabled (grey and cant be clicked on) can be activated by conducting the necessary analysis step before. For example, to enable to ‘Event Data’ checkbox on the right of the main window, you first have to extract events. 
 - If the user tries to do an analysis without proper preprocessing or enters a wrong format into any field requiring user input, values are either autocorrected and/or the user gets a message why the operation is not possible. The aim is to give an explanation of what to do when an error occurs, not only throw out an error nobody understands. 
-- In every window were you select a folder to load and some information about folder or data contents are shown, the folders were autosearched for the expected contents. If no expected contents were found, the user gets a message that nothing was found and has to select himself. This means that when you see information there, everything goes well. 
+- In every window that loads or saves some kind of data, these windows will first search autoset folders for information to show. I.e. when opening the 'Event Extraction' window, it will autosearch the recording path raw data was extracted from for files holding event data. The same holds true for spike sorting. When saving your dataset for spike sorting, a folder will automatically be suggested. If data is saved in this folder, all windows concerned with loading this kind of data are autosearching those locations, enabling on-click loads. Of course, there is always an option to manually select a folder too. 
 - All functions are designed in a way that they can be easily used outside of the user interface with just a few support functions, including all visualizations. This enables the Autorun functionality of the GUI, where you can apply all analysis and plots in a loop to several recordings.
 
 > ## **Disclaimer, License and Contact**
-This toolbox was created and is maintained by a single person as part of a PhD Project and Hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
-Feel free to contact me for tips and requests or pull a request/open an issue on Github. I try to get around all of them and provide guidance and help. 
+This toolbox was created and is maintained by a single person as part of a PhD project and hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
+Feel free to contact me for tips and requests or pull a request/open an issue on Github.

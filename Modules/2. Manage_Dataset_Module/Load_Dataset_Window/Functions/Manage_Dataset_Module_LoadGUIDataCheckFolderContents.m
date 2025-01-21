@@ -40,9 +40,6 @@ InfoFiletoLoad = [];
 DropDownMenuChar = {};
 DropDownMenu_2Char = {};
 
-% Go in GUI directory
-cd(executableFolder);
-
 if isempty(NewFolderSelection) % If folder no manually set by user 
     % Autoset folder which contents should be checked 
     SelectedFolder = [executableFolder,'\Recording Data\Saved GUI Data'];

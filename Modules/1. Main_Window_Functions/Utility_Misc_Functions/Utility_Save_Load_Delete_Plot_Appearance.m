@@ -50,7 +50,7 @@ elseif strcmp(Type,"Delete")
         delete(PlotAppearancePath);
         msgbox("Costum Plot Appearance succesfully deleted!");
     else
-        disp(['File ' fileName ' not found.']);
+        disp(['File PlotAppearance.mat not found. Was probably already deleted or not created yet']);
     end
 
 elseif strcmp(Type,"Load")
