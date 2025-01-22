@@ -399,4 +399,5 @@ else
     AmplitudeScalingFactorEditField = "";
 end
 
-InfoText = ["When you conducted spike sorting on your dataset either with Kilosort (with the Kilosort GUI) or Spikeinterface (with your own python script or using this GUI), you can load the results in this GUI for spike analysis. When you exported your dataset in the automatically created folder (and dont change output folder in Kilosort or Spikeinterface), results can be loaded with one click. Otherwise select the output folder manually.";"";InfoText];
+InfoText = ["When you conducted spike sorting on your dataset either with Kilosort (with the external Kilosort GUI yourself) or Spikeinterface (with your own python script or using this GUI), you can load the results in this GUI for spike analysis. When you exported your dataset in the automatically created folder (and dont change output folder in Kilosort or Spikeinterface), results can be loaded with one click. Otherwise manually select a folder containing the sorting output folder expected for the respective sorter (shown below).";"";InfoText];
+
