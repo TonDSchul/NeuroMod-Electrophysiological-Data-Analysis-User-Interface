@@ -53,12 +53,6 @@ Lastly, the toolbox fully supports Kilosort, Mountainsort 5 and SpykingCircus 2 
 
 **NOTE:** Loading sorting results is supported for Kilosort versions 3 and 4, while the automatic sorting via SpikeInterface is only available for Kilosort version 4.
 
-For a guide how to installed Kilosort 4 and for more information visit:
-
-https://github.com/MouseLand/Kilosort
-
-More information about the other toolboxes used are available in the section 'Overview of Other Toolboxes Used'.
-
 > ## **How to install the GUI** ##
 
 > **NOTE:** If you want to use the standalone app and install the supplied Matlab runtime version, it will ask you if you want to create a shortcut from the GUI to the Desktop. If you execute this shortcut, the GUI probably won't run !! This is because the execution folder of the application will be a temporary folder and not the downloaded GUI folder. Some required varaibles to start with will thererfore not be found at the expected locations. Always start from the application file in the 'Neuromod_GUI' folder!
