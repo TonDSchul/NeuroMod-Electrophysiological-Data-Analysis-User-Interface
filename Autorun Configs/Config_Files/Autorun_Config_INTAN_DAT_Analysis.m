@@ -52,7 +52,7 @@ AutorunConfig.DeleteFigureAfterSaving = "on";
 
 AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";
 AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
-AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD"
+AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD" to show image plots as 2D plots or as 3D plotsbbbbbbbbbbbbbbbbbb<<$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 AutorunConfig.AdditionalAmpFactor = []; % Additional signal amplification factor; empty for non, otherwise factor raw data gets multiplied with
 
 % When Autorun window is openend, just the above information are taken to populate

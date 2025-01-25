@@ -184,4 +184,40 @@ elseif strcmp(Type,"Manual")
             
     end
 
+elseif strcmp(Type,"MultipleRecordings")
+
+    [stringArray] = Utility_Extract_Contents_of_Folder(filepath);
+    % Use isfolder to check if each item is a folder
+    isFolder = arrayfun(@isfolder, filepath);
+    % Get the names of folders
+    folders = stringArray(isFolder);        
+    if ~isempty(folders)
+        if isscalar(folders)
+            disp(strcat("Just one folder (recording) found in selected folder. You might want to select a folder with multiple recording folder. Path: ",filepath))
+            app.CheckBox.Value = 0;
+            app.Label.FontColor = [1.00,0.00,0.00];
+            app.AutoSortingPathToBin = 0;
+            app.Label.Text = strcat("Manual-selection of ",num2str(length(folders))," folder " + ...
+            "NOT Succesfull");
+            app.SpikeSortinBinPath = [];
+        elseif length(folders) > 1
+            disp(strcat("Multiple recording folders found in directory ",filepath))
+            app.CheckBox.Value = 1;
+            app.Label.FontColor = [0.47,0.67,0.19];
+            app.AutoSortingPathToBin = 1;
+            app.Label.Text = strcat("Manual-selection of ",num2str(length(folders))," folder " + ...
+            "Succesfull");
+            
+            Sortothersthankilosort = 1;
+            app.SpikeSortinBinPath = filepath;
+        end
+    else
+        disp(strcat("No folder (recording) found in selected folder. You might want to select a folder with multiple recording folder. Path: ",filepath))
+        app.CheckBox.Value = 0;
+        app.Label.FontColor = [1.00,0.00,0.00];
+        app.AutoSortingPathToBin = 0;
+        app.Label.Text = strcat("Manual-selection of ",num2str(length(folders))," folder " + ...
+        "NOT Succesfull");
+        app.SpikeSortinBinPath = [];
+    end
 end

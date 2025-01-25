@@ -173,31 +173,30 @@ end
 
 %% Loop thtough filenames. If name matches with the below condition, file content is loaded
 for i = 1:length(fileNames)
-    if strcmp(fileNames{i}(1:end-4),'spike_clusters')
+    if strcmp(fileNames{i},'spike_clusters.npy')
         Data.Spikes.SpikeCluster = readNPY(fullfile(folderPath,fileNames{i}));
         Data.Spikes.SpikeCluster = double(Data.Spikes.SpikeCluster);
-    %elseif strcmp(fileNames{i}(1:end-4),'spike_times')
-    elseif strcmp(fileNames{i}(1:end-4),'spike_templates')
+    elseif strcmp(fileNames{i},'spike_templates.npy')
         Data.Spikes.SpikeTemplates = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'channel_map')
+    elseif strcmp(fileNames{i},'channel_map.npy')
         Data.Spikes.ChannelMap = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'channel_positions')
+    elseif strcmp(fileNames{i},'channel_positions.npy')
         Data.Spikes.ChannelPosition = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'spike_positions')
+    elseif strcmp(fileNames{i},'spike_positions.npy')
         if KSversion == 4
             Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
         end
-    elseif strcmp(fileNames{i}(1:end-4),'templates_ind')
+    elseif strcmp(fileNames{i},'templates_ind.npy')
         Data.Spikes.templates_ind = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'templates')
+    elseif strcmp(fileNames{i},'templates.npy')
         Data.Spikes.templates = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'spike_detection_templates')
+    elseif strcmp(fileNames{i},'spike_detection_templates.npy')
         Data.Spikes.spike_detection_templates = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'pc_features')
+    elseif strcmp(fileNames{i},'pc_features.npy')
         Data.Spikes.pc_features = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'pc_feature_ind')
+    elseif strcmp(fileNames{i},'pc_feature_ind.npy')
         Data.Spikes.pc_feature_ind = readNPY(fullfile(folderPath,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'kept_spikes')
+    elseif strcmp(fileNames{i},'kept_spikes.npy')
         Data.Spikes.kept_spikes = readNPY(fullfile(folderPath,fileNames{i}));
     end
 end

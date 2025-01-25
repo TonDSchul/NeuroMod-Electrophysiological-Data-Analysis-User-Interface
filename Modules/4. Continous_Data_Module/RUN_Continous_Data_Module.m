@@ -8,7 +8,7 @@ if strcmp(ModuleFunctionName,"Preprocessing")
 
     app.PreproWindow = Preprocessing_Window(app);
 
-     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"Preprocessing");
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"Preprocessing");
 
 elseif strcmp(ModuleFunctionName,"Static Spectrum Analysis")
 

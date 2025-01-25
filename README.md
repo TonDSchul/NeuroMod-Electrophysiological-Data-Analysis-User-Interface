@@ -53,15 +53,6 @@ Lastly, the toolbox fully supports Kilosort, Mountainsort 5 and SpykingCircus 2 
 
 **NOTE:** Loading sorting results is supported for Kilosort versions 3 and 4, while the automatic sorting via SpikeInterface is only available for Kilosort version 4.
 
-**NOTE:** Currently only external (SpikeInterface independent) Kilosort 4 versions up to version 4.0.8 are supported due to a bug in which the 'spike_positions.npy' Kilosort output file apparently doesnt contain the expected header. When you already installed a newer version, install legacy version by typing in your anaconda promt:
-
-```python
-conda activate kilosort
-```
-```python
-python -m pip install "kilosort[gui]"==4.0.8
-```
-
 For a guide how to installed Kilosort 4 and for more information visit:
 
 https://github.com/MouseLand/Kilosort
