@@ -31,10 +31,17 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sort
 
     print(file_path)
 
-    dtype = "float64"  # MATLAB's double corresponds to Python's float64
-    """  Load data using SpikeInterface """
-    recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
-                               num_channels=num_channels, dtype=dtype)
+    if Sorter in ['Kilosort 4']:
+        dtype = "int16"  # MATLAB's double corresponds to Python's float64
+        """  Load data using SpikeInterface """
+        recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
+                                   num_channels=num_channels, dtype=dtype)
+    else:
+        
+        dtype = "float64"  # MATLAB's double corresponds to Python's float64
+        """  Load data using SpikeInterface """
+        recording = si.read_binary(file_paths=file_path, sampling_frequency=sampling_frequency,
+                                   num_channels=num_channels, dtype=dtype)
         
     recording.annotate(is_filtered=False)
     
@@ -238,7 +245,8 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
     else:
         costume_KS4_params['skip_kilosort_preprocessing'] = False
         print("Prepro in KS4")
-        
+    
+    costume_KS4_params['use_binary_file'] = True
     print(costume_KS4_params)
     
     sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costume_KS4_params, recording=IntegerRecording,output_folder=Sorting_output_folder, remove_existing_folder=True)

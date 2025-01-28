@@ -116,17 +116,21 @@ def main(subfolders,file_path):
             Filename = subfolders[nIteration - 1]
             CompletePath = file_path+"/"+Filename+"/SpikeInterface"
         else:
-            print("Analyzing a single folder.")
-            CompletePath = subfolders;
+            if Sorter in ['Kilosort 4']:
+                CompletePath = subfolders[:subfolders.rfind("\\")] + "\\Kilosort"
+            else:
+                CompletePath = subfolders;
+            
+            print("Analyzing a single folder.")           
         
         print(IterMessage)
         print(CompletePath)
         
-        #if Sorter in ['Kilosort 4']:
-        #    BinFiles = get_dat_files(CompletePath)
-        #else:
-            
-        BinFiles = get_bin_files(CompletePath)
+        if Sorter in ['Kilosort 4']:
+            BinFiles = get_dat_files(CompletePath)
+            print(BinFiles)
+        else:            
+            BinFiles = get_bin_files(CompletePath)
             
         PathToLoad = CompletePath+"/"+BinFiles[0]
         
