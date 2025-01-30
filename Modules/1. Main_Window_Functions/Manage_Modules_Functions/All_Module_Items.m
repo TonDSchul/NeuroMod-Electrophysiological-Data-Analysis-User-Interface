@@ -46,9 +46,23 @@ Module{5}.Title = 'Example Module - this could be yours!';
 Module{5}.Function = 'RUN_Example';
 Module{5}.Items{1} = 'Example App 1';
 
+%% Test
+Module{6}.Title = 'Test';
+Module{6}.Function = 'RUN_Continous_Data_Module';
+Module{6}.Items{1} = 'Preprocessing';
+%% end of definition (do not edit this!)
 %%__________________________________________________________________________________________
 
 %% Determine which Modules the user selected in the manage modules window
 % only if ChangeApp = 1
 
 [app,Module] = Change_Modules_Determine_Selected_Modules(app,ChangeApp,ModuleOrder,Module);
+
+
+
+
+
+
+
+
+

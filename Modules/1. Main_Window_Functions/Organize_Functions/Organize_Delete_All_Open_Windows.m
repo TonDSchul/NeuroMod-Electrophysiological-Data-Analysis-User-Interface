@@ -144,99 +144,99 @@ catch
     app.EventLFPSSP = [];
 end
 %% Prepro Artefact rejection
-if isfield(app,'PreproArtefactRejection')
+try
     if ~isempty(app.PreproArtefactRejection)
         delete(app.PreproArtefactRejection);
         app.PreproArtefactRejection = [];
     end
-else
+catch
     app.PreproArtefactRejection = [];
 end
 
 %% Event Extraction Window
-if isfield(app,'EventExtractionWindow')
+try
     if ~isempty(app.EventExtractionWindow)
         delete(app.EventExtractionWindow);
         app.EventExtractionWindow = [];
     end
-else
+catch
     app.EventExtractionWindow = [];
 end
 %% Spike Extraction Window
-if isfield(app,'SpikeExtractionWindow')
+try
     if ~isempty(app.SpikeExtractionWindow)
         delete(app.SpikeExtractionWindow);
         app.SpikeExtractionWindow = [];
     end
-else
+catch
     app.SpikeExtractionWindow = [];
 end
 %% Load from Kilosort Window
-if isfield(app,'LoadfromKilosortWindowWindow')
+try
     if ~isempty(app.LoadfromKilosortWindowWindow)
         delete(app.LoadfromKilosortWindowWindow);
         app.LoadfromKilosortWindowWindow = [];
     end
-else
+catch
     app.LoadfromKilosortWindowWindow = [];
 end
 %% SaveforKilsort Window
-if isfield(app,'SaveforKilosortWindowWindow')
+try
     if ~isempty(app.SaveforKilosortWindowWindow)
         delete(app.SaveforKilosortWindowWindow);
         app.SaveforKilosortWindowWindow = [];
     end
-else
+catch
     app.SaveforKilosortWindowWindow = [];
 end
 
 %% Prepro Events Main Window Window 
-if isfield(app,'PreproEventsMainWindow')
+try
     if ~isempty(app.PreproEventsMainWindow)
         delete(app.PreproEventsMainWindow);
         app.PreproEventsMainWindow = [];
     end
-else
+catch
     app.PreproEventsMainWindow = [];
 end
 
 %% Event LFP analysis main window
-if isfield(app,'LFPEventsMainWindow')
+try
     if ~isempty(app.LFPEventsMainWindow)
         delete(app.LFPEventsMainWindow);
         app.LFPEventsMainWindow = [];
     end
-else
+catch
     app.LFPEventsMainWindow = [];
 end
 
 %% Save Data Window
-if isfield(app,'SaveDataWindow')
+try
     if ~isempty(app.SaveDataWindow)
         delete(app.SaveDataWindow);
         app.SaveDataWindow = [];
     end
-else
+catch
     app.SaveDataWindow = [];
 end
 
 %% Autorun Window
-if isfield(app,'AutorunWindow')
+try
     if ~isempty(app.AutorunWindow)
         delete(app.AutorunWindow);
         app.AutorunWindow = [];
     end
-else
+catch
     app.AutorunWindow = [];
 end
 
 %% Manage Modules window
-if isfield(app,'ManageModulesWindow')
+try
     if ~isempty(app.ManageModulesWindow)
         delete(app.ManageModulesWindow);
         app.ManageModulesWindow = [];
     end
-else
+catch
     app.ManageModulesWindow = [];
 end
 
