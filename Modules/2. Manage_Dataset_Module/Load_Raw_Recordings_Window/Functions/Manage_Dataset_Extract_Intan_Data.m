@@ -27,6 +27,7 @@ function [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Int
 %________________________________________________________________________________________
 
 Data = [];
+num_data_points = [];
 texttoshow = "Extracting Data for Intan Recording System";
 
 %% Extract .dat Files
@@ -100,46 +101,71 @@ if strcmp(Filetype,"Intan .rhd")
         
     texttoshow = [texttoshow;"Extracting Single RHD File. See progress in Matlab command window"];
     TextArea = texttoshow;
-
+    
+    % Get number of rhd files in folder and paths
+    
     [RhdFilePaths] = LoadIntanRHDFiles(SelectedFolder);
+    numFiles = length(RhdFilePaths);
 
-    LastDashIndex = find(RhdFilePaths == '\');
-    if ~isempty(LastDashIndex)
-        RHDPath = RhdFilePaths(1:LastDashIndex(end));
-        RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);
+    if numFiles == 1
+        Numiters = 1;
+        disp("Just one RHD file found.")
     else
-        msgbox("Error: No .rhd file found in selected folder!")
-        Data = [];
-        HeaderInfo = [];
-        SampleRate = [];
-        RecordingType = [];
-        return;
+        Numiters = numFiles;
+        warning("Multiple RHD files found in folder. They are concatonated together assuming they are part of the same recording.")
+    end
+
+    %% Loop over rhd files
+    for nrhdfiles = 1:Numiters
+        
+        CurrentFolder = convertStringsToChars(RhdFilePaths(nrhdfiles));
+        LastDashIndex = find(CurrentFolder == '\');
+
+        if ~isempty(LastDashIndex)
+            RHDPath = CurrentFolder(1:LastDashIndex(end));
+            RHDFiles = CurrentFolder(LastDashIndex(end)+1:end);
+        else
+            msgbox("Error: No .rhd file found in selected folder!")
+            Data = [];
+            HeaderInfo = [];
+            SampleRate = [];
+            RecordingType = [];
+            return;
+        end
+        
+        [amplifier_data,~,frequency_parameters,~,~,t_dig,~,~] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea);
+        
+        if Numiters == 1
+            if size(amplifier_data,1) == 0 || isempty(amplifier_data)
+                msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
+                TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
+                Data = [];
+                HeaderInfo = [];
+                SampleRate = [];
+                RecordingType = [];
+                return;
+            end
+        end
+        % Extract General Information about Digital Inputs
+        
+        if Numiters == 1
+            Data = single(amplifier_data);
+            num_data_points = size(Data,2);
+        else
+            Data = [Data,single(amplifier_data)];
+        end
+    
+        % Extract General Information about Digital Inputs
+        HeaderInfo = frequency_parameters;
+        
+        % Create Time vector based on nr of samples and sampling rate
+        SampleRate = HeaderInfo.amplifier_sample_rate;
+
     end
     
-    [amplifier_data,~,frequency_parameters,~,~,t_dig,~,~] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea);
-    
-    if size(amplifier_data,1) == 0 || isempty(amplifier_data)
-        msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
-        TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
-        Data = [];
-        HeaderInfo = [];
-        SampleRate = [];
-        RecordingType = [];
-        return;
+    if Numiters > 1
+        num_data_points = size(Data,2);
     end
-    
-    % Extract General Information about Digital Inputs
-    
-    Data = single(amplifier_data);
-
-    num_data_points = size(Data,2);
-            
-    % Extract General Information about Digital Inputs
-    HeaderInfo = frequency_parameters;
-    
-    % Create Time vector based on nr of samples and sampling rate
-    SampleRate = HeaderInfo.amplifier_sample_rate;
-
 end
 
 if strcmp(Filetype,"Intan .dat")

@@ -41,7 +41,7 @@ function findFilesInFolder(folder)
             findFilesInFolder(fullfile(folder, item.name));
         elseif endsWith(item.name, '.rhd')
             filePath = fullfile(folder, item.name);
-            RhdFilePaths = filePath;
+            RhdFilePaths = [RhdFilePaths,convertCharsToStrings(filePath)];
         end
     end
 end
