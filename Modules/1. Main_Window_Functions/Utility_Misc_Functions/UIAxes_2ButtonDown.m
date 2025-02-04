@@ -16,7 +16,7 @@ function [app] = UIAxes_2ButtonDown(app, event)
 % Department systemsphysiology of learning, LIN Magdeburg.
 
 %________________________________________________________________________________________
-
+tic
 % Get the clicked point coordinates
 clickPoint = event.IntersectionPoint;
 
@@ -38,4 +38,4 @@ end
 %input 3: Update time plot = Subsequent; Replot whole time plot = "Initial"
 %input 4: Whether Data plot should run in a movie or not
 Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Subsequent","MainWindowTimeManipulation",app.PlotEvents,app.Plotspikes);
-        
+toc

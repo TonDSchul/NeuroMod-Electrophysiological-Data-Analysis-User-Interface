@@ -127,12 +127,13 @@ for RecordingIndex = 1:NumRecordingIndex
     disp(strcat("Num of Processor ID's: ",num2str(length(streamNames))));
 
     Neuropixrecording = []; % == 1 if LFP data selected, == 2 if AP data selected
+    NP2Recording = 0;
+    
     %% if neuropixels probes
     if contains(streamNames{1},"Neuropix") || contains(streamNames{1},"PXI")
         disp("Neuropixels recording detected")
         APIndex = [];
         LFPIndex = [];
-        NP2Recording = 0;
         for i = 1:length(streamNames)
             if contains(streamNames{i},"AP")
                 APIndex = i;

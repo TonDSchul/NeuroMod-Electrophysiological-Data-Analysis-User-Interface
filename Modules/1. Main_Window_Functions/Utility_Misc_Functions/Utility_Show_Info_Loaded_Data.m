@@ -36,11 +36,13 @@ for i = 1:numel(fields)
             EventRelatedfields = fieldnames(fieldValue);
             for k = 1:numel(EventRelatedfields)
                 fieldName = EventRelatedfields{k};
-                fieldValue = app.Data.Info.EventRelatedPreprocessing.(fieldName);
-                if isnumeric(fieldValue)
-                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
-                else
-                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                if isfield(app.Data.Info.EventRelatedPreprocessing,fieldName)
+                    fieldValue = app.Data.Info.EventRelatedPreprocessing.(fieldName);
+                    if isnumeric(fieldValue)
+                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+                    else
+                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                    end
                 end
             end
         end
@@ -49,16 +51,18 @@ for i = 1:numel(fields)
             ProbeInfofields = fieldnames(fieldValue);
             for k = 1:numel(ProbeInfofields)
                 fieldName = ProbeInfofields{k};
-                fieldValue = app.Data.Info.ProbeInfo.(fieldName);
-                if isnumeric(fieldValue)
-                    if length(fieldValue)<32
-                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+                if isfield(app.Data.Info.ProbeInfo,fieldName)
+                    fieldValue = app.Data.Info.ProbeInfo.(fieldName);
+                    if isnumeric(fieldValue)
+                        if length(fieldValue)<32
+                            infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+                        else
+                            infoString = sprintf('%s%s: %s\n', infoString, fieldName, strcat(num2str(length(fieldValue)),' Elements'));
+                        end
                     else
-                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, strcat(num2str(length(fieldValue)),' Elements'));
-                    end
-                else
-                    if ~iscell(fieldValue)
-                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                        if ~iscell(fieldValue)
+                            infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                        end
                     end
                 end
             end
@@ -72,7 +76,9 @@ for i = 1:numel(fields)
             infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
         end
     else
-        infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+        if isnumeric(fieldValue)
+            infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+        end
     end
 end
 
