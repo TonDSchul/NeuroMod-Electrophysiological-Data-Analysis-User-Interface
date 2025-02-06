@@ -217,6 +217,10 @@ export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=F
 
 If you install Kilosort in your SpikeInterface environment and the error occurs: invalid literal for int() with base 10: 'KMeans is known to have a memory leak on Windows with MKL', follow these instructions to change your environmental variables in windows: https://stackoverflow.com/questions/69596239/how-to-avoid-memory-leak-when-dealing-with-kmeans-for-example-in-this-code-i-am
 
+**IMPORTANT:** When you execute SpikeInterface for the first time within Neuromod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administartor! Otherwise the command window won't open, but sorting is conducted anyway! You just don't know when it finishes.
+
+After selecting it, a command window opens showing you the progress of the SpikeInterface sorting. If this command window should not open, right clickt the python.exe you selected, click properties change the 'compatibility' settings under properties of the python exe and 
+
 > ### **About Performance**
 > 
 Everything was developed and tested with the following system: AM5 platform; CPU: AMD Ryzen 7 7800X3D, 32GB 4600Mhz DDR5 Ram, 1TB SSD, NVIDIA GeForce GTX 1660 and B650 AORUS ELITE AX mainboard. Since all relevant GUI information (raw and preprocessed data, spikes, event related data etc.) are saved in RAM, it is recommended to have at least 32GB of RAM. This allows to comfortably do everything with recordings lengths of up to 600 seconds and 32 channel. 
