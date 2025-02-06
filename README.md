@@ -170,7 +170,7 @@ https://github.com/cortex-lab/spikes
 
 > ### **How to Install SpikeInterface for Spike Sorting in Neuromod**
 
-First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to always with admin rights. Next create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands:
+First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to open always with admin rights. **Optional:** Create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands: (Alternatively just copy paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment)
 
 ```python
 pip install "spikeinterface[full]"
