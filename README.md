@@ -39,7 +39,7 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 probes as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
+The toolbox currently supports formats recorded with the Open Ephys GUI, Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 probes as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
 (Open Ephys GUI recordings were tested with the National Instruments PXIe-1083 chassis and Neuropixel basestations acquisition board, all Intan recordings were tested with the Intan USB Interface Board)
 
 Besides the continous data stream, event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analyzed, enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
