@@ -19,17 +19,17 @@ if Activated
     %% Main Window
     if strcmp(Window,"MainWindow") || strcmp(Window,"All")
         app.TimeRangeViewBox.Tooltip = "Edit to change plotted time; Format [1s]";
-        app.Button.Tooltip = "Click to increase plotted time";
-        app.Button_2.Tooltip = "Click to decrease plotted time";
+        app.Button.Tooltip = "Click to increase plotted time by the time specified in 'Time to Manipulate Main Plot'";
+        app.Button_2.Tooltip = "Click to decrease plotted time by the time specified in 'Time to Manipulate Main Plot'";
     
-        app.Button_3.Tooltip = "Click to go forward in time";
-        app.Button_4.Tooltip = "Click to go backwards in time";
+        app.Button_3.Tooltip = "Click to go forward in time by the time specified in 'Time to Manipulate Main Plot'";
+        app.Button_4.Tooltip = "Click to go backwards in time by the time specified in 'Time to Manipulate Main Plot'";
     
-        app.PlayButton.Tooltip = "Click to start play data";
-        app.PauseButton.Tooltip = "Click to stop play data";
+        app.PlayButton.Tooltip = "Click to start play data as a movie. Right click to change plotting speed.";
+        app.PauseButton.Tooltip = "Click to stop playing data as a movie.";
     
         app.OpenProbeViewButton.Tooltip = "Click to open probe layout to manipulate channel selection";
-        app.Slider.Tooltip = "Click to change space inbetween plotted lines; Right click to change limits";
+        app.Slider.Tooltip = "Click to change spaceing inbetween plotted lines; Right click to change limits";
     
         app.DropDown.Tooltip = "Select data type plotted";
         app.DropDown_2.Tooltip = "Select addons to plot like spikes and events";

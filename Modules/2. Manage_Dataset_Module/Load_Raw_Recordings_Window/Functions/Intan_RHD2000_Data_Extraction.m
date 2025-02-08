@@ -251,6 +251,8 @@ num_board_adc_channels = board_adc_index - 1;
 num_board_dig_in_channels = board_dig_in_index - 1;
 num_board_dig_out_channels = board_dig_out_index - 1;
 
+frequency_parameters.num_amplifier_channels = num_amplifier_channels;
+
 Channelnums.aux_input_channels = num_aux_input_channels;
 Channelnums.num_board_adc_channels = num_board_adc_channels;
 Channelnums.num_board_dig_in_channels = num_board_dig_in_channels;

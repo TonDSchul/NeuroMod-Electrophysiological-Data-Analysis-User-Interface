@@ -1,4 +1,4 @@
-function Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel)
+function Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime)
 
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
@@ -32,7 +32,8 @@ function Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,Plo
 % the user selected
 % 19. SpikePlotType: string, either "Points" or "Waveforms" to specifiy how
 % spikes should be plotted when the user selected them 
-
+% 20. frameTime: double, Time in seconds of each frame based on selected
+% frame rate
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -390,7 +391,7 @@ end
 
 if strcmp(Type,"Movie")
 
-    pause(0.04);
+    tic
 
     %% First Check and delete unneccesary plot handles
 
@@ -666,4 +667,16 @@ if strcmp(Type,"Movie")
             end      
         end
     end  
+
+    drawnow;
+
+    % limit time for new plot so that its not updating too fast and
+    % according to framerate
+    plottime = toc;
+    
+    if plottime<frameTime
+        timeremaining = frameTime-plottime;
+        pause(timeremaining);
+    end
+
 end

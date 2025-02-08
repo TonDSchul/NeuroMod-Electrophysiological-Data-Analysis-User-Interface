@@ -35,60 +35,140 @@ texttoshow = "Extracting Data for Intan Recording System";
 disp(strcat("Extracting ", Filetype," files"));
 
 if strcmp(Filetype,"Intan .dat")
+
+    OneFilePerSignalTypeFormat = 0;
+
     % Load dat file locations
     [DatFilePaths,AmplifierDataIndex,~,~,InfoRhd,~] = CheckIntanDatFiles(SelectedFolder);
+
+    if isscalar(AmplifierDataIndex)
+        dashindex = strfind(DatFilePaths{AmplifierDataIndex},'\');
+        filename = DatFilePaths{AmplifierDataIndex}(dashindex(end)+1:end);
+    
+        if contains(filename,'amplifier')
+            OneFilePerSignalTypeFormat = 1;
+        end
+    end
+
     % Load Rhd Info file
     [~,~,frequency_parameters,~,~,~,~,~] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"NoExtracting",[]);
  
     h = waitbar(0, 'Extracting Data...', 'Name','Extracting Data...');
-    cN = length(AmplifierDataIndex);  % number of steps/chunks
+    
+    %% If new rhx format 'One File Per Signal Type'
+    if OneFilePerSignalTypeFormat == 1
+        
+        numchannel = frequency_parameters.num_amplifier_channels;
 
-    for nchan = 1:length(AmplifierDataIndex) % Loop through all .dat files found
+        mmf = memmapfile(DatFilePaths{AmplifierDataIndex(1)}, 'Format', 'int16');
 
-       % Update the progress bar
-       fraction = nchan/cN;
-       msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
-       waitbar(fraction, h, msg);
+        Numdatapointsperchannel = size(mmf.Data,1)/numchannel;
+        Data = zeros(numchannel,Numdatapointsperchannel);
+        
+        ChunkStart = 1;
+        ChunkEnd = Numdatapointsperchannel;
 
-        disp(strcat("Extracting Channel ",num2str(nchan)));
+        for nchan = 1:frequency_parameters.num_amplifier_channels % Loop through all .dat files found
+                          
+            % Update the progress bar
+            fraction = nchan/numchannel;
+            msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
+            waitbar(fraction, h, msg);
+    
+            disp(strcat("Extracting Channel ",num2str(nchan)));
+    
+            texttoshow = [texttoshow;strcat("Extracting Channel ",num2str(nchan))];
+            TextArea = texttoshow;
+    
+            pause(0.05);
+    
+            if nchan == 1 % First channel: Define additional stuff
+               
+                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)).*0.000195)'; % in mV
 
-        texttoshow = [texttoshow;strcat("Extracting Channel ",num2str(nchan))];
-        TextArea = texttoshow;
+                ChunkStart = ChunkStart + Numdatapointsperchannel;
+                ChunkEnd = ChunkEnd + Numdatapointsperchannel;
+                      
+                num_data_points = Numdatapointsperchannel;
+                
+                if size(Data,1) == 0 || isempty(Data)
+                    msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
+                    TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
+                    Data = [];
+                    HeaderInfo = [];
+                    SampleRate = [];
+                    RecordingType = [];
+                    return;
+                end
+    
+                % Extract General Information about Digital Inputs
+                HeaderInfo = frequency_parameters;
+                
+                % Create Time vector based on nr of samples and sampling rate
+                SampleRate = HeaderInfo.amplifier_sample_rate;
+    
+            else % if second to last channel just extract data
+                
+                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)).*0.000195)'; % in mV
 
-        pause(0.05);
-
-        if nchan == 1 % First channel: Define additional stuff
-           
-            mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
-
-            Data = zeros(length(AmplifierDataIndex),size(mmf.Data,1));
-
-            Data(nchan,1:end) = (single(mmf.Data).*0.000195)'; % in mV
-            
-            num_data_points = size(Data,2);
-            
-            if size(Data,1) == 0 || isempty(Data)
-                msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
-                TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
-                Data = [];
-                HeaderInfo = [];
-                SampleRate = [];
-                RecordingType = [];
-                return;
+                ChunkStart = ChunkStart + Numdatapointsperchannel;
+                ChunkEnd = ChunkEnd + Numdatapointsperchannel;
+     
             end
+        end
 
-            % Extract General Information about Digital Inputs
-            HeaderInfo = frequency_parameters;
-            
-            % Create Time vector based on nr of samples and sampling rate
-            SampleRate = HeaderInfo.amplifier_sample_rate;
+    %% If One file per channel format selected
+    else
 
-        else % if second to last channel just extract data
-            
-            mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
-            Data(nchan,1:num_data_points) = mmf.Data';
-            Data(nchan,1:num_data_points) = single(Data(nchan,1:num_data_points)).*0.000195; % in mV
- 
+        numchannel = frequency_parameters.num_amplifier_channels;
+
+        for nchan = 1:length(AmplifierDataIndex) % Loop through all .dat files found
+                
+            % Update the progress bar
+            fraction = nchan/numchannel;
+            msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
+            waitbar(fraction, h, msg);
+    
+            disp(strcat("Extracting Channel ",num2str(nchan)));
+    
+            texttoshow = [texttoshow;strcat("Extracting Channel ",num2str(nchan))];
+            TextArea = texttoshow;
+    
+            pause(0.05);
+    
+            if nchan == 1 % First channel: Define additional stuff
+               
+                mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
+    
+                Data = zeros(length(AmplifierDataIndex),size(mmf.Data,1));
+    
+                Data(nchan,1:end) = (single(mmf.Data).*0.000195)'; % in mV
+                
+                num_data_points = size(Data,2);
+                
+                if size(Data,1) == 0 || isempty(Data)
+                    msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
+                    TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
+                    Data = [];
+                    HeaderInfo = [];
+                    SampleRate = [];
+                    RecordingType = [];
+                    return;
+                end
+    
+                % Extract General Information about Digital Inputs
+                HeaderInfo = frequency_parameters;
+                
+                % Create Time vector based on nr of samples and sampling rate
+                SampleRate = HeaderInfo.amplifier_sample_rate;
+    
+            else % if second to last channel just extract data
+                
+                mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
+                Data(nchan,1:num_data_points) = mmf.Data';
+                Data(nchan,1:num_data_points) = single(Data(nchan,1:num_data_points)).*0.000195; % in mV
+     
+            end
         end
     end
 

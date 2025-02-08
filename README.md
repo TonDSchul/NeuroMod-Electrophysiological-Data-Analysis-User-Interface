@@ -39,8 +39,7 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-The toolbox currently supports formats recorded with the Open Ephys GUI, Intan USB Interface Board software as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from Neuropixels 1.0 and 2.0 probes as well as Intan acquisition boards for the Open Ephys GUI; .dat and .rhd files for the Intan USB Interface Board software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
-(Open Ephys GUI recordings were tested with the National Instruments PXIe-1083 chassis and Neuropixel basestations acquisition board, all Intan recordings were tested with the Intan USB Interface Board)
+The toolbox currently supports formats recorded with the Open Ephys GUI, Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from the Open Ephys GUI recorded with Neuropixels - and Intan acquisition boards; .dat and .rhd files from the Intan RHX and RHD software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
 
 Besides the continous data stream, event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analyzed, enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components as well as event related spike analysis.
@@ -170,7 +169,7 @@ https://github.com/cortex-lab/spikes
 
 > ### **How to Install SpikeInterface for Spike Sorting in Neuromod**
 
-First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to always with admin rights. Next create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands:
+First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to open always with admin rights. **Optional:** Create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands: (Alternatively just copy paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment)
 
 ```python
 pip install "spikeinterface[full]"
@@ -216,6 +215,10 @@ export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=F
 ```
 
 If you install Kilosort in your SpikeInterface environment and the error occurs: invalid literal for int() with base 10: 'KMeans is known to have a memory leak on Windows with MKL', follow these instructions to change your environmental variables in windows: https://stackoverflow.com/questions/69596239/how-to-avoid-memory-leak-when-dealing-with-kmeans-for-example-in-this-code-i-am
+
+**IMPORTANT:** When you execute SpikeInterface for the first time within Neuromod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administartor! Otherwise the command window won't open, but sorting is conducted anyway! You just don't know when it finishes.
+
+After selecting it, a command window opens showing you the progress of the SpikeInterface sorting. If this command window should not open, right clickt the python.exe you selected, click properties change the 'compatibility' settings under properties of the python exe and 
 
 > ### **About Performance**
 > 

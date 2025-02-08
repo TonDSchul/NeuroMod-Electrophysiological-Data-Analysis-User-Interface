@@ -176,22 +176,25 @@ else
 end
 
 if MainPlot
+
+    frameTime = str2double(app.TimeRangeViewBox.Value(1:end-1))/app.MovieFramesPerSecond;
+
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
         % If downsampled data to show: Input argument 11 in plot fct = 1 (1 if donwsampled, 0 if not)
         if isfield(app.Data.Info,'DownsampleFactor') 
             app.LastPlot = "Preprocessed";  
             SpikeDataType = app.Data.Info.SpikeType;
-            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange)
+            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
         % If Raw data has to be plotted
         else
             app.LastPlot = "Preprocessed";
             SpikeDataType = app.Data.Info.SpikeType;
-            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange)
+            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
         end
     elseif strcmp(app.DropDown.Value,'Raw Data')
         app.LastPlot = "Raw";
         SpikeDataType = app.Data.Info.SpikeType;
-        Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange)
+        Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
     end
   
     %% Plot Time

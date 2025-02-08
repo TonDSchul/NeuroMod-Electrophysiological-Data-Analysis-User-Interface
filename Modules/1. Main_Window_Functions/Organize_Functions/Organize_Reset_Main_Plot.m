@@ -31,6 +31,12 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvent
 
 %________________________________________________________________________________________
 
+% Set standard values from Main window startup
+app.MovieFramesPerSecond = 40;
+app.CurrentTimePoints = 1;
+app.MovieTimeToJump = 0.02;
+app.MovieTimeToJump = str2double(app.TimeRangeViewBox.Value(1:end-1))*app.MovieTimeToJump;
+
 % delte data plots
 if DeleteChannelData
     app.UIAxes.NextPlot = "replace"; 
