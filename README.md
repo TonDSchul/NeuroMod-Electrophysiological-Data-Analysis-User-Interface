@@ -1,8 +1,8 @@
 # Neuromod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab 
 
-<img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
+<img src="Modules/MISC/Images/Logo.png" align="right" width="100" height="100"/>
 
-<img src="Modules/MISC/Images/MainWindowGIF.gif" width="800" height="410" />
+<img src="Modules/MISC/Images/MainWindowGIF.gif" width="750" height="400" />
 
 
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
