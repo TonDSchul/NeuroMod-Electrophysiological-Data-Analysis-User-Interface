@@ -64,7 +64,7 @@ end
 if strcmp(Type,"SpectrumPlot") || strcmp(Type,"All") 
     % Lables and Fontsize
     PlotAppearance.SpectrumWindow.Data.TimeXLabel = "Frequency [Hz]";
-    PlotAppearance.SpectrumWindow.Data.TimeYLabel = "Power/Frequency (dB/Hz)";
+    PlotAppearance.SpectrumWindow.Data.TimeYLabel = "Power/Frequency [dB/Hz]";
     PlotAppearance.SpectrumWindow.Data.TimeFontSize = 11;
     
     % LineWidth
@@ -157,7 +157,7 @@ end
 if strcmp(Type,"PowerEstimatePlot") || strcmp(Type,"All") 
     % Lables and Fontsize
     PlotAppearance.LivePowerEstimateWindow.XLabel = "";
-    PlotAppearance.LivePowerEstimateWindow.YLabel = "Power Estimate";
+    PlotAppearance.LivePowerEstimateWindow.YLabel = "Power/Frequency [dB/Hz]";
     PlotAppearance.LivePowerEstimateWindow.FontSize = 11;
 
     PlotAppearance.LivePowerEstimateWindow.BackgroundColor = [1,1,1]; % white

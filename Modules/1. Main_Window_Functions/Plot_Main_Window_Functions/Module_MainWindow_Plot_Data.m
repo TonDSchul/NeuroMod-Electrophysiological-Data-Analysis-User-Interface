@@ -391,7 +391,7 @@ end
 
 if strcmp(Type,"Movie")
 
-    tic
+    tic % Leave here for framrate!!!
 
     %% First Check and delete unneccesary plot handles
 
@@ -510,21 +510,23 @@ if strcmp(Type,"Movie")
 
     %% Plot Toolbox internally computed Spike Data
     if strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Internal")
-        
+
         if strcmp(SpikePlotType,"Points")
             if ~isempty(SpikeData.Indicie)
+
                 [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
-    
+                
+                % INdex of SpikeData.Position in Info.ProbeInfo.ActiveChannel
+
                 SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
     
                 if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
-
-                    %% Scale and Plot Kilosort Spike Positions
+                    %% Scale and Plot Spike Positions
                     for nspikes = 1:numel(SpikeData.Indicie) 
                         SpikeData.Position(nspikes) = Data(SpikeData.Position(nspikes),SpikeData.Indicie(nspikes));
                     end
                 end
-
+    
                 if isempty(SpikeHandles)
                     line(UIAxis, Time(SpikeData.Indicie), SpikeData.Position, ...
                      'LineStyle', 'none', ...  % No line between markers
@@ -547,9 +549,10 @@ if strcmp(Type,"Movie")
                          'MarkerSize', PlotAppearance.MainWindow.Data.LineWidth.MainSpikes + 1.5, ...
                          'Tag', 'Spikes');
                     end
-                end       
+                end      
             end
         elseif strcmp(SpikePlotType,"Waveforms") && strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+            
             [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
     
             SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
@@ -611,9 +614,8 @@ if strcmp(Type,"Movie")
                 delete(SpikeHandles(numspikesplotted+1:end));
             end
         end
-
     %% Plot loaded Kilosort Spikes
-    elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort")
+    elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort") || strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"SpikeInterface")
         if ~isempty(SpikeData.Indicie)
             
             [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
@@ -623,8 +625,9 @@ if strcmp(Type,"Movie")
             if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
                 %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
                 %range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
-                range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
                
+                range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
+                
                 %% Scale and Plot Kilosort Spike Positions
                 for j = 1:numel(SpikeData.Indicie) 
                     %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
@@ -633,6 +636,7 @@ if strcmp(Type,"Movie")
                     % Compute the scaling factor
                     SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
                 end
+
             else%imagsc plot
                 SpikeData.Position = (round(SpikeData.Position/ChannelSpacing))*ChannelSpacing;
             end
