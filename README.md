@@ -2,7 +2,7 @@
 
 <img src="Modules/MISC/Images/Logo.png" align="right" width="150" height="150"/>
 
-<img src="Modules/MISC/Images/bandicam 2025-02-09 19-27-22-166.gif" width="800" height="410" />
+<img src="Modules/MISC/Images/MainWindowGIF.gif" width="800" height="410" />
 
 
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
