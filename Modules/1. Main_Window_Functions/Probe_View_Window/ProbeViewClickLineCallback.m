@@ -447,14 +447,14 @@ if ProbeViewWindow == 0
                 end
             end
             
-            if strcmp(Window,'Cont. Internal Spikes') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Cont. Kilosort Spikes')
+            if strcmp(Window,'All Windows Opened') || strcmp(Window,'Cont. Spike Analysis')
                 if ~isempty(app.Mainapp.ConInternalSpikesWindow) || ~isempty(app.Mainapp.ConKilosortSpikesWindow)
                     Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
                     [app] = Utility_ProbeChange_Plot_ContSpikes(app);
                 end
             end
 
-            if strcmp(Window,'Event Internal Spikes') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Event Kilosort Spikes')
+            if strcmp(Window,'All Windows Opened') || strcmp(Window,'Event Spike Analysis')
                 if ~isempty(app.Mainapp.EventInternalSpikesWindow) || ~isempty(app.Mainapp.EventKilosortSpikesWindow)
                     Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
                     [app] = Utility_ProbeChange_Plot_EventSpikes(app);

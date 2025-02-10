@@ -522,6 +522,9 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
     Data.Spikes.Waveforms(SpikesWithWaveform==0,:) = [];
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1);
+    if min(Data.Spikes.SpikeChannel)==0
+        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel+1;
+    end
     if isfield(Data.Spikes,'SpikeCluster')
         if ~isempty(Data.Spikes.SpikeCluster)
             Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);

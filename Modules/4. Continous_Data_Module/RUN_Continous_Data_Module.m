@@ -52,59 +52,34 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
     end
            
     if ~isfield(app.Data,'Spikes')
-        msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
+        msgbox("Warning: No spike data found. Please first use the spike module to extract or load spike data");
         return;
-
-    elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
-
-        if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-            app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
-        end
-
-        if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
-            AlreadyIn = 0;
-            for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
-                if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Cont. Kilosort Spikes')
-                    AlreadyIn = 1;
-                end
-            end
-            if AlreadyIn == 0
-                app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Cont. Kilosort Spikes';
-            end 
-        end
-
-        % Open app window for Analysis of Kilosort Data
-        app.ConKilosortSpikesWindow = Continous_Spike_Window(app);
-
-        [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConSpikes");
-        
-    elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
-        
-        if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-            app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
-        end
-
-        if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
-            AlreadyIn = 0;
-            for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
-                if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Cont. Internal Spikes')
-                    AlreadyIn = 1;
-                end
-            end
-            if AlreadyIn == 0
-                app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Cont. Internal Spikes';
-            end 
-        end
-
-        % Open app window for Analysis of Internal Spike Detection
-        app.ConInternalSpikesWindow = Continous_Internal_Spike_Window(app);
-
-        [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConSpikes");
+    end
+   
+    if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
     end
 
+    if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
+        AlreadyIn = 0;
+        for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+            if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Cont. Spike Analysis')
+                AlreadyIn = 1;
+            end
+        end
+        if AlreadyIn == 0
+            app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Cont. Spike Analysis';
+        end 
+    end
+
+    % Open app window for Analysis of Kilosort Data
+    app.ConKilosortSpikesWindow = Continous_Spike_Window(app);
+
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConSpikes");
+        
 elseif strcmp(ModuleFunctionName,"Unit Analysis")
     if ~isfield(app.Data,'Spikes')
-        msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
+        msgbox("Warning: No spike data found. Please first use the spike module to extract or load spike data");
         return;
     else
         if strcmp(app.Data.Info.SpikeType,'Kilosort') || strcmp(app.Data.Info.SpikeType,'SpikeInterface')

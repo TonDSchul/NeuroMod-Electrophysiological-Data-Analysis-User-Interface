@@ -4,7 +4,7 @@ Author: Tony de Schultz
 ______________________________________________
 
 This Module contains app windows and functions to extract event data (ttl signals to your recording system) and accordingly event related data.
-It also contains app windows and functions to preprocess event related data (artefact, trial and channel rejection) and to analyse the LFP component of the event related data you extracted.
+It also contains app windows and functions to preprocess event related data (artefact, trial and channel rejection), to analyse the LFP component of the event related data you extracted and to show event related spike analysis.
 
 Event channel information can be extracted from every data format you can extract raw data from.
 
@@ -22,6 +22,14 @@ Since all files except those from fieldtrip are modified OR require compatibilit
 The Intan file format saves the event channel with (except specified otherwise) the same sampling rate as the amplifier channel. To get the indices of start of each event, the signal has to be thresholded. The same hold true for Spike2 recordings. Thresholding and indice extraction is handled by a costume function Extract_Events_Module_Extract_Event_Indicies_Intan.m.
 Open Ephys and Neuralynx recordings however just save state changes, therefore no thresholding is necessary!
  
+For the event related spike analysis, the spike repository from the Cortex Lab on Github at https://github.com/cortex-lab/spikes was used for one function. 
+% Function is saved in: GUIPath/Modules/Toolboxes/Modified/Modified_Spike_Repository
+These functions are modified to fit the purpose of the GUI  Continous_Spikes_Manage_Analysis_Plots.m function:
+
+1. plotDriftmap
+
+For the event spike analysis, one window is used independent of the type of sorter or spike data present. 
+Some functions necessary to run this window are located in the Spike Module! They are shared over continuous and event spike analysis.
 
 *****************
 
@@ -60,3 +68,15 @@ Event Extraction always goes according to this pipeline:
 
 3. Utility_Show_Info_Loaded_Data
 4. Organize_Prepare_Plot_and_Extract_GUI_Info
+
+
+*****************
+
+Workflow for Spike Analysis:
+
+Continous and Event Spike Analysis have separate app windows. Each window uses the Spike_Module_Set_Up_Spike_Analysis_Windows to set up app window components.
+
+Workflow for Event Spike Analysis: 
+1. Event_Spikes_Prepare_Plots
+2. Either Events_Internal_Spikes_Manage_Analysis_Plots OR Events_Kilosort_Spikes_Manage_Analysis_Plots, depending on whether spike data is from kilosort or internal spike detection
+

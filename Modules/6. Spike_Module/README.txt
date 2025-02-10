@@ -4,17 +4,18 @@ Author: Tony de Schultz
 ______________________________________________
 
 This Module contains app windows and functions for:
-1. Internal spike detection using thresholding. 
+1. Internal spike detection using thresholding as well as spike sorting with SpikeInterface. 
 2. Apply or load spike sorting of this internal spike detection with the Wave_Clus 3 MATLAB Toolbox from https://github.com/csn-le/wave_clus.
 3. Save raw or preprocessed GUI data for Kilosort and/or SpikeInterface.
-4. All spike analysis functions and windows (also for event spike analysis). 
+4. Spike analysis functions that are shared over event and continuous spike analysis. 
 
-Internal spike detection Kilosort and SpikeInterface spike data are mutually exclusive - you can only have one at a time. The representation in the Data.Spikes field are the same for Kilosort, SpikeInterface and internal spikes (same field names, same variable dimensions...). Kilosort and SpikeInterface have different app windows than internal spike analysis (for event and continuous data)  - this is a left over from earlier versions and will be addressed in future by only having a single window.
+Spike data from the internal thresholding, from Kilosort and from SpikeInterface are mutually exclusive - you can only have spike data from one at a time. The representation in the Data.Spikes field is the same for Kilosort, SpikeInterface and the internal spikes - so field names are the same. However, spike data from internal thresholding naturally has no pc components or template information - those fields remain empty. Also, the spike positions are saved as channel when only having internal thresholding or WaveClus_3 spike data. From any other sorter, spike position are saved in µm.
+
 Functions of Wave_Clus 3 remain unchanged. Only a compatiblity function is used called Spike_Module_Internal_Spike_Sorting.m
 
 IMPORTANT: 
 
-SpikeInterface is run via compatibility functions in the 'SpikeInterface' module folder of the GUI.
+SpikeInterface runs via compatibility functions in the 'SpikeInterface' module folder of the GUI.
 
 For smooth operation and one-click loading, saving and execution of spike sorting with any of the sorters, use the automatically created/suggested folders when saving for spike sorting.
 
@@ -66,21 +67,4 @@ Waveforms for each spike in a nspike x ntimewaveform matrix is extracted when sp
 
 Note: Some functions are used across all windows. They dont have continous or event in their name.
 
-*****************
-
-Workflow for all spike extraction, spike loading or saving only contains a single function without necessary support functions.
-
-NOTE: ALL FUNCTIONS WITH KILOSORT IN THEIR NAME ALSO WORK FOR SPIKEINTERFACE -- just a legacy naming scheme that has to be fixed
-
-Workflow for Spike Analysis:
-
-Continous and Event Spike Analysis have separate app windows. Each window uses the Spike_Module_Set_Up_Spike_Analysis_Windows to set up app window components.
-
-Workflow for Continous Spike Analysis: 
-1. Continous_Spikes_Prepare_Plots
-2. Either Continous_Kilosort_Spikes_Manage_Analysis_Plots OR Continous_Internal_Spikes_Manage_Analysis_Plots, depending on whether spike data is from kilosort or internal spike detection
-
-Workflow for Event Spike Analysis: 
-1. Event_Spikes_Prepare_Plots
-2. Either Events_Internal_Spikes_Manage_Analysis_Plots OR Events_Kilosort_Spikes_Manage_Analysis_Plots, depending on whether spike data is from kilosort or internal spike detection
 

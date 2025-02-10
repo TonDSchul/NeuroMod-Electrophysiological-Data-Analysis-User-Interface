@@ -57,62 +57,40 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         msgbox("Error: No event related data found. Please first extract events and event related data");
     else
         if ~isfield(app.Data,'Spikes')
-            msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
+            msgbox("Warning: No spike data found. Please first use the Spike Module to extract or load spike data.");
             return;
-        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
-            %% Start GUI
+        end
+        
+        %% Start GUI
 
-            if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-                app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
-            end
+        if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+            app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+        end
 
-            if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
-                AlreadyIn = 0;
-                for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
-                    if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Event Kilosort Spikes')
-                        AlreadyIn = 1;
-                    end
+        if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
+            AlreadyIn = 0;
+            for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+                if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Event Spike Analysis')
+                    AlreadyIn = 1;
                 end
-                if AlreadyIn == 0
-                    app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Event Kilosort Spikes';
-                end 
             end
+            if AlreadyIn == 0
+                app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Event Spike Analysis';
+            end 
+        end
 
+        if ~strcmp(app.Data.Info.SpikeType,"Internal")
             [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0);
-
-            if Error == 0
-                app.EventKilosortSpikesWindow = Events_Spike_Window(app);
-
-                [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"EventSpikes");
-                
-            end
-        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
-
-            if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-                app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
-            end
-
-            if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-                AlreadyIn = 0;
-                for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
-                    if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Event Internal Spikes')
-                        AlreadyIn = 1;
-                    end
-                end
-                if AlreadyIn == 0
-                    app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Event Internal Spikes';
-                end 
-            end
-
+        else
             [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0);
+        end
 
-            if Error == 0
-                app.EventInternalSpikesWindow = Events_Internal_Spike_Window(app);
+        if Error == 0
+            app.EventKilosortSpikesWindow = Events_Spike_Window(app);
 
-                [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"EventSpikes");
-                
-            end
-        end     
+            [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"EventSpikes");
+     
+        end
     end
 
 elseif strcmp(ModuleFunctionName,"Unit Analysis")

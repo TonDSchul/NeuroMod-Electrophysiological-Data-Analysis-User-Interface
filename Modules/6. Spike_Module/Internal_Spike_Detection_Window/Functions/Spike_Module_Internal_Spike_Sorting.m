@@ -179,6 +179,10 @@ if isfile(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')))
 
     load(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')),'cluster_class','par');
 
+    if min(Data.Spikes.SpikeChannel)==0
+        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel+1;
+    end
+
     Data.Spikes.SpikeCluster = cluster_class(:,1);
     Data.Info.SpikeType = "Internal";
     Data.Info.Sorter = CurrentSorter;
@@ -217,6 +221,10 @@ elseif isfile(strcat(strcat(SpikeSortingPath,'\Ch1_spikes.mat')))
 
     StartClusterNr = 0;
 
+    if min(Data.Spikes.SpikeChannel)==0
+        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel+1;
+    end
+    
     Data.Spikes.SpikeCluster = zeros(size(Data.Spikes.SpikeTimes));
 
     for nchannel = 1:size(Data.Raw,1)

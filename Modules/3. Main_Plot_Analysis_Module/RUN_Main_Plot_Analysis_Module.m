@@ -5,6 +5,10 @@ function RUN_Main_Plot_Analysis_Module(app,ModuleFunctionName)
 % made in the module field to the right of the RUN button
 
 if strcmp(ModuleFunctionName,"Live Spike Rate")
+    if ~isfield(app.Data,'Spikes')
+        msgbox("Warning: No spike data found. Please first use the Spike Module to extract or load spike data.");
+        return;
+    end
 
     if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
         app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
