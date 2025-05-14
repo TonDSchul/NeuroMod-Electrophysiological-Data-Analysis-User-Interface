@@ -78,7 +78,7 @@ Neuromod_Toolbox_GUI
 
 <img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="50%" />
 
-In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod_Toolbox_Manual.docx)
+In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](Modules/MISC/NeuroMod_Toolbox_Manual.docx)
 
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
