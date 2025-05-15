@@ -76,7 +76,7 @@ Neuromod_Toolbox_GUI
   
 > ### **Get Started With Example Data**
 
-<img src="Modules/MISC/Images/LoadDataGIF.gif" width="700" height="360" />
+<img src="Modules/MISC/Images/LoadDataGIF.gif" width="700" height="500" />
 
 In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](Modules/MISC/NeuroMod_Toolbox_Manual.docx)
 
