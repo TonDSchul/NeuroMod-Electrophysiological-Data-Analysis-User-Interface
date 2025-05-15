@@ -226,9 +226,7 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
 
 """ ################################################################ Kilosort 4 ####### """
 def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,SortingParameter):
-    
-    IntegerRecording = spre.astype(recording, dtype='int16')
-    
+        
     print("Starting Spike Sorting with Kilosort 4")
     
     """"Parallel Processing"""
@@ -246,10 +244,9 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
         costume_KS4_params['skip_kilosort_preprocessing'] = False
         print("Prepro in KS4")
     
-    costume_KS4_params['use_binary_file'] = True
     print(costume_KS4_params)
     
-    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costume_KS4_params, recording=IntegerRecording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costume_KS4_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
     return sortingKS4
     
 """ ################################################################ Sorting Analyzer ####### """

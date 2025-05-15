@@ -9,8 +9,11 @@ import spikeinterface.full as si
 
 import spikeinterface.widgets as sw
 import matplotlib.pyplot as plt
-
+from tempfile import TemporaryDirectory
 from spikeinterface import load_extractor
+import spikeinterface.preprocessing as spre
+
+from mountainsort5.util import create_cached_recording
 
 from spikeinterface.exporters import export_to_phy
 import shutil
@@ -158,11 +161,11 @@ def main(subfolders,file_path):
         Recording = Recording.set_probe(Probe)
         
         if Sorter in ['Kilosort 4']:
-            CachedRecording = Recording.save(format='binary', dtype = 'int32', folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4)
             CachedRecording.annotate(is_filtered=False)
             CachedRecording = CachedRecording.set_probe(Probe)
         if Sorter in ['SpykingCircus 2']:
-            CachedRecording = Recording.save(format='binary', dtype = 'float32', folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4)
             CachedRecording.annotate(is_filtered=False)
             CachedRecording = CachedRecording.set_probe(Probe)
         if Sorter in ['Mountainsort 5']:

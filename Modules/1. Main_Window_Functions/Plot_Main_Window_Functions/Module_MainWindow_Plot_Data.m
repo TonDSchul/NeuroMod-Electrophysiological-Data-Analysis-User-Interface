@@ -58,8 +58,9 @@ else
 end
 
 %% Predefine x and y lims and title before plotting to increase performance!
-
-xlim(UIAxis, [Time(1),Time(end)]);
+if Time(1) ~= Time(end)
+    xlim(UIAxis, [Time(1),Time(end)]);
+end
 
 if size(Data,1)>1
     if ~isempty(UIAxis.YTickLabel)

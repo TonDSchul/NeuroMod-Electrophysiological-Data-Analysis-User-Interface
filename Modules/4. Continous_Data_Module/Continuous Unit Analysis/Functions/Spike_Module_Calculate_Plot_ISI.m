@@ -63,7 +63,7 @@ for nplots = 1:length(Units)
         continue;
     end
 
-    disp(strcat("Plot ",num2str(nplots)));
+    %disp(strcat("Plot ",num2str(nplots)));
     na = strcat("UIAxes_",num2str(nplots));
     Figurename = figs.(na);
 
@@ -77,29 +77,15 @@ for nplots = 1:length(Units)
         InterspikeIntervals = [];
         % Extract Isi channelwise to avoid artefacts from end of one channel to
         % start of the next.
-        
-        for nchannel = 1:size(Data.Raw,1)
-            if strcmp(Data.Info.SpikeType,"Internal")
-                SpikeIndicies = SpikePositions == nchannel;
-            else
-                SpikeIndicies = SpikeChannel == nchannel;
-            end
 
-            if sum(SpikeIndicies)>0
-                TemSpikes = SpikeTimes(SpikeIndicies==1);
-                Cluster = SpikeCluster(SpikeIndicies==1);
-            
-                ClusterIndicies = Cluster == Units{nplots}(nUnit);
-                TemSpikes = TemSpikes(ClusterIndicies==1);
-                
-                if length(TemSpikes)>1
-                    %InterspikeIntervals = [InterspikeIntervals;(diff(TemSpikes))]; % Convert to s
-                    InterspikeIntervals = [InterspikeIntervals;abs((diff(sort(TemSpikes))))]; % Convert to s
-                end
-            end
-        end
-       
+        ClusterIndicies = SpikeCluster == Units{nplots}(nUnit);
+        TemSpikes = SpikeTimes(ClusterIndicies==1);
         
+        if length(TemSpikes)>1
+            %InterspikeIntervals = [InterspikeIntervals;(diff(TemSpikes))]; % Convert to s
+            InterspikeIntervals = [InterspikeIntervals;abs((diff(sort(TemSpikes))))]; % Convert to s
+        end
+                
         if ~isempty(InterspikeIntervals)
             
 

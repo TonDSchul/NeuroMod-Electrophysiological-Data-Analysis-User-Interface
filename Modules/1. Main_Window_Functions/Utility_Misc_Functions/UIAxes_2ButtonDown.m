@@ -16,7 +16,7 @@ function [app] = UIAxes_2ButtonDown(app, event)
 % Department systemsphysiology of learning, LIN Magdeburg.
 
 %________________________________________________________________________________________
-tic
+
 % Get the clicked point coordinates
 clickPoint = event.IntersectionPoint;
 
@@ -30,6 +30,16 @@ end
 % Find the index of the minimum difference
 [min_difference, app.CurrentTimePoints] = min(differences);
 
+if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,"Preprocessed Data")
+    if app.Data.TimeDownsampled(end)-app.Data.TimeDownsampled(app.CurrentTimePoints) <= 0.003
+        app.CurrentTimePoints = length(app.Data.TimeDownsampled) - (0.003*app.Data.Info.DownsampledSampleRate);
+    end
+else
+    if app.Data.Time(end)-app.Data.Time(app.CurrentTimePoints) <= 0.003
+        app.CurrentTimePoints = length(app.Data.Time) - (0.003*app.Data.Info.NativeSamplingRate);
+    end
+end
+
 %% Get all necessary Infos from GUI, set time scale based on time window, select data based on this AND plot
 % Plot functions are fully autonomous without needed the app
 % object. It is only needed to get the necessary parameter.
@@ -38,4 +48,4 @@ end
 %input 3: Update time plot = Subsequent; Replot whole time plot = "Initial"
 %input 4: Whether Data plot should run in a movie or not
 Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Subsequent","MainWindowTimeManipulation",app.PlotEvents,app.Plotspikes);
-toc
+

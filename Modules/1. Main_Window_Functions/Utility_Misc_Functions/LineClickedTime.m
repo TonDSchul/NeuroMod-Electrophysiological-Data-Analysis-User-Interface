@@ -30,6 +30,16 @@ end
 % % Find the index of the minimum difference
 [min_difference, app.CurrentTimePoints] = min(differences);
 
+if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,"Preprocessed Data")
+    if app.Data.TimeDownsampled(end)-app.Data.TimeDownsampled(app.CurrentTimePoints) <= 0.003
+        app.CurrentTimePoints = length(app.Data.TimeDownsampled) - (0.003*app.Data.Info.DownsampledSampleRate);
+    end
+else
+    if app.Data.Time(end)-app.Data.Time(app.CurrentTimePoints) <= 0.003
+        app.CurrentTimePoints = length(app.Data.Time) - (0.003*app.Data.Info.NativeSamplingRate);
+    end
+end
+
 %% Get all necessary Infos from GUI, set time scale based on time window, select data based on this AND plot
 % Plot functions are fully autonomous without needed the app
 % object. It is only needed to get the necessary parameter.

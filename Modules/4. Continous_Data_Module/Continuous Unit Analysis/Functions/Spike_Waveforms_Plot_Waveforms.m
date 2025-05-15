@@ -63,7 +63,7 @@ for nplots = 1:length(Units)
         continue;
     end
 
-    disp(strcat("Plot ",num2str(nplots)));
+    %disp(strcat("Plot ",num2str(nplots)));
     na = strcat("UIAxes_",num2str(nplots));
     Figurename = figs.(na);
 

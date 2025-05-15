@@ -1,4 +1,4 @@
-function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvents,KeepSpikes,ReplaceDataType)
+function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvents,KeepSpikes,ReplaceDataType,Plottype)
 
 %________________________________________________________________________________________
 
@@ -25,6 +25,9 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvent
 % spike plots, set to 0 to delete spike plots
 % 6: ReplaceDataType: double, 1 or 0, set to 1 the set plotted datatype to
 % 'Raw Data', otherwise userselection is not changed
+% 7: Plottype: Either 'Initial' when plotting for the first time/after hard
+% reset or 'subsequent' when plot is just supposed to be updated with new
+% data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -101,6 +104,6 @@ end
 %input 2: 1 if plot time, 0 if no time plot necessary
 %input 3: Update time plot = Subsequent; Replot whole time plot = "Initial"
 %input 4: Whether Data plot should run in a movie or not
-Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Initial","Events",app.PlotEvents,app.Plotspikes);
+Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,Plottype,"Static",app.PlotEvents,app.Plotspikes);
 
 Utility_Initialize_Clicks_Plots(app,"Static");
