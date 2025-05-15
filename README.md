@@ -76,13 +76,13 @@ Neuromod_Toolbox_GUI
   
 > ### **Get Started With Example Data**
 
-<img src="Modules/MISC/Images/Example_Image_5.jpg" align="right" width="50%" />
+<img src="Modules/MISC/Images/LoadDataGIF.gif" width="700" height="360" />
 
 In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](Modules/MISC/NeuroMod_Toolbox_Manual.docx)
 
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with the toolbox. 
-To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in Path_to_GUI/Recording Data/Example Data. Select a folder containing your recording and specify your probe design. Some probe designs (also the ones for the example dataset) are already available to load using the menu on top of the window. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is.
+To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option and click on the "RUN" button on the left side in the "Manage Dataset" module. Example datasets are saved in Path_to_GUI/Recording Data/Raw Data. Select a folder containing your recording and specify your probe design. Some probe designs (also for the example dataset) are already available to load using the menu on top of the window. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is.
 
 > ### **Overview of required Matlab toolboxes**
 
@@ -173,6 +173,7 @@ https://github.com/cortex-lab/spikes
 > ### **How to Install SpikeInterface for Spike Sorting in Neuromod**
 
 First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to open always with admin rights. **Optional:** Create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands: (Alternatively just copy paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment)
+For some of the following packages you need to install Visual Studios C++ as well!
 
 ```python
 pip install "spikeinterface[full]"
@@ -180,9 +181,8 @@ pip install --upgrade mountainsort5
 python -m pip install kilosort[gui]
 pip install spyking-circus
 pip install Hdbscan
-pip install sortingviewp
+pip install sortingview
 pip install spikeinterface[widgets]
-pip install matplotlib
 pip install matplotlib ipympl ipywidgets
 pip install PySide6 ephyviewer
 conda install pyqt=5
@@ -195,7 +195,7 @@ pip install pyuac
 pip install pypiwin32
 ```
 
-You also need to install Visual Studios C++. To use Kilosort 4 GPU support, you might need to enter the following commmands (see https://github.com/MouseLand/Kilosort): 
+To use Kilosort 4 GPU support, you might need to enter the following commmands (see https://github.com/MouseLand/Kilosort): 
 
 ```python
 pip uninstall torch
