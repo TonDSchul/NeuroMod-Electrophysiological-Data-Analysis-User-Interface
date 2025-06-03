@@ -4,6 +4,7 @@
 
 <img src="Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
 
+** Warning: Currently only Matlab Versions 2023a or newer are supported **
 
 Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
 It seamlessly integrates established toolboxes such as Kilosort, Open Ephys Tools, Fieldtrip and SpikeInterface for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between matlab and python packages.
