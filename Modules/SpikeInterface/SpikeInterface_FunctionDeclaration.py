@@ -113,13 +113,9 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
 """ ################################################################ Preprocessing ####### """
 def Preprocessing(Recording,Probe,Apply_Preprocessing):
     
-    if Apply_Preprocessing == 1:
-        print("Preprocessing Data...")
-        PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000, dtype=np.float64)
-        PreProRecording = spre.common_reference(recording=PreProRecording, dtype=np.float64)
-    else:
-       print("Not Preprocessing Data...")
-           
+    PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000, dtype=np.float64)
+    PreProRecording = spre.common_reference(recording=PreProRecording, dtype=np.float64)
+                
     PreProRecording = PreProRecording.set_probe(Probe)
     
     PreProRecording.annotate(is_filtered=True)
@@ -169,8 +165,10 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
     
     if Apply_Preprocessing == 1:
         costume_SC2_params['apply_preprocessing'] = False
+        print("No Prepro in SC2")
     else:
         costume_SC2_params['apply_preprocessing'] = True
+        print("Prepro in SC2")
     
     print("Costume_SC2_params:")
     print(costume_SC2_params)

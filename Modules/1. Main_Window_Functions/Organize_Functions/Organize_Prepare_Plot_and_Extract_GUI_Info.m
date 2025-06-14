@@ -8,7 +8,7 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 
 % Inputs: 
 % 1. app: app object of GUI main window
-% 2. PlotTime: Time in samples of the first datapoint plotted
+% 2. PlotTime: double, Time in samples of the first datapoint plotted 
 % 3. TimePlotInitial: string specifying what is plotted in time plot. So far only
 % Otions: "Initial" or "subsequent"
 % 4. DataPlotType: string specifying if movie or normal single plot is

@@ -4,7 +4,7 @@ function RUN_Event_Data_Module(app,ModuleFunctionName)
 % It opens the windows of this module depending on the selection the user
 % made in the module field to the right of the RUN button
 
-if strcmp(ModuleFunctionName,"Extract Events and Data")
+if strcmp(ModuleFunctionName,"Extract Events/TTL")
 
     app.EventExtractionWindow = Extract_Events_Window(app);
 
@@ -21,7 +21,15 @@ elseif strcmp(ModuleFunctionName,"Preprocessing")
             app.PreproEventsMainWindow = Preprocessing_Events_Main_Window(app);
         end
     end
-    
+
+elseif strcmp(ModuleFunctionName,"Import Events/TTL")
+
+    app.ImportEventTTLWindow = Import_Events_Window(app);
+
+    if isempty(app.ProbeViewWindowHandle)
+        app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+    end
+
 elseif strcmp(ModuleFunctionName,"LFP Analysis")
     if ~isfield(app.Data,'EventRelatedData')
         msgbox("Error: No event related data found. Please first extract events and event related data");

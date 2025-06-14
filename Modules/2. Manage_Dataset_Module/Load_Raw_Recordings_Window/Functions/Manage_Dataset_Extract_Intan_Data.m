@@ -84,7 +84,7 @@ if strcmp(Filetype,"Intan .dat")
     
             if nchan == 1 % First channel: Define additional stuff
                
-                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)).*0.000195)'; % in mV
+                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)));%.*0.000195)'; % in mV
 
                 ChunkStart = ChunkStart + Numdatapointsperchannel;
                 ChunkEnd = ChunkEnd + Numdatapointsperchannel;
@@ -109,7 +109,7 @@ if strcmp(Filetype,"Intan .dat")
     
             else % if second to last channel just extract data
                 
-                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)).*0.000195)'; % in mV
+                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)));%.*0.000195)'; % in mV
 
                 ChunkStart = ChunkStart + Numdatapointsperchannel;
                 ChunkEnd = ChunkEnd + Numdatapointsperchannel;

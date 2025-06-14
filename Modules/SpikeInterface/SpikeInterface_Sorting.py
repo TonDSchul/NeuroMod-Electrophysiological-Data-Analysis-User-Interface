@@ -174,10 +174,12 @@ def main(subfolders,file_path):
             CachedRecording = CachedRecording.set_probe(Probe)
             
         if Apply_Preprocessing == 1:
+            print("Preprocessing Data before Sorting")
             DumpedRecording = Preprocessing(CachedRecording,Probe,Apply_Preprocessing);
             DumpedRecording.annotate(is_filtered=True)
             DumpedRecording = DumpedRecording.set_probe(Probe)
         else:
+            print("Not Preprocessing Data before Sorting")
             DumpedRecording = CachedRecording
             DumpedRecording.annotate(is_filtered=False)
             DumpedRecording = DumpedRecording.set_probe(Probe)

@@ -4,7 +4,7 @@ This folder contains the following functions with respective Header:
 
 File: All_Module_Items.m
 %%__________________________________________________________________________________________
-%% This functions holds information about all modules added to the toolbox. If you want to add your own module,
+%% This function holds information about all modules added to the toolbox. If you want to add your own module,
 %% add a new cell to the Module variable below and enter the necessary info. 
 % Module{i}.Title holds the title of the Module shown in the main window
 % Module{i}.Items holds the name of each function the user can select in

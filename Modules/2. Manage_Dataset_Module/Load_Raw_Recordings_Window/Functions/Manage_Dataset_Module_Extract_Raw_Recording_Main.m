@@ -236,7 +236,7 @@ elseif strcmp(RecordingSystem,"Spike2")
     % If not installed let the user select the installation folder if he
     % installs it
     if fileExists == false
-        msgbox("'Spike2 MATLAB SON Interface' library not found. To analyze Spike2 .smrx files, you need to install this library available at 'https://ced.co.uk/upgrades/spike2matson'. Please install and select the 'CEDS64ML' folder thats installed. You only need to do this once.");
+        msgbox("'Spike2 MATLAB SON Interface' library not found. To analyze Spike2 .smrx files, you need to install this library available at 'https://ced.co.uk/upgrades/spike2matson'. Please install and select the 'CEDS64ML' folder thats installed with this library. You only need to do this once.");
         % Use the uigetdir function to open the file explorer dialog
         selectedFolder = uigetdir();
     
@@ -254,7 +254,7 @@ elseif strcmp(RecordingSystem,"Spike2")
 
         if ~isfolder(selectedFolder)
             delete(FolderWithPathVariable)
-            msgbox("'Spike2 MATLAB SON Interface' library not found. To analyze Spike2 .smrx files, you need to install this library available at 'https://ced.co.uk/upgrades/spike2matson'. Please install and select the 'CEDS64ML' folder thats installed. You only need to do this once.");
+            msgbox("'Spike2 MATLAB SON Interface' library not found. To analyze Spike2 .smrx files, you need to install this library available at 'https://ced.co.uk/upgrades/spike2matson'. Please install and select the 'CEDS64ML' folder thats installed with this library. You only need to do this once.");
             % Use the uigetdir function to open the file explorer dialog
             selectedFolder = uigetdir();
         

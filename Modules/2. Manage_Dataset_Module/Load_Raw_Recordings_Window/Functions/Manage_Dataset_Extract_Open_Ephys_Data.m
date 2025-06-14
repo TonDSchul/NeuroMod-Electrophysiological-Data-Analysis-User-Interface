@@ -52,15 +52,18 @@ SampleRate = [];
 % "Import" matlab-tools
 addpath(genpath("."));
 
-% % Test parameters used (either manually or via python-tools script)
-RECORDING_FORMATS_TO_TEST = ["Binary", "NWB2", "Open Ephys"];
-
 count = 1;
 
 h = waitbar(0, 'Extracting Data...', 'Name','Extracting Data...');
 
-% Create a session (loads all data from the most recent recording)
-session = Session(DATA_PATH);
+try
+    % Create a session (loads all data from the most recent recording)
+    session = Session(DATA_PATH);
+catch ME
+    disp(ME.identifier)
+    error("Failed to load OE recording. Make sure, that the recording folder does not contain files or folder NOT created by the recording software or this GUI! Error in line 64 in Manage_Dataset_Extract_Open_Ephys_Data.m")
+
+end
 
 % Iterate over the record nodes to access data
 
@@ -96,7 +99,7 @@ end
 
 for RecordingIndex = 1:NumRecordingIndex
 
-    disp(strcat("Extracting Recording ",num2str(AllRecordingIndicies(RecordingIndex))," of ",num2str(NumRecordingIndex)));
+    disp(strcat("Extracting Recording ",num2str(AllRecordingIndicies(RecordingIndex))," of ",num2str(length(node.recordings))));
 
     % Get the first recording 
     recording = node.recordings{1,AllRecordingIndicies(RecordingIndex)};
@@ -198,25 +201,25 @@ for RecordingIndex = 1:NumRecordingIndex
         ContinousStream = recording.continuous(streamName);
 
         if strcmp(node.format,'Binary') %% NP so far can only be saved as binary
-    
+            
             TempHeader = ContinousStream.metadata;
             
             % Delete Info fields saved as cells that can not be displayed
             % as information 
             % Get all field names of the structure
             fields = fieldnames(TempHeader);
-    
+            
             % Loop through each field
             for o = 1:numel(fields)
                 fieldName = fields{o};
-    
+                
                 % Check if the field contains a cell
                 if iscell(TempHeader.(fieldName))
                     % Delete the field
                     TempHeader = rmfield(TempHeader, fieldName);
                 end
             end
-    
+            
             %% Differentiate TempData and peripheral (ADC) channel
             DataChannel = [];
             NoDataChannel = [];
@@ -235,7 +238,7 @@ for RecordingIndex = 1:NumRecordingIndex
                             DataChannel = [DataChannel,i];
                         end
                     end
-
+                
                 %% Non NP or NP 2 recording
                 elseif isempty(Neuropixrecording)
                     if contains(ContinousStream.metadata.names{i},'CH')
@@ -253,13 +256,13 @@ for RecordingIndex = 1:NumRecordingIndex
             if NP2Recording == 1 
                 Neuropixrecording = 1;
             end
-
+            
             disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel and ",num2str(length(DataChannel))," data channel"));
             TempData = single(ContinousStream.samples(DataChannel,:));
     
             %% Get recording data
             Temp = node.recordings{1, RecordingIndex};
-
+            
             if isprop(Temp,'info')
                 %% NP recording
                 if Neuropixrecording == 1 

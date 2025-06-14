@@ -162,6 +162,15 @@ try
 catch
     app.EventExtractionWindow = [];
 end
+%% Import Events Window
+try
+    if ~isempty(app.ImportEventTTLWindow)
+        delete(app.ImportEventTTLWindow);
+        app.ImportEventTTLWindow = [];
+    end
+catch
+    app.ImportEventTTLWindow = [];
+end
 %% Spike Extraction Window
 try
     if ~isempty(app.SpikeExtractionWindow)
