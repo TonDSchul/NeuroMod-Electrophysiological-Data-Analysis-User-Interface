@@ -9,44 +9,14 @@ function [Data,EventChannelDropDown] = Import_Events_Add_Imported_Events(Data,Ev
 
 
 %% First maintaining GUI main data structure by deleting previous event data
-if isfield(Data,'Events')
+if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
+    msgbox("Warning: Events and event related data where already extracted. Previous data will be overwritten!");
+elseif isfield(Data,'Events')
     msgbox("Warning: Events where already extracted. Previous data will be overwritten!");
-    fieldToRemove = 'Events';
-    Data = rmfield(Data, fieldToRemove);
-    if isfield(Data,'EventChannelType')
-        fieldsToDelete = {'EventChannelType'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-    if isfield(Data,'EventChannelNames')
-        fieldsToDelete = {'EventChannelNames'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-else
-    Data.Events = [];
 end
 
-if isfield(Data,'EventRelatedSpikes')
-    fieldsToDelete = {'EventRelatedSpikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-end
-
-if isfield(Data,'EventRelatedData')
-    msgbox("Existing event related data found and overwritten");
-    fieldsToDelete = {'EventRelatedData'};
-    Data = rmfield(Data, fieldsToDelete);
-    fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
-    Data.Info = rmfield(Data.Info, fieldsToDelete);
-end
-
-if isfield(Data,'PreprocessedEventRelatedData')
-    msgbox("Existing preprocessed event related data found and deleted");
-    fieldsToDelete = {'PreprocessedEventRelatedData'};
-    Data = rmfield(Data, fieldsToDelete);
-    fieldsToDelete = {'EventRelatedPreprocessing'};
-    Data.Info = rmfield(Data.Info, fieldsToDelete);
+if isfield(Data,'Events')
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
 end
 
 %% check for events outside of range

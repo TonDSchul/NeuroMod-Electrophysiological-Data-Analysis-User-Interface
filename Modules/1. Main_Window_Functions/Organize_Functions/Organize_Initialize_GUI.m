@@ -356,65 +356,7 @@ elseif strcmp(Type,"Preprocessing")
         app.PowerSpecResults = rmfield(app.PowerSpecResults, fieldsToDelete);
     end
 
-    if isfield(app.Data,'Preprocessed')
-        if ~isempty(app.Data.Preprocessed)
-            app.DropDown.Items{2} = 'Preprocessed Data';
-            app.DropDown.Value = 'Raw Data';
-        else
-            if length(app.DropDown.Items) == 2
-                app.DropDown.Items(2) = [];
-                app.DropDown.Value = 'Raw Data';
-            else
-                app.DropDown.Value = 'Raw Data';
-            end
-        end
-    else
-        if length(app.DropDown.Items) == 2
-            app.DropDown.Items(2) = [];
-            app.DropDown.Value = 'Raw Data';
-        else
-            app.DropDown.Value = 'Raw Data';
-        end
-    end
-
-    if ~isfield(app.Data,'Events')
-        if strcmp(app.PlotEvents,"Events")
-            app.PlotEvents = "No";
-        end
-        Placeholder = {};
-        app.DropDown_2.Items = Placeholder;
-        app.DropDown_2.Items{1} = 'Non';
-    else
-        Placeholder = {};
-        app.DropDown_2.Items = Placeholder;
-        app.DropDown_2.Items{1} = 'Non';
-        app.DropDown_2.Items{2} = 'Events';
-        if strcmp(app.PlotEvents,"Events")
-            app.DropDown_2.Value = 'Events';
-        end
-    end
-
-    if ~isfield(app.Data,'Spikes')
-        if strcmp(app.Plotspikes,"Spikes")
-            app.Plotspikes = "No";
-        end
-    else
-        app.DropDown_2.Items = Placeholder;
-        app.DropDown_2.Items{1} = 'Non';
-        if isfield(app.Data,'Events')
-            app.DropDown_2.Items{2} = 'Events';
-            app.DropDown_2.Items{3} = 'Spikes';
-        else
-            app.DropDown_2.Items{2} = 'Spikes';
-        end
-        
-        if strcmp(app.PlotEvents,"Events")
-            app.DropDown_2.Value = 'Events';
-        end
-        if strcmp(app.Plotspikes,"Spikes")
-            app.DropDown_2.Value = 'Spikes';
-        end
-    end
+    [app] = Organize_Set_MainWindow_Dropdown(app,app.Data);
 
     % if strcmp(app.DropDown.Value,'Raw Data')
     %     app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));

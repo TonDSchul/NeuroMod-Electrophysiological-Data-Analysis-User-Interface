@@ -1,4 +1,4 @@
-function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvents,KeepSpikes,ReplaceDataType,Plottype)
+function Organize_Reset_Main_Plot(app,DeleteChannelData,KeepEvents,KeepSpikes,ReplaceDataType,PlotTime)
 
 %________________________________________________________________________________________
 
@@ -12,11 +12,9 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvent
 % 1. app: app object of the extract data window to access the
 % Load_Data_Window_Info variable which holds the loaded channel order and
 % channelspacing 
-% 2. DeleteChannelData: double, 1 or 0, determines whether main data plot
+% 2. DeleteChannelData: Hard reset of data plot; double, 1 or 0, determines whether main data plot
 %channeldata is deleted. Can be set to 0 if only event or spike data
 %changes
-% 3. DeleteTimePlot: double, 1 or 0, determines whether time plot is
-% deleted and plotted again - set to 1 if events are extracted
 % 4: KeepEvents: double, 1 or 0, determines whether events lines should continue to be shown
 % when they were already selected - set 1 when spikes are extracted to keep
 % event line plots, set to 0 to delete event line plots
@@ -25,10 +23,7 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvent
 % spike plots, set to 0 to delete spike plots
 % 6: ReplaceDataType: double, 1 or 0, set to 1 the set plotted datatype to
 % 'Raw Data', otherwise userselection is not changed
-% 7: Plottype: Either 'Initial' when plotting for the first time/after hard
-% reset or 'subsequent' when plot is just supposed to be updated with new
-% data
-
+% 8: PlotTime: number of samples time plot currently is set to
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 
@@ -36,7 +31,7 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,DeleteTimePlot,KeepEvent
 
 % Set standard values from Main window startup
 app.MovieFramesPerSecond = 40;
-app.CurrentTimePoints = 1;
+app.CurrentTimePoints = PlotTime;
 app.MovieTimeToJump = 0.02;
 app.MovieTimeToJump = str2double(app.TimeRangeViewBox.Value(1:end-1))*app.MovieTimeToJump;
 
@@ -70,13 +65,6 @@ if ReplaceDataType
     app.DropDown.Value = 'Raw Data';
 end
 
-% Delete time plots
-if DeleteTimePlot
-    app.UIAxes_2.NextPlot = "replace"; 
-    plot(app.UIAxes_2,0,0);
-    app.UIAxes_2.NextPlot = "add"; 
-end
-
 % Event Plots
 if ~KeepEvents
     EventHandles = findobj(app.UIAxes, 'Type', 'line', 'Tag', 'Events');
@@ -84,7 +72,9 @@ if ~KeepEvents
         delete(EventHandles(:));
     end
     app.PlotEvents = "No";
-    app.DropDown_2.Value = 'Non';
+    if strcmp(app.DropDown_2.Value,'Events')
+        app.DropDown_2.Value = 'Non';
+    end
 end
 
 % Spike Plots
@@ -94,7 +84,9 @@ if ~KeepSpikes
         delete(SpikeHandles(:));
     end
     app.Plotspikes = "No";
-    app.DropDown_2.Value = 'Non';
+    if strcmp(app.DropDown_2.Value,'Spikes')
+        app.DropDown_2.Value = 'Non';
+    end
 end
 
 %% Get all necessary Infos from GUI, set time scale based on time window, select data based on this AND plot

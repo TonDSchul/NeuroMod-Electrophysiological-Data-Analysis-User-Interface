@@ -122,6 +122,7 @@ elseif strcmp(ComponentToDelete,"Events")
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
+
     if isfield(Data,'PreprocessedEventRelatedData')
         fieldsToDelete = {'PreprocessedEventRelatedData'};
         Data = rmfield(Data, fieldsToDelete);

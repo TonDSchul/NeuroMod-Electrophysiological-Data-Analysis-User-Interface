@@ -39,43 +39,8 @@ SaveFilter = "No";
 
 if isfield(Data,'Spikes')
     msgbox("Warning: Spike data already part of the dataset. Exisitng data will be removed.");
-    Data.Spikes = [];
-    if isfield(Data,'EventRelatedSpikes')
-        fieldsToDelete = {'EventRelatedSpikes'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-    end
-    if isfield(Data.Info,'SpikeSorting')
-        fieldsToDelete = {'SpikeSorting'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeSorting')
-        fieldsToDelete = {'SpikeSorting'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'Sorter')
-        fieldsToDelete = {'Sorter'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeDetectionNrStd')
-        fieldsToDelete = {'SpikeDetectionNrStd'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeDetectionThreshold')
-        fieldsToDelete = {'SpikeDetectionThreshold'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-    Data.Info.SpikeType = "Non";
-end     
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
+end      
 
 % initiate field
 Data.Spikes = [];
@@ -182,19 +147,8 @@ end
 
 %% If no KilosortData found: Spike Field is emptyx but has to be deleted
 if isempty(Data.Spikes)
-    fieldsToDelete = {'Spikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-    Data.Info.SpikeType = 'Non';
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"EventRelatedData");
     msgbox("No sorting data could be loaded.");
-    fieldsToDelete = {'EventRelatedSpikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-    if isfield(Data,'EventRelatedSpikes')
-        fieldsToDelete = {'EventRelatedSpikes'};
-        % Delete fieldsven
-        Data = rmfield(Data, fieldsToDelete);
-    end
     return;
 end
 

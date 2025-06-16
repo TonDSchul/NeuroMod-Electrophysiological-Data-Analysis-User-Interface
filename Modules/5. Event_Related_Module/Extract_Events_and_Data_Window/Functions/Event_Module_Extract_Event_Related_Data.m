@@ -33,23 +33,9 @@ TimearoundEvent = [];
 EventChannelNr = [];
 
 if isfield(Data,'EventRelatedData')
-    if ~isempty(Data.EventRelatedData)
-        msgbox("Existing event related data found and overwritten");
-        Data.EventRelatedData = [];
-        fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange'};
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-end
-
-if isfield(Data,'PreprocessedEventRelatedData')
-    if ~isempty(Data.PreprocessedEventRelatedData)
-        msgbox("Existing preprocessed event related data found and deleted");
-        fieldsToDelete = {'PreprocessedEventRelatedData'};
-        Data = rmfield(Data, fieldsToDelete);
-        fieldsToDelete = {'EventRelatedPreprocessing'};
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-end
+    msgbox("Warning: Event related data data already part of the dataset. Exisitng data will be removed.");
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"EventRelatedData");
+end 
 
 for i = 1:length(Data.Info.EventChannelNames)
     if strcmp(EventChannel,Data.Info.EventChannelNames{i})

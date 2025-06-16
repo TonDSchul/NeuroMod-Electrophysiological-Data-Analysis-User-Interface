@@ -37,44 +37,7 @@ function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,
 %% Check exisiting spike data. Already existing Data is deleted!
 if isfield(Data,'Spikes')
     msgbox("Warning: Spike data already part of the dataset. Exisitng data will be removed.");
-    Data.Spikes = [];
-    if isfield(Data,'EventRelatedSpikes')
-        fieldsToDelete = {'EventRelatedSpikes'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeSorting')
-        fieldsToDelete = {'SpikeSorting'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'Sorter')
-        fieldsToDelete = {'Sorter'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeSorting')
-        fieldsToDelete = {'SpikeSorting'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeDetectionNrStd')
-        fieldsToDelete = {'SpikeDetectionNrStd'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeDetectionThreshold')
-        fieldsToDelete = {'SpikeDetectionThreshold'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    Data.Info.SpikeType = "Non";
+    [Data,Error] = Organize_Delete_Dataset_Components(Data,"Spikes");
 end          
    
 %% Spike Structure has to be same as for Kilosort. Parameters not applicable to this spike analyiss are the following: (they stay empty)
@@ -469,11 +432,8 @@ end
 
 %% If no Spikes found, fields are empty. Delete field
 if isempty(Data.Spikes.SpikeTimes)
-    fieldsToDelete = {'Spikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
     msgbox("Warning: No Spikes found.");
-    Data.Info.SpikeType = 'Non';
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
     close(h);
     ToKeep = [];
     return;

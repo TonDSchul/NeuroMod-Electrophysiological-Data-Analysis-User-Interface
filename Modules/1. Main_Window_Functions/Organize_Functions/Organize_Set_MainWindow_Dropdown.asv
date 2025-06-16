@@ -1,0 +1,44 @@
+function [app] = Organize_Set_MainWindow_Dropdown(app,Data)
+
+%% Plot Selection
+% Plot Addons
+app.DropDown_2.Items = {};
+
+events = 0;
+spikes = 0;
+
+if isfield(Data,'Events')
+    events = 1;
+end
+
+if isfield(Data,'Spikes')
+    spikes = 1;
+end
+
+app.DropDown_2.Items{1} = 'Non';
+
+if events == 1 
+    app.DropDown_2.Items{2} = 'Events';
+end
+
+if spikes == 1 && events == 1 
+    app.DropDown_2.Items{3} = 'Spikes';
+elseif spikes == 1 && events == 0 
+    app.DropDown_2.Items{2} = 'Spikes';
+end
+
+% Main plot data
+app.DropDown.Items = {};
+app.DropDown.Items{1} = 'Raw Data';
+if isfield(Data,'Preprocessed')
+    app.DropDown.Items{2} = 'Preprocessed Data';
+end
+
+%% Event Channel Selection
+app.EventChannelDropDown.Items = {};
+if isfield(Data,'Events')
+    app.EventChannelDropDown.Enable = "on";
+    for i = 1:length(Data.Info.EventChannelNames)
+        app.EventChannelDropDown.Items{i} = Data.Info.EventChannelNames{i};
+    end
+end

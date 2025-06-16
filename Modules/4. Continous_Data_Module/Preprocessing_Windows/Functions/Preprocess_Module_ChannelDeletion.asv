@@ -25,13 +25,13 @@ h = waitbar(0, 'Deleting Channel...', 'Name','Deleting Channel...');
 msg = sprintf('Deleting Channel... (%d%% done)', round(100*(1/5)));
 waitbar(1/4, h, msg);
 
-ActiveChannelDeletionIndice = zeros(size(Data.Info.ProbeInfo.ActiveChannel));
+a = zeros(size(Data.Info.ProbeInfo.ActiveChannel));
 
 for i = 1:length(ChannelDeletion)
-    ActiveChannelDeletionIndice = ActiveChannelDeletionIndice + Data.Info.ProbeInfo.ActiveChannel == ChannelDeletion(i);
+    a = a + Data.Info.ProbeInfo.ActiveChannel == ChannelDeletion(i);
 end
 
-ChannelDeletion = find(ActiveChannelDeletionIndice==1);
+
 
 %% Delete Continous Data points
 if isfield(Data,'Preprocessed')

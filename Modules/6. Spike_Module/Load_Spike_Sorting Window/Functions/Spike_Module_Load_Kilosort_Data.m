@@ -43,42 +43,7 @@ SaveFilter = "No";
 
 if isfield(Data,'Spikes')
     msgbox("Warning: Spike data already part of the dataset. Exisitng data will be removed.");
-    Data.Spikes = [];
-    if isfield(Data,'EventRelatedSpikes')
-        fieldsToDelete = {'EventRelatedSpikes'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-    end
-    if isfield(Data.Info,'SpikeSorting')
-        fieldsToDelete = {'SpikeSorting'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeDetectionNrStd')
-        fieldsToDelete = {'SpikeDetectionNrStd'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeSorting')
-        fieldsToDelete = {'SpikeSorting'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'Sorter')
-        fieldsToDelete = {'Sorter'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'SpikeDetectionThreshold')
-        fieldsToDelete = {'SpikeDetectionThreshold'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-    Data.Info.SpikeType = "Non";
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
 end     
 
 % initiate field
@@ -230,28 +195,9 @@ end
 
 %% If no KilosortData found: Spike Field is emptyx but has to be deleted
 if isempty(Data.Spikes)
-    fieldsToDelete = {'Spikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-    Data.Info.SpikeType = 'Non';
-    msgbox("No Kilosort 4 data found in selected path.");
-    fieldsToDelete = {'EventRelatedSpikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-    if isfield(Data,'EventRelatedSpikes')
-        fieldsToDelete = {'EventRelatedSpikes'};
-        % Delete fieldsven
-        Data = rmfield(Data, fieldsToDelete);
-    end
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
+    msgbox("No sorting data could be loaded.");
     return;
-end
-
-% extracted every time analysis ios plotted, so removing is not really
-% necessary, but for good measure
-if isfield(Data,'EventRelatedSpikes')
-    fieldsToDelete = {'EventRelatedSpikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
 end
 
 if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)

@@ -50,13 +50,9 @@ if ~isempty(ProbeBrainAreas)
     if isfield(ProbeBrainAreas,'AreaTipDistance')
         
         NumPositiveDepths = sum(ProbeBrainAreas.AreaTipDistance(:,1)>0);
-
-        if SwitchTopBottomChannel == 0
-            FirstActiveChannelDepth = ((NumChannel-1)*ChannelSpacing) - (((ActiveChannel(1)/ChannelRows)-1)*ChannelSpacing);
-        else
-            FirstActiveChannelDepth = ((NumChannel-1)*ChannelSpacing) - (((min(ActiveChannel)/ChannelRows)-1)*ChannelSpacing);
-        end
-
+        
+        FirstActiveChannelDepth = ((NumChannel-1)*ChannelSpacing) - ((ActiveChannel(1)-1)*ChannelSpacing);
+        
         Distances = abs(diff(ProbeBrainAreas.AreaTipDistance(1:NumPositiveDepths+1,1)));
 
         Areanames = ProbeBrainAreas.AreaNamesShort(1:NumPositiveDepths);
