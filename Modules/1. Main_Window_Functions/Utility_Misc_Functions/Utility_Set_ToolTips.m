@@ -187,9 +187,11 @@ if Activated
            
             app.EventExtractionWindow.RecordingSystem.Tooltip = "This shows the recording system determined when data was extracted.";
             app.EventExtractionWindow.FileTypeDropDown.Tooltip = "Depending on the recording system and file format you might have multipe event channel types. This can be analog or digital inputs lines as well as different recording nodes. To see which types contain your event data click the 'Plot Input Channel' button.";
-            app.EventExtractionWindow.NrInputChinfolderEditField.Tooltip = "Nr of event input channel of the type specified above were found. 3 with 'Digital Inputs' selected above means that 3 digital event channel were found. Depends on the recording system.";
-            app.EventExtractionWindow.AnalogThresholdVEditField.Tooltip = "When your event data is present as a continous recording (unlike Open Ephys or Neuralynx recordings), a threshold has to be applied to determine the time points of the event onsets. If the signal exceeds this value, the time point is captured.";
-            app.EventExtractionWindow.InputChannelSelectionEditField.Tooltip = "Select which of the found input channel of the selected type you want to extract events from. [1,2,4,6] for digital input types means that the digital recording system input channel nr. 1,2,4 and 6 are scanned for event data.";
+            app.EventExtractionWindow.NrInputChinfolderEditField.Tooltip = "Nr of event input channel of the type specified above were found. 3 with 'Digital Inputs' selected above means that 3 different digital event channel were found. Depends on the recording system.";
+            app.EventExtractionWindow.AnalogThresholdVEditField.Tooltip = "When your event data is present as a continous recording (unlike Open Ephys or Neuralynx recordings), a threshold has to be applied to determine the time points of the event onsets. If the signal exceeds this value, the time point is captured as a trigger.";
+            app.EventExtractionWindow.InputChannelSelectionEditField.Tooltip = "Select which of the found input channel of the selected type you want to extract trigegrs from. [1,2,4,6] for digital input types means that the digital recording system input channel nr. 1,2,4 and 6 are scanned for trigger.";
+            
+            app.EventExtractionWindow.LoadCostumeTriggerIdentityButton.Tooltip = "Click to open a window that allows to divide triggers in a single event input channel into multiple different event input channel. For example, 200 trigger in a single event channel each representing one of 4 different auditory stimulus frequency being played can be divided into 4 different channel, each for one frequency. Consequently, event related analysis can be coducted for each event channel individually.";
 
             app.EventExtractionWindow.SetFoldermanuallyButton.Tooltip = "Event channel data is auto-searched for in the folder the data was extracted from. When this folder does not contain your recording data or switched location, you can manually select a folder which contains your event data for the current recording.";
             app.EventExtractionWindow.PlotInputChannelButton.Tooltip = "To see which input channel types and numbers contain your event data and which threshold to use (if applicable), click this button to plot the event data over time.";
@@ -201,7 +203,7 @@ if Activated
             app.EventExtractionWindow.TimeWindowBeforeEventssEditField.Tooltip = "Time after each event in seconds to extract data from.";
 
             app.EventExtractionWindow.ExtractEventRelatedDataButton.Tooltip = "Start event related data extraction with the settings above. Once finished you can analyse event related data.";
-
+           
         end
     end
 

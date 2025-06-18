@@ -54,11 +54,7 @@ for numchannels = 1:length(InputChannelData)
     if size(InputChannelData{numchannels},2) == 1
         InputChannelData{numchannels} = InputChannelData{numchannels}(:)';
     end
-    if strcmp(InputChannelType,"Digital Inputs")
-        if InputChannelData{numchannels}(1) == 1
-            InputChannelData{numchannels} = single(~InputChannelData{numchannels}(:));
-        end
-    end
+
 end
 
 %% Extract Distinct events
@@ -69,23 +65,26 @@ Data.Events = cell(1,length(InputChannelData));
 
 for numchannels = 1:length(InputChannelData)   
     % Find the indices of elements greater than the threshold
+
     aboveThreshold = InputChannelData{numchannels} >= Threshold;
+
     belowThreshold = InputChannelData{numchannels} < Threshold;
+
     if sum(aboveThreshold) == length(InputChannelData{numchannels}) || sum(belowThreshold) == length(InputChannelData{numchannels}) % --> if no value smaller than threshold: ill defined, no events captured
         msgbox(strcat("No value smaller than threshold: ill defined, no events captured for event channel",num2str(numchannels))); 
         Data.Events{numchannels} = [];
     else
-        if strcmp(EventInfoType,'Event Onset')
+        if strcmp(EventInfoType,'Rising Edge')
             % Detect rising edge 
-            for i = 1:length(aboveThreshold)-1
-                if aboveThreshold(i) && (i == 1 || ~aboveThreshold(i-1)) && (aboveThreshold(i+1))
+            for i = 2:length(aboveThreshold)
+                if aboveThreshold(i-1) == 0 && aboveThreshold(i) == 1
                     Data.Events{numchannels} = [Data.Events{numchannels}, i];
                 end
             end
-        else
+        elseif strcmp(EventInfoType,'Falling Edge')
             % Detect falling edge 
-            for i = 1:length(aboveThreshold) - 1
-                if belowThreshold(i) && (i == 1 || ~belowThreshold(i-1)) && belowThreshold(i+1)
+            for i = 2:length(aboveThreshold)
+                if belowThreshold(i-1) == 0 && belowThreshold(i) == 1
                     if i ~= 1
                         Data.Events{numchannels} = [Data.Events{numchannels}, i];
                     end
@@ -101,3 +100,8 @@ for numevents = 1:length(Data.Events)
     end
 end
 
+% figure;
+% hold on
+% plot(Data.Time,InputChannelData{1})
+% a = zeros(size(Data.Events{1}))+1;
+% plot(Data.Events{1}/25000,a,'*','Color','r')

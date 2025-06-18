@@ -198,8 +198,6 @@ if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
         end
     end
     
-    EventInfoField = EventInfo.DINChannel;
-
     EventInfoType = EventInfo.EventType;
 
     %% Start Event Extraction with parameters found above
@@ -418,6 +416,42 @@ elseif strcmp(RecordingType,"Spike2")
     end
 end
 
+
+%% Check for weird input channel characteristics, assuming event dara is more or less equally spaced 
+%(closer to each other than mean distance between samples minus std)
+
+NoiseIndices = cell(size(Data.Events));
+FoundBadEvents = 0;
+
+for i = 1:length(Data.Events)
+    SampleDiffs = diff(Data.Events{i});
+
+    SampleDiffMean = mean(SampleDiffs);
+    SampleDiffStd = std(SampleDiffs);
+    
+    NoiseIndices{i} = find(SampleDiffs <= SampleDiffMean - SampleDiffStd);
+    
+    if ~isempty(NoiseIndices{i})
+        FoundBadEvents = 1;
+    end
+end
+
+if FoundBadEvents == 1
+    %msgbox(strcat(num2str(length(NoiseIndices))," Events/TTLs found that are closer to other event triggers than the mean distance between event triggers minus their standard deviation is. If the time inbetween event triggers is supposed to be (roughly) the same, there are prb noise spikes in your event trigger data!"))
+    app = Clean_Events(Data,NoiseIndices,FileTypeDropDown);
+    
+    uiwait(app.CleanEventTriggerUIFigure);
+    % Wait for the app to close
+    
+    if isvalid(app)
+        Data = app.Data;
+        delete(app)
+    else
+        msgbox("Clean events window closed before changes could be applied to dataset! Continuing with event extraction ")
+    end
+end
+
+
 if isfield(Data,'Events') 
     if ~isempty(Data.Events)
         Eventstodelete = [];
@@ -586,3 +620,5 @@ else
     pause(0.2);
     return;
 end
+
+
