@@ -55,4 +55,25 @@ if ~isempty(app.Mainapp.EventKilosortSpikesWindow)
         Organize_Prepare_Plot_and_Extract_GUI_Info(app.Mainapp.EventKilosortSpikesWindow.Mainapp,1,"Initial","Static",app.Mainapp.EventKilosortSpikesWindow.Mainapp.PlotEvents,app.Mainapp.EventKilosortSpikesWindow.Mainapp.Plotspikes);
     end
 
+    if strcmp(app.Mainapp.EventKilosortSpikesWindow.AnalysisTypeDropDown.Value,"Spike Rate Heatmap") || strcmp(app.Mainapp.EventKilosortSpikesWindow.AnalysisTypeDropDown.Value,"Spike Triggered Average")
+        cb=colorbar('peer',app.Mainapp.EventKilosortSpikesWindow.UIAxes,'location','WestOutside');
+        cb.Color = 'k';              % Sets tick mark and label color to black
+        cb.Label.Rotation = 270;
+        cb.Label.Color = 'k';        % Sets the color of the label text
+        app.Mainapp.EventKilosortSpikesWindow.UIAxes.XColor = 'k';  
+        app.Mainapp.EventKilosortSpikesWindow.UIAxes.XTickLabelMode = 'auto';  
+
+        if strcmp(app.Mainapp.EventKilosortSpikesWindow.AnalysisTypeDropDown.Value,"Spike Rate Heatmap")
+            cb.Label.String = "Firing Rate [Hz]";
+        elseif strcmp(app.Mainapp.EventKilosortSpikesWindow.AnalysisTypeDropDown.Value,"Spike Triggered Average")
+            cb.Label.String = "Signal [mV]";
+        end
+    end
+
+    app.Mainapp.EventKilosortSpikesWindow.UIAxes.Title.Color = 'k';  
+    app.Mainapp.EventKilosortSpikesWindow.UIAxes.YColor = 'k';  
+    app.Mainapp.EventKilosortSpikesWindow.UIAxes.YLabel.Color = 'k';
+    app.Mainapp.EventKilosortSpikesWindow.UIAxes.YTickLabelMode = 'auto';
+    
+
 end

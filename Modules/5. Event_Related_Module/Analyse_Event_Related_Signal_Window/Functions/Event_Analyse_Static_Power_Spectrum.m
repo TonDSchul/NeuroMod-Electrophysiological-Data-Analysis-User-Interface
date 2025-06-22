@@ -37,9 +37,9 @@ function [CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,Figure,Dat
 %________________________________________________________________________________________
 
 %% First calculate ERP over events when multiple events selected
-if SelectedEvents(1) ~= SelectedEvents(2) %--> mean over events if multiple selected
+if length(SelectedEvents)>1 %--> mean over events if multiple selected
     if strcmp(DataSource,"Raw Event Related Data")
-        DataToAnalyse = squeeze(mean(Data.EventRelatedData(:,SelectedEvents(1):SelectedEvents(2),:),2));
+        DataToAnalyse = squeeze(mean(Data.EventRelatedData(:,SelectedEvents,:),2));
         
         if strcmp(DataType,"Channel Individually")
             DataToAnalyse = DataToAnalyse(SelectedChannel,:);
@@ -47,7 +47,7 @@ if SelectedEvents(1) ~= SelectedEvents(2) %--> mean over events if multiple sele
             DataToAnalyse = mean(DataToAnalyse,1);
         end
     else
-        DataToAnalyse = squeeze(mean(Data.PreprocessedEventRelatedData(:,SelectedEvents(1):SelectedEvents(2),:),2));
+        DataToAnalyse = squeeze(mean(Data.PreprocessedEventRelatedData(:,SelectedEvents,:),2));
 
         if strcmp(DataType,"Channel Individually")
             DataToAnalyse = DataToAnalyse(SelectedChannel,:);
@@ -57,7 +57,7 @@ if SelectedEvents(1) ~= SelectedEvents(2) %--> mean over events if multiple sele
     end
 else % If same event --> no mean
     if strcmp(DataSource,"Raw Event Related Data")
-        DataToAnalyse = squeeze(Data.EventRelatedData(:,SelectedEvents(1),:));
+        DataToAnalyse = squeeze(Data.EventRelatedData(:,SelectedEvents,:));
         
         if strcmp(DataType,"Channel Individually")
             DataToAnalyse = DataToAnalyse(SelectedChannel,:);
@@ -65,7 +65,7 @@ else % If same event --> no mean
             DataToAnalyse = mean(DataToAnalyse,1);
         end
     else
-        DataToAnalyse = squeeze(Data.PreprocessedEventRelatedData(:,SelectedEvents(1),:));
+        DataToAnalyse = squeeze(Data.PreprocessedEventRelatedData(:,SelectedEvents,:));
 
         if strcmp(DataType,"Channel Individually")
             DataToAnalyse = DataToAnalyse(SelectedChannel,:);
@@ -108,7 +108,8 @@ DispIndicies = Freq>dispRange(1) & Freq<dispRange(2);
 if ~isempty(PWelch_handles)
     set(PWelch_handles(1), 'XData', Freq(DispIndicies), 'YData', 10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
 else
-    semilogy(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
+    line(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
+
 end
 
 xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);

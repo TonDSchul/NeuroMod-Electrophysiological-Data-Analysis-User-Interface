@@ -78,10 +78,33 @@ else
    return;
 end
 
-if isfield(app.Mainapp.Data.Info.ProbeInfo,'CompleteAreaNames')
-    BrainAreaInfo = app.Mainapp.Data.Info.ProbeInfo.CompleteAreaNames;
+if isprop(app,'ProbeLayoutWindowUIFigure')
+    if isfield(app.ProbeTrajectoryInfo,'AreaNamesLong')
+        BrainAreaInfo = app.ProbeTrajectoryInfo;
+    else
+        BrainAreaInfo = [];
+    end
 else
-    BrainAreaInfo = [];
+    if isfield(app.Mainapp.Data.Info.ProbeInfo,'CompleteAreaNames')
+        BrainAreaInfo = app.Mainapp.Data.Info.ProbeInfo.CompleteAreaNames;
+    else
+        BrainAreaInfo = [];
+    end
 end
 
-Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
+if isprop(app,'ProbeLayoutWindowUIFigure')
+
+    if ~isempty(app.ActiveChannelField.Value{1})
+        ActiveChannel = str2double(strsplit(app.ActiveChannelField.Value{1},','));
+    else
+        ActiveChannel = 1:str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value);
+    end
+    
+    if app.ReverseTopandBottomChannelNumberCheckBox.Value == 1
+        ActiveChannel = (str2double(app.NrChannelEditField.Value)*str2double(app.ChannelRowsDropDown.Value)+1)-ActiveChannel;
+    end
+
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,1,[],app.CheckBox.Value,[],app.ReverseTopandBottomChannelNumberCheckBox.Value,app.SwitchLeftandRightChannelNumberCheckBox.Value)
+else
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,app.Mainapp.ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
+end

@@ -32,6 +32,17 @@ try
 catch
     app.ProbeViewWindowHandle = [];
 end
+
+%% Data Extraction WIndow
+% try
+%     if ~isempty(app.ExtractDataWindow) && DeleteProbeView ~= 1
+%         delete(app.ExtractDataWindow);
+%         app.ExtractDataWindow = [];
+%     end
+% catch
+%     app.ExtractDataWindow = [];
+% end
+
 %% Live main window plots
 try
     if ~isempty(app.PSTHApp)
@@ -248,4 +259,18 @@ try
 catch
     app.ManageModulesWindow = [];
 end
+
+
+%% Manage Components
+try
+    if ~isempty(app.Manage_Dataset_ComponentsWindow)
+        delete(app.Manage_Dataset_ComponentsWindow);
+        app.Manage_Dataset_ComponentsWindow = [];
+    end
+catch
+    app.Manage_Dataset_ComponentsWindow = [];
+end
+
+
+
 

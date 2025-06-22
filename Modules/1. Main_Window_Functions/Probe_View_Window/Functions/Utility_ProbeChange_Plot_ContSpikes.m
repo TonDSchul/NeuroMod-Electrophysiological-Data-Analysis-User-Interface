@@ -156,4 +156,36 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
         app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data = TempData;
     end
 
+    if strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Amplitude Density Along Depth") || strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Cumulative Spike Amplitude Density Along Depth") || strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Average Waveforms Across Channel") || strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Triggered LFP")
+        cb=colorbar('peer',app.Mainapp.ConKilosortSpikesWindow.UIAxes,'location','WestOutside');
+        cb.Color = 'k';              % Sets tick mark and label color to black
+        cb.Label.Rotation = 270;
+        cb.Label.Color = 'k';        % Sets the color of the label text
+    
+        if strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Average Waveforms Across Channel")
+            cb.Label.String = "Amplitude [mV]";
+        elseif strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Triggered LFP")
+            cb.Label.String = "Signal [mV]";
+        else
+            cb.Label.String = "Firing Rate [Hz]";
+        end
+    end
+    
+    
+    app.Mainapp.ConKilosortSpikesWindow.UIAxes.YColor = 'k';  
+    app.Mainapp.ConKilosortSpikesWindow.UIAxes.YTickLabelMode = 'auto';
+    app.Mainapp.ConKilosortSpikesWindow.UIAxes.XColor = 'k';  
+    app.Mainapp.ConKilosortSpikesWindow.UIAxes.Title.Color = 'k';  
+    %app.UIAxes.YTickLabelMode = 'auto';
+    if strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Map")
+        % Disable XTick labels
+        app.Mainapp.ConKilosortSpikesWindow.UIAxes.XTickLabel = [];
+        app.Mainapp.ConKilosortSpikesWindow.UIAxes.Title.Color = 'k'; 
+        % Remove xlabel
+        app.Mainapp.ConKilosortSpikesWindow.UIAxes.XLabel.String = '';
+        app.Mainapp.ConKilosortSpikesWindow.UIAxes.YColor = 'k';  
+        app.Mainapp.ConKilosortSpikesWindow.UIAxes.YTickLabelMode = 'auto';
+    end
+
 end
+

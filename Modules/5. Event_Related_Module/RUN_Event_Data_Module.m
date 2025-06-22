@@ -30,6 +30,8 @@ elseif strcmp(ModuleFunctionName,"Import Events/TTL")
         app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
     end
 
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ImportEvents");
+
 elseif strcmp(ModuleFunctionName,"LFP Analysis")
     if ~isfield(app.Data,'EventRelatedData')
         msgbox("Error: No event related data found. Please first extract events and event related data");

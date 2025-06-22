@@ -157,7 +157,8 @@ cbar_handle=colorbar('peer',Figure,'location','EastOutside');
 cbar_handle.Label.String = PlotAppearance.TFWindow.CLabel;
 cbar_handle.Label.Rotation = 270;
 
-title(Figure,strcat("Total Time Frequency Power for Events ",num2str(EventSelection)));
+%title(Figure,strcat("Total Time Frequency Power for Trigger ",num2str(EventSelection)));
+title(Figure,strcat("Total Time Frequency Power"));
 xlabel(Figure,PlotAppearance.TFWindow.XLabel), ylabel(Figure,PlotAppearance.TFWindow.YLabel)
 ylim(Figure,[costumfrex(1) costumfrex(3)])
 

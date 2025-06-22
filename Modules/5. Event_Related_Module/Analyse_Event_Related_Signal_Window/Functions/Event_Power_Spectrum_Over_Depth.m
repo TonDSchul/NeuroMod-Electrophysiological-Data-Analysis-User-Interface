@@ -50,11 +50,11 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Ove
 %________________________________________________________________________________________
 
 %% First calculate ERP over events when multiple events selected
-if SelectedEvents(1) ~= SelectedEvents(2) %--> mean over events if multiple selected
+if length(SelectedEvents) > 1 %--> mean over events if multiple selected
     if strcmp(DataSource,"Raw Event Related Data")
-        DataToAnalyse = squeeze(mean(Data.EventRelatedData(:,SelectedEvents(1):SelectedEvents(2),:),2)); 
+        DataToAnalyse = squeeze(mean(Data.EventRelatedData(:,SelectedEvents,:),2)); 
     else
-        DataToAnalyse = squeeze(mean(Data.PreprocessedEventRelatedData(:,SelectedEvents(1):SelectedEvents(2),:),2));
+        DataToAnalyse = squeeze(mean(Data.PreprocessedEventRelatedData(:,SelectedEvents,:),2));
     end
 else % If same event --> no mean
     if strcmp(DataSource,"Raw Event Related Data")

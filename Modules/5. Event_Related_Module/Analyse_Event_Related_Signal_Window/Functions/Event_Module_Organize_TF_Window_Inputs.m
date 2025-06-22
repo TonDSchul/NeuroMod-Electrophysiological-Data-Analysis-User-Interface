@@ -58,8 +58,12 @@ DataChannelRange = [];
 %% Extract Values to do calculations
 
 CommaIndex = find(EventNumberSelectionEditField==',');
-EventNrRange(1) = str2double(EventNumberSelectionEditField(1:CommaIndex-1));
-EventNrRange(2) = str2double(EventNumberSelectionEditField(CommaIndex+1:end));
+
+EventNrRange = eval(EventNumberSelectionEditField);
+
+if isempty(EventNrRange)
+    EventNrRange = 1;
+end
 
 DataChannelSelected = ChannelSelectionDropDown;
 

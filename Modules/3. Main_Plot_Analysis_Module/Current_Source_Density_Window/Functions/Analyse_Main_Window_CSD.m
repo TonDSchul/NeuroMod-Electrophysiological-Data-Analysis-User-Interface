@@ -72,6 +72,8 @@ if strcmp(TwoORThreeD,"TwoD")
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
         cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;
+        cbar_handle.Color = 'k';  
+        cbar_handle.Label.Color = 'k';        % Sets the color of the label text
     else
         set(PowerDepth_handles(1),'XData', TimeRangetoPlot, 'YData', ds(1:size(csd,2)), ...
         'CData', csd','Tag','PowerDepth');
@@ -101,6 +103,8 @@ elseif strcmp(TwoORThreeD,"ThreeD")
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
         cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;
+        cbar_handle.Color = 'k';  
+        cbar_handle.Label.Color = 'k';        % Sets the color of the label text
         % 3D Plot
         surf(Figure,TimeRangetoPlot,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')
         % % 2D Plot

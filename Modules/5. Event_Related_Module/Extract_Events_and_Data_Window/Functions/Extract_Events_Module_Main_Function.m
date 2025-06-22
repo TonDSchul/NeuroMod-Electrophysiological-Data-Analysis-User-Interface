@@ -67,9 +67,9 @@ EventChannelDropDown = [];
 
 %% First maintaining GUI main data structure by deleting previous event data
 if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
-    msgbox("Warning: Events and event related data where already extracted. Previous data will be overwritten!");
+    msgbox("Warning: Event trigger and event related data where already extracted. Previous data will be overwritten!");
 elseif isfield(Data,'Events')
-    msgbox("Warning: Events where already extracted. Previous data will be overwritten!");
+    msgbox("Warning: Event trigger where already extracted. Previous data will be overwritten!");
 end
 
 if isfield(Data,'Events')
@@ -227,7 +227,7 @@ elseif strcmp(RecordingType,"Open Ephys")
     if ~isempty(startTimestamp)
         startTimestamp = round(Data.Info.startTimestamp*Data.Info.NativeSamplingRate);
     else
-        msgbox("Warning: No aquisition start time stamp found. Cannot correct event times if recording and aquistion start are different.")
+        msgbox("Warning: No aquisition start time stamp found. Cannot correct trigger times if recording and aquistion start are different.")
     end
     
     [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Data,Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp,Data.Info.AllRecordingIndicies);
@@ -240,14 +240,14 @@ elseif strcmp(RecordingType,"Open Ephys")
             if sum(EventsToDelete)>0
                 Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
                 Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
-                disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," events are deleted!"));
+                disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," trigger are deleted!"));
             end
         end
         if isfield(Data.Info,'CutEnd')
             EventsToDelete = Data.Events{i} > length(Data.Time);
             if sum(EventsToDelete)>0
                 Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
-                disp(strcat("Event Nr. ",num2str(i),": Stop time of dataset was cut. Last ",num2str(sum(EventsToDelete))," events are deleted!"));
+                disp(strcat("Event Nr. ",num2str(i),": Stop time of dataset was cut. Last ",num2str(sum(EventsToDelete))," trigger are deleted!"));
             end
         end
     end
@@ -257,7 +257,7 @@ elseif strcmp(RecordingType,"Open Ephys")
         % Search for those events and delete
         for nevents = 1:length(Data.Events)
             if sum(Data.Events{nevents}>length(Data.Time))>0
-                msgbox(strcat("Extracted event data for selected channel ", num2str(nevents)," contains ",num2str(sum(Data.Events{nevents}>length(Data.Time)))," samples outside of time range which are deleted. This can be due to an incorrect start timestamp of your recording."))
+                msgbox(strcat("Extracted trigger data for selected channel ", num2str(nevents)," contains ",num2str(sum(Data.Events{nevents}>length(Data.Time)))," samples outside of time range which are deleted. This can be due to an incorrect start timestamp of your recording."))
                 Data.Events{nevents}(Data.Events{nevents}>length(Data.Time)) = [];
             end
         end
@@ -293,10 +293,10 @@ elseif strcmp(RecordingType,"Neuralynx")
     if ~isempty(Eventsamples) 
         
         if sum(Eventsamples>length(Data.Time))>0
-            msgbox("Warning: Events outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
+            msgbox("Warning: Trigger outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
             Eventsamples(Eventsamples>length(Data.Time)) = [];
             if isempty(Eventsamples)
-                msgbox("Warning: All event indicies had to be deleted.");
+                msgbox("Warning: All trigger indicies had to be deleted.");
                 Data.Events = [];
             end
         end
@@ -447,7 +447,7 @@ if FoundBadEvents == 1
         Data = app.Data;
         delete(app)
     else
-        msgbox("Clean events window closed before changes could be applied to dataset! Continuing with event extraction ")
+        msgbox("Clean events window closed before changes could be applied to dataset! Continuing with event extraction.")
     end
 end
 
@@ -461,7 +461,7 @@ if isfield(Data,'Events')
             
             if sum(EventsSmallerZero)>0
                 Data.Events{i}(EventsSmallerZero) = [];
-                msgbox(strcat("Found and deleted ",num2str(sum(EventsSmallerZero))," event indicies smaller or equal to 0. For Open Ephys recordings this can be due to extracting a limited number of recordings for node A while extracting events from node B from which all recordings are analysze (nwb). This can lead to correct event times as long as events from node B lie outside of time range of node A. In doubt please try a different node and/or load all recordings from current node!"));
+                msgbox(strcat("Found and deleted ",num2str(sum(EventsSmallerZero))," trigger indicies smaller or equal to 0. For Open Ephys recordings this can be due to extracting a limited number of recordings for node A while extracting events from node B from which all recordings are analysze (nwb). This can lead to correct event times as long as events from node B lie outside of time range of node A. In doubt please try a different node and/or load all recordings from current node!"));
             end
 
             if ~isempty(Data.Events{i})
@@ -475,7 +475,7 @@ if isfield(Data,'Events')
                         if sum(EventsToDelete)>0
                             Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
                             Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
-                            disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," events are deleted!"));
+                            disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," triggers are deleted!"));
                         end
                     end
             
@@ -483,7 +483,7 @@ if isfield(Data,'Events')
                         EventsToDelete = Data.Events{i} >= length(Data.Time);
                         if sum(EventsToDelete)>0
                             Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
-                            disp(strcat("Stop time of dataset was cut. First ",num2str(sum(EventsToDelete))," events are deleted!"));
+                            disp(strcat("Stop time of dataset was cut. First ",num2str(sum(EventsToDelete))," triggers are deleted!"));
                         end
                     end
                 end
@@ -539,9 +539,9 @@ if isfield(Data,'Events')
                 end
                 
                 if i == 1
-                    TextArea2Object.Value = strcat("Event Extraction succesfull. Found ",num2str(length(Data.Events{i}))," Events for Event Channel ",Data.Info.EventChannelNames{i});
+                    TextArea2Object.Value = strcat("Event Extraction succesfull. Found ",num2str(length(Data.Events{i}))," Trigger for Event Channel ",Data.Info.EventChannelNames{i});
                 else
-                    TextArea2Object.Value = [TextArea2Object.Value;strcat("Event Extraction succesfull. Found ",num2str(length(Data.Events{i}))," Events for Event Channel ",Data.Info.EventChannelNames{i})];
+                    TextArea2Object.Value = [TextArea2Object.Value;strcat("Event Extraction succesfull. Found ",num2str(length(Data.Events{i}))," Trigger for Event Channel ",Data.Info.EventChannelNames{i})];
                 end
             end
     
@@ -551,10 +551,10 @@ if isfield(Data,'Events')
         end
     
         if ~isempty(Eventstodelete) 
-            msgbox(strcat("Warning: Events ",num2str(Eventstodelete)," contain no event indicies and are deleted"));
+            msgbox(strcat("Warning: Event(s) ",num2str(Eventstodelete)," contain no trigger indicies and are deleted"));
             
             if length(Eventstodelete)==length(Data.Events) % If all events empty
-                msgbox("No Events found!");
+                msgbox("No Trigger found!");
                 fieldsToDelete = {'Events'};
                 % Delete fields
                 Data = rmfield(Data, fieldsToDelete);
@@ -568,7 +568,7 @@ if isfield(Data,'Events')
                     % Delete fields
                     Data.Info = rmfield(Data.Info, fieldsToDelete);
                 end
-                TextArea2Object.Value = "No Events found!";
+                TextArea2Object.Value = "No Trigger found!";
                 EventChannelDropDown = [];
                 pause(0.2);
                 return;
@@ -581,7 +581,7 @@ if isfield(Data,'Events')
         end
 
     else % If events empty
-        msgbox("No Events found!");
+        msgbox("No Trigger found!");
         if isfield(Data.Info,'EventChannelNames')
             fieldsToDelete = {'Events'};
             % Delete fields
@@ -597,13 +597,13 @@ if isfield(Data,'Events')
             % Delete fields
             Data.Info = rmfield(Data.Info, fieldsToDelete);
         end
-        TextArea2Object.Value = "No Events found!";
+        TextArea2Object.Value = "No Trigger found!";
         EventChannelDropDown = [];
         pause(0.2);
         return;
     end
 else
-    msgbox("No Events found!");
+    msgbox("No Trigger found!");
     if isfield(Data.Info,'EventChannelNames')
         fieldsToDelete = {'EventChannelNames'};
         % Delete fields
@@ -615,7 +615,7 @@ else
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
-    TextArea2Object.Value = "No Events found!";
+    TextArea2Object.Value = "No Trigger found!";
     EventChannelDropDown = [];
     pause(0.2);
     return;

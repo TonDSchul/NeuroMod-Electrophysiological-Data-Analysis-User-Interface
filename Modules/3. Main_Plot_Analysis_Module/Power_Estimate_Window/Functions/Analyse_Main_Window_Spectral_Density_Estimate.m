@@ -104,6 +104,7 @@ if isempty(PowerEstimatesHandles)
     % Set the xtick labels
     Figure.XTickLabel = xtick_labels;    
     Figure.FontSize = PlotAppearance.LivePowerEstimateWindow.FontSize;
+    xlim(Figure,[0.5,5.5])
 else
     set(PowerEstimatesHandles, 'YData', [Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],'FaceColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'EdgeColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'Tag', 'Barobject');
 end

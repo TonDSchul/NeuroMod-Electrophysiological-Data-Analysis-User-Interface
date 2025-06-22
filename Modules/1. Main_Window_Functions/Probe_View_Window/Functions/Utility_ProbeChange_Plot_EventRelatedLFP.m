@@ -21,9 +21,7 @@ if strcmp(Window,"ERP")
     TimearoundEvent(1) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)-1));
     TimearoundEvent(2) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
     
-    commaindicie = strfind(app.Mainapp.EventLFPERP.EventNumberSelectionEditField.Value,",");
-    EventNr(1) = str2double(app.Mainapp.EventLFPERP.EventNumberSelectionEditField.Value(1:commaindicie-1));
-    EventNr(2) = str2double(app.Mainapp.EventLFPERP.EventNumberSelectionEditField.Value(commaindicie+1:end));
+    EventNr = eval(app.Mainapp.EventLFPERP.EventNumberSelectionEditField.Value);
     
     %% Plot ERP
     
@@ -34,9 +32,9 @@ if strcmp(Window,"ERP")
     end
     
     if strcmp(app.Mainapp.EventLFPERP.DataTypeDropDown.Value,'Raw Event Related Data')
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
+        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr,:),EventTime,app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
     else
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,[],app.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
+        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),EventTime,app.Mainapp.ActiveChannel,[],app.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
     end
 end
 
@@ -46,9 +44,7 @@ if strcmp(Window,"CSD")
     TimearoundEvent(1) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)-1));
     TimearoundEvent(2) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
     
-    commaindicie = strfind(app.Mainapp.EventLFPCSD.EventNumberSelectionEditField.Value,",");
-    EventNr(1) = str2double(app.Mainapp.EventLFPCSD.EventNumberSelectionEditField.Value(1:commaindicie-1));
-    EventNr(2) = str2double(app.Mainapp.EventLFPCSD.EventNumberSelectionEditField.Value(commaindicie+1:end));
+    EventNr = eval(app.Mainapp.EventLFPCSD.EventNumberSelectionEditField.Value);
     
     % Structure holding csd window specific infos
     CSD.ChannelSpacing = app.Mainapp.Data.Info.ChannelSpacing;
@@ -63,10 +59,17 @@ if strcmp(Window,"CSD")
     
     %% Plot CSD
     if strcmp(app.Mainapp.EventLFPCSD.DataTypeDropDown.Value,'Raw Event Related Data') 
-        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.EventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[]);
+        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.EventRelatedData(:,EventNr,:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[]);
     else
-        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr(1):EventNr(2),:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[]); 
+        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),EventTime,app.Mainapp.ActiveChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[]); 
     end
+
+    cb = colorbar(app.Mainapp.EventLFPCSD.UIAxes);
+    cb.Color = 'k';              % Sets tick mark and label color to black
+    cb.Label.Color = 'k';        % Sets the color of the label text
+    cb.Label.String = app.Mainapp.PlotAppearance.CSDWindow.CLabel;
+    cb.Label.Rotation = 270;
+    cb.FontSize =  app.Mainapp.PlotAppearance.CSDWindow.FontSize;  
 end
 
 if strcmp(Window,"EventSpectrum")
@@ -76,14 +79,14 @@ if strcmp(Window,"EventSpectrum")
     if strcmp(app.Mainapp.EventLFPSSP.AnalysisDropDown.Value,"Band Power Individual Channel ")
 
         SelectedChannel = str2double(app.Mainapp.EventLFPSSP.ChannelDropDown.Value);
-        if app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
-            TempActiveChannel = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)*str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+1)-sort(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel);
-            [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,SelectedChannel,'MainWindow');
-        else
-            [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,SelectedChannel,'MainWindow');
-        end
+        % if app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+        %     TempActiveChannel = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)*str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+1)-sort(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel);
+        %     [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,SelectedChannel,'MainWindow');
+        % else
+        %     [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,SelectedChannel,'MainWindow');
+        % end
 
-        SelectedEvents = str2double(split(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value,','))';
+        SelectedEvents = eval(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value);
 
         set(app.Mainapp.EventLFPSSP.UIAxes, 'YDir', 'normal');
         cb = colorbar(app.Mainapp.EventLFPSSP.UIAxes);   % Create a colorbar (if it exists)
@@ -93,7 +96,7 @@ if strcmp(Window,"EventSpectrum")
 
         [app.Mainapp.CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(app.Mainapp.Data,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.DataTypeDropDown.Value,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,SelectedChannel,app.Mainapp.EventLFPSSP.ChannelDropDown.Value,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,SelectedEvents);
 
-        SelectedEvents = str2double(split(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value,','))';
+        SelectedEvents = eval(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value);
 
         [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'Just Frequency Bands',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,SelectedEvents,app.Mainapp.ActiveChannel); 
 
@@ -101,9 +104,16 @@ if strcmp(Window,"EventSpectrum")
 
         app.Mainapp.EventLFPSSP.UIAxes.YScale = 'linear';
         
-        SelectedEvents = str2double(split(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value,','))';
+        SelectedEvents = eval(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value);
 
         [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'All',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,SelectedEvents,app.Mainapp.ActiveChannel); 
+        
+        cb = colorbar(app.Mainapp.EventLFPSSP.UIAxes);
+        cb.Color = 'k';              % Sets tick mark and label color to black
+        cb.Label.String = "Power [dB]";
+        cb.Label.Rotation = 270;
+        %cb.FontSize =  app.Mainapp.PlotAppearance.SpectrumWindow.Data.TimeFontSize;
+        cb.Label.Color = 'k';        % Sets the color of the label text
     end
 end
 

@@ -33,7 +33,7 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     % Colors
     PlotAppearance.MainWindow.Data.Color.MainSpikes = [1,0,0]; % red
     PlotAppearance.MainWindow.Data.Color.MainEvents = [0,0,0]; % black
-    PlotAppearance.MainWindow.Data.Color.MainBackground = [1,1,1]; % white
+    PlotAppearance.MainWindow.Data.Color.MainBackground = [0.85,0.85,0.85]; % grey
     % LineWidths
     PlotAppearance.MainWindow.Data.LineWidth.MainSpikes = 2.5;
     PlotAppearance.MainWindow.Data.LineWidth.MainEvents = 2.5;
@@ -52,7 +52,7 @@ if strcmp(Type,"MainTimePlot") || strcmp(Type,"All")
     % Colors
     PlotAppearance.MainWindow.Data.Color.TimeEvents = [0,0,0]; % black
     PlotAppearance.MainWindow.Data.Color.TimeRectangle = [1,0,0]; % blue
-    PlotAppearance.MainWindow.Data.Color.TimeBackground = [0.9,0.9,0.9]; % black
+    PlotAppearance.MainWindow.Data.Color.TimeBackground = [0.7,0.7,0.7]; % black
     
     % LineWidths
     PlotAppearance.MainWindow.Data.LineWidth.TimeEvents = 1.5;
@@ -71,7 +71,7 @@ if strcmp(Type,"SpectrumPlot") || strcmp(Type,"All")
     PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth = 1.5; % blue
 
     % Color
-    PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor = [1,1,1]; % white
+    PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor = [0.85,0.85,0.85]; % grey
     PlotAppearance.SpectrumWindow.Data.SpectrumColor = [0,0.447058823529412,0.741176470588235]; % blue
 end
 
@@ -91,7 +91,7 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     PlotAppearance.ERPWindow.SingleERP.EventColor = [0.75,0.75,0.75]; % grey
     PlotAppearance.ERPWindow.SingleERP.MeanColor = [0,0,0]; % black
     PlotAppearance.ERPWindow.SingleERP.TriggerColor = [1,0,0]; % red
-    PlotAppearance.ERPWindow.SingleERP.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.ERPWindow.SingleERP.BackgroundColor = [0.85,0.85,0.85]; % grey
 
     % Multiple ERPs (for each channel)
     % Lables and Fontsize
@@ -105,7 +105,7 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
 
     % Color
     PlotAppearance.ERPWindow.MultipleERP.TriggerColor = [1,0,0]; % red
-    PlotAppearance.ERPWindow.MultipleERP.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.ERPWindow.MultipleERP.BackgroundColor = [0.85,0.85,0.85]; % grey
 end
 
 %% CSD Window
@@ -121,7 +121,7 @@ if strcmp(Type,"CSDPlot") || strcmp(Type,"All")
 
     % Color
     PlotAppearance.CSDWindow.TriggerColor = [1,0,0]; % red
-    PlotAppearance.CSDWindow.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.CSDWindow.BackgroundColor = [0.85,0.85,0.85]; % grey
 
 end
 
@@ -138,7 +138,7 @@ if strcmp(Type,"TFPlot") || strcmp(Type,"All")
 
     % Color
     PlotAppearance.TFWindow.TriggerColor = [1,0,0]; % red
-    PlotAppearance.TFWindow.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.TFWindow.BackgroundColor = [0.85,0.85,0.85]; % grey
 
 end
 
@@ -150,7 +150,7 @@ if strcmp(Type,"LiveCSDPlot") || strcmp(Type,"All")
     PlotAppearance.LiveCSDWindow.CLabel = "Signal [mV/mm^2]";
     PlotAppearance.LiveCSDWindow.FontSize = 11;
 
-    PlotAppearance.LiveCSDWindow.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.LiveCSDWindow.BackgroundColor = [0.85,0.85,0.85]; % grey
 end
 
 %% Power Estimate Live Window
@@ -160,7 +160,7 @@ if strcmp(Type,"PowerEstimatePlot") || strcmp(Type,"All")
     PlotAppearance.LivePowerEstimateWindow.YLabel = "Power/Frequency [dB/Hz]";
     PlotAppearance.LivePowerEstimateWindow.FontSize = 11;
 
-    PlotAppearance.LivePowerEstimateWindow.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.LivePowerEstimateWindow.BackgroundColor = [0.85,0.85,0.85]; % grey
     PlotAppearance.LivePowerEstimateWindow.BarColor = [0,0,0]; % black
 end
 
@@ -171,7 +171,7 @@ if strcmp(Type,"LiveSpikeRatePlot") || strcmp(Type,"All")
     PlotAppearance.LiveSpikeRateWindow.YLabel = "Spike Rate [Hz]";
     PlotAppearance.LiveSpikeRateWindow.FontSize = 11;
 
-    PlotAppearance.LiveSpikeRateWindow.BackgroundColor = [1,1,1]; % white
+    PlotAppearance.LiveSpikeRateWindow.BackgroundColor = [0.85,0.85,0.85]; % grey
     PlotAppearance.LiveSpikeRateWindow.BarColor = [0,0,0]; % black
 end
 
@@ -183,7 +183,7 @@ if strcmp(Type,"InternalEventSpikePlot") || strcmp(Type,"All")
     PlotAppearance.InternalEventSpikePlot.MainPlotYLabel = "Depth [µm]";
     PlotAppearance.InternalEventSpikePlot.MainPlotFontSize = 11;
     % Color
-    PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor = [1,1,1]; % white
+    PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor = [1,1,1]; % grey
     PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor = [1,0,0]; % red
     PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor = [0.9,0.9,0.9]; % grey
     % LineWidth
@@ -197,12 +197,12 @@ if strcmp(Type,"InternalEventSpikePlot") || strcmp(Type,"All")
     PlotAppearance.InternalEventSpikePlot.SRTimePlotFontSize = 11;
     % Color
     PlotAppearance.InternalEventSpikePlot.SRTimePlotBarColor = [0,0,0]; % black
-    PlotAppearance.InternalEventSpikePlot.SRTimePlotBackgroundColor = [1,1,1]; % white
+    PlotAppearance.InternalEventSpikePlot.SRTimePlotBackgroundColor = [0.85,0.85,0.85]; % grey
     % Spike rate over channel
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotXLabel = "Spike Rate per";
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotYLabel = "";
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotFontSize = 11;
     % Color
     PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor = [0,0,0]; % black
-    PlotAppearance.InternalEventSpikePlot.SRChannelPlotBackgroundColor = [1,1,1]; % white
+    PlotAppearance.InternalEventSpikePlot.SRChannelPlotBackgroundColor = [0.85,0.85,0.85]; % grey
 end

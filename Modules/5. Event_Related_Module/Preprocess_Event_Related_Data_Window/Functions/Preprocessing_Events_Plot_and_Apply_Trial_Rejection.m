@@ -23,8 +23,7 @@ function [EventRelatedData,Error,Trialselectionfield] = Preprocessing_Events_Plo
 % 7. TrialsToReject: char with trial selection of preprocessing window, as
 % char, i.e. '1,10' for events 1 to 10
 % 8. EventsToPlot: double vector, sets events to plot since plotting can slow down
-% everything considerably when having a lot of events. Format: [1,10] for
-% events 1 to 10 
+% everything considerably when having a lot of events.
 
 % Outputs: 
 % 1. EventRelatedData: nchannel x ntrials x ntime single matrix with modified event
@@ -56,40 +55,25 @@ if strcmp(Type,'OnlyReject') || strcmp(Type,'RejectandPlot')
 
     Input = TrialsToReject;
     Error = 0;
+    
+    Trialselectionfield = Input;
 
-    if isempty(Input) == 0 % If Trialselection field filled (empty = All Trials)
-        [TrialsToReject] = Utility_SimpleCheckInputs(TrialsToReject,"Two",strcat('1,',num2str(NrTrials)),1,0);
-    end
-
-    Trialselectionfield = TrialsToReject; 
-
-    %% Get Trials to be Rejected if Selection field in GUI is filled
-    if isempty(Trialselectionfield) == 0
-        value = Trialselectionfield;
-        indicesep = find(value == ',');
-        RejectedTrialsofInterest(1,1) = str2double(value(1:indicesep(1)-1));
-        RejectedTrialsofInterest(1,2) = str2double(value(indicesep+1:end));
-    else
-        msgbox("Error: Please Input Trials to reject first in the format: 1,10 or 1,1");
-        return;
-    end
 
     %% Check if Trials to be rejected are within trialrange of dataset
-    Trialsavailable(1) = 1;
-    Trialsavailable(2) = NrTrials;
-    
-    if RejectedTrialsofInterest(2) > Trialsavailable(2) 
-        msgbox("Error: Selected Trials not in Range");
-        return;
-    elseif RejectedTrialsofInterest(1) > Trialsavailable(2) 
-        msgbox("Error: Selected Trials not in Range");
-        return;
-    elseif RejectedTrialsofInterest(1) == 1 && RejectedTrialsofInterest(2)  == NrTrials
-        msgbox("Error: Not possible to reject all Trials");
+
+    if length(EventsToPlot)>size(EventRelatedData,2) || sum(EventsToPlot>size(EventRelatedData,2))
+        msgbox("Error: One or more trigger not in range of available trigger!");
+        Trialselectionfield = '1:1';
         return;
     end
 
-    EventRelatedData(:,RejectedTrialsofInterest(1):RejectedTrialsofInterest(2),:) = [];
+    if length(EventsToPlot) == size(EventRelatedData,2)
+        msgbox("Error: Not possible to reject all Trials!");
+        Trialselectionfield = '1:1';
+        return;
+    end
+
+    EventRelatedData(:,EventsToPlot,:) = [];
 
 end
 
@@ -98,13 +82,23 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
     Input = TrialsToReject;
     Error = 0;
     
-    if isempty(Input) == 0 % If Trialselection field filled (empty = All Trials)
-        [TrialsToReject] = Utility_SimpleCheckInputs(TrialsToReject,"Two",strcat('1,',num2str(NrTrials)),1,0);
-    end
+    Trialselectionfield = Input;
 
-    Trialselectionfield = TrialsToReject; 
+    %% Check if Trials to be rejected are within trialrange of dataset
 
-    ERP = mean(squeeze(EventRelatedData(str2double(ChannelSelection),EventsToPlot(1):EventsToPlot(2),:)),1);
+    % if length(EventsToPlot)>size(EventRelatedData,2) || sum(EventsToPlot>size(EventRelatedData,2))
+    %     msgbox("Error: One or more trigger not in range of available trigger!");
+    %     Trialselectionfield = '';
+    %     return;
+    % end
+    % 
+    % if length(EventsToPlot) == size(EventRelatedData,2)
+    %     msgbox("Error: Not possible to reject all Trials!");
+    %     Trialselectionfield = '';
+    %     return;
+    % end
+
+    ERP = mean(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1);
 
     %% Plot Broadband
     hold(TopFigure, 'on' )
@@ -131,7 +125,7 @@ if strcmp(Type,'Plot') || strcmp(Type,'RejectandPlot')
     hold(TopFigure, 'off' )
 
     %% ERP
-    TrialstoPlot = EventsToPlot(1):EventsToPlot(2);
+    TrialstoPlot = size(EventRelatedData,2);
 
     TrialsHandle = findobj(BottomFigure, 'Tag', 'Trials');
     ERPHandle = findobj(BottomFigure, 'Tag', 'ERP');

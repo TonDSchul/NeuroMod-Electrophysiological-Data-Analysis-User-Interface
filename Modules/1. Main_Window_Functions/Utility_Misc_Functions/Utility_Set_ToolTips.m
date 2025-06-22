@@ -189,12 +189,14 @@ if Activated
             app.EventExtractionWindow.FileTypeDropDown.Tooltip = "Depending on the recording system and file format you might have multipe event channel types. This can be analog or digital inputs lines as well as different recording nodes. To see which types contain your event data click the 'Plot Input Channel' button.";
             app.EventExtractionWindow.NrInputChinfolderEditField.Tooltip = "Nr of event input channel of the type specified above were found. 3 with 'Digital Inputs' selected above means that 3 different digital event channel were found. Depends on the recording system.";
             app.EventExtractionWindow.AnalogThresholdVEditField.Tooltip = "When your event data is present as a continous recording (unlike Open Ephys or Neuralynx recordings), a threshold has to be applied to determine the time points of the event onsets. If the signal exceeds this value, the time point is captured as a trigger.";
-            app.EventExtractionWindow.InputChannelSelectionEditField.Tooltip = "Select which of the found input channel of the selected type you want to extract trigegrs from. [1,2,4,6] for digital input types means that the digital recording system input channel nr. 1,2,4 and 6 are scanned for trigger.";
+            app.EventExtractionWindow.InputChannelSelectionEditField.Tooltip = "Select which of the found input channel of the selected type you want to extract trigger from. [1,2,4,6] for digital input types means that the digital recording system input channel nr. 1,2,4 and 6 are scanned for trigger.";
             
+            app.EventExtractionWindow.EventTypeDropDown.Tooltip = "Select whether to extract the rising or falling edge of a trigger. For Open Ephys event data, this corresponds to state 1 (rising edge) or 0 (falling edge).";
+
             app.EventExtractionWindow.LoadCostumeTriggerIdentityButton.Tooltip = "Click to open a window that allows to divide triggers in a single event input channel into multiple different event input channel. For example, 200 trigger in a single event channel each representing one of 4 different auditory stimulus frequency being played can be divided into 4 different channel, each for one frequency. Consequently, event related analysis can be coducted for each event channel individually.";
 
             app.EventExtractionWindow.SetFoldermanuallyButton.Tooltip = "Event channel data is auto-searched for in the folder the data was extracted from. When this folder does not contain your recording data or switched location, you can manually select a folder which contains your event data for the current recording.";
-            app.EventExtractionWindow.PlotInputChannelButton.Tooltip = "To see which input channel types and numbers contain your event data and which threshold to use (if applicable), click this button to plot the event data over time.";
+            app.EventExtractionWindow.PlotInputChannelButton.Tooltip = "To see which input channel types and numbers contain your event data and which threshold to use (if applicable), click this button to plot the event data over time. For Open Ephys time stamps, trigger data is represented as a continous data stream over time with the signal showing a 1 for each trigger time stamp plus 5ms after that. Inbetween triggers, signal is 0.";
             app.EventExtractionWindow.StartEventExtractionButton.Tooltip = "Press to start event extraction which the settings specified above. Once finsihed (with valid event times found) this enables the 'Exract Event Related Data' section below, which is necessary to analyse event related data.";
 
             app.EventExtractionWindow.DatatoUseDropDown.Tooltip = "Specify if event related data should be extracted from your raw or preprocessed dataset.";
@@ -202,8 +204,29 @@ if Activated
             app.EventExtractionWindow.TimeWindowAfterEventssEditField.Tooltip = "Time before each event in seconds to extract data from.";
             app.EventExtractionWindow.TimeWindowBeforeEventssEditField.Tooltip = "Time after each event in seconds to extract data from.";
 
-            app.EventExtractionWindow.ExtractEventRelatedDataButton.Tooltip = "Start event related data extraction with the settings above. Once finished you can analyse event related data.";
+            app.EventExtractionWindow.ExtractEventRelatedDataButton.Tooltip = "Start event related data extraction with the settings above. Once finished you can analyse event related LFP and spike data.";
            
+        end
+    end
+
+    %% Import Events window
+    if strcmp(Window,"ImportEvents") || strcmp(Window,"All")
+        if ~isempty(app.ImportEventTTLWindow) && isvalid(app.ImportEventTTLWindow) 
+           
+            app.ImportEventTTLWindow.InputChannelSelectionEditField.Tooltip = "This shows the number of event channel found within the loaded file.";
+            app.ImportEventTTLWindow.InputChannelSelectionEditField_2.Tooltip = "Here you can change the name of each of the event channel found in the loaded file that is eventually displayed in all GUI windows. At standard this shows the name of each event channel within the loaded file (see the textare to the right for information about the required format).";
+            
+            app.ImportEventTTLWindow.SelectFilecsvortxtButton.Tooltip = "Click to select a .csv or .txt file containing your trigger time stamps (in samples) for each event channel. See the text area above for more information about the required format.";
+            app.ImportEventTTLWindow.PlotEventDataButton.Tooltip = "Click to see a plot of all trigger within each event channel found in the loaded file. Trigger data is represented as a continous data stream over time with the signal showing a 1 for each trigger time stamp plus 5ms after that. Inbetween triggers, signal is 0.";
+            app.ImportEventTTLWindow.TakeasnewEventDataButton.Tooltip = "Press to start event extraction which the settings specified above. Once finsihed (with valid event times found) this enables the 'Exract Event Related Data' section below, which is necessary to analyse event related data.";
+
+
+            app.ImportEventTTLWindow.DatatoUseDropDown.Tooltip = "Specify if event related data should be extracted from your raw or preprocessed dataset.";
+            app.ImportEventTTLWindow.EventChanneltoUseDropDown.Tooltip = "Specify which event channel extracted above to use for event related data extraction.";
+            app.ImportEventTTLWindow.TimeWindowAfterEventssEditField.Tooltip = "Time before each event in seconds to extract data from.";
+            app.ImportEventTTLWindow.TimeWindowBeforeEventssEditField.Tooltip = "Time after each event in seconds to extract data from.";
+
+            app.ImportEventTTLWindow.ExtractEventRelatedDataButton.Tooltip = "Start event related data extraction with the settings above. Once finished you can analyse event related LFP and spike data.";
         end
     end
 
@@ -323,6 +346,13 @@ if Activated
                 app.SpikeExtractionWindow.SortingParameterWindow.SetNewSettingsandContinueButton.Tooltip = "Press this button to confrim the changes you made and proceed in the 'Spike Detection and Sorting' window.";
                 
             end
+        end
+    end
+
+    %% Manage Dataset Window
+    if strcmp(Window,"ManageDataset") || strcmp(Window,"All")
+        if ~isempty(app.Manage_Dataset_ComponentsWindow) && isvalid(app.Manage_Dataset_ComponentsWindow)
+            app.Manage_Dataset_ComponentsWindow.DropDown.Tooltip = "Select the dataset component you want to delete or save. Raw data, Time and Info fields cannot be deleted since they are necessary for this GUI to work.";
         end
     end
 
@@ -620,6 +650,13 @@ else % Not activated
                 app.SpikeExtractionWindow.SortingParameterWindow.SetNewSettingsandContinueButton.Tooltip = "";
                 
             end
+        end
+    end
+
+    %% Manage Dataset Window
+    if strcmp(Window,"ManageDataset") || strcmp(Window,"All")
+        if ~isempty(app.Manage_Dataset_ComponentsWindow) && isvalid(app.Manage_Dataset_ComponentsWindow)
+            app.Manage_Dataset_ComponentsWindow.DropDown.Tooltip = "";
         end
     end
 

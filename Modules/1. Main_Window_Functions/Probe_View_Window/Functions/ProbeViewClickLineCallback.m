@@ -443,6 +443,20 @@ if ProbeViewWindow == 0
                         else
                             [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'Just Frequency Bands',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel);
                         end
+                        if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
+                            cb = colorbar(app.Mainapp.ContStaticSpectrumWindow.UIAxes);
+                            cb.Color = 'k';              % Sets tick mark and label color to black
+                            cb.Label.String = "Power [dB]";
+                            cb.Label.Rotation = 270;
+                            %cb.FontSize =  app.Mainapp.PlotAppearance.SpectrumWindow.Data.TimeFontSize;
+                            cb.Label.Color = 'k';        % Sets the color of the label text
+                        else
+                            cb = colorbar(app.Mainapp.ContStaticSpectrumWindow.UIAxes);   % Create a colorbar (if it exists)
+                            if ~isempty(cb)
+                                delete(cb);                  % Delete the colorbar
+                            end
+                        end
+
                     end
                 end
             end

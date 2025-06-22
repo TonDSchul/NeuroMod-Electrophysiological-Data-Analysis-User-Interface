@@ -72,9 +72,9 @@ longdata = double( reshape(data,1,[]) ); % double for filtfilt function
 tf = zeros(2,nFrex,length(time),2); % The first two corresponds to total and nonphase locked components, the second two corresponds to TF(1) and ITPC (2)
 filtpow = zeros(nFrex,2000);
 
-if TrialsofInterest(1,1) ~= TrialsofInterest(1,2)
+if length(TrialsofInterest)>1
     erp = mean(data,1)';
-elseif TrialsofInterest(1,1) == TrialsofInterest(1,2)
+elseif isscalar(length(TrialsofInterest))
     erp = data;
 end
 

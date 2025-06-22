@@ -71,7 +71,7 @@ for numchannels = 1:length(InputChannelData)
     belowThreshold = InputChannelData{numchannels} < Threshold;
 
     if sum(aboveThreshold) == length(InputChannelData{numchannels}) || sum(belowThreshold) == length(InputChannelData{numchannels}) % --> if no value smaller than threshold: ill defined, no events captured
-        msgbox(strcat("No value smaller than threshold: ill defined, no events captured for event channel",num2str(numchannels))); 
+        msgbox(strcat("No value smaller than threshold: ill defined, no trigger captured for event channel",num2str(numchannels))); 
         Data.Events{numchannels} = [];
     else
         if strcmp(EventInfoType,'Rising Edge')

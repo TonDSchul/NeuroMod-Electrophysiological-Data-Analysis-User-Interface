@@ -77,12 +77,16 @@ if str2double(SpikeRateNumBinsEditField) < 0
 end
 
 %% NrChannels to plot
-
+%%% TODO: Delete component, not used anymore!
 [ChannelSelectionField] = Utility_SimpleCheckInputs(ChannelSelectionField,"Two",strcat('1,',num2str(size(Data.EventRelatedData,1))),1,0);
 
 %% NrEvents to plot
 
-[EventRangeEditField] = Utility_SimpleCheckInputs(EventRangeEditField,"Two",strcat('1,',num2str(size(Data.EventRelatedData,2))),1,0);
+if contains(EventRangeEditField,',')
+    if ~contains(EventRangeEditField,'[') || ~contains(EventRangeEditField,']')
+        EventRangeEditField = strcat('[',EventRangeEditField,']');
+    end
+end
 
 [SpikeTriggeredAverageField] = Utility_SimpleCheckInputs(SpikeTriggeredAverageField,"Two",strcat('-0.005,0.2'),0,0);
 
@@ -97,10 +101,8 @@ spaceindicie = strfind(Data.Info.EventRelatedDataTimeRange,' ');
 PlotInfo.TimearoundEvent(1) = str2double(Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)-1));
 PlotInfo.TimearoundEvent(2) = str2double(Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
 
-commaindicie = strfind(EventRangeEditField,",");
-PlotInfo.EventNr(1) = str2double(EventRangeEditField(1:commaindicie-1));
-PlotInfo.EventNr(2) = str2double(EventRangeEditField(commaindicie+1:end));
-PlotInfo.EventRange = PlotInfo.EventNr(1):PlotInfo.EventNr(2);
+PlotInfo.EventNr = eval(EventRangeEditField);
+PlotInfo.EventRange = eval(EventRangeEditField);
 
 [PlotInfo.ChannelsToPlot] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainPlot');
 
