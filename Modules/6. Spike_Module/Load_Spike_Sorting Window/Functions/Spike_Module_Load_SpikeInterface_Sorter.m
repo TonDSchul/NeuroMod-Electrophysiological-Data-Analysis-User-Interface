@@ -103,6 +103,12 @@ for i = 1:length(fileNames)
     end
 end
 
+if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
+    msgbox("Error: Loaded spike data contains more channel than current probe design does. This can be due to channel deletion conducted after sorting or loading the wrong sorting data.")
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
+    return;
+end
+
 UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
 
 for i = 1:length(fileNames)

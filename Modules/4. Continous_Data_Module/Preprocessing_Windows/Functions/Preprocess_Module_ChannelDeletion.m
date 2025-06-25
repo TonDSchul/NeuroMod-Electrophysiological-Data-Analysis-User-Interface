@@ -28,7 +28,7 @@ waitbar(1/4, h, msg);
 ActiveChannelDeletionIndice = zeros(size(Data.Info.ProbeInfo.ActiveChannel));
 
 for i = 1:length(ChannelDeletion)
-    ActiveChannelDeletionIndice = ActiveChannelDeletionIndice + Data.Info.ProbeInfo.ActiveChannel == ChannelDeletion(i);
+    ActiveChannelDeletionIndice = ActiveChannelDeletionIndice + (Data.Info.ProbeInfo.ActiveChannel == ChannelDeletion(i));
 end
 
 ChannelDeletion = find(ActiveChannelDeletionIndice==1);
@@ -53,10 +53,12 @@ if isfield(Data,'PreprocessedEventRelatedData')
     Data.PreprocessedEventRelatedData(ChannelDeletion,:,:) = [];
 end
 
-Data.Info.Channelorder(ChannelDeletion) = [];
+if isfield(Data.Info,'EventRelatedActiveChannel')
+    Data.Info.EventRelatedActiveChannel(ChannelDeletion) = [];
+end
 
+Data.Info.Channelorder(ChannelDeletion) = [];
 Data.Info.ProbeInfo.ActiveChannel(ChannelDeletion) = [];
-%Data.Info.ProbeInfo.NrChannel = num2str(size(Data.Raw,1));
 
 msg = sprintf('Deleting Channel... (%d%% done)', round(100*(2/4)));
 waitbar(2/4, h, msg);

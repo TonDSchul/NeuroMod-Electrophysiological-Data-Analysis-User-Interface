@@ -77,6 +77,12 @@ if strcmp(TypeofAnalysis,"Spike Map")
 
     CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",rgbMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Data.Spikes.ChannelPosition,Figure,numCluster,ClusterToShow,PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
     CurrentPlotData = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,"Initial",rgbMatrix,ClusterToShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+
+    if strcmp(Data.Info.SpikeType,"Internal")
+        yyaxis(Figure2, 'right');
+        ylabel(Figure2,'Spike Rate [Hz]');
+    end
+
 end
 
 if strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
@@ -86,6 +92,11 @@ if strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
         SpikeTimes = SpikeTimes/Data.Info.NativeSamplingRate;
     end
     CurrentPlotData = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,"Initial",rgbMatrix,ClusterToShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    
+    if strcmp(Data.Info.SpikeType,"Internal")
+        yyaxis(Figure2, 'right');
+        ylabel(Figure2,'Spike Rate [Hz]');
+    end
 end
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")

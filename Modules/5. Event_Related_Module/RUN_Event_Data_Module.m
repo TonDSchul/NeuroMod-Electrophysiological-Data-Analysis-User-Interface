@@ -89,10 +89,12 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
             end 
         end
 
+        StandardDataType = 'Raw Event Related Data';
+
         if ~strcmp(app.Data.Info.SpikeType,"Internal")
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0);
+            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0,StandardDataType);
         else
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0);
+            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0,StandardDataType);
         end
 
         if Error == 0
@@ -112,14 +114,17 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
             return;
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
             %% Start GUI
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0);
+            StandardDataType = 'Raw Event Related Data';
+
+            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0,StandardDataType);
 
             if isfield(app.Data.Spikes,"Waveforms")
                 Continous_Waveform_Analysis_Window(app,"EventWindow");
             end
         elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
+            StandardDataType = 'Raw Event Related Data';
 
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0);
+            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0,StandardDataType);
 
             if isfield(app.Data.Spikes,"Waveforms")
                 if isfield(app.Data.Info,'SpikeSorting')

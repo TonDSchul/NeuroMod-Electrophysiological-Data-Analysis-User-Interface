@@ -18,8 +18,7 @@ function Change_Modules_Restore_Default(app)
 
 
 %% Save standard template
-FileToSearchFor = strcat(app.Mainapp.executableFolder,"\Modules\MISC\Variables (do not edit)\Template_ModuleOrder.mat");
-load(FileToSearchFor,'ModuleOrder');
+ModuleOrder = [1,2,3,4];
 
 [app.Module,app.Mainapp] = All_Module_Items(app.Mainapp,1,ModuleOrder);
 

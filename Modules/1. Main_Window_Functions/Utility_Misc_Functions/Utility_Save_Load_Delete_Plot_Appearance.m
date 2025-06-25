@@ -62,13 +62,13 @@ elseif strcmp(Type,"Load")
         load(PlotAppearancePath,'PlotAppearance');
         disp("Loaded Costum Plot Appearance (Select 'Delete Costum Appearance' in the main window menu to reset the costum appearance back to standard)!");
     else% If costum appearance not found, load template instead
-        PlotAppearancePath = strcat(executableFolder,'\Modules\MISC\Variables (do not edit)\Template_PlotAppearance.mat');
+        PlotAppearancePath = strcat(executableFolder,'\Modules\MISC\Variables (do not edit)\PlotAppearance.mat');
         if isfile(PlotAppearancePath)
             load(PlotAppearancePath,'PlotAppearance');
             disp("Loaded Standard Plot Appearance Template! (no costum appearance saved, can be done in the 'Save costum Appearance' menu of the main window)");
         else % If no template found, create new one
             [PlotAppearance] = Organize_Set_Standard_PlotAppearance("All",PlotAppearance);
-            Savefilename = strcat(executableFolder,'\Modules\MISC\Variables (do not edit)\Template_PlotAppearance.mat');
+            Savefilename = strcat(executableFolder,'\Modules\MISC\Variables (do not edit)\PlotAppearance.mat');
             save(Savefilename,'PlotAppearance')
             disp("Couldn find any autosaved plot appearance template. Organize_Set_Standard_PlotAppearance.m is executed to create a new one!");
         end

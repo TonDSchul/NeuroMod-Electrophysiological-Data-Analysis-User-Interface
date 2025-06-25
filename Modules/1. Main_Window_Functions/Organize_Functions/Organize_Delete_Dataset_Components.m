@@ -96,6 +96,11 @@ elseif strcmp(ComponentToDelete,"EventRelatedData")
         fieldsToDelete = {'EventRelatedPreprocessing'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
+    
+    if isfield(Data.Info,'EventRelatedPreprocessing')
+        fieldsToDelete = {'EventRelatedPreprocessing'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
 
 elseif strcmp(ComponentToDelete,"Events")
 
@@ -125,6 +130,11 @@ elseif strcmp(ComponentToDelete,"Events")
     if isfield(Data,'PreprocessedEventRelatedData')
         fieldsToDelete = {'PreprocessedEventRelatedData'};
         Data = rmfield(Data, fieldsToDelete);
+        fieldsToDelete = {'EventRelatedPreprocessing'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'EventRelatedPreprocessing')
         fieldsToDelete = {'EventRelatedPreprocessing'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
@@ -244,6 +254,11 @@ elseif strcmp(ComponentToDelete,"PreprocessedEventRelatedData")
 
         Data.Info.EventRelatedActiveChannel = Data.Info.ProbeInfo.ActiveChannel;
 
+    end
+
+    if isfield(Data.Info,'EventRelatedPreprocessing')
+        fieldsToDelete = {'EventRelatedPreprocessing'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
 end

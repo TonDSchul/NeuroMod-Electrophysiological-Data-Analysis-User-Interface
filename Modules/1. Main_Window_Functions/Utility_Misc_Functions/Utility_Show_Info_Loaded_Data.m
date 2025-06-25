@@ -48,6 +48,9 @@ for i = 1:numel(fields)
         end
 
         if isfield(app.Data.Info,'ProbeInfo')
+            if ~isstruct(fieldValue)
+                continue;
+            end
             ProbeInfofields = fieldnames(fieldValue);
             for k = 1:numel(ProbeInfofields)
                 fieldName = ProbeInfofields{k};

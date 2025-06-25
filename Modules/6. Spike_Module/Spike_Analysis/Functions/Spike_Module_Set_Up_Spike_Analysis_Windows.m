@@ -97,11 +97,11 @@ else
     %% Manage TextField
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
-        strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
+        strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.EventRelatedSpikes.SpikeCluster))))];
     else
         if strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
             texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
-            strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.Spikes.SpikeCluster))))];
+            strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.EventRelatedSpikes.SpikeCluster))))];
         else
             texttoshow = strcat("Number of Spikes: ",num2str(length(SpikeTimes)));
         end
@@ -149,6 +149,23 @@ else
     end
 end
 
+%% If event spike plot cluster can be missing. So cluster dropdown menu has to be adjusted 
+if strcmp(EventWindow,"EventWindow")
+    AllUniquecluster = unique(app.Mainapp.Data.EventRelatedSpikes.SpikeCluster);
+    if min(app.Mainapp.Data.EventRelatedSpikes.SpikeCluster) == 0
+        AllUniquecluster = AllUniquecluster+1;
+    end
+    
+    if strcmp(EventWindow,"EventWindow")
+        % Exatract number of spike clusters Kilosort found
+        app.numCluster = numel(unique(app.Mainapp.Data.EventRelatedSpikes.SpikeCluster));
+    end
+else
+    AllUniquecluster = unique(app.Mainapp.Data.Spikes.SpikeCluster);
+    if min(app.Mainapp.Data.Spikes.SpikeCluster) == 0
+        AllUniquecluster = AllUniquecluster+1;
+    end
+end
 %% Manage Cluster Selection
 if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
     texttoshow = {};
@@ -158,9 +175,9 @@ if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data
     else
         texttoshow{1} = 'Non';
         texttoshow{2} = 'All';
-         
-        for i = 1:app.numCluster
-            texttoshow{i+2} = num2str(i);
+
+        for i = 1:length(AllUniquecluster)
+            texttoshow{i+2} = num2str(AllUniquecluster(i));
         end
     end
     app.ClustertoshowDropDown.Items = texttoshow;

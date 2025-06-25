@@ -226,6 +226,12 @@ if sum(SpikeTimesSmaller0)>0
     msgbox("Warning: spike time(s) smaller or equal to 0 found and deleted. This is a known behavior fixed in newer Kilosort 4 versions." )
 end
 
+if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
+    msgbox("Error: Loaded spike data contains more channel than current probe design does. This can be due to channel deletion conducted after sorting or loading the wrong sorting data.")
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
+    return;
+end
+
 %% Specify SpikeType
 Data.Info.SpikeType = 'Kilosort';
 Data.Info.Sorter = 'External Kilosort GUI';

@@ -77,14 +77,14 @@ end
 
 %% Compute Spectrum using pwelch
 
-if strcmp(DataSource,"Raw Event Related Data")
-    NonNaN = ~isnan(DataToAnalyse);
-     if isfield(Data.Info, 'DownsampleFactor')
-        [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.DownsampledSampleRate);
-    else
-        [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);
-     end
+%if strcmp(DataSource,"Raw Event Related Data")
+NonNaN = ~isnan(DataToAnalyse);
+if isfield(Data.Info, 'DownsampleFactor')
+    [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.DownsampledSampleRate);
+else
+    [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);
 end
+%end
 
 if strcmp(DataType,"Channel Individually")
     titlestring = strcat("Power Spectral Density Channel ",ChannelText);

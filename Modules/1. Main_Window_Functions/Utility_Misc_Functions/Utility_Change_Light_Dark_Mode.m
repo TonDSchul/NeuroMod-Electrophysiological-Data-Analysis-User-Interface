@@ -1,52 +1,78 @@
 function app = Utility_Change_Light_Dark_Mode(app,Window)
 
+if isfield(app,'Mainapp') || isprop(app,'Mainapp') || ~isprop(app,'Image')
+    try
+        Mode = app.Mainapp.Colorscheme;
+    catch
+        Mode = 'DarkMode_Dark_Light';
+    end
+else
+    try
+        Mode = app.Colorscheme;
+    catch
+        Mode = 'DarkMode_Dark_Light';
+    end
+end
+
+%%%
+if strcmp(Mode,'DarkMode_Dark_Light')
+    WindowBackgroundColor = [0.8,0.8,0.8];
+    ComponentsInWindowColor = [0.85,0.85,0.85];
+elseif strcmp(Mode,'DarkMode_Light_Dark')
+    ComponentsInWindowColor = [0.8,0.8,0.8];
+    WindowBackgroundColor = [0.85,0.85,0.85];
+
+elseif strcmp(Mode,'LightMode_Dark_Light')
+    ComponentsInWindowColor = [0.95,0.95,0.95];
+    WindowBackgroundColor = [1,1,1];
+elseif strcmp(Mode,'LightMode_Light_Dark')
+    ComponentsInWindowColor = [1,1,1];
+    WindowBackgroundColor = [0.95,0.95,0.95];
+end
 
 if strcmp(Window,'MainWindow')
     % texts to black
     set(findall(app.NeuromodToolboxMainWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
     % backgrounds to grey
-    app.NeuromodToolboxMainWindowUIFigure.Color       = [0.85,0.85,0.85];
-    app.ManageDatasetPanel.BackgroundColor            = [0.85,0.85,0.85];
-    app.MainPlotAnalysisModulePanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.ContinousDataModulePanel.BackgroundColor      = [0.85,0.85,0.85];
-    app.EventDataModulePanel.BackgroundColor          = [0.85,0.85,0.85];
-    app.SpikeModulePanel_2.BackgroundColor            = [0.85,0.85,0.85];
+    app.NeuromodToolboxMainWindowUIFigure.Color       = WindowBackgroundColor;
+    app.ManageDatasetPanel.BackgroundColor            = WindowBackgroundColor;
+    app.MainPlotAnalysisModulePanel.BackgroundColor   = WindowBackgroundColor;
+    app.ContinousDataModulePanel.BackgroundColor      = WindowBackgroundColor;
+    app.EventDataModulePanel.BackgroundColor          = WindowBackgroundColor;
+    app.SpikeModulePanel_2.BackgroundColor            = WindowBackgroundColor;
 
-    app.ManageDatasetPanel.ForegroundColor            = [0.85,0.85,0.85];
-    app.MainPlotAnalysisModulePanel.ForegroundColor   = [0.85,0.85,0.85];
-    app.ContinousDataModulePanel.ForegroundColor      = [0.85,0.85,0.85];
-    app.EventDataModulePanel.ForegroundColor          = [0.85,0.85,0.85];
-    app.SpikeModulePanel_2.ForegroundColor            = [0.85,0.85,0.85];
+    app.ManageDatasetPanel.ForegroundColor            = WindowBackgroundColor;
+    app.MainPlotAnalysisModulePanel.ForegroundColor   = WindowBackgroundColor;
+    app.ContinousDataModulePanel.ForegroundColor      = WindowBackgroundColor;
+    app.EventDataModulePanel.ForegroundColor          = WindowBackgroundColor;
+    app.SpikeModulePanel_2.ForegroundColor            = WindowBackgroundColor;
 
-    app.TimeSpanControlDropDown.BackgroundColor       = [0.9,0.9,0.9];
-    app.TimeRangeViewBox.BackgroundColor              = [0.9,0.9,0.9];
-    app.DropDown.BackgroundColor                      = [0.9,0.9,0.9];
-    app.DropDown_2.BackgroundColor                    = [0.9,0.9,0.9];
-    app.EventChannelDropDown.BackgroundColor          = [0.9,0.9,0.9];
+    app.TimeSpanControlDropDown.BackgroundColor       = ComponentsInWindowColor;
+    app.TimeRangeViewBox.BackgroundColor              = ComponentsInWindowColor;
+    app.DropDown.BackgroundColor                      = ComponentsInWindowColor;
+    app.DropDown_2.BackgroundColor                    = ComponentsInWindowColor;
+    app.EventChannelDropDown.BackgroundColor          = ComponentsInWindowColor;
     
-    app.ListBox_5.BackgroundColor                     = [0.9,0.9,0.9];
-    app.ListBox_6.BackgroundColor                     = [0.9,0.9,0.9];
-    app.ListBox_3.BackgroundColor                     = [0.9,0.9,0.9];
-    app.ListBox_2.BackgroundColor                     = [0.9,0.9,0.9];
-    app.ListBox.BackgroundColor                       = [0.9,0.9,0.9];
+    app.ListBox_5.BackgroundColor                     = ComponentsInWindowColor;
+    app.ListBox_6.BackgroundColor                     = ComponentsInWindowColor;
+    app.ListBox_3.BackgroundColor                     = ComponentsInWindowColor;
+    app.ListBox_2.BackgroundColor                     = ComponentsInWindowColor;
+    app.ListBox.BackgroundColor                       = ComponentsInWindowColor;
 
-    %app.LeftPanel.BackgroundColor                     = [0.85,0.85,0.85];
-   %app.RightPanel.BackgroundColor                    = [0.85,0.85,0.85];
+    app.TimeSpanandAxisControlPanel.BackgroundColor   = WindowBackgroundColor;
+    app.ChannelandPlotControlPanel.BackgroundColor    = WindowBackgroundColor;
+    app.TimeSpanandAxisControlPanel.ForegroundColor   = WindowBackgroundColor;
+    app.ChannelandPlotControlPanel.ForegroundColor    = WindowBackgroundColor;
 
-    app.TimeSpanandAxisControlPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.ChannelandPlotControlPanel.BackgroundColor    = [0.85,0.85,0.85];
-    app.TimeSpanandAxisControlPanel.ForegroundColor   = [0.85,0.85,0.85];
-    app.ChannelandPlotControlPanel.ForegroundColor    = [0.85,0.85,0.85];
-
-    app.TextArea.BackgroundColor                      = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor                      = ComponentsInWindowColor;
     app.RecordingandDatasetInformationLabel.FontColor = [0,0,0];
     
     % Plot text to black
     if ~isempty(app.PlotAppearance)
         app.UIAxes.Color  = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
     else
-        app.UIAxes.Color  = [0.85,0.85,0.85];
+        app.UIAxes.Color  = WindowBackgroundColor;
     end
     app.UIAxes.XLabel.Color = [0 0 0];
     app.UIAxes.YLabel.Color = [0 0 0];
@@ -69,11 +95,11 @@ if strcmp(Window,'MainWindow')
     app.UIAxes_2.Title.Color  = [0 0 0];
     app.UIAxes_2.Box  = 0;
     
-    app.RUNButton.BackgroundColor = [0.9,0.9,0.9];
-    app.RUNButton_2.BackgroundColor = [0.9,0.9,0.9];
-    app.RUNButton_3.BackgroundColor = [0.9,0.9,0.9];
-    app.RUNButton_4.BackgroundColor = [0.9,0.9,0.9];
-    app.RUNButton_5.BackgroundColor = [0.9,0.9,0.9];
+    app.RUNButton.BackgroundColor = ComponentsInWindowColor;
+    app.RUNButton_2.BackgroundColor = ComponentsInWindowColor;
+    app.RUNButton_3.BackgroundColor = ComponentsInWindowColor;
+    app.RUNButton_4.BackgroundColor = ComponentsInWindowColor;
+    app.RUNButton_5.BackgroundColor = ComponentsInWindowColor;
 
 end
 
@@ -81,16 +107,16 @@ if strcmp(Window,"Probe_View_Window")
     % texts to black
     set(findall(app.ProbeViewUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.ProbeViewUIFigure.Color  = [0.85,0.85,0.85];
+    app.ProbeViewUIFigure.Color  = WindowBackgroundColor;
 
-    app.ChangeforWindowDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.ChannelSelectionEditField.BackgroundColor   = [0.9,0.9,0.9];
+    app.ChangeforWindowDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.ChannelSelectionEditField.BackgroundColor   = ComponentsInWindowColor;
     
-    app.Panel.BackgroundColor   = [0.85,0.85,0.85];
+    app.Panel.BackgroundColor   = WindowBackgroundColor;
 
-    app.ScrollandclicktosetactiveanalysischannelLabel.BackgroundColor = [0.85,0.85,0.85];
+    app.ScrollandclicktosetactiveanalysischannelLabel.BackgroundColor = WindowBackgroundColor;
     % Plot text to black
-    app.UIAxes.Color  = [0.85,0.85,0.85];
+    app.UIAxes.Color  = WindowBackgroundColor;
     app.UIAxes.XLabel.Color = [0 0 0];
     app.UIAxes.YLabel.Color = [0 0 0];
     app.UIAxes.Title.Color  = [0 0 0];
@@ -111,56 +137,56 @@ if strcmp(Window,"ExtractDataWindow")
     % texts to black
     set(findall(app.ExtractDataWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
-    app.TextArea_3.BackgroundColor = [0.9,0.9,0.9];
-    app.TextArea_4.BackgroundColor = [0.85,0.85,0.85];
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.TextArea_3.BackgroundColor = ComponentsInWindowColor;
+    app.TextArea_4.BackgroundColor = WindowBackgroundColor;
 
-   app.ExtractionOptionsPanel.BackgroundColor = [0.85,0.85,0.85];
-   app.ExtractionOptionsPanel.ForegroundColor = [0.85,0.85,0.85];
+   app.ExtractionOptionsPanel.BackgroundColor = WindowBackgroundColor;
+   app.ExtractionOptionsPanel.ForegroundColor = WindowBackgroundColor;
 
-   app.RecordingSystemDropDown.BackgroundColor                = [0.9,0.9,0.9];
-   app.FileTypeDropDown.BackgroundColor                       = [0.9,0.9,0.9];
-   app.AdditionalAmplificationFactorEditField.BackgroundColor = [0.9,0.9,0.9];
+   app.RecordingSystemDropDown.BackgroundColor                = ComponentsInWindowColor;
+   app.FileTypeDropDown.BackgroundColor                       = ComponentsInWindowColor;
+   app.AdditionalAmplificationFactorEditField.BackgroundColor = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"ProbeLayout_Window")    
     % texts to black
     set(findall(app.ProbeLayoutWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.ProbeLayoutWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.ProbeLayoutWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.ChannelOrderField.BackgroundColor   = [0.9,0.9,0.9];
-    app.ActiveChannelField.BackgroundColor   = [0.9,0.9,0.9];
+    app.ChannelOrderField.BackgroundColor   = ComponentsInWindowColor;
+    app.ActiveChannelField.BackgroundColor   = ComponentsInWindowColor;
 
-    app.SetProbeGeometryPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.SetProbeGeometryPanel.ForegroundColor = [0.85,0.85,0.85];
+    app.SetProbeGeometryPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SetProbeGeometryPanel.ForegroundColor = WindowBackgroundColor;
 
-    app.AdditionalOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.AdditionalOptionsPanel.ForegroundColor = [0.85,0.85,0.85];
+    app.AdditionalOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.AdditionalOptionsPanel.ForegroundColor = WindowBackgroundColor;
     
-    app.SetChannelInformationPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.SetChannelInformationPanel.ForegroundColor = [0.85,0.85,0.85];
+    app.SetChannelInformationPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SetChannelInformationPanel.ForegroundColor = WindowBackgroundColor;
 
     
     app.LoadChannelOrderButton.BackgroundColor   = [0.79,0.95,0.70];
     app.LoadActiveChannelSelectionButton.BackgroundColor   = [0.79,0.95,0.70];
 
-    app.NrChannelEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.ChannelSpacingumEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.HorizontalOffsetumEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.VerticalOffsetumEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.ChannelRowsDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.VerticalOffsetumEditField_2.BackgroundColor   = [0.9,0.9,0.9];
+    app.NrChannelEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.ChannelSpacingumEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.HorizontalOffsetumEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.VerticalOffsetumEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.ChannelRowsDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.VerticalOffsetumEditField_2.BackgroundColor   = ComponentsInWindowColor;
 
-    app.UIAxes.Color  = [0.9,0.9,0.9];
+    app.UIAxes.Color  = ComponentsInWindowColor;
     app.UIAxes.XColor = [0 0 0];
     app.UIAxes.YColor = [0 0 0];
     app.UIAxes.Title.Color  = [0 0 0];
 
-    app.UIAxes2.Color  = [0.9,0.9,0.9];
+    app.UIAxes2.Color  = ComponentsInWindowColor;
     app.UIAxes2.XColor = [0 0 0];
     app.UIAxes2.YColor = [0 0 0];
     app.UIAxes2.Title.Color  = [0 0 0];
@@ -173,42 +199,42 @@ if strcmp(Window,"NP1_LFP_AP")
     % texts to black
     set(findall(app.SelectRecordingWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor   = [0.85,0.85,0.85];
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor   = WindowBackgroundColor;
 
-    app.TextArea_3.BackgroundColor   = [0.85,0.85,0.85];
+    app.TextArea_3.BackgroundColor   = WindowBackgroundColor;
 end
 
 if strcmp(Window,"OE_Multiple_Recordings_Window")    
     % texts to black
     set(findall(app.SelectRecordingWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor   = [0.85,0.85,0.85];
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor   = WindowBackgroundColor;
 
-    app.TextArea_3.BackgroundColor   = [0.85,0.85,0.85];
+    app.TextArea_3.BackgroundColor   = WindowBackgroundColor;
 
-    app.RecordingstoselectEditField.BackgroundColor   = [0.9,0.9,0.9];
+    app.RecordingstoselectEditField.BackgroundColor   = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Spike2_Select_Event_Channel_Window")    
     % texts to black
     set(findall(app.Spike2SelectEventChannelUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.Panel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.85,0.85,0.85];
-    app.TextArea_2.BackgroundColor   = [0.85,0.85,0.85];
+    app.TextArea.BackgroundColor   = WindowBackgroundColor;
+    app.TextArea_2.BackgroundColor   = WindowBackgroundColor;
 
-    app.EventChannelSelectionIntemptyfornonEditField.BackgroundColor   = [0.9,0.9,0.9];
+    app.EventChannelSelectionIntemptyfornonEditField.BackgroundColor   = ComponentsInWindowColor;
 
 end
 
@@ -217,16 +243,16 @@ if strcmp(Window,"Load_Data_Window")
     % texts to black
     set(findall(app.LoadDataWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
 
-    app.DropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.DropDown_2.BackgroundColor   = [0.9,0.9,0.9];
+    app.DropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.DropDown_2.BackgroundColor   = ComponentsInWindowColor;
 
-    app.LoadingOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.LoadingOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.LoadingOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.LoadingOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
     app.SelectDifferentFolderButton.BackgroundColor   = [0.79,0.95,0.70];
 end
@@ -235,82 +261,82 @@ if strcmp(Window,"Save_Data_Window")
     % texts to black
     set(findall(app.SaveDataWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
 
-    app.SaveTypeDropDown.BackgroundColor   = [0.9,0.9,0.9];
+    app.SaveTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
 
-    app.SaveOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.SaveOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.SaveOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SaveOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.SelectAllButton.BackgroundColor   = [0.9,0.9,0.9];
+    app.SelectAllButton.BackgroundColor   = ComponentsInWindowColor;
 
-    app.RawDataButton.BackgroundColor   = [0.9,0.9,0.9];
-    app.PreprocessedDataButton.BackgroundColor   = [0.9,0.9,0.9];
-    app.SpikeIndiciesButton.BackgroundColor   = [0.9,0.9,0.9];
-    app.EventRelatedDataButton.BackgroundColor   = [0.9,0.9,0.9];
-    app.EventTimesButton.BackgroundColor   = [0.9,0.9,0.9];
-    app.PreprocessedEventRelatedDataButton.BackgroundColor   = [0.9,0.9,0.9];
+    app.RawDataButton.BackgroundColor   = ComponentsInWindowColor;
+    app.PreprocessedDataButton.BackgroundColor   = ComponentsInWindowColor;
+    app.SpikeIndiciesButton.BackgroundColor   = ComponentsInWindowColor;
+    app.EventRelatedDataButton.BackgroundColor   = ComponentsInWindowColor;
+    app.EventTimesButton.BackgroundColor   = ComponentsInWindowColor;
+    app.PreprocessedEventRelatedDataButton.BackgroundColor   = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Probe_View_Help_Window")    
     % texts to black
     set(findall(app.ProbeViewHelpUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.ProbeViewHelpUIFigure.Color  = [0.85,0.85,0.85];
+    app.ProbeViewHelpUIFigure.Color  = WindowBackgroundColor;
 
-    app.HelpInteractiveProbeViewWindowPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.HelpInteractiveProbeViewWindowPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.HelpInteractiveProbeViewWindowPanel.BackgroundColor   = WindowBackgroundColor;
+    app.HelpInteractiveProbeViewWindowPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Preprocess_Window")    
     % texts to black
     set(findall(app.PreprocessingWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.PreprocessingWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.PreprocessingWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.FilteringPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.FilteringPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.FilteringPanel.BackgroundColor   = WindowBackgroundColor;
+    app.FilteringPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.DownsamplingPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.DownsamplingPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.DownsamplingPanel.BackgroundColor   = WindowBackgroundColor;
+    app.DownsamplingPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.NormalizePanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.NormalizePanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.NormalizePanel.BackgroundColor   = WindowBackgroundColor;
+    app.NormalizePanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.OtherUtilitiesPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.OtherUtilitiesPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.OtherUtilitiesPanel.BackgroundColor   = WindowBackgroundColor;
+    app.OtherUtilitiesPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.GrandAveragePanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.GrandAveragePanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.GrandAveragePanel.BackgroundColor   = WindowBackgroundColor;
+    app.GrandAveragePanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor    = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor    = ComponentsInWindowColor;
 
-    app.FilterMethodDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.FilterTypeDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.FilterDirectionDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.CuttoffFrequencyHzEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.FilterOrderEditField.BackgroundColor = [0.9,0.9,0.9];
+    app.FilterMethodDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.FilterTypeDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.FilterDirectionDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.CuttoffFrequencyHzEditField.BackgroundColor = ComponentsInWindowColor;
+    app.FilterOrderEditField.BackgroundColor = ComponentsInWindowColor;
 
-    app.PlotExampleButton.BackgroundColor = [0.9,0.9,0.9];
-    app.InspectFilterButton.BackgroundColor = [0.9,0.9,0.9];
+    app.PlotExampleButton.BackgroundColor = ComponentsInWindowColor;
+    app.InspectFilterButton.BackgroundColor = ComponentsInWindowColor;
 
-    app.DownsampleFactorEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.PlotExampleButton_2.BackgroundColor = [0.9,0.9,0.9];
+    app.DownsampleFactorEditField.BackgroundColor = ComponentsInWindowColor;
+    app.PlotExampleButton_2.BackgroundColor = ComponentsInWindowColor;
 
-    app.PlotExampleButton_4.BackgroundColor = [0.9,0.9,0.9];
+    app.PlotExampleButton_4.BackgroundColor = ComponentsInWindowColor;
 
-    app.PlotExampleButton_3.BackgroundColor = [0.9,0.9,0.9];
+    app.PlotExampleButton_3.BackgroundColor = ComponentsInWindowColor;
 
-    app.DeleteChannelButton.BackgroundColor = [0.9,0.9,0.9];
-    app.CutStartandEndofRecordingButton_2.BackgroundColor = [0.9,0.9,0.9];
-    app.StimulationArtefactRejectionButton.BackgroundColor = [0.9,0.9,0.9];
+    app.DeleteChannelButton.BackgroundColor = ComponentsInWindowColor;
+    app.CutStartandEndofRecordingButton_2.BackgroundColor = ComponentsInWindowColor;
+    app.StimulationArtefactRejectionButton.BackgroundColor = ComponentsInWindowColor;
 
 end
 
@@ -318,23 +344,23 @@ if strcmp(Window,"Artefact_Rejection_Window")
     % texts to black
     set(findall(app.ContinousArtefactRejectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.ContinousArtefactRejectionUIFigure.Color  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.ContinousArtefactRejectionUIFigure.Color  = WindowBackgroundColor;
 
-    app.RejectionOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RejectionOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.RejectionOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RejectionOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.EventChannelforStimulationDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.RejectionMethodDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.EventstoPlotDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.TimeAroundEventsEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.TimeAroundEventsEditField_2.BackgroundColor = [0.9,0.9,0.9];
+    app.EventChannelforStimulationDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.RejectionMethodDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.EventstoPlotDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.TimeAroundEventsEditField.BackgroundColor = ComponentsInWindowColor;
+    app.TimeAroundEventsEditField_2.BackgroundColor = ComponentsInWindowColor;
 
 
-    app.InformationTextArea.BackgroundColor   = [0.9,0.9,0.9];
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
 
-    app.UIAxes.Color  = [0.85,0.85,0.85];
+    app.UIAxes.Color  = WindowBackgroundColor;
     app.UIAxes.XLabel.Color = [0 0 0];
     app.UIAxes.YLabel.Color = [0 0 0];
     app.UIAxes.Title.Color  = [0 0 0];
@@ -344,23 +370,23 @@ end
 if strcmp(Window,"Ask_SaveName")   
     set(findall(app.SetNameUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.SetNameUIFigure.Color  = [0.85,0.85,0.85];
-    app.SaveNameEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.SetNameUIFigure.Color  = WindowBackgroundColor;
+    app.SaveNameEditField.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"BinSizeChange")   
     set(findall(app.BinSizeChangeUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.BinSizeChangeUIFigure.Color  = [0.85,0.85,0.85];
-    app.EditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.BinSizeChangeUIFigure.Color  = WindowBackgroundColor;
+    app.EditField.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"ChangePlotSpeed")   
     set(findall(app.ChannelSpacingSelectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ChannelSpacingSelectionUIFigure.Color  = [0.85,0.85,0.85];
-    app.TimetoJumpsPressEntertoConfirmEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea_4.BackgroundColor  = [0.9,0.9,0.9];
+    app.ChannelSpacingSelectionUIFigure.Color  = WindowBackgroundColor;
+    app.TimetoJumpsPressEntertoConfirmEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea_4.BackgroundColor  = ComponentsInWindowColor;
 end
 
 
@@ -368,8 +394,8 @@ end
 if strcmp(Window,"ChangeChannelSpacing")   
     set(findall(app.ChannelSpacingSelectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ChannelSpacingSelectionUIFigure.Color  = [0.85,0.85,0.85];
-    app.SpacingLimitsminmaxEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.ChannelSpacingSelectionUIFigure.Color  = WindowBackgroundColor;
+    app.SpacingLimitsminmaxEditField.BackgroundColor  = ComponentsInWindowColor;
    
 end
 
@@ -378,40 +404,40 @@ end
 if strcmp(Window,"ControlsWindow")   
     set(findall(app.ControlsWindowsUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ControlsWindowsUIFigure.Color  = [0.85,0.85,0.85];
+    app.ControlsWindowsUIFigure.Color  = WindowBackgroundColor;
 
-    app.MainWindowPanel.BackgroundColor = [0.85,0.85,0.85];
-    app.ProbeViewWindowPanel.BackgroundColor = [0.85,0.85,0.85];
+    app.MainWindowPanel.BackgroundColor = WindowBackgroundColor;
+    app.ProbeViewWindowPanel.BackgroundColor = WindowBackgroundColor;
 
-    app.MainWindowPanel.ForegroundColor = [0.85,0.85,0.85];
-    app.ProbeViewWindowPanel.ForegroundColor = [0.85,0.85,0.85];
+    app.MainWindowPanel.ForegroundColor = WindowBackgroundColor;
+    app.ProbeViewWindowPanel.ForegroundColor = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"FigureChange")   
     set(findall(app.ChangePlotAppearanceWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ChangePlotAppearanceWindowUIFigure.Color  = [0.85,0.85,0.85];
-    app.EditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.ChangePlotAppearanceWindowUIFigure.Color  = WindowBackgroundColor;
+    app.EditField.BackgroundColor  = ComponentsInWindowColor;
    
 end
 
 if strcmp(Window,"ManageDataset")   
     set(findall(app.ManageDatasetComponentsWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ManageDatasetComponentsWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.ManageDatasetComponentsWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     
-    app.ManagementOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.ManagementOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.ManagementOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.ManagementOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
-    app.DropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.ExportFormatDropDown.BackgroundColor  = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
+    app.DropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.ExportFormatDropDown.BackgroundColor  = ComponentsInWindowColor;
    
 end
 
@@ -419,9 +445,9 @@ end
 if strcmp(Window,"TimeSpanSelection")   
     set(findall(app.ChannelSpacingSelectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ChannelSpacingSelectionUIFigure.Color  = [0.85,0.85,0.85];
+    app.ChannelSpacingSelectionUIFigure.Color  = WindowBackgroundColor;
 
-    app.MaxTimeSpansEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.MaxTimeSpansEditField.BackgroundColor  = ComponentsInWindowColor;
    
 end
 
@@ -429,116 +455,116 @@ end
 if strcmp(Window,"LowPassSettings")   
     set(findall(app.SetLowPassFilterSettingsUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.SetLowPassFilterSettingsUIFigure.Color  = [0.85,0.85,0.85];
+    app.SetLowPassFilterSettingsUIFigure.Color  = WindowBackgroundColor;
 
-    app.MaxTimeSpansEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.MaxTimeSpansEditField.BackgroundColor  = ComponentsInWindowColor;
    
 end
 
 if strcmp(Window,"SpikeTrgAveragePrepro")   
     set(findall(app.PreproSTAWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.PreproSTAWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.PreproSTAWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.FilterOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.FilterOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.FilterOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.FilterOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
 
-    app.CutoffFrequencyHzEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.FilterOrderEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.SaveasnewPreprocessedDatasetDropDown.BackgroundColor  = [0.9,0.9,0.9];
+    app.CutoffFrequencyHzEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.FilterOrderEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.SaveasnewPreprocessedDatasetDropDown.BackgroundColor  = ComponentsInWindowColor;
    
 end
 
 if strcmp(Window,"ManageModulesWindow")   
     set(findall(app.ManageModulesWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ManageModulesWindowUIFigure.Color  = [0.85,0.85,0.85];
-    app.AllModulesPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.AllModulesPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.ManageModulesWindowUIFigure.Color  = WindowBackgroundColor;
+    app.AllModulesPanel.BackgroundColor  = WindowBackgroundColor;
+    app.AllModulesPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.CurrentModulesPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.CurrentModulesPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.CurrentModulesPanel.BackgroundColor  = WindowBackgroundColor;
+    app.CurrentModulesPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.Panel.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel.BackgroundColor  = WindowBackgroundColor;
+    app.Panel.ForegroundColor  = WindowBackgroundColor;
 
-    app.Panel_1.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel_1.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel_1.BackgroundColor  = WindowBackgroundColor;
+    app.Panel_1.ForegroundColor  = WindowBackgroundColor;
 
-    app.Panel_2.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel_2.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel_2.BackgroundColor  = WindowBackgroundColor;
+    app.Panel_2.ForegroundColor  = WindowBackgroundColor;
 
-    app.Panel_3.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel_3.ForegroundColor  = [0.85,0.85,0.85];
-
-
-    app.ListBox_5.BackgroundColor  = [0.9,0.9,0.9];
-    app.ListBox_4.BackgroundColor  = [0.9,0.9,0.9];
-    app.ListBox_2.BackgroundColor  = [0.9,0.9,0.9];
-    app.ListBox.BackgroundColor  = [0.9,0.9,0.9];
+    app.Panel_3.BackgroundColor  = WindowBackgroundColor;
+    app.Panel_3.ForegroundColor  = WindowBackgroundColor;
 
 
-    app.ListofSavedModulesTextArea.BackgroundColor  = [0.9,0.9,0.9];
+    app.ListBox_5.BackgroundColor  = ComponentsInWindowColor;
+    app.ListBox_4.BackgroundColor  = ComponentsInWindowColor;
+    app.ListBox_2.BackgroundColor  = ComponentsInWindowColor;
+    app.ListBox.BackgroundColor  = ComponentsInWindowColor;
 
-    app.AllModulesPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.AllModulesPanel.ForegroundColor  = [0.85,0.85,0.85];
+
+    app.ListofSavedModulesTextArea.BackgroundColor  = ComponentsInWindowColor;
+
+    app.AllModulesPanel.BackgroundColor  = WindowBackgroundColor;
+    app.AllModulesPanel.ForegroundColor  = WindowBackgroundColor;
 
 
 
-    app.SelectedModuleDropDown.BackgroundColor  = [0.9,0.9,0.9];
+    app.SelectedModuleDropDown.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"CutTime")   
     set(findall(app.CutRecordingTimeUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.CutRecordingTimeUIFigure.Color  = [0.85,0.85,0.85];
+    app.CutRecordingTimeUIFigure.Color  = WindowBackgroundColor;
 
-    app.CutTimeOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.CutTimeOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.CutTimeOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.CutTimeOptionsPanel.ForegroundColor  = WindowBackgroundColor;
     
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TimetocutfromstartsEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.TimetocutbeforeendsEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.TimetocutfromstartsEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.TimetocutbeforeendsEditField.BackgroundColor  = ComponentsInWindowColor;
    
 end
 
 if strcmp(Window,"DeleteChannel")   
     set(findall(app.ChannelDeletionWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ChannelDeletionWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.ChannelDeletionWindowUIFigure.Color  = WindowBackgroundColor;
     
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.ChanneltoDelete.BackgroundColor  = [0.9,0.9,0.9];
+    app.ChanneltoDelete.BackgroundColor  = ComponentsInWindowColor;
 end
 
 
 if strcmp(Window,"ContSpectrum")   
     set(findall(app.StaticSpectrumWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.StaticSpectrumWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.StaticSpectrumWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.StaticSpectrumOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.StaticSpectrumOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.StaticSpectrumOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.StaticSpectrumOptionsPanel.ForegroundColor  = WindowBackgroundColor;
     
-    app.TextArea_2.BackgroundColor  = [0.85,0.85,0.85];
+    app.TextArea_2.BackgroundColor  = WindowBackgroundColor;
     
 
-    app.AnalysisDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.ChannelDropDown.BackgroundColor  = [0.9,0.9,0.9];
+    app.AnalysisDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.ChannelDropDown.BackgroundColor  = ComponentsInWindowColor;
 
-    app.FrequencyRangeHzEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.DataTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
+    app.FrequencyRangeHzEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
 
-    app.DataSourceDropDown.BackgroundColor  = [0.9,0.9,0.9];
+    app.DataSourceDropDown.BackgroundColor  = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -576,91 +602,91 @@ end
 if strcmp(Window,"ImportEvents")   
     set(findall(app.ImportEventsWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ImportEventsWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.ImportEventsWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.ImportSettingsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.ImportSettingsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.ImportSettingsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.ImportSettingsPanel.ForegroundColor  = WindowBackgroundColor;
     
-    app.Panel.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel.BackgroundColor  = WindowBackgroundColor;
+    app.Panel.ForegroundColor  = WindowBackgroundColor;
 
-    app.Panel_2.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel_2.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel_2.BackgroundColor  = WindowBackgroundColor;
+    app.Panel_2.ForegroundColor  = WindowBackgroundColor;
 
-    app.ExtractEventRelatedDataPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.ExtractEventRelatedDataPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.ExtractEventRelatedDataPanel.BackgroundColor  = WindowBackgroundColor;
+    app.ExtractEventRelatedDataPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.InputChannelSelectionEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.InputChannelSelectionEditField_2.BackgroundColor  = [0.9,0.9,0.9];
+    app.InputChannelSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.InputChannelSelectionEditField_2.BackgroundColor  = ComponentsInWindowColor;
     
-    app.EventTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor  = [0.9,0.9,0.9];
+    app.EventTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor  = ComponentsInWindowColor;
 
-    app.DatatoUseDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.EventChanneltoUseDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.TimeWindowAfterEventssEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.TimeWindowBeforeEventssEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.DatatoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventChanneltoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.TimeWindowAfterEventssEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.TimeWindowBeforeEventssEditField.BackgroundColor  = ComponentsInWindowColor;
 
-    app.TextArea_3.BackgroundColor  = [0.9,0.9,0.9];
+    app.TextArea_3.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"ExtractEvents")   
     set(findall(app.ExtractEventsWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ExtractEventsWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.ExtractEventsWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.EventExtractionSettingsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.EventExtractionSettingsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.EventExtractionSettingsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.EventExtractionSettingsPanel.ForegroundColor  = WindowBackgroundColor;
     
-    app.Panel.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel.BackgroundColor  = WindowBackgroundColor;
+    app.Panel.ForegroundColor  = WindowBackgroundColor;
 
-    app.Panel_2.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel_2.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel_2.BackgroundColor  = WindowBackgroundColor;
+    app.Panel_2.ForegroundColor  = WindowBackgroundColor;
 
-    app.ExtractEventRelatedDataPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.ExtractEventRelatedDataPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.ExtractEventRelatedDataPanel.BackgroundColor  = WindowBackgroundColor;
+    app.ExtractEventRelatedDataPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.EventTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea_3.BackgroundColor  = [0.9,0.9,0.9];
+    app.EventTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea_3.BackgroundColor  = ComponentsInWindowColor;
 
-    app.FileTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.AnalogThresholdVEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.EventTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.InputChannelSelectionEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.FileTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.AnalogThresholdVEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.EventTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.InputChannelSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
     
 
-    app.DatatoUseDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.EventChanneltoUseDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.TimeWindowAfterEventssEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.TimeWindowBeforeEventssEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.DatatoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventChanneltoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.TimeWindowAfterEventssEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.TimeWindowBeforeEventssEditField.BackgroundColor  = ComponentsInWindowColor;
     
 end
 
 if strcmp(Window,"PlotImportEvents")   
     set(findall(app.ShowImportedEventChannelUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ShowImportedEventChannelUIFigure.Color  = [0.85,0.85,0.85];
+    app.ShowImportedEventChannelUIFigure.Color  = WindowBackgroundColor;
 
-    app.PlotOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.PlotOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.PlotOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.PlotOptionsPanel.ForegroundColor  = WindowBackgroundColor;
     
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
     
-    app.DowsampledSampleRateHzEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.FileTypeDropDown_2.BackgroundColor  = [0.9,0.9,0.9];
+    app.DowsampledSampleRateHzEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.FileTypeDropDown_2.BackgroundColor  = ComponentsInWindowColor;
 
-    app.UIAxes.Color  = [0.85,0.85,0.85];
+    app.UIAxes.Color  = WindowBackgroundColor;
     app.UIAxes.XColor = 'k';  
     app.UIAxes.YColor = 'k';  
 
@@ -679,20 +705,20 @@ end
 if strcmp(Window,"PlotExtratedEvents")   
     set(findall(app.ShowEventChannelUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ShowEventChannelUIFigure.Color  = [0.85,0.85,0.85];
+    app.ShowEventChannelUIFigure.Color  = WindowBackgroundColor;
 
-    app.PlotOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.PlotOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.PlotOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.PlotOptionsPanel.ForegroundColor  = WindowBackgroundColor;
     
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
     
-    app.DowsampledSampleRateHzEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.FileTypeDropDown_2.BackgroundColor  = [0.9,0.9,0.9];
-    app.FileTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.FileTypeDropDown_3.BackgroundColor  = [0.9,0.9,0.9];
+    app.DowsampledSampleRateHzEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.FileTypeDropDown_2.BackgroundColor  = ComponentsInWindowColor;
+    app.FileTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.FileTypeDropDown_3.BackgroundColor  = ComponentsInWindowColor;
 
-    app.UIAxes.Color  = [0.85,0.85,0.85];
+    app.UIAxes.Color  = WindowBackgroundColor;
     app.UIAxes.XColor = 'k';  
     app.UIAxes.YColor = 'k';  
 
@@ -710,57 +736,57 @@ end
 if strcmp(Window,"Load_Costume_Triggers")   
     set(findall(app.LoadCostumeTriggerIdentityUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.LoadCostumeTriggerIdentityUIFigure.Color  = [0.85,0.85,0.85];
+    app.LoadCostumeTriggerIdentityUIFigure.Color  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
 end
 
 
 if strcmp(Window,"Clean_Events")   
     set(findall(app.CleanEventTriggerUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.CleanEventTriggerUIFigure.Color  = [0.85,0.85,0.85];
+    app.CleanEventTriggerUIFigure.Color  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Clean_Events")   
     set(findall(app.CleanEventTriggerUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.CleanEventTriggerUIFigure.Color  = [0.85,0.85,0.85];
+    app.CleanEventTriggerUIFigure.Color  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Preprocess_Events_Main_Window")   
     set(findall(app.PreprocessEventDataWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.PreprocessEventDataWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.PreprocessEventDataWindowUIFigure.Color  = WindowBackgroundColor;
     
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor  = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Event_Trial_Rejection")   
     set(findall(app.TrialRejectionWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.TrialRejectionWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.TrialRejectionWindowUIFigure.Color  = WindowBackgroundColor;
     
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.TrialRejectionSettingsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.TrialRejectionSettingsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.TrialRejectionSettingsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.TrialRejectionSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.ChannelofInterestDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.ClimfromtoEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.RejectTrialsfromtoEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.PlotTrialsfromtoEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.ChannelofInterestDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.ClimfromtoEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.RejectTrialsfromtoEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.PlotTrialsfromtoEditField.BackgroundColor  = ComponentsInWindowColor;
 
-    app.UIAxes.Color  = [0.85,0.85,0.85];
+    app.UIAxes.Color  = WindowBackgroundColor;
     app.UIAxes.XColor = 'k';  
     app.UIAxes.YColor = 'k';  
 
@@ -780,7 +806,7 @@ if strcmp(Window,"Event_Trial_Rejection")
     cb.Label.String = 'Signal [mV]';
     cb.Label.Rotation = 270;
 
-    app.UIAxes_2.Color  = [0.85,0.85,0.85];
+    app.UIAxes_2.Color  = WindowBackgroundColor;
     app.UIAxes_2.XColor = 'k';  
     app.UIAxes_2.YColor = 'k';  
 
@@ -798,14 +824,14 @@ end
 if strcmp(Window,"EventChannelRejection")   
     set(findall(app.ChannelRejectionWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ChannelRejectionWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.ChannelRejectionWindowUIFigure.Color  = WindowBackgroundColor;
     
-    app.ChannelSettingsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.ChannelSettingsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.ChannelSettingsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.ChannelSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.RejectChannelFormat11or110EditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.RejectChannelFormat11or110EditField.BackgroundColor  = ComponentsInWindowColor;
 
-    app.UIAxes.Color  = [0.85,0.85,0.85];
+    app.UIAxes.Color  = WindowBackgroundColor;
     app.UIAxes.XColor = 'k';  
     app.UIAxes.YColor = 'k';  
 
@@ -825,27 +851,27 @@ end
 if strcmp(Window,"EventLFPMain")   
     set(findall(app.Analyse_Event_Related_SignalUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.Analyse_Event_Related_SignalUIFigure.Color  = [0.85,0.85,0.85];
+    app.Analyse_Event_Related_SignalUIFigure.Color  = WindowBackgroundColor;
     
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.SelectEventRelatedAnalysisPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.SelectEventRelatedAnalysisPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.SelectEventRelatedAnalysisPanel.BackgroundColor  = WindowBackgroundColor;
+    app.SelectEventRelatedAnalysisPanel.ForegroundColor  = WindowBackgroundColor;
 
 end
 
 if strcmp(Window,"EventERP")   
     set(findall(app.EventRelatedAnalysisUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.EventRelatedAnalysisUIFigure.Color  = [0.85,0.85,0.85];
+    app.EventRelatedAnalysisUIFigure.Color  = WindowBackgroundColor;
 
-    app.ERPAnalysisSettingsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.ERPAnalysisSettingsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.ERPAnalysisSettingsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.ERPAnalysisSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.DataTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.ChannelSelectionDropDown_2.BackgroundColor  = [0.9,0.9,0.9];
-    app.EventNumberSelectionEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.ChannelSelectionDropDown_2.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
     
 
 
@@ -883,18 +909,18 @@ end
 if strcmp(Window,"EventCSD")   
     set(findall(app.CSDAnalysisUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.CSDAnalysisUIFigure.Color  = [0.85,0.85,0.85];
+    app.CSDAnalysisUIFigure.Color  = WindowBackgroundColor;
     
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.CSDParameterPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.CSDParameterPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.CSDParameterPanel.BackgroundColor  = WindowBackgroundColor;
+    app.CSDParameterPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.DataTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.EventNumberSelectionEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.HammWindowEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.ClimminmaxEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.HammWindowEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.ClimminmaxEditField.BackgroundColor  = ComponentsInWindowColor;
     
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.CSDWindow.BackgroundColor;
@@ -926,28 +952,28 @@ end
 if strcmp(Window,"EventTF")   
     set(findall(app.TFAnalysisUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.TFAnalysisUIFigure.Color  = [0.85,0.85,0.85];
+    app.TFAnalysisUIFigure.Color  = WindowBackgroundColor;
     
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.EventandChannelSelectionPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.EventandChannelSelectionPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.EventandChannelSelectionPanel.BackgroundColor  = WindowBackgroundColor;
+    app.EventandChannelSelectionPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.WaveletAnalysisParameterPanel_2.BackgroundColor  = [0.85,0.85,0.85];
-    app.WaveletAnalysisParameterPanel_2.ForegroundColor  = [0.85,0.85,0.85];
+    app.WaveletAnalysisParameterPanel_2.BackgroundColor  = WindowBackgroundColor;
+    app.WaveletAnalysisParameterPanel_2.ForegroundColor  = WindowBackgroundColor;
 
-    app.AnalysisTypePanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.AnalysisTypePanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.AnalysisTypePanel.BackgroundColor  = WindowBackgroundColor;
+    app.AnalysisTypePanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.DataTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.EventNumberSelectionEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.FrequencyRangeminmaxstepsEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.CycleWidthfromto23EditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.FrequencyRangeminmaxstepsEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.CycleWidthfromto23EditField.BackgroundColor  = ComponentsInWindowColor;
 
-    app.ClimminmaxEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.WaveletTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.CycleWidthfromto23EditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.ClimminmaxEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.WaveletTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.CycleWidthfromto23EditField.BackgroundColor  = ComponentsInWindowColor;
     
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.TFWindow.BackgroundColor;
@@ -978,19 +1004,19 @@ end
 if strcmp(Window,"EventSpectrum")   
     set(findall(app.EventStaticSpectrumWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.EventStaticSpectrumWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.EventStaticSpectrumWindowUIFigure.Color  = WindowBackgroundColor;
     
-    app.AnalysisSettingsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.AnalysisSettingsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.AnalysisSettingsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.AnalysisSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.AnalysisDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.ChannelDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.DataTypeDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.FrequencyRangeHzEditField.BackgroundColor  = [0.9,0.9,0.9];
+    app.AnalysisDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.ChannelDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.FrequencyRangeHzEditField.BackgroundColor  = ComponentsInWindowColor;
 
-    app.DataSourceDropDown.BackgroundColor  = [0.9,0.9,0.9];
-    app.EventSelectionEditField.BackgroundColor  = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor  = [0.9,0.9,0.9];
+    app.DataSourceDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor  = ComponentsInWindowColor;
     
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1030,29 +1056,29 @@ if strcmp(Window,"Spike_Detection_Window")
     % texts to black
     set(findall(app.SpikeDetectionWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.SpikeDetectionWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+    app.SpikeDetectionWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.Panel.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel.BackgroundColor  = WindowBackgroundColor;
+    app.Panel.ForegroundColor  = WindowBackgroundColor;
 
-    app.Panel_2.BackgroundColor  = [0.85,0.85,0.85];
-    app.Panel_2.ForegroundColor  = [0.85,0.85,0.85];
+    app.Panel_2.BackgroundColor  = WindowBackgroundColor;
+    app.Panel_2.ForegroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor = [0.9,0.9,0.9];
-    app.TextArea_2.BackgroundColor = [0.9,0.9,0.9];
-    app.TextArea_3.BackgroundColor = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor = ComponentsInWindowColor;
+    app.TextArea_3.BackgroundColor = ComponentsInWindowColor;
 
-    app.DetectionMethodDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.ThresholdEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.MeanDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.VerticalSpikeOffsetToleranceSamplesEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.MinDepthofArtefactmEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.TimeOffsettoCombineSpikeIndiciessEditField.BackgroundColor = [0.9,0.9,0.9];
+    app.DetectionMethodDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.ThresholdEditField.BackgroundColor = ComponentsInWindowColor;
+    app.MeanDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.VerticalSpikeOffsetToleranceSamplesEditField.BackgroundColor = ComponentsInWindowColor;
+    app.MinDepthofArtefactmEditField.BackgroundColor = ComponentsInWindowColor;
+    app.TimeOffsettoCombineSpikeIndiciessEditField.BackgroundColor = ComponentsInWindowColor;
 
-    app.SorterDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.OptionsDropDown_2.BackgroundColor = [0.9,0.9,0.9];
+    app.SorterDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.OptionsDropDown_2.BackgroundColor = ComponentsInWindowColor;
 
 end
 
@@ -1060,14 +1086,14 @@ if strcmp(Window,"Spike_Sorting_Parameter")
     % texts to black
     set(findall(app.SpikeInterfaceParameterSelectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.SpikeInterfaceParameterSelectionUIFigure.Color  = [0.85,0.85,0.85];
+    app.SpikeInterfaceParameterSelectionUIFigure.Color  = WindowBackgroundColor;
 
-    app.GeneralSettingsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.GeneralSettingsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.GeneralSettingsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.GeneralSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor = ComponentsInWindowColor;
 
-    app.LoadSavedParameterDropDown.BackgroundColor = [0.9,0.9,0.9];
+    app.LoadSavedParameterDropDown.BackgroundColor = ComponentsInWindowColor;
 
 end
 
@@ -1075,17 +1101,17 @@ if strcmp(Window,"Load_Sorting_Window")
     % texts to black
     set(findall(app.LoadSpikeSortingResultsUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.LoadSpikeSortingResultsUIFigure.Color  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LoadSpikeSortingResultsUIFigure.Color  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.LoadingOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.LoadingOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.LoadingOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.LoadingOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.InformationTextArea.BackgroundColor = [0.9,0.9,0.9];
+    app.InformationTextArea.BackgroundColor = ComponentsInWindowColor;
 
-    app.SpikeSorterDropDown.BackgroundColor = [0.9,0.9,0.9];
-    app.AmplitudeScalingFactorEditField.BackgroundColor = [0.9,0.9,0.9];
+    app.SpikeSorterDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.AmplitudeScalingFactorEditField.BackgroundColor = ComponentsInWindowColor;
 
 end
 
@@ -1093,36 +1119,36 @@ if strcmp(Window,"AskForHighPass_Window")
     % texts to black
     set(findall(app.PreproSTAWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.PreproSTAWindowUIFigure.Color  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.PreproSTAWindowUIFigure.Color  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
     
-    app.FilterOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.FilterOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.FilterOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.FilterOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor = ComponentsInWindowColor;
 
-    app.CutoffFrequencyHzEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.FilterOrderEditField.BackgroundColor = [0.9,0.9,0.9];
-    app.SaveasnewPreprocessedDatasetDropDown.BackgroundColor = [0.9,0.9,0.9];
+    app.CutoffFrequencyHzEditField.BackgroundColor = ComponentsInWindowColor;
+    app.FilterOrderEditField.BackgroundColor = ComponentsInWindowColor;
+    app.SaveasnewPreprocessedDatasetDropDown.BackgroundColor = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Save_for_Sorting_Window")    
     % texts to black
     set(findall(app.SaveforSpikeSortingWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.SaveforSpikeSortingWindowUIFigure.Color  = [0.85,0.85,0.85];
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.SaveforSpikeSortingWindowUIFigure.Color  = WindowBackgroundColor;
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
 
-    app.SavingOptionsPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.SavingOptionsPanel.ForegroundColor  = [0.85,0.85,0.85];
+    app.SavingOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.SavingOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.InformationTextArea.BackgroundColor = [0.9,0.9,0.9];
+    app.InformationTextArea.BackgroundColor = ComponentsInWindowColor;
 
-    app.Dataset.BackgroundColor = [0.9,0.9,0.9];
-    app.SaveFormatDropDown_2.BackgroundColor = [0.9,0.9,0.9];
-    app.SaveFormatDropDown.BackgroundColor = [0.9,0.9,0.9];
+    app.Dataset.BackgroundColor = ComponentsInWindowColor;
+    app.SaveFormatDropDown_2.BackgroundColor = ComponentsInWindowColor;
+    app.SaveFormatDropDown.BackgroundColor = ComponentsInWindowColor;
 
 end
 
@@ -1131,15 +1157,15 @@ if strcmp(Window,"LiveCSDWindow")
     % texts to black
     set(findall(app.CSDWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.CSDWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.CSDWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     
-    app.CurrentSourceDensityOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.CurrentSourceDensityOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.CurrentSourceDensityOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.CurrentSourceDensityOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.HammWindowEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.DataTypeDropDown.BackgroundColor   = [0.9,0.9,0.9];
+    app.HammWindowEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.LiveCSDWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1169,12 +1195,12 @@ if strcmp(Window,"LiveSpectralPowerWindow")
     % texts to black
     set(findall(app.PowerEstimateWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.PowerEstimateWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.PowerEstimateWindowUIFigure.Color  = WindowBackgroundColor;
     
-    app.PowerEstimateOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.PowerEstimateOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.PowerEstimateOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.PowerEstimateOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.DataTypeDropDown.BackgroundColor   = [0.9,0.9,0.9];
+    app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.LivePowerEstimateWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1197,13 +1223,13 @@ if strcmp(Window,"LiveSpikeRatePowerWindow")
     % texts to black
     set(findall(app.SpikeRateWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.SpikeRateWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.SpikeRateWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.LeftPanel.BackgroundColor  = [0.85,0.85,0.85];
-    app.RightPanel.BackgroundColor  = [0.85,0.85,0.85];
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
     
-    app.SpikeRateOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.SpikeRateOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.SpikeRateOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SpikeRateOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.LiveSpikeRateWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1226,20 +1252,20 @@ if strcmp(Window,"ContSpikeAnalysis")
     % texts to black
     set(findall(app.ContinuousSpikeAnalysisUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ContinuousSpikeAnalysisUIFigure.Color  = [0.85,0.85,0.85];
+    app.ContinuousSpikeAnalysisUIFigure.Color  = WindowBackgroundColor;
 
-    app.SpikeAnalysisOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.SpikeAnalysisOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
-    app.WaveformOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.WaveformOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.SpikeAnalysisOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SpikeAnalysisOptionsPanel.ForegroundColor   = WindowBackgroundColor;
+    app.WaveformOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.WaveformOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
-    app.TypeofAnalysisDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.ClustertoshowDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.EventstoshowDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.SpikeRateNumBinsEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.TimeWindowSpiketriggredLFPEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.WaveformSelectionforPlottingEditField.BackgroundColor   = [0.9,0.9,0.9];
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.TypeofAnalysisDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.ClustertoshowDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.EventstoshowDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.SpikeRateNumBinsEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.TimeWindowSpiketriggredLFPEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.WaveformSelectionforPlottingEditField.BackgroundColor   = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1305,22 +1331,22 @@ if strcmp(Window,"ContUnitAnalysis")
     % texts to black
     set(findall(app.UnitAnalysisWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.UnitAnalysisWindowUIFigure.Color  = [0.85,0.85,0.85];
+    app.UnitAnalysisWindowUIFigure.Color  = WindowBackgroundColor;
 
-    app.PlotColumnSettingsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.PlotColumnSettingsPanel.ForegroundColor   = [0.85,0.85,0.85];
-    app.GeneralSettingsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.GeneralSettingsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.PlotColumnSettingsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.PlotColumnSettingsPanel.ForegroundColor   = WindowBackgroundColor;
+    app.GeneralSettingsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.GeneralSettingsPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.UnitstoShowEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.NumWaveformsEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.UnitstoShowEditField_2.BackgroundColor   = [0.9,0.9,0.9];
-    app.NumWaveformsEditField_2.BackgroundColor   = [0.9,0.9,0.9];
+    app.UnitstoShowEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.NumWaveformsEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.UnitstoShowEditField_2.BackgroundColor   = ComponentsInWindowColor;
+    app.NumWaveformsEditField_2.BackgroundColor   = ComponentsInWindowColor;
     
-    app.MaxISItoshowsEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.BinNumberISIEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.DeleteUnitDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.TimeLagmsEditField.BackgroundColor   = [0.9,0.9,0.9];
+    app.MaxISItoshowsEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.BinNumberISIEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.DeleteUnitDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.TimeLagmsEditField.BackgroundColor   = ComponentsInWindowColor;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Set title, xlabel, ylabel colors
@@ -1328,7 +1354,7 @@ if strcmp(Window,"ContUnitAnalysis")
     app.UIAxes_1.XLabel.Color = 'k';
     app.UIAxes_1.YLabel.Color = 'k';
 
-    app.UIAxes_1.Color  = [0.85,0.85,0.85];
+    app.UIAxes_1.Color  = WindowBackgroundColor;
     app.UIAxes_1.XColor = 'k';  
 
     app.UIAxes_1.XTickLabelMode = 'auto';  
@@ -1349,7 +1375,7 @@ if strcmp(Window,"ContUnitAnalysis")
     app.UIAxes_4.XLabel.Color = 'k';
     app.UIAxes_4.YLabel.Color = 'k';
 
-    app.UIAxes_4.Color  = [0.85,0.85,0.85];
+    app.UIAxes_4.Color  = WindowBackgroundColor;
     app.UIAxes_4.XColor = 'k';  
 
     app.UIAxes_4.XTickLabelMode = 'auto';  
@@ -1369,7 +1395,7 @@ if strcmp(Window,"ContUnitAnalysis")
     app.UIAxes_7.XLabel.Color = 'k';
     app.UIAxes_7.YLabel.Color = 'k';
 
-    app.UIAxes_7.Color  = [0.85,0.85,0.85];
+    app.UIAxes_7.Color  = WindowBackgroundColor;
     app.UIAxes_7.XColor = 'k';  
     
     app.UIAxes_7.XTickLabelMode = 'auto';  
@@ -1391,7 +1417,7 @@ if strcmp(Window,"ContUnitAnalysis")
     app.UIAxes_2.XLabel.Color = 'k';
     app.UIAxes_2.YLabel.Color = 'k';
 
-    app.UIAxes_2.Color  = [0.85,0.85,0.85];
+    app.UIAxes_2.Color  = WindowBackgroundColor;
     app.UIAxes_2.XColor = 'k';  
 
     app.UIAxes_2.XTickLabelMode = 'auto';  
@@ -1410,7 +1436,7 @@ if strcmp(Window,"ContUnitAnalysis")
     app.UIAxes_5.XLabel.Color = 'k';
     app.UIAxes_5.YLabel.Color = 'k';
 
-    app.UIAxes_5.Color  = [0.85,0.85,0.85];
+    app.UIAxes_5.Color  = WindowBackgroundColor;
     app.UIAxes_5.XColor = 'k';  
 
     app.UIAxes_5.XTickLabelMode = 'auto';  
@@ -1430,7 +1456,7 @@ if strcmp(Window,"ContUnitAnalysis")
     app.UIAxes_8.XLabel.Color = 'k';
     app.UIAxes_8.YLabel.Color = 'k';
 
-    app.UIAxes_8.Color  = [0.85,0.85,0.85];
+    app.UIAxes_8.Color  = WindowBackgroundColor;
     app.UIAxes_8.XColor = 'k';  
 
     app.UIAxes_8.XTickLabelMode = 'auto';  
@@ -1451,20 +1477,22 @@ if strcmp(Window,"EventSpikeAnalysis")
     % texts to black
     set(findall(app.EventRelatedSpikeAnalysisUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.EventRelatedSpikeAnalysisUIFigure.Color  = [0.85,0.85,0.85];
+    app.EventRelatedSpikeAnalysisUIFigure.Color  = WindowBackgroundColor;
 
-    app.SpikeAnalysisOptionsPanel.BackgroundColor   = [0.85,0.85,0.85];
-    app.SpikeAnalysisOptionsPanel.ForegroundColor   = [0.85,0.85,0.85];
+    app.SpikeAnalysisOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SpikeAnalysisOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.TextArea.BackgroundColor   = [0.9,0.9,0.9];
-    app.AnalysisTypeDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.ClustertoshowDropDown.BackgroundColor   = [0.9,0.9,0.9];
-    app.EventRangeEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.BaselineWindowStartStopinsEditField.BackgroundColor   = [0.9,0.9,0.9];
-
-    app.SpikeRateNumBinsEditField.BackgroundColor   = [0.9,0.9,0.9];
-    app.TimeWindowSpiketriggredLFPEditField.BackgroundColor   = [0.9,0.9,0.9];
-
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.AnalysisTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.ClustertoshowDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.EventRangeEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.BaselineWindowStartStopinsEditField.BackgroundColor   = ComponentsInWindowColor;
+    
+    app.SpikeRateNumBinsEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.TimeWindowSpiketriggredLFPEditField.BackgroundColor   = ComponentsInWindowColor;
+    
+    app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+    
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor;
     app.UIAxes.XColor = 'k';  
     app.UIAxes.XTickLabelMode = 'auto';  
@@ -1523,4 +1551,92 @@ if strcmp(Window,"EventSpikeAnalysis")
     app.UIAxes_5.Title.Color = 'k';
     app.UIAxes_5.XLabel.Color = 'k';
     
+end
+
+if strcmp(Window,"AutorunWindow")    
+    % texts to black
+    set(findall(app.AutorunManagerWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+
+    app.AutorunManagerWindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.ConfigSelectionPanel.BackgroundColor   = WindowBackgroundColor;
+    app.ConfigSelectionPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.AutorunSettingsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.AutorunSettingsPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.TextArea_2.BackgroundColor   = ComponentsInWindowColor;
+
+    app.ConfigSelectedDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.FoldertoskipEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.PictureFormatDropDown.BackgroundColor   = ComponentsInWindowColor;
+end
+if strcmp(Window,"AutorunWindowSelectTemplate")    
+    % texts to black
+    set(findall(app.SelectAutorunTemplateWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    
+    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
+    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+
+    app.SelectAutorunTemplateWindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.SelectTemplateDropDown.BackgroundColor   = ComponentsInWindowColor;
+
+    app.TextArea.BackgroundColor   = WindowBackgroundColor;
+    app.TextArea_2.BackgroundColor   = WindowBackgroundColor;
+
+end
+
+if strcmp(Window,"Autorun_Reset_Config")    
+    % texts to black
+    set(findall(app.ResetConfigWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.ResetConfigWindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.DefaultTemplatetoResetConfigtoDropDown.BackgroundColor   = ComponentsInWindowColor;
+end
+
+if strcmp(Window,"AutorunShowFunction")    
+    % texts to black
+    set(findall(app.Show_Function_WindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.Show_Function_WindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+end
+
+if strcmp(Window,'AddNewModuleWindow')
+    % texts to black
+    set(findall(app.AddNewModuleWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.AddNewModuleWindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.Step1Panel.BackgroundColor   = WindowBackgroundColor;
+    app.Step1Panel.ForegroundColor   = WindowBackgroundColor;
+
+    app.Step2Panel.BackgroundColor   = WindowBackgroundColor;
+    app.Step2Panel.ForegroundColor   = WindowBackgroundColor;
+
+    app.Step3Panel.BackgroundColor   = WindowBackgroundColor;
+    app.Step3Panel.ForegroundColor   = WindowBackgroundColor;
+
+    app.NameoftheNewModuleEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.InformationTextArea_2.BackgroundColor   = ComponentsInWindowColor;
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+
+end
+
+if strcmp(Window,'ChangeLowPassSettings')
+    % texts to black
+    set(findall(app.SelectSpikeRateFilterOptionsUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.SelectSpikeRateFilterOptionsUIFigure.Color  = WindowBackgroundColor;
+
+    app.EnternewCutoffFrequencyHzEditField.BackgroundColor   = WindowBackgroundColor;
+
+
 end

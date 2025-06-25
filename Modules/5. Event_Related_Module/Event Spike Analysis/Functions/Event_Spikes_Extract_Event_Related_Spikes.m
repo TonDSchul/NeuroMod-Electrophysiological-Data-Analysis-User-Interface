@@ -1,4 +1,4 @@
-function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType,SpikeTriggereAverage)
+function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType,SpikeTriggereAverage,EventDataType)
 
 %________________________________________________________________________________________
 
@@ -19,6 +19,8 @@ function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType
 % is plotted. This means, that spike samples are not "normalized" to event
 % time range. This enables to extract spike data from raw/preprocessed data. 0
 % Otherwise
+% 4. EventDataType: char, either 'Raw Event Related Data' or 'Preprocessed
+% Event Related Data'. 
 
 % Output
 % 1. Data: main window data structure with added field Data.EventRelatedSpikes
@@ -71,14 +73,24 @@ Data.EventRelatedSpikes.DataCorrectedSpikePositions = [];
 Events = Data.Events{EventtoShow};
 SpikeTimes = Data.Spikes.SpikeTimes;
 
-cN = size(Data.EventRelatedData,2);
+if strcmp(EventDataType,"Preprocessed Event Related Data")
+    cN = size(Data.PreprocessedEventRelatedData,2);
+else
+    cN = size(Data.EventRelatedData,2);
+end
 
 % Loop over event indicies (trials)
-for nevents = 1:size(Data.EventRelatedData,2)
+for nevents = 1:cN
     
     msg = sprintf('Extract Event Related Spikes... (%d%% done)', round(100*(nevents/cN)));
     waitbar(nevents/cN, h, msg);
     
+    if strcmp(EventDataType,"Preprocessed Event Related Data")
+        if sum(Data.Info.EventRelatedPreprocessing.TrialRejectionTrials == nevents) == 1
+            continue;
+        end
+    end
+
     % Extracts Spike Times from Kilosort Spike
     % positions within event range
     SpikeIndicieWithinCurrentEvent = SpikeTimes > Events(nevents)-NumSamplesBefore & SpikeTimes <= Events(nevents)+NumSamplesAfter;
