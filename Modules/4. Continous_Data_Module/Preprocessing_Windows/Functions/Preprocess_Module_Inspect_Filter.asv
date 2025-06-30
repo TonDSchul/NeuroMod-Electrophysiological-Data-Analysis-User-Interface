@@ -88,12 +88,12 @@ if isfield(PreProInfo,'FilterKernel')
             if strcmp(PreProInfo.FilterType, "Butterworth IR")
                 % Butterworth filter design
                 % FIR filter design
-                
+
                 [b, a] = butter(filterorder, Wn, ftype);
-                
+             
                 impulse_response = impz(b, a);
                 
-                
+               
                 nyquist = Data.Info.NativeSamplingRate/2;
                 
                 % Frequency response
@@ -106,9 +106,9 @@ if isfield(PreProInfo,'FilterKernel')
                 subplot(121)
                 stem(impulse_response, 'filled')
                 xlabel('Samples')
-                
+
                 title(['Impulse response (butter - ' PreProInfo.FilterType ')'])
-                
+              
                 axis square
                 
                 subplot(122), hold on
@@ -128,6 +128,7 @@ if isfield(PreProInfo,'FilterKernel')
                 set(gca, 'xlim', [0 Cutoff*4])
                 xlabel('Frequency (Hz)'), ylabel('Filter gain')
                 legend({'Actual';'Ideal'})
+
                 title('Frequency response')
                 
             end
@@ -141,10 +142,10 @@ if isfield(PreProInfo,'FilterKernel')
                         % filter parameters
                         nyquist = 1000/2;
                     end
-                    
+
                     % filter kernel
                     filtkern = fir1(filterorder,Cutoff/nyquist);
-                    
+                                    
                     % compute the power spectrum of the filter kernel
                     filtpow = abs(fft(filtkern)).^2;
                     % compute the frequencies vector and remove negative frequencies
@@ -161,11 +162,11 @@ if isfield(PreProInfo,'FilterKernel')
                     
                     % plot amplitude spectrum of the filter kernel
                     subplot(122), hold on
-                    plot(hz,filtpow,'bs-','linew',2,'markerfacecolor','w')
+                    plot(hz,filtpow,'gs-','linew',2,'markerfacecolor','w')
                     plot([0 Cutoff(1) Cutoff Cutoff(2) nyquist],[0 0 1 1 0 0],'ro-','linew',2,'markerfacecolor','w')
                     
                     % dotted line corresponding to the lower edge of the filter cut-off
-                    plot([1 1]*Cutoff(1),get(gca,'ylim'),'r:')
+                    plot([1 1]*Cutoff(1),get(gca,'ylim'),'k:')
                     
                     % make the plot look nicer
                     set(gca,'xlim',[0 Cutoff(1)*4])%,'ylim',[-.05 1.05])
@@ -186,7 +187,7 @@ if isfield(PreProInfo,'FilterKernel')
                     % Create bandpass Butterworth filter (narrowband)
                     [b, a] = butter(filterorder, Cutoff / nyquist, 'bandpass');  % Cutoff = [low high] in Hz
                     impulse_response = impz(b, a);
-                    
+            
                     % Frequency response of the filter
                     [filtresp, freq] = freqz(b, a, 1024, nyquist*2);
                     
@@ -208,11 +209,11 @@ if isfield(PreProInfo,'FilterKernel')
                     
                     % Plot amplitude spectrum of the filter
                     subplot(122), hold on
-                    plot(hz, filtpow, 'bs-', 'linew', 2, 'markerfacecolor', 'w')
+                    plot(hz, filtpow, 'gs-', 'linew', 2, 'markerfacecolor', 'w')
                     plot([0 Cutoff(1) Cutoff Cutoff(2) nyquist], [0 0 1 1 0 0], 'ro-', 'linew', 2, 'markerfacecolor', 'w')
                     
                     % Dotted line corresponding to the lower edge of the filter cut-off
-                    plot([1 1]*Cutoff(1), get(gca, 'ylim'), 'r:')
+                    plot([1 1]*Cutoff(1), get(gca, 'ylim'), 'k:')
                     
                     % Make the plot look nicer
                     set(gca, 'xlim', [0 Cutoff(1)*4])
@@ -251,7 +252,7 @@ if isfield(PreProInfo,'FilterKernel')
                     axis square
                     
                     subplot(122), hold on
-                    plot(hz, filtpow, 'bs-', 'linew', 2, 'markerfacecolor', 'w')
+                    plot(hz, filtpow, 'gs-', 'linew', 2, 'markerfacecolor', 'w')
                     
                     % Ideal band-stop filter shape (smooth transition for realism)
                     tw = diff(Cutoff) * 0.3;  % 30% transition width
@@ -260,8 +261,8 @@ if isfield(PreProInfo,'FilterKernel')
                     plot(idealX, idealY, 'ro-', 'linew', 2, 'markerfacecolor', 'w')
                     
                     % Dotted lines at cutoff frequencies
-                    plot([1 1]*Cutoff(1), get(gca, 'ylim'), 'r:')
-                    plot([1 1]*Cutoff(2), get(gca, 'ylim'), 'r:')
+                    plot([1 1]*Cutoff(1), get(gca, 'ylim'), 'k:')
+                    plot([1 1]*Cutoff(2), get(gca, 'ylim'), 'k:')
                     
                     set(gca, 'xlim', [0, Cutoff(2)*4])
                     xlabel('Frequency (Hz)'), ylabel('Filter gain')
@@ -288,7 +289,7 @@ if isfield(PreProInfo,'FilterKernel')
                     axis square
                     
                     subplot(122), hold on
-                    plot(hz, filtpow, 'bs-', 'linew', 2, 'markerfacecolor', 'w')
+                    plot(hz, filtpow, 'gs-', 'linew', 2, 'markerfacecolor', 'w')
                     
                     % Ideal shape
                     tw = diff(Cutoff) * 0.3;
@@ -296,8 +297,8 @@ if isfield(PreProInfo,'FilterKernel')
                     idealY = [1, 1, 0, 0, 1, 1];
                     plot(idealX, idealY, 'ro-', 'linew', 2, 'markerfacecolor', 'w')
                     
-                    plot([1 1]*Cutoff(1), get(gca, 'ylim'), 'r:')
-                    plot([1 1]*Cutoff(2), get(gca, 'ylim'), 'r:')
+                    plot([1 1]*Cutoff(1), get(gca, 'ylim'), 'k:')
+                    plot([1 1]*Cutoff(2), get(gca, 'ylim'), 'k:')
                     
                     set(gca, 'xlim', [0, Cutoff(2)*4])
                     xlabel('Frequency (Hz)'), ylabel('Filter gain')

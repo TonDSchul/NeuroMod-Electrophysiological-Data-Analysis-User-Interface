@@ -1,11 +1,23 @@
 function app = Preprocess_DeleteLastPipeline_Entry(app)
 
-if strcmp(app.PreprocessingSteps(end),"High-Pass") || strcmp(app.PreprocessingSteps(end),"Low-Pass") || strcmp(app.PreprocessingSteps(end),"Narrowband") 
+if strcmp(app.PreprocessingSteps(end),"High-Pass") || strcmp(app.PreprocessingSteps(end),"Low-Pass")
     if isfield(app.Info,'FilterMethod')
         % Fields to delete
         fieldsToDelete = {'Cutoff', 'FilterOrder', 'FilterMethod', 'FilterType', 'FilterDirection'};
         % Delete fields
         app.Info = rmfield(app.Info, fieldsToDelete);
+    end
+    app.PreprocessingSteps(end) = [];
+elseif strcmp(app.PreprocessingSteps(end),"Narrowband")
+    if isfield(app.Info,'NarrowbandFilterMethod')
+        fields = {'NarrowbandFilterMethod','NarrowbandFilterType','NarrowbandFilterDirection','NarrowbandCutoff','NarrowbandFilterOrder'};
+        app.Info = rmfield(app.Info,fields);
+    end
+    app.PreprocessingSteps(end) = [];
+elseif strcmp(app.PreprocessingSteps(end),"Resampling")
+    if isfield(app.Info,'Resample')
+        fields = {'Resample','ResamplingFrequency'};
+        app.Info = rmfield(app.Info,fields);
     end
     app.PreprocessingSteps(end) = [];
 elseif strcmp(app.PreprocessingSteps(end),"Median-Filter") 

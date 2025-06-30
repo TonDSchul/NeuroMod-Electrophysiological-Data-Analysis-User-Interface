@@ -356,6 +356,14 @@ if Activated
         end
     end
 
+    %% LIVE ECHT
+    if strcmp(Window,"LiveECHT") || strcmp(Window,"All")
+        if ~isempty(app.LiveECHTWindow) && isvalid(app.LiveECHTWindow)
+            
+            app.LiveECHTWindow.ChannelSelectionDropDown.Tooltip = "Select the channel for which you want to compute the ECHT";
+        end
+    end
+
     %disp("Tooltips turned ON");
 
 else % Not activated
@@ -659,5 +667,15 @@ else % Not activated
             app.Manage_Dataset_ComponentsWindow.DropDown.Tooltip = "";
         end
     end
+
+    %% LIVE ECHT
+    if strcmp(Window,"LiveECHT") || strcmp(Window,"All")
+        if ~isempty(app.LiveECHTWindow) && isvalid(app.LiveECHTWindow)
+            app.LiveECHTWindow.DownsampledSampleRateHzEditField.Tooltip = "";
+            app.LiveECHTWindow.CenterFrequencyHzEditField.Tooltip = "";
+            app.LiveECHTWindow.ChannelSelectionDropDown.Tooltip = "";
+        end
+    end
+
 
 end

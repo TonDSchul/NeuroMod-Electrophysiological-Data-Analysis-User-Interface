@@ -45,7 +45,7 @@ dir = [];
 filterorder = [];
 Cutoff = [];
 
-if strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Low-Pass") || strcmp(PreprocessingSteps(PPSteps),"Narrowband")
+if strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Low-Pass")
     if strcmp(Info.FilterType,"Butterworth IR")  
         type = 'but';
     elseif strcmp(Info.FilterType,"FIR-1")
@@ -60,6 +60,24 @@ if strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(
     elseif strcmp(Info.FilterDirection,"Zero-phase forward and reverse")
         dir ='twopass';
     elseif strcmp(Info.FilterDirection,"Zero-phase reverse and forward")
+        dir ='twopass-reverse';
+    end
+elseif strcmp(PreprocessingSteps(PPSteps),"Narrowband")
+
+    if strcmp(Info.NarrowbandFilterType,"Butterworth IR")  
+        type = 'but';
+    elseif strcmp(Info.NarrowbandFilterType,"FIR-1")
+        type ='fir';
+    elseif strcmp(Info.NarrowbandFilterType,"Firls")
+        type ='firls';
+    end
+    if strcmp(Info.NarrowbandFilterDirection,"Forward")
+        dir = 'onepass';
+    elseif strcmp(Info.NarrowbandFilterDirection,"Reverse")
+        dir ='onepass-reverse';
+    elseif strcmp(Info.NarrowbandFilterDirection,"Zero-phase forward and reverse")
+        dir ='twopass';
+    elseif strcmp(Info.NarrowbandFilterDirection,"Zero-phase reverse and forward")
         dir ='twopass-reverse';
     end
 
@@ -98,8 +116,11 @@ df = [];
     
 % If any filter except of bandpass and median filter
 
-if strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Low-Pass") || strcmp(PreprocessingSteps(PPSteps),"Narrowband")
+if strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Low-Pass") 
     filterorder = str2double(Info.FilterOrder);
+end
+if strcmp(PreprocessingSteps(PPSteps),"Narrowband")
+    filterorder = str2double(Info.NarrowbandFilterOrder);
 end
 % If band pass
 if strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
@@ -116,7 +137,7 @@ wintype = 'hamming';
 % range defined by two values instead of just one like
 % for high or low pass filter
 if strcmp(PreprocessingSteps(PPSteps),"Narrowband") 
-    value = Info.Cutoff;
+    value = Info.NarrowbandCutoff;
     indicesep = find(value == ',');
     Cutoff(1,1) = str2double(value(1:indicesep(1)-1));
     Cutoff(1,2) = str2double(value(indicesep+1:end));
@@ -125,7 +146,7 @@ elseif strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
     indicesep = find(value == ',');
     Cutoff(1,1) = str2double(value(1:indicesep(1)-1));
     Cutoff(1,2) = str2double(value(indicesep+1:end));
-elseif strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Low-Pass") || strcmp(PreprocessingSteps(PPSteps),"Narrowband")
+elseif strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Low-Pass") 
     % Only one value for high/lowpass
     Cutoff = str2double(Info.Cutoff);  % Passband edge frequency in Hz
 end

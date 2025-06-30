@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData,PlotAppearance)
+function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData,PlotAppearance,WindowSize,UseCostumeWindowSize)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum of a signal using pwelch method
@@ -24,8 +24,11 @@ function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figu
 % case user wants to export them
 % 9. PlotAppearance: structure holding current default of plot appearances
 % like linewidth
-
+% 10. WindowSize: char from editfield, window size for Pwelch
 % Outputs:
+% 11. UseCostumeWindowSize: logical 1 or 0, whether costume window size
+% should be applied
+
 % 1. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them. See below to see which fields and data
 
@@ -34,17 +37,27 @@ function [CurrentPlotData] = Analyse_Main_Window_Static_Power_Spectrum(Data,Figu
 
 %________________________________________________________________________________________
 
+if ~isempty(WindowSize)
+    if UseCostumeWindowSize == 1
+        WindowSize = str2double(WindowSize);
+    else
+        WindowSize = [];
+    end
+else
+    WindowSize = [];
+end
+
 %% Compute Spectrum using pwelch
 if strcmp(DataType,"Channel Individually")
     if strcmp(DataSource,"Raw Data")
         NonNaN = ~isnan(Data.Raw);
-        [Welchpowspect,Freq] = pwelch(double(Data.Raw(SelectedChannel,NonNaN(SelectedChannel,:))),[],[],[],Data.Info.NativeSamplingRate);
+        [Welchpowspect,Freq] = pwelch(double(Data.Raw(SelectedChannel,NonNaN(SelectedChannel,:))),WindowSize,[],[],Data.Info.NativeSamplingRate);
     elseif strcmp(DataSource,"Preprocessed Data")
         NonNaN = ~isnan(Data.Preprocessed);
         if isfield(Data.Info, 'DownsampleFactor')
-            [Welchpowspect,Freq] = pwelch(double(Data.Preprocessed(SelectedChannel,NonNaN(SelectedChannel,:))),[],[],[],Data.Info.DownsampledSampleRate);
+            [Welchpowspect,Freq] = pwelch(double(Data.Preprocessed(SelectedChannel,NonNaN(SelectedChannel,:))),WindowSize,[],[],Data.Info.DownsampledSampleRate);
         else
-            [Welchpowspect,Freq] = pwelch(double(Data.Preprocessed(SelectedChannel,NonNaN(SelectedChannel,:))),[],[],[],Data.Info.NativeSamplingRate);
+            [Welchpowspect,Freq] = pwelch(double(Data.Preprocessed(SelectedChannel,NonNaN(SelectedChannel,:))),WindowSize,[],[],Data.Info.NativeSamplingRate);
         end
     end
     titlestring = strcat("Power Spectral Density Channel ",ChannelText);
@@ -52,14 +65,14 @@ elseif strcmp(DataType,"Mean over all Channel")
     if strcmp(DataSource,"Raw Data")
         MeanOverChannel = mean(Data.Raw,1,'omitnan');
         NonNaN = ~isnan(MeanOverChannel);
-        [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);
+        [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),WindowSize,[],[],Data.Info.NativeSamplingRate);
     elseif strcmp(DataSource,"Preprocessed Data")
         MeanOverChannel = mean(Data.Preprocessed,1,'omitnan');
         NonNaN = ~isnan(MeanOverChannel);
         if isfield(Data.Info, 'DownsampleFactor')
-            [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),[],[],[],Data.Info.DownsampledSampleRate);
+            [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),WindowSize,[],[],Data.Info.DownsampledSampleRate);
         else
-            [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);
+            [Welchpowspect,Freq] = pwelch(double(MeanOverChannel(NonNaN)),WindowSize,[],[],Data.Info.NativeSamplingRate);
         end
     end
     titlestring = strcat("Power Spectral Density Mean over Channel");

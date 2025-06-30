@@ -60,7 +60,10 @@ if strcmp(type,"Filter")
     flagexist = 0;
     flagbandstop = 0;
     flagmedian = 0;
-
+    flagexistNarrowband = 0;
+    flagexistLowPass = 0;
+    flagDownsample = 0;
+    IndexLowPass = [];
     % If PreprocessingSteps filled with values (already added steps to pipeline)
     if ~isempty(PreprocessingSteps)
         % Loop over already added steps
@@ -68,20 +71,22 @@ if strcmp(type,"Filter")
             % Identofy which filter was already added and mark it with the
             % flag variables
             if strcmp(PreprocessingSteps(i),"Low-Pass")
-                Index = i;
-                flagexist = 1;
+                IndexLowPass = i;
+                flagexistLowPass = 1;
             elseif strcmp(PreprocessingSteps(i),"High-Pass")
                 Index = i;
                 flagexist = 1;
             elseif strcmp(PreprocessingSteps(i),"Narrowband")
-                Index = i;
-                flagexist = 1;
+                %Index = i;
+                flagexistNarrowband = 1;
             elseif strcmp(PreprocessingSteps(i),"Band-Stop")
                 IndexBandstop = i;
                 flagbandstop = 1;
             elseif strcmp(PreprocessingSteps(i),"Median Filter")
                 IndexMedian = i;
                 flagmedian = 1;
+            elseif strcmp(PreprocessingSteps(i),"Downsampling")
+                flagDownsample = 1;
             end
         end
     end
@@ -90,7 +95,7 @@ if strcmp(type,"Filter")
     % If a filter except of the following two is selected: Parameter names
     % are the same and only one of them can be applied at a time -->
     % handling all of these cases together
-    if ~strcmp(FilterMethod,"Median Filter") && ~strcmp(FilterMethod,"Band-Stop")
+    if ~strcmp(FilterMethod,"Median Filter") && ~strcmp(FilterMethod,"Band-Stop") && ~strcmp(FilterMethod,"Narrowband")
         % Save all entered filter parameters
         Info.FilterMethod = FilterMethod;
         Info.FilterType = FilterType;
@@ -110,34 +115,45 @@ if strcmp(type,"Filter")
         Info.BandStopFilterDirection = FilterDirection; 
         Info.BandStopCutoff = CuttoffFrequency;
         Info.BandStopFilterOrder = FilterOrder;
+    elseif strcmp(FilterMethod,"Narrowband")
+        % Band-Stop filter can be applied along with another filter. Therefore
+        % the field holding the parameter has to be named differently
+        Info.NarrowbandFilterMethod = FilterMethod;
+        Info.NarrowbandFilterType = FilterType;
+        Info.NarrowbandFilterDirection = FilterDirection; 
+        Info.NarrowbandCutoff = CuttoffFrequency;
+        Info.NarrowbandFilterOrder = FilterOrder;
     end
     
     %% Replace old pipeline entry when a filter is added and a filter already was added that cannot be applied together
     % Check If flags for filters except of bandstop and median from which only one at a time can be
     % applied is set to 1 (if already part of the pipeline)
-    if flagexist == 1 && strcmp(FilterMethod,"Low-Pass") || flagexist == 1 && strcmp(FilterMethod,"High-Pass") || flagexist == 1 && strcmp(FilterMethod,"Narrowband")
+    if flagexistLowPass == 1 && strcmp(FilterMethod,"Low-Pass") || flagexist == 1 && strcmp(FilterMethod,"High-Pass") 
         % If filter already added: Replace entry with the new filter
         % selection. Parameters already got overwritten in the part above,
         if strcmp(FilterMethod,"Low-Pass")
-            PreprocessingSteps(Index) = "Low-Pass";
+            PreprocessingSteps(IndexLowPass) = "Low-Pass";
+            msgbox("Low-Pass filter was already added. Previous settings got replaced by the current ones");
         elseif strcmp(FilterMethod,"High-Pass")
+            msgbox("High-Pass filter was already added. Previous settings got replaced by the current ones");
             PreprocessingSteps(Index) = "High-Pass";
-        elseif strcmp(FilterMethod,"Narrowband")
-            PreprocessingSteps(Index) = "Narrowband";
         end
     
     %% Give info about overwriting
     % If bandstop or median filter already added: Old settings are
     % overwritten
-    elseif flagbandstop == 1 && strcmp(FilterMethod,"Band-Stop") || flagmedian == 1 && strcmp(FilterMethod,"Median Filter")
+    elseif flagbandstop == 1 && strcmp(FilterMethod,"Band-Stop") || flagmedian == 1 && strcmp(FilterMethod,"Median Filter") || flagexistNarrowband == 1 && strcmp(FilterMethod,"Narrowband")
         
         if strcmp(FilterMethod,"Band-Stop")
-            msgbox("Band-Stop Filter was already added. Previous Settings got replaced by the current ones");
+            msgbox("Band-Stop filter was already added. Previous settings got replaced by the current ones");
            
         end
         if strcmp(FilterMethod,"Median Filter")
-             msgbox("Median-Filter was already added. Previous Settings got replaced by the current ones");
-            
+             msgbox("Median-filter was already added. Previous settings got replaced by the current ones");
+        end
+
+        if strcmp(FilterMethod,"Narrowband")
+             msgbox("Narrowband filter was already added. Previous settings got replaced by the current ones");
         end
     else
         % Add selected setp to the vector holding the pipeline order that
@@ -155,7 +171,7 @@ if strcmp(type,"Filter")
         FlagDownsampledBeforeLP = 0;
         if ~isempty(PreprocessingSteps)
             for i = 1:length(PreprocessingSteps)
-                if strcmp(PreprocessingSteps(i),"Downsampling")
+                if strcmp(PreprocessingSteps(i),"Downsampling") && i < IndexLowPass
                     FlagDownsampledBeforeLP = 1;
                     DownsampledIndex = i;
                 end
@@ -171,10 +187,73 @@ if strcmp(type,"Filter")
     % display updated pipeline in preprocessing window textbox
 end
 
+if strcmp(type,"Resampling")
+    downsamplingindex = [];
+     % If PreprocessingSteps filled with values (already added steps to pipeline)
+    if ~isempty(PreprocessingSteps)
+        % Loop over already added steps
+        for i = 1:length(PreprocessingSteps)
+            % Identofy which filter was already added and mark it with the
+            % flag variables
+            if strcmp(PreprocessingSteps(i),"Downsampling")
+                downsamplingindex = i;
+            end
+        end
+    end
+    % if downsampling added before: delete
+    if ~isempty(downsamplingindex)
+        fieldsToDeleteInfo = {'DownsampleFactor','DownsampledSampleRate'};
+        Info = rmfield(Info, fieldsToDeleteInfo);
+        PreprocessingSteps(downsamplingindex) = "Resampling";
+        msgbox("Downsampling was added earlier, which is not compatible with resampling again. Downsampling step was removed from the pipeline and resampling takes its place!")
+    end
+         
+    % if resampling already part of pipeline just update values
+    flagresampling = 0;
+    if ~isempty(PreprocessingSteps)
+        % Loop over already added steps
+        for i = 1:length(PreprocessingSteps)
+            if strcmp(PreprocessingSteps(i),"Resampling")
+                flagresampling = 1;
+            end
+        end
+    end
+    if flagresampling == 0
+        Info.Resample = "Resampling On";
+        Info.ResamplingFrequency = CuttoffFrequency;
+        PreprocessingSteps = [PreprocessingSteps;"Resampling"];
+    else
+        Info.Resample = "Resampling On";
+        Info.ResamplingFrequency = CuttoffFrequency;
+        msgbox("Resampling was already added! New sample frequency is updated.");
+    end
+end
+
 %% If user seleceted downsampling 
 % Check if it was already applied, If yes give a warning and overwrite
 % values, ifnot save new paramter
 if strcmp(type,"Downsample")
+
+    resamplinglingindex = [];
+     % If PreprocessingSteps filled with values (already added steps to pipeline)
+    if ~isempty(PreprocessingSteps)
+        % Loop over already added steps
+        for i = 1:length(PreprocessingSteps)
+            % Identofy which filter was already added and mark it with the
+            % flag variables
+            if strcmp(PreprocessingSteps(i),"Resampling")
+                resamplinglingindex = i;
+            end
+        end
+    end
+    % if downsampling added before: delete
+    if ~isempty(resamplinglingindex)
+        fieldsToDeleteInfo = {'Resample','ResamplingFrequency'};
+        Info = rmfield(Info, fieldsToDeleteInfo);
+        PreprocessingSteps(resamplinglingindex) = "Downsampling";
+        msgbox("Resampling was added earlier, which is not compatible with downsampling again. Resampling step was removed from the pipeline and downsampling takes its place!")
+    end
+
     if ~isempty(PreprocessingSteps)
         AlreadyFound = 0;
         for i = 1:length(PreprocessingSteps)

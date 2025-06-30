@@ -160,6 +160,18 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
     end
+    if isfield(Data.Info,'NarrowbandFilterMethod')
+        % Fields to delete
+        fieldsToDelete = {'NarrowbandFilterMethod','NarrowbandFilterType','NarrowbandFilterDirection','NarrowbandCutoff','NarrowbandFilterOrder'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+    if isfield(Data.Info,'Resample')
+        % Fields to delete
+        fieldsToDelete = {'Resample','ResamplingFrequency'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
     if isfield(Data.Info,'FilterMethod')
         % Fields to delete
         fieldsToDelete = {'Cutoff', 'FilterOrder', 'FilterMethod', 'FilterType', 'FilterDirection'};

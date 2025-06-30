@@ -560,7 +560,7 @@ if strcmp(Window,"ContSpectrum")
 
     app.AnalysisDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.ChannelDropDown.BackgroundColor  = ComponentsInWindowColor;
-
+    app.FrequencyRangeHzEditField_2.BackgroundColor  = ComponentsInWindowColor;
     app.FrequencyRangeHzEditField.BackgroundColor  = ComponentsInWindowColor;
     app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
 
@@ -1639,4 +1639,12 @@ if strcmp(Window,'ChangeLowPassSettings')
     app.EnternewCutoffFrequencyHzEditField.BackgroundColor   = WindowBackgroundColor;
 
 
+end
+
+if strcmp(Window,"AskForResampling")    
+    % texts to black
+    set(findall(app.AskforResampleWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.AskforResampleWindowUIFigure.Color  = WindowBackgroundColor;
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
 end

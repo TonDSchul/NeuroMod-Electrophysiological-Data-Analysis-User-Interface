@@ -21,6 +21,7 @@ Module{1}.Function = 'RUN_Main_Plot_Analysis_Module';
 Module{1}.Items{1} = 'Live Spike Rate';
 Module{1}.Items{2} = 'Live Power Estimate';
 Module{1}.Items{3} = 'Live Current Source Density';
+Module{1}.Items{4} = 'Instantaneous Phase';
 %% Continous Data Module
 Module{2}.Title = 'Continuous Data Module';
 Module{2}.Function = 'RUN_Continous_Data_Module';

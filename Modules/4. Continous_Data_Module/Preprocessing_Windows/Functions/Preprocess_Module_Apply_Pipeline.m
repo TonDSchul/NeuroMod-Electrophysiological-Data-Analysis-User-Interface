@@ -90,13 +90,26 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
     % filter (doesnt have most of the parameters the other filters have (only filterorder))
     if strcmp(PreprocessingSteps(PPSteps),"Low-Pass") || strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Narrowband") || strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
         
+
         h = waitbar(0, 'Applying Filter...', 'Name','Preprocessing...');
 
         %% Get Filter options
         [type,dir,filterorder,wintype,df,Cutoff,~] = Preprocess_Module_Set_Filter_Parameter(PPSteps,PreprocessingSteps,PreProInfo);
+        
+        if Inspectfilter == 1
+            A = 0;
+            B = 0;
+            NonNan = [];
+            %% Inspect filter
+            Preprocess_Module_Inspect_Filter(Data,PreProInfo,PreprocessingSteps,PPSteps,SampleRate,A,B,Cutoff,filterorder,NonNan);
+            if ~isempty(h)
+                close(h);
+            end
+            return;
+        end
 
         %% Apply Preprocessing functions to dataset
-        if strcmp(PreprocessingSteps(PPSteps),"Low-Pass")            
+        if strcmp(PreprocessingSteps(PPSteps),"Low-Pass") 
             % If first preprocessing step: Apply to raw data.
             % The seconf preprocessing step however has top be
             % applied to the already preprocessed dataset,
@@ -108,6 +121,7 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     NonNan = ~isnan(Data.Raw(channelnr,:));
                     msg = sprintf('Low Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
                     waitbar(channelnr/cN, h, msg);
+
                     [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_lowpassfilter(double(Data.Raw(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
                 end
             else % If not first step in pipeline: apply to already preprocessed data
@@ -116,10 +130,13 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     NonNan = ~isnan(Data.Preprocessed(channelnr,:));
                     msg = sprintf('Low Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
                     waitbar(channelnr/cN, h, msg);
+   
                     [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_lowpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
                 end
             end
+
         elseif strcmp(PreprocessingSteps(PPSteps),"High-Pass")
+
             if PPSteps == 1 % If first step in pipeline: apply to raw data
                 Data.Preprocessed = single(zeros(size(Data.Raw)));
                 cN = size(Data.Raw,1);
@@ -127,6 +144,7 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     NonNan = ~isnan(Data.Raw(channelnr,:));
                     msg = sprintf('High Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
                     waitbar(channelnr/cN, h, msg);
+
                     [Data.Preprocessed(channelnr,NonNan), B,A] = ft_preproc_highpassfilter(double(Data.Raw(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
                 end
             else % If not first step in pipeline: apply to already preprocessed data
@@ -135,29 +153,70 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     NonNan = ~isnan(Data.Preprocessed(channelnr,:));
                     msg = sprintf('High Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
                     waitbar(channelnr/cN, h, msg);
+
                     [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_highpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
                 end
             end
         elseif strcmp(PreprocessingSteps(PPSteps),"Narrowband")
 
             if PPSteps == 1 % If first step in pipeline: apply to raw data
+                % filter parameters
+                nyquist = Data.Info.NativeSamplingRate/2;
+                
+                if strcmp(PreProInfo.NarrowbandFilterType,"Butterworth IR")
+                    Wn = Cutoff / nyquist;  % Normalized cutoff
+                    [b, a] = butter(filterorder, Wn, 'bandpass');
+                else
+                    % filter kernel
+                    filtkern = fir1(filterorder,Cutoff/nyquist);
+                end
+
                 Data.Preprocessed = single(zeros(size(Data.Raw)));
                 cN = size(Data.Raw,1);
                 for channelnr = 1:size(Data.Raw,1)
                     NonNan = ~isnan(Data.Raw(channelnr,:));
                     msg = sprintf('Narrowband Filtering... (%d%% done)', round(100*(channelnr/cN)));
                     waitbar(channelnr/cN, h, msg);
-                    [Data.Preprocessed(channelnr,NonNan), ~, ~] = ft_preproc_bandpassfilter(double(Data.Raw(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
+
+                    if strcmp(PreProInfo.NarrowbandFilterType,"Butterworth IR")
+                        Data.Preprocessed(channelnr,NonNan) = filtfilt(b, a, double(Data.Raw(channelnr,NonNan)));
+                    else
+                    % apply the filter to the data
+                        Data.Preprocessed(channelnr,NonNan) = filtfilt(filtkern,1,double(Data.Raw(channelnr,NonNan)));
+                    end
                 end
             else % If not first step in pipeline: apply to already preprocessed data
+                if ~isempty(find(PreprocessingSteps(1:PPSteps)=='Downsampling')) % downsampling already applied
+                    % filter parameters
+                    nyquist = DownsampledSampleRate/2;
+                else
+                    % filter parameters
+                    nyquist = Data.Info.NativeSamplingRate/2;
+                end
+                
+                if strcmp(PreProInfo.NarrowbandFilterType,"Butterworth IR")
+                    Wn = Cutoff / nyquist;  % Normalized cutoff
+                    [b, a] = butter(filterorder, Wn, 'bandpass');
+                else
+                    % filter kernel
+                    filtkern = fir1(filterorder,Cutoff/nyquist);
+                end
+
                 cN = size(Data.Preprocessed,1);
                 for channelnr = 1:size(Data.Preprocessed,1)
                     NonNan = ~isnan(Data.Preprocessed(channelnr,:));
                     msg = sprintf('Narrowband Filtering... (%d%% done)', round(100*(channelnr/cN)));
                     waitbar(channelnr/cN, h, msg);
-                    [Data.Preprocessed(channelnr,NonNan), ~, ~] = ft_preproc_bandpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
+
+                    % apply the filter to the data
+                    if strcmp(PreProInfo.NarrowbandFilterType,"Butterworth IR")
+                        Data.Preprocessed(channelnr,NonNan) = filtfilt(b, a, double(Data.Preprocessed(channelnr,NonNan)));
+                    else
+                        Data.Preprocessed(channelnr,NonNan) = filtfilt(filtkern,1,double(Data.Preprocessed(channelnr,NonNan)));
+                    end
                 end
             end
+
         elseif strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
 
             if PPSteps == 1 % If first step in pipeline: apply to raw data
@@ -180,14 +239,6 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
             end
         end
 
-        if Inspectfilter == 1
-            %% Inspect filter
-            Preprocess_Module_Inspect_Filter(Data,PreProInfo,PreprocessingSteps,PPSteps,SampleRate,A,B,Cutoff,filterorder,NonNan);
-            if ~isempty(h)
-                close(h);
-            end
-            return;
-        end
         clear NonNan
 
     elseif strcmp(PreprocessingSteps(PPSteps),"Median Filter")
@@ -223,7 +274,62 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
         waitbar(2/2, h, msg);
 
         clear TempPreprocessed TempRaw NonNan
+    
+    elseif strcmp(PreprocessingSteps(PPSteps),"Resampling")
+        h2 = waitbar(0, 'Resampling...', 'Name','Preprocessing...');
+        %% Get Filter options
+        
+        msg = sprintf('Resampling... (%d%% done)', 0);
+        waitbar(0, h2, msg);
 
+        if PPSteps == 1 % If first step in pipeline: apply to raw data
+            FsOriginal = Data.Info.NativeSamplingRate; % <-- Replace with your actual sampling rate
+            FsTarget = PreProInfo.ResamplingFrequency;
+            
+            [p, q] = rat(FsTarget / FsOriginal); % Rational approximation for resampling
+
+            % Preallocate
+            [nChannels, ~] = size(Data.Raw);
+            Data.Preprocessed = zeros(nChannels, ceil(size(Data.Raw,2) * FsTarget / FsOriginal));
+            
+            % Resample each channel
+            for ch = 1:nChannels
+                Data.Preprocessed(ch, :) = resample(double(Data.Raw(ch, :)), p, q);
+
+                progress = (ch/nChannels)*100;
+                msg = sprintf('Downsampling... (%d%% done)', round(progress));
+                waitbar(round(progress), h2, msg);
+            end
+        else
+            
+            FsOriginal = Data.Info.NativeSamplingRate; % <-- Replace with your actual sampling rate
+            FsTarget = PreProInfo.ResamplingFrequency;
+
+            [p, q] = rat(FsTarget / FsOriginal); % Rational approximation for resampling
+
+            % Preallocate
+            [nChannels, ~] = size(Data.Preprocessed);
+            DataResampled = zeros(nChannels, ceil(size(Data.Preprocessed,2) * FsTarget / FsOriginal));
+            
+            % Resample each channel
+            for ch = 1:nChannels
+                DataResampled(ch, :) = resample(double(Data.Preprocessed(ch, :)), p, q);
+                progress = (ch/nChannels)*100;
+                msg = sprintf('Downsampling... (%d%% done)', round(progress));
+                waitbar(round(progress), h2, msg);
+            end
+
+            Data.Preprocessed = DataResampled;
+            clear DataResampled
+        end
+        
+        close(h2);
+        
+        Data.TimeDownsampled = double(0:(1/PreProInfo.ResamplingFrequency):(size(Data.Preprocessed,2)-1)/PreProInfo.ResamplingFrequency);
+
+        PreProInfo.DownsampledSampleRate = PreProInfo.ResamplingFrequency;
+        PreProInfo.DownsampleFactor =  FsOriginal/FsTarget; 
+        
     elseif strcmp(PreprocessingSteps(PPSteps),"Downsampling")
 
         h2 = waitbar(0, 'Downsampling...', 'Name','Preprocessing...');

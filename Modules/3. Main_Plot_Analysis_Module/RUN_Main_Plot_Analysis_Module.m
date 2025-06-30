@@ -84,4 +84,11 @@ elseif strcmp(ModuleFunctionName,"Live Current Source Density")
 
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveCSD");
 
+
+elseif strcmp(ModuleFunctionName,"Instantaneous Phase")
+
+    app.LiveECHTWindow = ECHT_Window(app);
+    
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveECHT");
+
 end
