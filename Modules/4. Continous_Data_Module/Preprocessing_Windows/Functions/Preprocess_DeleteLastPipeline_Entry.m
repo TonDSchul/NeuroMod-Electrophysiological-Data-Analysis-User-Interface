@@ -20,6 +20,14 @@ elseif strcmp(app.PreprocessingSteps(end),"Resampling")
         app.Info = rmfield(app.Info,fields);
     end
     app.PreprocessingSteps(end) = [];
+
+elseif strcmp(app.PreprocessingSteps(end),"ASR")
+    if isfield(app.Info,'ASR')
+        fields = {'ASRLineNoiseC','ASRHPTransitions','ASRBurstC','WindowC','ASR'};
+        app.Info = rmfield(app.Info,fields);
+    end
+    app.PreprocessingSteps(end) = [];
+
 elseif strcmp(app.PreprocessingSteps(end),"Median-Filter") 
     if isfield(app.Info,'MedianFilterMethod')
         % Fields to delete

@@ -40,7 +40,13 @@ if strcmp(PlotType,"Initial")
 
     UIAxis.Color = PlotAppearance.MainWindow.Data.Color.TimeBackground;
 
-    
+    UIAxis.XLabel.Color = [0 0 0];
+    UIAxis.YLabel.Color = [0 0 0];       
+    UIAxis.YColor = 'k';  
+    %UIAxes.XTickLabelMode = 'auto';
+    UIAxis.XColor = 'k';  
+    UIAxis.Title.Color = 'k';  
+    UIAxis.Box ="off";
     %% Plot Events
     if strcmp(EventPlot,"Events") 
        

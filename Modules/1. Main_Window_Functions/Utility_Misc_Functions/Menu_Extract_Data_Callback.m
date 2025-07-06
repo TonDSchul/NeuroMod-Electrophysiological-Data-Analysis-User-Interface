@@ -258,5 +258,7 @@ if strcmp(Window,"ProbeLayout")
         
     end
 
+    app = Utility_Change_Light_Dark_Mode(app,"ProbeLayout_Window");
+
 end
 

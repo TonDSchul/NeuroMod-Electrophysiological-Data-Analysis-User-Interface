@@ -1,5 +1,5 @@
 
-function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands, BandPowerFigure, FrequencyBandsFigure,WhattoPlot, ChannelSpacing, TwoORThreeD)
+function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands, BandPowerFigure, FrequencyBandsFigure,WhattoPlot, ChannelSpacing, TwoORThreeD, PlotAppearance)
 % function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands)
 %
 % Plots LFP power across the probe, depth by frequency, as colormap
@@ -73,15 +73,29 @@ if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
         grid(BandPowerFigure, 'off');
 
     end
+    
+    BandPowerFigure.FontSize = PlotAppearance.SpectrumWindow.Data.TimeFontSize;
+    BandPowerFigure.Color = PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;
+
+    BandPowerFigure.XLabel.Color = [0 0 0];
+    BandPowerFigure.YLabel.Color = [0 0 0];       
+    BandPowerFigure.YColor = 'k';  
+    %UIAxes.XTickLabelMode = 'auto';
+    BandPowerFigure.XColor = 'k';  
+    BandPowerFigure.Title.Color = 'k';  
+    BandPowerFigure.Box ="off";
 
     xlim(BandPowerFigure,dispRange);
     title(BandPowerFigure,'Power over Depth')
     xlabel(BandPowerFigure,'Frequency [Hz]');
     set(BandPowerFigure, 'YDir', 'reverse');
     ylabel(BandPowerFigure,'Depth on Probe [µm]');
+
     cbar_handle=colorbar('peer',BandPowerFigure,'location','EastOutside');
     cbar_handle.Label.String = "Power [dB]";
     cbar_handle.Label.Rotation = 270;
+    cbar_handle.Color = 'k';  
+    cbar_handle.Label.Color = 'k';        % Sets the color of the label text
     ylim(BandPowerFigure,[0,(nC-1)*ChannelSpacing]);
     
 end
@@ -126,4 +140,16 @@ if strcmp(WhattoPlot,"Just Frequency Bands") || strcmp(WhattoPlot,"All")
     xlabel(FrequencyBandsFigure,'Power (dB)');
     h = legend(FrequencyBandsFigure,cellfun(@(x)sprintf('%.1f - %.1f Hz', x(1), x(2)), freqBands, 'uni', false));
     set(h, 'Position', [ 0.8771    0.7856    0.0980    0.1009]);
+
+    FrequencyBandsFigure.FontSize = PlotAppearance.SpectrumWindow.Data.TimeFontSize;
+    FrequencyBandsFigure.Color = PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;
+
+    FrequencyBandsFigure.XLabel.Color = [0 0 0];
+    FrequencyBandsFigure.YLabel.Color = [0 0 0];       
+    FrequencyBandsFigure.YColor = 'k';  
+    %UIAxes.XTickLabelMode = 'auto';
+    FrequencyBandsFigure.XColor = 'k';  
+    FrequencyBandsFigure.Title.Color = 'k';  
+    FrequencyBandsFigure.Box ="off";
+
 end

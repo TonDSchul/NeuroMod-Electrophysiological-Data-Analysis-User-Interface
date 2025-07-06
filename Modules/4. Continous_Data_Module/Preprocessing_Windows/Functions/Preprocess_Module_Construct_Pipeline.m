@@ -138,7 +138,16 @@ if strcmp(type,"Filter")
             msgbox("High-Pass filter was already added. Previous settings got replaced by the current ones");
             PreprocessingSteps(Index) = "High-Pass";
         end
-    
+        
+    elseif flagexistLowPass == 1 && strcmp(FilterMethod,"High-Pass") || flagexist == 1 && strcmp(FilterMethod,"Low-Pass") 
+        if flagexist == 1 && strcmp(FilterMethod,"Low-Pass") 
+            PreprocessingSteps(Index) = "Low-Pass";
+            msgbox("High-Pass filter was already added. Previous settings got replaced by the current ones");
+        elseif flagexistLowPass == 1 && strcmp(FilterMethod,"High-Pass")
+            PreprocessingSteps(IndexLowPass) = "High-Pass";
+            msgbox("Low-Pass filter was already added. Previous settings got replaced by the current ones");
+        end
+
     %% Give info about overwriting
     % If bandstop or median filter already added: Old settings are
     % overwritten
@@ -171,9 +180,16 @@ if strcmp(type,"Filter")
         FlagDownsampledBeforeLP = 0;
         if ~isempty(PreprocessingSteps)
             for i = 1:length(PreprocessingSteps)
-                if strcmp(PreprocessingSteps(i),"Downsampling") && i < IndexLowPass
-                    FlagDownsampledBeforeLP = 1;
-                    DownsampledIndex = i;
+                if ~isempty(IndexLowPass)
+                    if strcmp(PreprocessingSteps(i),"Downsampling") && i < IndexLowPass
+                        FlagDownsampledBeforeLP = 1;
+                        DownsampledIndex = i;
+                    end
+                else
+                    if strcmp(PreprocessingSteps(i),"Downsampling") && i < length(PreprocessingSteps)
+                        FlagDownsampledBeforeLP = 1;
+                        DownsampledIndex = i;
+                    end
                 end
             end
         end
@@ -334,6 +350,35 @@ if strcmp(type,"Normalize")
     elseif isempty(PreprocessingSteps)
         PreprocessingSteps = [PreprocessingSteps,"Normalize"];
         Info.Normalize = "Normalization On";
+    end
+end
+
+%% If user seleceted ASR 
+% Check if it was already applied, If yes give a warning and overwrite
+% values, if not save new paramter
+if strcmp(type,"ASR")
+    if ~isempty(PreprocessingSteps)
+        % If Normalize was already applied
+        AlreadyFound = 0;
+        for i = 1:length(PreprocessingSteps)
+            if strcmp(PreprocessingSteps(i),"ASR")
+                f = msgbox("ASR was already added.");
+                % function ends here, next lines only get executed when
+                % Normalize was not already part of the pipeline
+                AlreadyFound = 1;
+            end
+        end
+        % If Normalize gets added the first time: Save parameter and add to
+        % the pipeline vector PreprocessingSteps holding the steps for
+        % later execution  of the pipeline
+        if AlreadyFound == 0
+            PreprocessingSteps = [PreprocessingSteps;"ASR"];
+            % Info saved to identofy that GrandAverage was applied
+            Info.ASR = "On";
+        end
+    elseif isempty(PreprocessingSteps)
+        PreprocessingSteps = [PreprocessingSteps,"ASR"];
+        Info.ASR = "On";
     end
 end
 

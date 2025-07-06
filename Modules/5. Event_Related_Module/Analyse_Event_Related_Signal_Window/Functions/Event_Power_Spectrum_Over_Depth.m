@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel,PlotAppearance)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth for event related data
@@ -101,7 +101,7 @@ BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
 Figure_2.NextPlot = "add";
 Figure_2.FontSize = 10;
 Figure.FontSize = 10;
-plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD);
+plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance);
 
 %% save plotted data in case user wants to save 
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);

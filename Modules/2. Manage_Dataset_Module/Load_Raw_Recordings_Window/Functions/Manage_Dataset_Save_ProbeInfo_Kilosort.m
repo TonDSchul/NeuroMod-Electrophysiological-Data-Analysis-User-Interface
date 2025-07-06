@@ -81,7 +81,7 @@ if str2double(ChannelRowsDropDown) == 2
     % 
     % chanMap0ind = chanMap-1;
 
-    chanMap = 1:NrChannel;
+    chanMap = 1:NrChannel*str2double(ChannelRowsDropDown);
     chanMap0ind = chanMap-1;
 
     if isempty(ActiveChannelField{1})
@@ -119,7 +119,7 @@ if str2double(ChannelRowsDropDown) == 2
         xcoords(ProperIndicies) = xcoords(ProperIndicies) + VerOffsetDistanceSecondRow;
     end
     
-    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannel-1)/2)*str2double(ChannelSpacingumEditField);
+    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannel)-1)*str2double(ChannelSpacingumEditField);
     ycoords = zeros(size(chanMap));
     
     vec = 1:length(chanMap);

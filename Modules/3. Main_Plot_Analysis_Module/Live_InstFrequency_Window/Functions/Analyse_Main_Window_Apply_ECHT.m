@@ -1,9 +1,17 @@
-function [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,Samplefrequency,FilterSettings] = Analyse_Main_Window_Apply_ECHT(MainplotData,Info,SelectedChannel,NarrowbandCutoffLowerHigher,NarrowbandFilterOrder,NarrowBandApplied,DataTypeDropDown)
+function [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,Samplefrequency,FilterSettings] = Analyse_Main_Window_Apply_ECHT(MainplotData,Info,SelectedChannel,NarrowbandCutoffLowerHigher,NarrowbandFilterOrder,NarrowBandApplied,DataTypeDropDown,SelectedActiveChannel)
 
 
 Cutoff = str2double(strsplit(NarrowbandCutoffLowerHigher,','));
 SelectedChannel = str2double(SelectedChannel);
 filterorder = str2double(NarrowbandFilterOrder);
+
+%ChannelToAnalyse = find(Info.ProbeInfo.ActiveChannel==SelectedChannel)
+if Info.ProbeInfo.SwitchTopBottomChannel == 1
+    TempActiveChannel = (str2double(Info.ProbeInfo.NrChannel)*str2double(Info.ProbeInfo.NrRows)+1)-sort(Info.ProbeInfo.ActiveChannel);
+    [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(TempActiveChannel,SelectedChannel,'MainPlot');
+else
+    [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Info.ProbeInfo.ActiveChannel,SelectedChannel,'MainPlot');
+end
 
 % select data
 DataToCompute = MainplotData(SelectedChannel,:);

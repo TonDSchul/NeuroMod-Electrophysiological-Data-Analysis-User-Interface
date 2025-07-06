@@ -34,7 +34,7 @@ if strcmp(Window,"ERP")
     if strcmp(app.Mainapp.EventLFPERP.DataTypeDropDown.Value,'Raw Event Related Data')
         [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr,:),EventTime,app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
     else
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),EventTime,app.Mainapp.ActiveChannel,[],app.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
+        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),EventTime,app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'All',[],app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value);
     end
 end
 
@@ -98,7 +98,7 @@ if strcmp(Window,"EventSpectrum")
 
         SelectedEvents = eval(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value);
 
-        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'Just Frequency Bands',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,SelectedEvents,app.Mainapp.ActiveChannel); 
+        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'Just Frequency Bands',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,SelectedEvents,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance); 
 
     elseif strcmp(app.Mainapp.EventLFPSSP.AnalysisDropDown.Value,"Band Power over Depth")
 
@@ -106,7 +106,7 @@ if strcmp(Window,"EventSpectrum")
         
         SelectedEvents = eval(app.Mainapp.EventLFPSSP.EventSelectionEditField.Value);
 
-        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'All',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,SelectedEvents,app.Mainapp.ActiveChannel); 
+        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'All',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,SelectedEvents,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance); 
         
         cb = colorbar(app.Mainapp.EventLFPSSP.UIAxes);
         cb.Color = 'k';              % Sets tick mark and label color to black

@@ -1,4 +1,4 @@
-function [EventRelatedData,EventsToPlot,TrialsToReject] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject,EventsToPlot)
+function [EventRelatedData,EventsToPlot,TrialsToReject,ThresCrossingTrials] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject,EventsToPlot,PlotThreshold,Threshold)
 
 %________________________________________________________________________________________
 %% Function to apply and plot event/trial rejection
@@ -24,6 +24,8 @@ function [EventRelatedData,EventsToPlot,TrialsToReject] = Preprocessing_Events_P
 % char, i.e. '1,10' for events 1 to 10
 % 8. EventsToPlot: double vector, sets events to plot since plotting can slow down
 % everything considerably when having a lot of events.
+% 9. PlotThreshold: logical 1 or 0 (empty for non)
+% 10. Threshold: double, threshold to automatically detect trials to delete
 
 % Outputs: 
 % 1. EventRelatedData: nchannel x ntrials x ntime single matrix with modified event
@@ -35,6 +37,12 @@ function [EventRelatedData,EventsToPlot,TrialsToReject] = Preprocessing_Events_P
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
+% if not threshold value but plot threshold is set to 1
+if PlotThreshold == 1 && isempty(Threshold)
+    PlotThreshold = 0;
+end
+
+ThresCrossingTrials = [];
 Error = 0;
 
 OriginalChannelSelection = ChannelSelection;
@@ -47,10 +55,23 @@ else
     ChannelSelection = num2str(ChannelSelection);
 end
 
+ChannelSelection = str2double(ChannelSelection);
+
+%extract trheshold
+if ~isempty(Threshold)
+    Threshold = str2double(Threshold);
+    if isnan(Threshold)
+        Threshold = [];
+    end
+else
+    Threshold = [];
+end
+
 %% Get Trials to reject
 if ~isempty(TrialsToReject)
     try
         TrialsToReject = eval(TrialsToReject);
+        TrialsToReject = sort(TrialsToReject);
     catch
         TrialsToReject = [];
         disp("Warning: trigger to reject could not be determined. Taking no trigger as default!")
@@ -92,24 +113,35 @@ if length(TrialsToReject) == size(EventRelatedData,2)
     return;
 end
 
-
 IndiciesToDelete = zeros(size(EventRelatedData,2),1)+1;
 
 IndiciesToDelete(EventsToPlot) = 0;
 
 IndiciesToDelete(TrialsToReject) = 1;
 
-EventRelatedData(:,IndiciesToDelete==1,:) = [];
+EventRelatedData(:,IndiciesToDelete==1,:) = NaN;
+
+%% Check Threshold Crossings
+
+for ntrials = 1:size(EventRelatedData,2)
+    if sum(EventRelatedData(ChannelSelection,ntrials,:) > abs(Threshold)) > 0 || sum(EventRelatedData(ChannelSelection,ntrials,:) < -abs(Threshold)) > 0
+        ThresCrossingTrials = [ThresCrossingTrials,ntrials];
+    end
+end
 
 %% Check if Trials to be rejected are within trialrange of dataset
 
-ERP = mean(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1);
+ERP = mean(squeeze(EventRelatedData(ChannelSelection,:,:)),1,'omitnan');
+
+NTrials(1) = sum(IndiciesToDelete==0);
+NTrials(2) = length(EventsToPlot);
+NumTrials = min(NTrials);
 
 %% Plot Broadband
 hold(TopFigure, 'on' )
 cla(TopFigure);
 TopFigure.NextPlot = "replace";
-imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1),squeeze(EventRelatedData(str2double(ChannelSelection),:,:)))
+imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1),squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)))
 set(TopFigure,'YDir','normal');
 titlestring = strcat("Broadband Plot Channel ",OriginalChannelSelection);
 TopFigure.FontSize = 10;
@@ -118,9 +150,9 @@ ylabel(TopFigure,'Trials/Events')
 title(TopFigure,titlestring)
 xlabel(TopFigure,'Time [s]')
 xlim(TopFigure,[Time(1) Time(end)]); % since this signal was low pass filtered at 200Hz
-if size(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1) ~= 1
-    ylim(TopFigure,[1 size(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1)]); % since this signal was low pass filtered at 200Hz
-elseif size(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)),1) == 1
+if size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1) ~= 1
+    ylim(TopFigure,[1 size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1)]); % since this signal was low pass filtered at 200Hz
+elseif size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1) == 1
     ylim(TopFigure,[0.5 1.5]); % since this signal was low pass filtered at 200Hz
 end
 
@@ -133,7 +165,12 @@ hold(TopFigure, 'off' )
 TrialsHandle = findobj(BottomFigure, 'Tag', 'Trials');
 ERPHandle = findobj(BottomFigure, 'Tag', 'ERP');
 EventHandle = findobj(BottomFigure, 'Tag', 'Eventline');
+ThreshHandle = findobj(BottomFigure, 'Tag', 'Thresh');
 
+if length(ThreshHandle)>2
+    delete(ThreshHandle(3:end));
+    ThreshHandle = findobj(BottomFigure, 'Tag', 'Thresh');
+end
 if length(ERPHandle)>1
     delete(ERPHandle(2:end));
     ERPHandle = findobj(BottomFigure, 'Tag', 'ERP');
@@ -142,35 +179,48 @@ if length(EventHandle)>1
     delete(EventHandle(2:end));
     EventHandle = findobj(BottomFigure, 'Tag', 'Eventline');
 end
-if length(TrialsHandle)>size(EventRelatedData,2)
-    delete(TrialsHandle(size(EventRelatedData,2)+1:end));
+if length(TrialsHandle)>NumTrials
+    delete(TrialsHandle(NumTrials+1:end));
     TrialsHandle = findobj(BottomFigure, 'Tag', 'Trials');
 end
-
+% plot threshold
+if PlotThreshold == 1 
+    if isempty(ThreshHandle)
+        threshline(1) = line(BottomFigure,[Time(1),Time(end)],[Threshold,Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+        threshline(2) = line(BottomFigure,[Time(1),Time(end)],[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+    else
+        set(ThreshHandle(1), 'XData', [Time(1),Time(end)], 'YData',[Threshold,Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+        set(ThreshHandle(2), 'XData', [Time(1),Time(end)], 'YData',[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+        threshline = ThreshHandle;
+    end
+    
+end
+% plot events
 if isempty(EventHandle)
     eventline = line(BottomFigure,[0,0],[min(EventRelatedData,[],'all') max(EventRelatedData,[],'all')],'Color','k','LineStyle','--','LineWidth',2,'Tag','Eventline');
 else
     set(EventHandle(1), 'XData', [0,0], 'YData',[min(EventRelatedData,[],'all') max(EventRelatedData,[],'all')],'Color','k','LineStyle','--','LineWidth',2,'Tag','Eventline');
     eventline = EventHandle(1);
 end
-
+% plot erp mean
 if isempty(ERPHandle)
     MeanERP = line(BottomFigure,Time,ERP,'Color','k','LineWidth',2, 'Tag', 'ERP');
 else
     set(ERPHandle(1), 'XData', Time, 'YData',ERP,'Color','k','LineWidth',2, 'Tag', 'ERP');
     MeanERP = ERPHandle(1);
 end
-
-for i = 1:size(EventRelatedData,2) % loop over trials
+% plot trials
+for i = 1:NumTrials % loop over trials
+    CurrentTrial = find(IndiciesToDelete==0);
     if isempty(TrialsHandle)
-        h = line(BottomFigure,Time,squeeze(EventRelatedData(str2double(ChannelSelection),i,:)),'LineWidth',.5,'Tag','Trials');
+        h = line(BottomFigure,Time,squeeze(EventRelatedData(ChannelSelection,CurrentTrial(i),:)),'LineWidth',.5,'Tag','Trials');
         set(h,'color',[1 1 1]*.75);
     else
         if i<=length(TrialsHandle)
-            set(TrialsHandle(i), 'XData', Time, 'YData',squeeze(EventRelatedData(str2double(ChannelSelection),i,:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
+            set(TrialsHandle(i), 'XData', Time, 'YData',squeeze(EventRelatedData(ChannelSelection,CurrentTrial(i),:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
             h(1) = TrialsHandle(1);
         else
-            line(BottomFigure,Time,squeeze(EventRelatedData(str2double(ChannelSelection),i,:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
+            line(BottomFigure,Time,squeeze(EventRelatedData(ChannelSelection,CurrentTrial(i),:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
         end
     end
 end
@@ -180,19 +230,32 @@ end
 uistack(MeanERP, 'top');
 uistack(eventline, 'top');
 
+if PlotThreshold == 1 
+    uistack(threshline, 'top');
+end
+
 BottomFigure.FontSize = 11;
 titlestring = strcat("ERP Channel ",OriginalChannelSelection);
 title(BottomFigure,titlestring);
 xlim(BottomFigure,[min(Time) max(Time)]);
-ylim(BottomFigure,[min(min(squeeze(EventRelatedData(str2double(ChannelSelection),:,:)))) max(max(squeeze(EventRelatedData(str2double(ChannelSelection),:,:))))]);
+ylim(BottomFigure,[min(min(squeeze(EventRelatedData(ChannelSelection,:,:)))) max(max(squeeze(EventRelatedData(ChannelSelection,:,:))))]);
 xlabel(BottomFigure,'Time [s]');
 ylabel(BottomFigure,'Potential [mV]');
 
-% Add legend only once
-if isempty(findobj(BottomFigure, 'Type', 'legend'))
-    % Create legend and then set its 'HandleVisibility' to 'off'
-    legendHandle = legend([h(1), MeanERP, eventline], {'Trials/Events', 'ERP', 'Trigger'});
-    set(legendHandle, 'HandleVisibility', 'off');
+if PlotThreshold == 1 
+    % Add legend only once
+    if isempty(findobj(BottomFigure, 'Type', 'legend'))
+        % Create legend and then set its 'HandleVisibility' to 'off'
+        legendHandle = legend([h(1), MeanERP, eventline,threshline(1)], {'Trials/Events', 'ERP', 'Trigger', 'Thresh'});
+        set(legendHandle, 'HandleVisibility', 'off');
+    end
+else
+    % Add legend only once
+    if isempty(findobj(BottomFigure, 'Type', 'legend'))
+        % Create legend and then set its 'HandleVisibility' to 'off'
+        legendHandle = legend([h(1), MeanERP, eventline], {'Trials/Events', 'ERP', 'Trigger'});
+        set(legendHandle, 'HandleVisibility', 'off');
+    end
 end
 
 hold(BottomFigure, 'off' );

@@ -147,6 +147,13 @@ if strcmp(Type,"Static")
             for i = 1:size(Data,1)
                 lines(i).Color = colorMap(i, :);
             end
+
+            UIAxis.XLabel.Color = [0 0 0];
+            UIAxis.YLabel.Color = [0 0 0];       
+            UIAxis.YColor = 'k';  
+            %UIAxes.XTickLabelMode = 'auto';
+            UIAxis.XColor = 'k';  
+            UIAxis.Title.Color = 'k';  
         else
             if length(lineHandles) >= size(Data,1)
                 for i = 1:size(Data,1)

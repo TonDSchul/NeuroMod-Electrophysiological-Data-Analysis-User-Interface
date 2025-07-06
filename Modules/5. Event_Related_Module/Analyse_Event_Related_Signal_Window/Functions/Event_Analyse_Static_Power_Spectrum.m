@@ -116,6 +116,18 @@ xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);
 ylabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeYLabel);
 ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(Welchpowspect(DispIndicies)),[],'all')])
 
+Figure.FontSize = PlotAppearance.SpectrumWindow.Data.TimeFontSize;
+Figure.Color = PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;
+
+Figure.XLabel.Color = [0 0 0];
+Figure.YLabel.Color = [0 0 0];       
+Figure.YColor = 'k';  
+%UIAxes.XTickLabelMode = 'auto';
+Figure.XColor = 'k';  
+Figure.Title.Color = 'k';  
+Figure.Box ="off";
+view(Figure,0,90);
+
 xlim(Figure,[dispRange(1) dispRange(2)]);
 title(Figure,titlestring);
 Figure.FontSize = 10;

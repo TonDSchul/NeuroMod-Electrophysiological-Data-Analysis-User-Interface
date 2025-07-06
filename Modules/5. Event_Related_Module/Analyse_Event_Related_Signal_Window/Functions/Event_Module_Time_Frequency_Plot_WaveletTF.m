@@ -156,6 +156,15 @@ climsTF(2) = max(Datatouse(~isinf(Datatouse)),[],'all');
 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
 cbar_handle.Label.String = PlotAppearance.TFWindow.CLabel;
 cbar_handle.Label.Rotation = 270;
+cbar_handle.Color = 'k';  
+cbar_handle.Label.Color = 'k';        % Sets the color of the label text
+Figure.XLabel.Color = [0 0 0];
+Figure.YLabel.Color = [0 0 0];       
+Figure.YColor = 'k';  
+%UIAxes.XTickLabelMode = 'auto';
+Figure.XColor = 'k';  
+Figure.Title.Color = 'k';  
+Figure.Box ="off";
 
 %title(Figure,strcat("Total Time Frequency Power for Trigger ",num2str(EventSelection)));
 title(Figure,strcat("Total Time Frequency Power"));

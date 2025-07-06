@@ -1,4 +1,4 @@
-function [StringFileContents,EventInfo] = Import_Events_Read_File(EventInfo,EventNamesField)
+function [EventInfo,Errormessage,NewPath,outputLines] = Import_Events_Read_File(EventInfo)
 
 %________________________________________________________________________________________
 %% Function to add imported events to the main window data structure
@@ -10,6 +10,10 @@ function [StringFileContents,EventInfo] = Import_Events_Read_File(EventInfo,Even
 if ~isempty(EventInfo)
     EventInfo = [];
 end
+
+outputLines = [];
+NewPath = [];
+Errormessage = [];
 
 %% Get user selcted a csv or txt
 % Prompt the user to select a folder
@@ -34,11 +38,14 @@ Testdata = {};
 % Loop through each line
 for i = 1:numel(lines)
     line = strtrim(lines(i));  % Remove leading/trailing whitespace
-    if startsWith(line, "Event Nr")
+    if startsWith(line, "Event Nr") || startsWith(line, "Event")
         % Split by commas
         parts = split(line, ',');
         pointindicie = find(parts{1}==':');
-        
+        if isempty(pointindicie)
+            msgbox("Warning: One line found without a ':' after the event name and before data starts!")
+        end
+
         parts{1} = parts{1}(pointindicie+1:end);
        
         % Extract numeric part (skip the first element which is the label)
@@ -46,7 +53,15 @@ for i = 1:numel(lines)
         
         % Store in events cell
         Testdata{end+1} = numericValues;
+    else
+        msgbox("Line found that didnt start with an event name.");
     end
+    
+end
+
+if isempty(Testdata)
+    Errormessage = ("Error: File did not contain expected content. Make sure event/TTL data starts with 'Event Nr 1:' followed by numbers (without spaces) separated with a comma. See the 'Show Example Files' tab on top of this window.");
+    return
 end
 
 for i = 1:length(Testdata)
@@ -54,8 +69,9 @@ for i = 1:length(Testdata)
 end
 
 % Initialize a string array to hold each block of output
-StringFileContents = strings(0, 1);  % Empty column vector of strings
+outputLines = strings(0, 1);  % Empty column vector of strings
 
+IsMissingNumber = [];
 % Loop through all events
 for idx = 1:numel(Testdata)
     % Get the data
@@ -63,13 +79,53 @@ for idx = 1:numel(Testdata)
 
     % Convert to comma-separated string
     dataStr = strjoin(string(data), ', ');
-
+    
+    if ismissing(dataStr)
+        IsMissingNumber = idx;
+        continue;
+    end
     % Add header and data as separate lines
-    StringFileContents(end+1) = sprintf('Event Nr: %d', idx);
-    StringFileContents(end+1) = dataStr;
+    outputLines(end+1) = sprintf('Event Nr: %d', idx);
+    outputLines(end+1) = dataStr;
 end
 
-EventInfo.Path = NewPath;
+if length(IsMissingNumber) == length(Testdata)
+    Errormessage = ("Error: File did not contain expected content (no numbers found after event names, ensure event names are followed by a ':'). Make sure event/TTL data starts with 'Event Nr 1:' followed by numbers (without spaces) separated with a comma. See the 'Show Example Files' tab on top of this window.");
+    return
+end
+
+NewTestData = {};
+if ~isempty(IsMissingNumber)
+    for i = 1:numel(Testdata)
+        if isempty(find(i == IsMissingNumber))
+            if isempty(NewTestData)
+                NewTestData{1} = Testdata{i};
+            else
+                NewTestData{end+1} = Testdata{i};
+            end
+        end
+    end
+    Testdata = NewTestData;
+end
+
+Errormessage = [];
+if isempty(Testdata)
+    Errormessage = ("Error: File did not contain expected content. Make sure event/TTL data starts with 'Event Nr 1:' followed by numbers (without spaces) separated with a comma. See the 'Show Example Files' tab on top of this window.");
+    
+    return
+end
+
 EventInfo.NumberEvents = length(Testdata);
 EventInfo.TempEvents = Testdata;
-EventInfo.EventNames = EventNamesField;
+EventInfo.EventNames = [];
+
+for i = 1:length(Testdata)
+    if i ~= 1
+        EventInfo.EventNames = [EventInfo.EventNames,',',strcat('Event TTL Nr. ', num2str(i))];
+    else
+        EventInfo.EventNames = [EventInfo.EventNames,strcat('Event TTL Nr. ', num2str(i))];
+    end
+end
+
+
+

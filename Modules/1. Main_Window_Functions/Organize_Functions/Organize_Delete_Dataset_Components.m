@@ -195,6 +195,10 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDeleteInfo);
     end
+    if isfield(Data.Info,'ASR')
+        fieldsToDeleteInfo = {'ASRLineNoiseC','ASRHPTransitions','ASRBurstC','WindowC','ASR'};
+        Data.Info = rmfield(Data.Info,fieldsToDeleteInfo);
+    end
     if isfield(Data.Info,'Normalize')
         fieldsToDelete = {'Normalize'};
         % Delete fields

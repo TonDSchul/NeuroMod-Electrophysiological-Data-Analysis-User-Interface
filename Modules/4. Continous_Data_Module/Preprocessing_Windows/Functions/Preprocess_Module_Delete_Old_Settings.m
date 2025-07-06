@@ -85,6 +85,12 @@ if isfield(Data, 'Preprocessed') && Delete_old_settings == 1
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
+    if isfield(Data.Info,'NarrowbandFilterMethod')
+        % Fields to delete
+        fieldsToDelete = {'NarrowbandFilterMethod','NarrowbandFilterType','NarrowbandFilterDirection','NarrowbandCutoff','NarrowbandFilterOrder'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
     if isfield(Data.Info,'BandStopFilterMethod')
         % Fields to delete
         fieldsToDelete = {'BandStopCutoff', 'BandStopFilterOrder', 'BandStopFilterMethod', 'BandStopFilterType', 'BandStopFilterDirection'};
@@ -95,6 +101,10 @@ if isfield(Data, 'Preprocessed') && Delete_old_settings == 1
         fieldsToDeleteInfo = {'DownsampleFactor','DownsampledSampleRate'};
         % Delete fields
         Data.Info = rmfield(Data.Info, fieldsToDeleteInfo);
+    end
+    if isfield(Data.Info,'ASR')
+        fields = {'ASRLineNoiseC','ASRHPTransitions','ASRBurstC','WindowC','ASR'};
+        Data.Info = rmfield(Data.Info,fields);
     end
     if isfield(Data.Info,'Normalize')
         fieldsToDelete = {'Normalize'};

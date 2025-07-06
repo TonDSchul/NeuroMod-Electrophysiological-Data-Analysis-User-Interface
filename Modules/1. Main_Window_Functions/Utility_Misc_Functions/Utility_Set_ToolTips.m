@@ -59,7 +59,7 @@ if Activated
                     app.ExtractDataWindow.ProbeLayoutWindow.NrChannelEditField.Tooltip = "Edit Nr of channel of your probe. For multiple channel rows set number of one row! Necessary to plot.";
                     app.ExtractDataWindow.ProbeLayoutWindow.ChannelSpacingumEditField.Tooltip = "Edit channel spacing between channels in a row in µm. Necessary to plot.";
                     app.ExtractDataWindow.ProbeLayoutWindow.ChannelRowsDropDown.Tooltip = "Edit the number of channel rows per Shank. Second channel row is to the right of the first one.";
-                    app.ExtractDataWindow.ProbeLayoutWindow.HorizontalOffsetumEditField.Tooltip = "Edit distance between channel rows; in µm.";
+                    app.ExtractDataWindow.ProbeLayoutWindow.HorizontalOffsetumEditField.Tooltip = "Edit distance between channel rows; in µm. Must be bigger than 0um if probe has more than 1 channel row!";
                     app.ExtractDataWindow.ProbeLayoutWindow.VerticalOffsetumEditField.Tooltip = "Only applied when two rows selected. Edit vertical offset of second channel row on the right compared to the first channel row; in µm.";
             
                     app.ExtractDataWindow.ProbeLayoutWindow.VerticalOffsetumEditField_2.Tooltip = "Vertical offset between indented channels; in µm.";

@@ -99,12 +99,25 @@ if isempty(PowerEstimatesHandles)
     title(Figure,"Spectral Power Estimate")
     ylabel(Figure,PlotAppearance.LivePowerEstimateWindow.YLabel)
     xlabel(Figure,PlotAppearance.LivePowerEstimateWindow.XLabel)
+
+    Figure.Color = PlotAppearance.LivePowerEstimateWindow.BackgroundColor;
+
+    Figure.XLabel.Color = [0 0 0];
+    Figure.YLabel.Color = [0 0 0];       
+    Figure.YColor = 'k';  
+    Figure.XColor = 'k';  
+    Figure.Title.Color = 'k';  
+    Figure.Box ="off";
+    Figure.XTick = 1:5;
     %xlable(Figure,"");
+    %Figure.XTickLabel = {};
     xtick_labels = {strcat('Delta (',num2str(delta(1)),' - ',' ',num2str(delta(end)),' Hz)'), strcat('Theta (',num2str(theta(1)),' - ',' ',num2str(theta(end)),' Hz)'), strcat('Alpha (',num2str(alpha(1)),' - ',' ',num2str(alpha(end)),' Hz)'), strcat('Beta (',num2str(beta(1)),' - ',' ',num2str(beta(end)),' Hz)'), strcat('Gamma (',num2str(gamma(1)),' - ',' ',num2str(gamma(end)),' Hz)')};
     % Set the xtick labels
     Figure.XTickLabel = xtick_labels;    
     Figure.FontSize = PlotAppearance.LivePowerEstimateWindow.FontSize;
     xlim(Figure,[0.5,5.5])
+    xtickangle(Figure, 45);
+
 else
     set(PowerEstimatesHandles, 'YData', [Avgdelta,Avgtheta,Avgalpha,Avgbeta,Avggamma],'FaceColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'EdgeColor', PlotAppearance.LivePowerEstimateWindow.BarColor, 'Tag', 'Barobject');
 end

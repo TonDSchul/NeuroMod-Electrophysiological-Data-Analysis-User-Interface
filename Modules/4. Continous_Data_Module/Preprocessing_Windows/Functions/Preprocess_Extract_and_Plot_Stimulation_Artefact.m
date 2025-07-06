@@ -111,6 +111,13 @@ xlabel(Figure,"Time [ms]")
 ylabel(Figure,"Channel")
 xlim(Figure,[PlotTimeVector(1),PlotTimeVector(end)])
 ylim(Figure,[min(PlotData,[],'all') max(PlotData,[],'all')]);
+Figure.XLabel.Color = [0 0 0];
+Figure.YLabel.Color = [0 0 0];       
+Figure.YColor = 'k';  
+%UIAxes.XTickLabelMode = 'auto';
+Figure.XColor = 'k';  
+Figure.Title.Color = 'k';  
+Figure.Box ="off";
 
 if isempty(ArtefactData_handles)
     for i = 1:size(PlotData,1) % over channel for costum color

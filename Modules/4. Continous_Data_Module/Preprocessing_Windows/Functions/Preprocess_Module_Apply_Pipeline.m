@@ -90,9 +90,6 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
     % filter (doesnt have most of the parameters the other filters have (only filterorder))
     if strcmp(PreprocessingSteps(PPSteps),"Low-Pass") || strcmp(PreprocessingSteps(PPSteps),"High-Pass") || strcmp(PreprocessingSteps(PPSteps),"Narrowband") || strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
         
-
-        h = waitbar(0, 'Applying Filter...', 'Name','Preprocessing...');
-
         %% Get Filter options
         [type,dir,filterorder,wintype,df,Cutoff,~] = Preprocess_Module_Set_Filter_Parameter(PPSteps,PreprocessingSteps,PreProInfo);
         
@@ -110,6 +107,7 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
 
         %% Apply Preprocessing functions to dataset
         if strcmp(PreprocessingSteps(PPSteps),"Low-Pass") 
+            h = waitbar(0, 'Applying Filter...', 'Name','Low Pass Filtering...');
             % If first preprocessing step: Apply to raw data.
             % The seconf preprocessing step however has top be
             % applied to the already preprocessed dataset,
@@ -134,9 +132,11 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_lowpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
                 end
             end
+            
+            close(h);
 
         elseif strcmp(PreprocessingSteps(PPSteps),"High-Pass")
-
+            h = waitbar(0, 'Applying Filter...', 'Name','High-Pass Filtering...');
             if PPSteps == 1 % If first step in pipeline: apply to raw data
                 Data.Preprocessed = single(zeros(size(Data.Raw)));
                 cN = size(Data.Raw,1);
@@ -157,8 +157,9 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_highpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
                 end
             end
+            close(h);
         elseif strcmp(PreprocessingSteps(PPSteps),"Narrowband")
-
+            h = waitbar(0, 'Applying Filter...', 'Name','Narrowband Filtering...');
             if PPSteps == 1 % If first step in pipeline: apply to raw data
                 % filter parameters
                 nyquist = Data.Info.NativeSamplingRate/2;
@@ -217,8 +218,10 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                 end
             end
 
-        elseif strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
+            close(h);
 
+        elseif strcmp(PreprocessingSteps(PPSteps),"Band-Stop")
+            h = waitbar(0, 'Applying Filter...', 'Name','Band-Stop Filtering...');
             if PPSteps == 1 % If first step in pipeline: apply to raw data
                 Data.Preprocessed = single(zeros(size(Data.Raw)));
                 cN = size(Data.Raw,1);
@@ -237,12 +240,13 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     [Data.Preprocessed(channelnr,NonNan), ~, ~] = ft_preproc_bandstopfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
                 end
             end
+            close(h);
         end
 
         clear NonNan
 
     elseif strcmp(PreprocessingSteps(PPSteps),"Median Filter")
-
+        h = waitbar(0, 'Applying Filter...', 'Name','Median Filtering...');
         if PPSteps == 1 % If first step in pipeline: apply to raw data
             NonNan = ~isnan(Data.Raw);
             TempRaw = zeros(size(Data.Raw));
@@ -257,7 +261,6 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
             end
         end
         
-        h = waitbar(0, 'Median Filtering...', 'Name','Preprocessing...');
 
         %% Get Filter options
         [~,~,filterorder,~,~,~,~] = Preprocess_Module_Set_Filter_Parameter(PPSteps,PreprocessingSteps,PreProInfo);
@@ -274,7 +277,7 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
         waitbar(2/2, h, msg);
 
         clear TempPreprocessed TempRaw NonNan
-    
+        close(h);
     elseif strcmp(PreprocessingSteps(PPSteps),"Resampling")
         h2 = waitbar(0, 'Resampling...', 'Name','Preprocessing...');
         %% Get Filter options
@@ -370,8 +373,28 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
         end
 
         close(h2);
-    elseif strcmp(PreprocessingSteps(PPSteps),"Normalize")
 
+
+    elseif strcmp(PreprocessingSteps(PPSteps),"ASR")
+        if PPSteps == 1 % If first step in pipeline: apply to raw data
+            [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Raw,PPSteps,Data,0,PreProInfo);
+        else % recognize already applied downsampling
+            if ~isempty(find(PreprocessingSteps == "Downsampling"))
+                if find(PreprocessingSteps == "Downsampling")<PPSteps
+                    [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,1,PreProInfo);
+                else
+                    [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
+                end
+            else
+                [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
+            end
+        end
+
+        Data.Preprocessed = cleanData;
+        clear cleanData;
+
+    elseif strcmp(PreprocessingSteps(PPSteps),"Normalize")
+        
         if PPSteps == 1 % If first step in pipeline: apply to raw data
             % Downsampling only works with matrixes cloumn
             % wise. Therefore it is transposed to Channel as
@@ -417,10 +440,6 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
         [Data] = Preprocessing_Module_Cut_Time(Data,"CutEnd",PreProInfo.CutEnd,PreprocessingSteps,PPSteps);
 
     end 
-end
-
-if ~isempty(h)
-    close(h);
 end
 
 %% Plot Examples

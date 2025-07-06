@@ -54,11 +54,6 @@ ds = (0:nChan)*ChannelSpacing; %depth in micrometers given 50 µm spacing
 
 xlim(Figure,[TimeRangetoPlot(1),TimeRangetoPlot(end)]);
 ylim(Figure,[ds(1),ds(end-1)]);
-titlestring = strcat("Current Source Density Analysis of Main Window Plot");
-title(Figure,titlestring);
-xlabel(Figure,PlotAppearance.LiveCSDWindow.XLabel)
-ylabel(Figure,PlotAppearance.LiveCSDWindow.YLabel) 
-Figure.FontSize = PlotAppearance.LiveCSDWindow.FontSize;
 
 if strcmp(TwoORThreeD,"TwoD")
     PowerDepth_handles = findobj(Figure, 'Tag', 'PowerDepth');
@@ -74,6 +69,21 @@ if strcmp(TwoORThreeD,"TwoD")
         cbar_handle.Label.Rotation = 270;
         cbar_handle.Color = 'k';  
         cbar_handle.Label.Color = 'k';        % Sets the color of the label text
+
+        titlestring = strcat("Current Source Density Analysis of Main Window Plot");
+        title(Figure,titlestring);
+        xlabel(Figure,PlotAppearance.LiveCSDWindow.XLabel)
+        ylabel(Figure,PlotAppearance.LiveCSDWindow.YLabel) 
+        Figure.FontSize = PlotAppearance.LiveCSDWindow.FontSize;
+        
+        Figure.XLabel.Color = [0 0 0];
+        Figure.YLabel.Color = [0 0 0];       
+        Figure.YColor = 'k';  
+        %UIAxes.XTickLabelMode = 'auto';
+        Figure.XColor = 'k';  
+        Figure.Title.Color = 'k';  
+        Figure.Box ="off";
+
     else
         set(PowerDepth_handles(1),'XData', TimeRangetoPlot, 'YData', ds(1:size(csd,2)), ...
         'CData', csd','Tag','PowerDepth');
@@ -100,24 +110,33 @@ elseif strcmp(TwoORThreeD,"ThreeD")
     end
 
     if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
+        
+        % 3D Plot
+        surf(Figure,TimeRangetoPlot,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')
+        % % 2D Plot
+        titlestring = strcat("Current Source Density Analysis of Main Window Plot");
+        title(Figure,titlestring);
+        xlabel(Figure,PlotAppearance.LiveCSDWindow.XLabel)
+        ylabel(Figure,PlotAppearance.LiveCSDWindow.YLabel) 
+        Figure.FontSize = PlotAppearance.LiveCSDWindow.FontSize;
+        
+        Figure.XLabel.Color = [0 0 0];
+        Figure.YLabel.Color = [0 0 0];       
+        Figure.YColor = 'k';  
+        %UIAxes.XTickLabelMode = 'auto';
+        Figure.XColor = 'k';  
+        Figure.Title.Color = 'k';  
+        Figure.Box ="off";
+
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
         cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;
         cbar_handle.Color = 'k';  
         cbar_handle.Label.Color = 'k';        % Sets the color of the label text
-        % 3D Plot
-        surf(Figure,TimeRangetoPlot,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')
-        % % 2D Plot
-        % min_z = min(csd,[],'all');
-        % imagesc(Figure,TimeRangetoPlot, ds(1:size(csd,2)), ...
-        % 'CData', csd', 'Tag','PowerDepth2D');
     else
         % 3D Plot
         set(PowerDepth3D_handles(1),'XData', TimeRangetoPlot,'YData', ds(1:size(csd,2)),'CData',csd','ZData',csd','EdgeColor', 'none','Tag','PowerDepth3D')
-        % % 2D Plot
-        % min_z = min(csd,[],'all');
-        % set(PowerDepth2D_handles(1),'XData',TimeRangetoPlot,'YData', ds(1:size(csd,2)),  ...
-        % 'CData', csd','Tag','PowerDepth2D');
+
     end
 
     view(Figure,45,45);

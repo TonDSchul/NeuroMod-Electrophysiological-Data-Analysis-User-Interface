@@ -404,7 +404,7 @@ if isprop(app.LiveECHTWindow,'ExistflagECHT')
             %     StopIndex = StartIndex+round(TimeDurationTemp*app.Data.Info.NativeSamplingRate);
             % end
 
-            [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] = Analyse_Main_Window_Apply_ECHT(app.Data.Raw(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,0,app.DropDown.Value);
+            [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] = Analyse_Main_Window_Apply_ECHT(app.Data.Raw(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,0,app.DropDown.Value,app.ActiveChannel);
 
             [app.LiveECHTWindow.GlobalYlim] = Analyse_Main_Window_Plot_ECHT(app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings,app.Data.Time(StartIndex:StopIndex),app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value);
             
@@ -414,14 +414,14 @@ if isprop(app.LiveECHTWindow,'ExistflagECHT')
         elseif strcmp(app.DropDown.Value,'Preprocessed Data')
             if isfield(app.Data.Info,'DownsampleFactor')
 
-                [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] =  Analyse_Main_Window_Apply_ECHT(app.Data.Preprocessed(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,NarrowBandPresent,app.DropDown.Value);
+                [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] =  Analyse_Main_Window_Apply_ECHT(app.Data.Preprocessed(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,NarrowBandPresent,app.DropDown.Value,app.ActiveChannel);
 
                 [app.LiveECHTWindow.GlobalYlim] = Analyse_Main_Window_Plot_ECHT(app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings,app.Data.TimeDownsampled(StartIndex:StopIndex),app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value);
                 
                 xlim(app.LiveECHTWindow.UIAxes,[app.Data.TimeDownsampled(StartIndex) app.Data.TimeDownsampled(StopIndex)])
                 xlim(app.LiveECHTWindow.UIAxes_2,[app.Data.TimeDownsampled(StartIndex) app.Data.TimeDownsampled(StopIndex)])
             else
-                [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] =  Analyse_Main_Window_Apply_ECHT(app.Data.Preprocessed(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,NarrowBandPresent,app.DropDown.Value);
+                [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] =  Analyse_Main_Window_Apply_ECHT(app.Data.Preprocessed(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,NarrowBandPresent,app.DropDown.Value,app.ActiveChannel);
 
                 [app.LiveECHTWindow.GlobalYlim] = Analyse_Main_Window_Plot_ECHT(app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings,app.Data.Time(StartIndex:StopIndex),app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value);
             

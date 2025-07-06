@@ -86,10 +86,7 @@ if isempty(CSD)
         ylim(Figure,[min(DataLinestoPlot,[],'all') max(DataLinestoPlot,[],'all')]);   
             
         xlim(Figure,[EventTime(1) EventTime(end)]);
-        xlabel(Figure,PlotAppearance.ERPWindow.SingleERP.XLabel)
-        ylabel(Figure,PlotAppearance.ERPWindow.SingleERP.YLabel)
-        title(Figure,strcat("Event Related Potential Channel ",num2str(OriginalERPChannel)));
-            
+        
         TrialLinesHandles = findobj(Figure, 'Type', 'line', 'Tag', 'TrialLines');
     
         %% Plot Trials
@@ -105,6 +102,18 @@ if isempty(CSD)
         end
         
         if isempty(TrialLinesHandles)
+            xlabel(Figure,PlotAppearance.ERPWindow.SingleERP.XLabel)
+            ylabel(Figure,PlotAppearance.ERPWindow.SingleERP.YLabel)
+            title(Figure,strcat("Event Related Potential Channel ",num2str(OriginalERPChannel)));
+
+            Figure.FontSize = PlotAppearance.ERPWindow.SingleERP.FontSize;
+            Figure.Color = PlotAppearance.ERPWindow.SingleERP.BackgroundColor;
+            Figure.XLabel.Color = [0 0 0];
+            %UIAxes.XTickLabelMode = 'auto';
+            Figure.XColor = 'k';  
+            Figure.Title.Color = 'k';  
+            Figure.Box ="off";
+
             if size(EventRelatedData,2) == 1
                 Trialplot = line(Figure,EventTime,squeeze(EventRelatedData(ERPChannel,:,:))', 'Color', PlotAppearance.ERPWindow.SingleERP.EventColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.EventLineWidth,'Tag','TrialLines');
             else
@@ -150,6 +159,7 @@ if isempty(CSD)
             end
             
             if isempty(EventLinesHandles)
+
                 Eventplot = line(Figure,[0,0],[min(min(DataLinestoPlot)) max(max(DataLinestoPlot))],'Color',PlotAppearance.ERPWindow.SingleERP.TriggerColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.TriggerLineWidth,'Tag','EventLines');
             else
                 set(EventLinesHandles(:), 'XData',[0,0],'YData', [min(min(DataLinestoPlot)) max(max(DataLinestoPlot))],'Color',PlotAppearance.ERPWindow.SingleERP.TriggerColor,'LineWidth',PlotAppearance.ERPWindow.SingleERP.TriggerLineWidth,'Tag','EventLines');
@@ -219,6 +229,14 @@ if isempty(CSD)
                 delete(ChannelERPHandles(2:end));
                 ChannelERPHandles = findobj(Figure2, 'Type', 'line', 'Tag', 'ChannelERP');
             end
+        else
+            Figure2.FontSize = PlotAppearance.ERPWindow.MultipleERP.FontSize;
+            Figure2.Color = PlotAppearance.ERPWindow.MultipleERP.BackgroundColor;
+            Figure2.XLabel.Color = [0 0 0];
+            %UIAxes.XTickLabelMode = 'auto';
+            Figure2.XColor = 'k';  
+            Figure2.Title.Color = 'k';  
+            Figure2.Box ="off";
         end
     
         for nchannel = 1:size(DataToPlot,1)
@@ -346,7 +364,7 @@ else
         if isempty(PowerDepth2D_handles)
             % 2D Plot
             min_z = 0;
-            imagesc(Figure,EventTime,ds, csd', 'Tag', 'PowerDepth2D');
+            imagesc(Figure,EventTime,ds, csd', 'Tag', 'PowerDepth2D');            
         else
             min_z = 0;
             set(PowerDepth2D_handles(1),'XData',EventTime,'YData',ds, ...
@@ -405,6 +423,15 @@ else
     cbar_handle=colorbar('peer',Figure,'location','EastOutside');
     cbar_handle.Label.String = PlotAppearance.CSDWindow.CLabel;
     cbar_handle.Label.Rotation = 270;
+    cbar_handle.Color = 'k';  
+    cbar_handle.Label.Color = 'k';        % Sets the color of the label text
+    Figure.XLabel.Color = [0 0 0];
+    Figure.YLabel.Color = [0 0 0];       
+    Figure.YColor = 'k';  
+    %UIAxes.XTickLabelMode = 'auto';
+    Figure.XColor = 'k';  
+    Figure.Title.Color = 'k';  
+    Figure.Box ="off";
 
     %% save plotted data in case user wants to save 
     % Save data main plot -- channel spike rate

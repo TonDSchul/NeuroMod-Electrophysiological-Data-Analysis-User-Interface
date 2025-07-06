@@ -106,24 +106,17 @@ SpikesPerBin = SpikesPerBin./length(Channelselection);
 %% Low Pass filter results, bc of small bin sizes 
 
 if LowPassSpikeRate == 1
-    Samplefrequency = 1/Timerangebin;
+    Samplefrequency = round(1/Timerangebin);
     filteredSpikeRate = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikesPerBin, CutoffFreque, Samplefrequency, FilterOrder, numbins);
 else
     filteredSpikeRate = SpikesPerBin;
 end
 
 %% Set up figure and plot
-title(Figure,strcat("Spike Rate of Main Window Time Range"));
 
 Timeofbins =linspace(TimeRangetoPlot(1),TimeRangetoPlot(end),numbins);
 
-xlabel(Figure,strcat(PlotAppearance.LiveSpikeRateWindow.XLabel,"; ",num2str(Timerangebin),'s per bin'))
-
 hBar = findobj(Figure, 'Type', 'bar', 'Tag', 'Barobject');
-
-xlim(Figure,[1,length(Timeofbins)])
-
-Figure.FontSize = PlotAppearance.LiveSpikeRateWindow.FontSize;
 
 if length(hBar)>numbins && ~isempty(hBar) 
     delete(hBar(numbins+1:end));
@@ -137,7 +130,22 @@ end
 
 if isempty(hBar)
     bar(Figure,filteredSpikeRate,'FaceColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'EdgeColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'Tag', 'Barobject')  
+    
+    title(Figure,strcat("Spike Rate of Main Window Time Range"));
+    xlabel(Figure,strcat(PlotAppearance.LiveSpikeRateWindow.XLabel,"; ",num2str(Timerangebin),'s per bin'))
     ylabel(Figure,PlotAppearance.LiveSpikeRateWindow.YLabel);
+    Figure.FontSize = PlotAppearance.LiveSpikeRateWindow.FontSize;
+
+    xlim(Figure,[1,length(Timeofbins)])
+
+    Figure.XLabel.Color = [0 0 0];
+    Figure.YLabel.Color = [0 0 0];       
+    Figure.YColor = 'k';  
+    %UIAxes.XTickLabelMode = 'auto';
+    Figure.XColor = 'k';  
+    Figure.Title.Color = 'k';  
+    Figure.Box ="off";
+    
 else
     set(hBar, 'YData', filteredSpikeRate,'FaceColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'EdgeColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'Tag', 'Barobject');
     %% Ylim
@@ -162,8 +170,7 @@ end
 xticks(Figure, 1:length(Timeofbins));
 % Set the x-axis tick labels to the time vector
 xticklabels(Figure, cellstr(num2str(Timeofbins(:), '%.2f')));
-
-
+xlim(Figure,[1,length(Timeofbins)])
 %% save plotted data in case user wants to save 
 CurrentPlotData.LiveSpikeXData = 1:length(filteredSpikeRate);
 CurrentPlotData.LiveSpikeYData = filteredSpikeRate;

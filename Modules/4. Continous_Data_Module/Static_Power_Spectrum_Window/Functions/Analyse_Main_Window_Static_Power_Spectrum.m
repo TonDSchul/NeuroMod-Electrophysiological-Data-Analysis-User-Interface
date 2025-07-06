@@ -96,17 +96,29 @@ if ~isempty(PWelch_handles)
 else
     %semilogy(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
     line(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
+    xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);
+    ylabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeYLabel);
+    Figure.FontSize = PlotAppearance.SpectrumWindow.Data.TimeFontSize;
+    title(Figure,titlestring);
+
+    Figure.Color = PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;
+
+    Figure.XLabel.Color = [0 0 0];
+    Figure.YLabel.Color = [0 0 0];       
+    Figure.YColor = 'k';  
+    %UIAxes.XTickLabelMode = 'auto';
+    Figure.XColor = 'k';  
+    Figure.Title.Color = 'k';  
+    Figure.Box ="off";
+
 end
 
-xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);
-ylabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeYLabel);
 if min(10*log10(Welchpowspect(DispIndicies)),[],'all') ~= max(10*log10(Welchpowspect(DispIndicies)),[],'all')
     ylim(Figure,[min(10*log10(Welchpowspect(DispIndicies)),[],'all') max(10*log10(Welchpowspect(DispIndicies)),[],'all')])
 end
 view(Figure,0,90);
 xlim(Figure,[dispRange(1) dispRange(2)]);
-title(Figure,titlestring);
-Figure.FontSize = 10;
+
 grid(Figure, 'on');
 drawnow;
 hold(Figure, 'off' );
