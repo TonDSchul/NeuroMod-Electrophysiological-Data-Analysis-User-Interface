@@ -85,10 +85,28 @@ elseif strcmp(ModuleFunctionName,"Live Current Source Density")
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveCSD");
 
 
-elseif strcmp(ModuleFunctionName,"Instantaneous Frequency")
+elseif strcmp(ModuleFunctionName,"Live Instantaneous Frequency")
+    
+    if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+    end
+
+    if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
+        AlreadyIn = 0;
+        for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+            if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Main Plot Phase Synchronization')
+                AlreadyIn = 1;
+            end
+        end
+        if AlreadyIn == 0
+            app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Main Plot Phase Synchronization';
+        end
+    else % if no probe view available
+ 
+    end
 
     app.LiveECHTWindow = Live_InstFrequency_Window(app);
     
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveECHT");
-
+    
 end

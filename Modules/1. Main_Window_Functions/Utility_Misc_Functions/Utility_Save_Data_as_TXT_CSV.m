@@ -53,7 +53,7 @@ writestruct(PlottedData.Info, Fullsavefile, FileType="json");
 writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
 
 %% First For spike analyis (Continous and events); Otherwise unit analysis window
-if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contains(Analysis,"Current") && ~contains(Analysis,"Phase")
+if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contains(Analysis,"Current") && ~contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
 
     %% Write TextInfos
     if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes") % XData = Non - spike Data  
@@ -174,6 +174,77 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
     end
 
 end %If spike analyis (Continous and events); 
+
+%% Inst. Frequency/Phase analysis
+if contains(Analysis,"Instantaneous")
+    writematrix(strcat("***** Time Duration of Analysed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    
+    writematrix(strcat("***** Start Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    
+    writematrix(strcat("***** Stop Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+
+    writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+    
+    if contains(Analysis,"Phase Time Series")
+        writematrix(strcat("***** Phase Time Series Data (Phase Angles Over Time in Radians) *****"),Fullsavefile, 'WriteMode', 'append');
+        % Write XData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** X_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.PhaseAngleTimesXData, Fullsavefile, 'WriteMode', 'append');
+        % Write YData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** Y_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.PhaseAngleTimesSyncYData, Fullsavefile, 'WriteMode', 'append');
+        % Write XTicks
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** X_Ticks *****"),Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.PhaseAngleTimesSyncXTicks, Fullsavefile, 'WriteMode', 'append');
+
+    elseif contains(Analysis,"Phase Amplitude Envelope")
+        writematrix(strcat("***** Phase Amplitude Envelope Over Complex Hilbert Transform Result *****"),Fullsavefile, 'WriteMode', 'append');
+        % Write XData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** X_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.PhaseAmplitudeEnvelopeXData, Fullsavefile, 'WriteMode', 'append');
+        % Write YData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** Y_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.PhaseAmplitudeEnvelopeYData, Fullsavefile, 'WriteMode', 'append');
+        % Write XTicks
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** X_Ticks *****"),Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.PhaseAmplitudeEnvelopeXTicks, Fullsavefile, 'WriteMode', 'append');
+    elseif contains(Analysis,"All To All Connectivity")
+        writematrix(strcat("***** All To All Connectivity Phase Synchronization (Length of Average Phase Difference Vector) *****"),Fullsavefile, 'WriteMode', 'append');
+        % Write XData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** X_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.AllToAllSyncXData, Fullsavefile, 'WriteMode', 'append');
+        % Write YData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** Y_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.AllToAllSyncYData, Fullsavefile, 'WriteMode', 'append');
+        % Write CData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** C_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.AllToAllSyncCData, Fullsavefile, 'WriteMode', 'append');
+        % Write XTicks
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** X_Ticks *****"),Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.AllToAllSyncXTicks, Fullsavefile, 'WriteMode', 'append');
+
+    elseif contains(Analysis,"Polar Phase Angle Differences")
+        writematrix(strcat("***** Polar Phase Angle Differences (Theta and Radii for Each Data Time Point)*****"),Fullsavefile, 'WriteMode', 'append');
+        % Write XData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** X_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.PhaseDiffsXData, Fullsavefile, 'WriteMode', 'append');
+        % Write YData
+        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
+        writematrix(strcat("***** Y_Data *****"),Fullsavefile, 'WriteMode', 'append');
+        writematrix(PlottedData.PhaseDiffsYData, Fullsavefile, 'WriteMode', 'append');
+    end
+end
 
 %% unit analysis window
 if contains(Analysis,"Plot")
@@ -341,7 +412,7 @@ end
 
 %% Time Freuwncy Power
 
-if contains(Analysis,"Phase")
+if contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
     writematrix(strcat("***** Time Duration of Analysed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
     writematrix(strcat("***** Start Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');

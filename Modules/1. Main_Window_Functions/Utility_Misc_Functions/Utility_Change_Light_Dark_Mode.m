@@ -1663,12 +1663,19 @@ if strcmp(Window,"InstFrequWindow")
     app.SettingsPanel.BackgroundColor   = WindowBackgroundColor;
     app.SettingsPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.Panel.BackgroundColor   = WindowBackgroundColor;
+    app.Panel.ForegroundColor   = WindowBackgroundColor;
+
     app.ChannelSelectionDropDown.BackgroundColor   = ComponentsInWindowColor;
     app.NarrowbandCutoffLowerHigherEditField.BackgroundColor   = ComponentsInWindowColor;
     app.NarrowbandFilterorderEditField.BackgroundColor   = ComponentsInWindowColor;
-    
-    
+    app.ECHTFilterorderEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+
+    app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.ChannelSelectionDropDown_2.BackgroundColor   = ComponentsInWindowColor;
+    app.CalculationMethodDropDown.BackgroundColor   = ComponentsInWindowColor;
+
     app.UIAxes.Title.Color = 'k';
     app.UIAxes.XLabel.Color = 'k';
     app.UIAxes.YLabel.Color = 'k';
@@ -1678,7 +1685,6 @@ if strcmp(Window,"InstFrequWindow")
 
     app.UIAxes.XTickLabelMode = 'auto';  
     app.UIAxes.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
-    %app.UIAxes.FontColor = 'k';  % Tick label color
     
     % Set title, xlabel, ylabel colors
     app.UIAxes.Title.Color = 'k';
@@ -1704,6 +1710,23 @@ if strcmp(Window,"InstFrequWindow")
     
     app.UIAxes_2.YLabel.Color = 'k';
     app.UIAxes_2.YColor = 'k';
+
+    app.UIAxes_3.Title.Color = 'k';
+    app.UIAxes_3.XLabel.Color = 'k';
+    app.UIAxes_3.YLabel.Color = 'k';
+
+    app.UIAxes_3.Color  = ComponentsInWindowColor;
+    app.UIAxes_3.XColor = 'k';  
+
+    app.UIAxes_3.XTickLabelMode = 'auto';  
+    app.UIAxes_3.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
+    
+    % Set title, xlabel, ylabel colors
+    app.UIAxes_3.Title.Color = 'k';
+    app.UIAxes_3.XLabel.Color = 'k';
+    
+    app.UIAxes_3.YLabel.Color = 'k';
+    app.UIAxes_3.YColor = 'k';
 
 end
 

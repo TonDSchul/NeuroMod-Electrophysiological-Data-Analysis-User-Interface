@@ -367,73 +367,37 @@ if isprop(app.SpectralEstApp,'ExistflagSDE')
     end
 end
 
-%% Plot ECHT Method Live Window
+%% Plot Inst. Frequency Live Window
 % when user manipulates time in main window always execute
-
-
 ECHTPlot = 1;
 if isprop(app.LiveECHTWindow,'ExistflagECHT')
     if app.LiveECHTWindow.Startup == 1 || ECHTPlot
-               
-        NarrowBandPresent = 0;
-        if isfield(app.Data.Info,'NarrowbandFilterMethod')
-            NarrowBandPresent = 1;
-        end
+        % convert time points from donwsaampled state to raw data state 
+        if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Preprocessed Data') && strcmp(app.LiveECHTWindow.DataTypeDropDown.Value,'Raw Data') 
+            TimeinSecs = app.Data.TimeDownsampled(app.CurrentTimePoints);
+            differences = abs(app.Data.Time - TimeinSecs);
+            [~, TempCurrentTimePoints] = min(differences);
 
-        Downsampleflag = 0;
-        if isfield(app.Data.Info,'DownsampledSampleRate')
-            Downsampleflag = 1;
-        end
-        
-        TakeRawDataAnyway = 0;
-        if NarrowBandPresent == 0 && Downsampleflag==1
-            TakeRawDataAnyway = 1;
-        end
-
-        if strcmp(app.DropDown.Value,'Raw Data') || TakeRawDataAnyway == 1         
+            TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
+            StartIndex = TempCurrentTimePoints;
+            StopIndex = StartIndex+ceil(TimeDuration*app.Data.Info.NativeSamplingRate);
+            if StopIndex > size(app.Data.Raw,2)
+                StopIndex = size(app.Data.Raw,2);
+            end
+        elseif isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Raw Data') && strcmp(app.LiveECHTWindow.DataTypeDropDown.Value,'Preprocessed Data') 
+            TimeinSecs = app.Data.Time(app.CurrentTimePoints);
+            differences = abs(app.Data.TimeDownsampled - TimeinSecs);
+            [~, TempCurrentTimePoints] = min(differences);
             
-            % if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Raw Data')
-            %     TimeinSecs = app.Data.TimeDownsampled(app.CurrentTimePoints);
-            %     % Calculate the absolute differences
-            %     differences = abs(app.Data.Time - TimeinSecs);
-            % 
-            %     % Find the index of the minimum difference
-            %     [~, StartIndex] = min(differences);
-            % 
-            %     TimeDurationTemp = str2double(app.TimeRangeViewBox.Value(1:end-1));
-            %     StopIndex = StartIndex+round(TimeDurationTemp*app.Data.Info.NativeSamplingRate);
-            % end
-
-            [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] = Analyse_Main_Window_Apply_ECHT(app.Data.Raw(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,0,app.DropDown.Value,app.ActiveChannel);
-
-            [app.LiveECHTWindow.GlobalYlim] = Analyse_Main_Window_Plot_ECHT(app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings,app.Data.Time(StartIndex:StopIndex),app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value);
-            
-            xlim(app.LiveECHTWindow.UIAxes,[app.Data.Time(StartIndex) app.Data.Time(StopIndex)])
-            xlim(app.LiveECHTWindow.UIAxes_2,[app.Data.Time(StartIndex) app.Data.Time(StopIndex)])
-
-        elseif strcmp(app.DropDown.Value,'Preprocessed Data')
-            if isfield(app.Data.Info,'DownsampleFactor')
-
-                [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] =  Analyse_Main_Window_Apply_ECHT(app.Data.Preprocessed(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,NarrowBandPresent,app.DropDown.Value,app.ActiveChannel);
-
-                [app.LiveECHTWindow.GlobalYlim] = Analyse_Main_Window_Plot_ECHT(app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings,app.Data.TimeDownsampled(StartIndex:StopIndex),app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value);
-                
-                xlim(app.LiveECHTWindow.UIAxes,[app.Data.TimeDownsampled(StartIndex) app.Data.TimeDownsampled(StopIndex)])
-                xlim(app.LiveECHTWindow.UIAxes_2,[app.Data.TimeDownsampled(StartIndex) app.Data.TimeDownsampled(StopIndex)])
-            else
-                [ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings] =  Analyse_Main_Window_Apply_ECHT(app.Data.Preprocessed(:,StartIndex:StopIndex),app.Data.Info,app.LiveECHTWindow.ChannelSelectionDropDown.Value,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,NarrowBandPresent,app.DropDown.Value,app.ActiveChannel);
-
-                [app.LiveECHTWindow.GlobalYlim] = Analyse_Main_Window_Plot_ECHT(app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,ECHT_Phases,HILBERT_Phases,ECHTResultUnwrap,HILBERT_PhasesUnwrap,AdjustedDownsampleRate,FilterSettings,app.Data.Time(StartIndex:StopIndex),app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value);
-            
-                xlim(app.LiveECHTWindow.UIAxes,[app.Data.Time(StartIndex) app.Data.Time(StopIndex)])
-                xlim(app.LiveECHTWindow.UIAxes_2,[app.Data.Time(StartIndex) app.Data.Time(StopIndex)])
+            TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
+            StartIndex = TempCurrentTimePoints;
+            StopIndex = StartIndex+round(TimeDuration*app.Data.Info.DownsampledSampleRate);
+            if StopIndex > size(app.Data.Preprocessed,2)
+                StopIndex = size(app.Data.Preprocessed,2);
             end
         end
 
-        if app.LiveECHTWindow.Startup == 1
-            ylim(app.LiveECHTWindow.UIAxes,[-max(ECHT_Phases)-0.5,max(ECHT_Phases)+0.5])
-        end
+        [app.LiveECHTWindow.GlobalYlim,texttoshow,app.CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(app.LiveECHTWindow.PolarPlot,app.LiveECHTWindow.UIAxes_3,app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,app.Data,app.LiveECHTWindow.ChannelToCompare,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,app.ActiveChannel,app.LiveECHTWindow.DataTypeDropDown.Value,app.PlotAppearance,app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value,StartIndex,StopIndex,app.LiveECHTWindow.WhatToDo,app.LiveECHTWindow.Ccolormap,app.LiveECHTWindow.CalculationMethodDropDown.Value,app.LiveECHTWindow.ForceFilterOFFCheckBox.Value,app.LiveECHTWindow.ECHTFilterorderEditField.Value,app.CurrentPlotData);      
+        app.LiveECHTWindow.TextArea.Value = texttoshow;
     end
 end
-
-

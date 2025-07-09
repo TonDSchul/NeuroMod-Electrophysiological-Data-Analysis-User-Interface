@@ -169,7 +169,7 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     [b, a] = butter(filterorder, Wn, 'bandpass');
                 else
                     % filter kernel
-                    filtkern = fir1(filterorder,Cutoff/nyquist);
+                    filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
                 end
 
                 Data.Preprocessed = single(zeros(size(Data.Raw)));
@@ -200,7 +200,7 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
                     [b, a] = butter(filterorder, Wn, 'bandpass');
                 else
                     % filter kernel
-                    filtkern = fir1(filterorder,Cutoff/nyquist);
+                    filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
                 end
 
                 cN = size(Data.Preprocessed,1);

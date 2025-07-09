@@ -273,4 +273,12 @@ end
 
 
 
-
+%% LiveECHTWindow
+try
+    if ~isempty(app.LiveECHTWindow)
+        delete(app.LiveECHTWindow);
+        app.LiveECHTWindow = [];
+    end
+catch
+    app.LiveECHTWindow = [];
+end

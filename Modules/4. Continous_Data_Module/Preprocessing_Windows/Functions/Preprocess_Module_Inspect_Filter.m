@@ -143,7 +143,7 @@ if isfield(PreProInfo,'FilterKernel')
                     end
                     
                     % filter kernel
-                    filtkern = fir1(filterorder,Cutoff/nyquist);
+                    filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
                     
                     % compute the power spectrum of the filter kernel
                     filtpow = abs(fft(filtkern)).^2;

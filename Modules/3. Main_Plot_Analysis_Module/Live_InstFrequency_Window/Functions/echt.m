@@ -1,4 +1,4 @@
-function x = echt(xr, filt_lf, filt_hf, Fs, n)
+function x = echt(xr, filt_lf, filt_hf, Fs, n, ECHTFilterorder)
 % ECHT: Endpoint Corrected Hilbert Transform
 %   X = echt(Xr) computes the so-called discrete-time analytic signal. 
 %   It is a modification of Matlab's hilbert.m function that significantly 
@@ -96,7 +96,7 @@ end
 x = x.*h(:,ones(1,size(x,2)));
 
 % Compute filter's frequency response
-filt_order = 2;
+filt_order = ECHTFilterorder;
 [b,a] = butter(filt_order, [filt_lf filt_hf]/(Fs/2), 'bandpass');
 T = 1/Fs*n;                           % Sampling time period
 filt_freq = (ceil(-n/2:n/2-1)'/T);    % Center bin frequencies of the FFT.

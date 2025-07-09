@@ -32,6 +32,7 @@ elseif strcmp(ModuleFunctionName,"Static Spectrum Analysis")
 
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConStaticSpectrum");
 
+
 elseif strcmp(ModuleFunctionName,"Spike Analysis")
     % Delete Part of CurrentPlotData holding previous spike
     % data if its there

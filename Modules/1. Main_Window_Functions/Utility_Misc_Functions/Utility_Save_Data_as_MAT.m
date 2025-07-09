@@ -118,10 +118,47 @@ elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = 
             end
         end
         DataToSave.MainXTicks =  PlottedData.MainXTicks;
-    
     end
 end
 
+end
+
+if contains(Analysis,"Instantaneous")
+    if contains(Analysis,"Phase Time Series")
+        DataToSave.PhaseAngleTimesSyncType =  PlottedData.PhaseAngleTimesSyncType;
+        DataToSave.PhaseAngleTimesSyncXData =  PlottedData.PhaseAngleTimesXData;
+        DataToSave.PhaseAngleTimesSyncYData =  PlottedData.PhaseAngleTimesSyncYData;
+        if isfield(DataToSave,'PhaseAngleTimesSyncCData')
+            if ~isempty(PlottedData.PhaseAngleTimesSyncCData)
+                DataToSave.PhaseAngleTimesSyncCData =  PlottedData.PhaseAngleTimesSyncCData;
+            end
+        end
+    elseif contains(Analysis,"Phase Amplitude Envelope")
+        DataToSave.PhaseAmplitudeEnvelopeType =  PlottedData.PhaseAmplitudeEnvelopeType;
+        DataToSave.PhaseAmplitudeEnvelopeXData =  PlottedData.PhaseAmplitudeEnvelopeXData;
+        DataToSave.PhaseAmplitudeEnvelopeYData =  PlottedData.PhaseAmplitudeEnvelopeYData;
+        if isfield(DataToSave,'PhaseAmplitudeEnvelopeCData')
+            if ~isempty(PlottedData.PhaseAmplitudeEnvelopeCData)
+                DataToSave.PhaseAmplitudeEnvelopeCData =  PlottedData.PhaseAmplitudeEnvelopeCData;
+            end
+        end
+    elseif contains(Analysis,"All To All Connectivity")
+        DataToSave.AllToAllSyncType =  PlottedData.AllToAllSyncType;
+        DataToSave.AllToAllSyncXData =  PlottedData.AllToAllSyncXData;
+        DataToSave.AllToAllSyncYData =  PlottedData.AllToAllSyncYData;
+        DataToSave.AllToAllSyncCData =  PlottedData.AllToAllSyncCData;
+            
+        
+    elseif contains(Analysis,"Polar Phase Angle Differences")
+        DataToSave.PhaseDiffsType =  PlottedData.PhaseDiffsType;
+        DataToSave.PhaseDiffsXData =  PlottedData.PhaseDiffsXData;
+        DataToSave.PhaseDiffsYData =  PlottedData.PhaseDiffsYData;
+        if isfield(DataToSave,'MainCData')
+            if ~isempty(PlottedData.PhaseDiffsCData)
+                DataToSave.PhaseDiffsCData =  PlottedData.PhaseDiffsCData;
+            end
+        end
+    end
 end
 
 if contains(Analysis,"Plot")
@@ -187,7 +224,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
 
 end
 
-if contains(Analysis,"Phase")
+if contains(Analysis,"Phase") && ~ contains(Analysis,"Instantaneous")
     DataToSave.TFPowerType =  PlottedData.TFPowerType;
     DataToSave.TFPowerXData =  PlottedData.TFPowerXData;
     DataToSave.TFPowerYData =  PlottedData.TFPowerYData;
