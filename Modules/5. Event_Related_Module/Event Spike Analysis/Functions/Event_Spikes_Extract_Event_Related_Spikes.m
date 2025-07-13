@@ -1,4 +1,4 @@
-function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType,SpikeTriggereAverage,EventDataType)
+function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType,SpikeTriggereAverage,EventDataType,EventChannelName)
 
 %________________________________________________________________________________________
 
@@ -21,6 +21,8 @@ function [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,SpikeType
 % Otherwise
 % 4. EventDataType: char, either 'Raw Event Related Data' or 'Preprocessed
 % Event Related Data'. 
+% 5.EventChannelName: char, name of the event channel to extract event
+% related spikes for
 
 % Output
 % 1. Data: main window data structure with added field Data.EventRelatedSpikes
@@ -49,7 +51,7 @@ end
 
 %% Extract Event Related Spikes from Kilosort
 for i = 1:length(Data.Info.EventChannelNames)
-    if strcmp(Data.Info.EventRelatedDataChannel,Data.Info.EventChannelNames{i})
+    if strcmp(EventChannelName,Data.Info.EventChannelNames{i})
         EventtoShow = i;
     end
 end
@@ -74,16 +76,37 @@ Events = Data.Events{EventtoShow};
 SpikeTimes = Data.Spikes.SpikeTimes;
 
 if strcmp(EventDataType,"Preprocessed Event Related Data")
-    cN = size(Data.PreprocessedEventRelatedData,2);
+    if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+        % Find rejection indices for the currently selected event channel
+        Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
+        TrialrejectionindiciesCurrentChannel = find(Namevector == EventChannelName);
+        % Select trials if event channel found
+        if ~isempty(TrialrejectionindiciesCurrentChannel)
+            TrialsToReject = Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel);
+        else
+            TrialsToReject = [];
+        end
+        
+        AllTrialIdentities = 1:length(Events);
+
+        if ~isempty(TrialsToReject)
+            AllTrialIdentities(TrialsToReject) = [];
+        end
+    else
+        AllTrialIdentities = 1:length(Events);
+    end
+
 else
-    cN = size(Data.EventRelatedData,2);
+    AllTrialIdentities = 1:length(Events);
 end
 
 % Loop over event indicies (trials)
-for nevents = 1:cN
+for i = 1:length(AllTrialIdentities)
     
-    msg = sprintf('Extract Event Related Spikes... (%d%% done)', round(100*(nevents/cN)));
-    waitbar(nevents/cN, h, msg);
+    nevents = AllTrialIdentities(i);
+
+    msg = sprintf('Extract Event Related Spikes... (%d%% done)', round(100*(nevents/length(AllTrialIdentities))));
+    waitbar(nevents/length(AllTrialIdentities), h, msg);
     
     if strcmp(EventDataType,"Preprocessed Event Related Data")
         if sum(Data.Info.EventRelatedPreprocessing.TrialRejectionTrials == nevents) == 1
@@ -106,7 +129,7 @@ for nevents = 1:cN
         Data.EventRelatedSpikes.SpikeTimes = [Data.EventRelatedSpikes.SpikeTimes;TempSpikeTimes];
         Data.EventRelatedSpikes.SpikePositions = [Data.EventRelatedSpikes.SpikePositions;Data.Spikes.SpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
         Data.EventRelatedSpikes.SpikeAmps = [Data.EventRelatedSpikes.SpikeAmps;Data.Spikes.SpikeAmps(SpikeIndicieWithinCurrentEvent==1)];
-        Data.EventRelatedSpikes.SpikeEvents = [Data.EventRelatedSpikes.SpikeEvents;zeros(sum(SpikeIndicieWithinCurrentEvent),1)+nevents];
+        Data.EventRelatedSpikes.SpikeEvents = [Data.EventRelatedSpikes.SpikeEvents;zeros(sum(SpikeIndicieWithinCurrentEvent),1)+i];
         Data.EventRelatedSpikes.SpikeChannel = [Data.EventRelatedSpikes.SpikeChannel;Data.Spikes.SpikeChannel(SpikeIndicieWithinCurrentEvent==1)];
         Data.EventRelatedSpikes.SpikeWaveforms = [Data.EventRelatedSpikes.SpikeWaveforms;Data.Spikes.Waveforms(SpikeIndicieWithinCurrentEvent==1,:)];
         

@@ -41,7 +41,17 @@ for i = 1:numel(fields)
                     if isnumeric(fieldValue)
                         infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
                     else
-                        infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                        try
+                            a = convertStringsToChars(fieldValue);
+                            if length(a)>100
+                                TempfieldValue = strcat('More than 100 Char Elements');
+                                infoString = sprintf('%s%s: %s\n', infoString, fieldName, TempfieldValue);
+                            else
+                                infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                            end
+                        catch
+                            infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+                        end
                     end
                 end
             end

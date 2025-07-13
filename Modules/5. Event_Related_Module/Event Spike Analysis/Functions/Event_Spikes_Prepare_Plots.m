@@ -78,7 +78,7 @@ end
 
 %% NrChannels to plot
 %%% TODO: Delete component, not used anymore!
-[ChannelSelectionField] = Utility_SimpleCheckInputs(ChannelSelectionField,"Two",strcat('1,',num2str(size(Data.EventRelatedData,1))),1,0);
+[ChannelSelectionField] = Utility_SimpleCheckInputs(ChannelSelectionField,"Two",strcat('1,',num2str(size(Data.Raw,1))),1,0);
 
 %% NrEvents to plot
 
@@ -163,7 +163,7 @@ else
     end
 end
 %% Select Data based on Event Selecion
-PlotInfo.ChannelNr = size(Data.EventRelatedData,1);
+PlotInfo.ChannelNr = size(Data.Raw,1);
 
 TempEventIndicies = zeros(length(TempEvents),1);
 for i = 1:length(PlotInfo.EventRange)

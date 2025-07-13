@@ -50,9 +50,15 @@ if strcmp(EventWindow,"EventWindow")
     app.SpikeBinSettings.time_bin_size = 0.006; % app.GeneralSettings.Time bin size in seconds
     
     app.ChannelSelectionforPlottingEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.Raw,1)));
-
-    app.EventRangeEditField.Value = strcat('1:',num2str(size(app.Mainapp.Data.EventRelatedData,2)));
     
+    % Event channel selected
+    for i = 1:length(app.Mainapp.Data.Info.EventChannelNames)
+        app.EventChannelSelectionDropDown.Items{i} = convertStringsToChars(app.Mainapp.Data.Info.EventChannelNames{i});
+    end
+
+    %% -------------------- Populate event channel selection -------------------- 
+    [app.EventRangeEditField.Value] = Event_Module_Check_EventInput(app.EventRangeEditField.Value,app.Mainapp.Data,app.EventChannelSelectionDropDown.Value,"Raw Event Related Data",1);
+
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
         [PlotInfo,~,~,~,~,~,~] = Event_Spikes_Prepare_Plots(app.Mainapp.Data,app.EventRangeEditField.Value,app.ChannelSelectionforPlottingEditField.Value,app.BaselineWindowStartStopinsEditField,app.SpikeRateNumBinsEditField.Value,"Kilosort",0,app.TimeWindowSpiketriggredLFPEditField.Value,app.SpikeBinSettings,app.Mainapp.ActiveChannel);
     else

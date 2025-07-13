@@ -199,13 +199,8 @@ if Activated
             app.EventExtractionWindow.PlotInputChannelButton.Tooltip = "To see which input channel types and numbers contain your event data and which threshold to use (if applicable), click this button to plot the event data over time. For Open Ephys time stamps, trigger data is represented as a continous data stream over time with the signal showing a 1 for each trigger time stamp plus 5ms after that. Inbetween triggers, signal is 0.";
             app.EventExtractionWindow.StartEventExtractionButton.Tooltip = "Press to start event extraction which the settings specified above. Once finsihed (with valid event times found) this enables the 'Exract Event Related Data' section below, which is necessary to analyse event related data.";
 
-            app.EventExtractionWindow.DatatoUseDropDown.Tooltip = "Specify if event related data should be extracted from your raw or preprocessed dataset.";
-            app.EventExtractionWindow.EventChanneltoUseDropDown.Tooltip = "Specify which event channel extracted above to use for event related data extraction.";
             app.EventExtractionWindow.TimeWindowAfterEventssEditField.Tooltip = "Time before each event in seconds to extract data from.";
             app.EventExtractionWindow.TimeWindowBeforeEventssEditField.Tooltip = "Time after each event in seconds to extract data from.";
-
-            app.EventExtractionWindow.ExtractEventRelatedDataButton.Tooltip = "Start event related data extraction with the settings above. Once finished you can analyse event related LFP and spike data.";
-           
         end
     end
 
@@ -220,13 +215,9 @@ if Activated
             app.ImportEventTTLWindow.PlotEventDataButton.Tooltip = "Click to see a plot of all trigger within each event channel found in the loaded file. Trigger data is represented as a continous data stream over time with the signal showing a 1 for each trigger time stamp plus 5ms after that. Inbetween triggers, signal is 0.";
             app.ImportEventTTLWindow.TakeasnewEventDataButton.Tooltip = "Press to start event extraction which the settings specified above. Once finsihed (with valid event times found) this enables the 'Exract Event Related Data' section below, which is necessary to analyse event related data.";
 
-
-            app.ImportEventTTLWindow.DatatoUseDropDown.Tooltip = "Specify if event related data should be extracted from your raw or preprocessed dataset.";
-            app.ImportEventTTLWindow.EventChanneltoUseDropDown.Tooltip = "Specify which event channel extracted above to use for event related data extraction.";
             app.ImportEventTTLWindow.TimeWindowAfterEventssEditField.Tooltip = "Time before each event in seconds to extract data from.";
             app.ImportEventTTLWindow.TimeWindowBeforeEventssEditField.Tooltip = "Time after each event in seconds to extract data from.";
 
-            app.ImportEventTTLWindow.ExtractEventRelatedDataButton.Tooltip = "Start event related data extraction with the settings above. Once finished you can analyse event related LFP and spike data.";
         end
     end
 

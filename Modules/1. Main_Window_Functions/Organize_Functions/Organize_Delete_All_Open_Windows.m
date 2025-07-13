@@ -165,22 +165,26 @@ catch
 end
 
 %% Event Extraction Window
-try
-    if ~isempty(app.EventExtractionWindow)
-        delete(app.EventExtractionWindow);
+if DeleteProbeView
+    try
+        if ~isempty(app.EventExtractionWindow)
+            delete(app.EventExtractionWindow);
+            app.EventExtractionWindow = [];
+        end
+    catch
         app.EventExtractionWindow = [];
     end
-catch
-    app.EventExtractionWindow = [];
 end
 %% Import Events Window
-try
-    if ~isempty(app.ImportEventTTLWindow)
-        delete(app.ImportEventTTLWindow);
+if DeleteProbeView
+    try
+        if ~isempty(app.ImportEventTTLWindow)
+            delete(app.ImportEventTTLWindow);
+            app.ImportEventTTLWindow = [];
+        end
+    catch
         app.ImportEventTTLWindow = [];
     end
-catch
-    app.ImportEventTTLWindow = [];
 end
 %% Spike Extraction Window
 try
@@ -281,4 +285,15 @@ try
     end
 catch
     app.LiveECHTWindow = [];
+end
+
+
+%% EventIndiceRejectionWindow
+try
+    if ~isempty(app.EventIndiceRejectionWindow)
+        delete(app.EventIndiceRejectionWindow);
+        app.EventIndiceRejectionWindow = [];
+    end
+catch
+    app.EventIndiceRejectionWindow = [];
 end

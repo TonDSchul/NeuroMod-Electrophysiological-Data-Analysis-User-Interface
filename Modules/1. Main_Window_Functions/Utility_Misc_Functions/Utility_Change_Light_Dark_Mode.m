@@ -296,9 +296,7 @@ end
 if strcmp(Window,"Preprocess_Window")    
     % texts to black
     set(findall(app.PreprocessingWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
-    
-    app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
-    app.RightPanel.BackgroundColor  = WindowBackgroundColor;
+
     app.PreprocessingWindowUIFigure.Color  = WindowBackgroundColor;
 
     app.FilteringPanel.BackgroundColor   = WindowBackgroundColor;
@@ -337,7 +335,7 @@ if strcmp(Window,"Preprocess_Window")
     app.DeleteChannelButton.BackgroundColor = ComponentsInWindowColor;
     app.CutStartandEndofRecordingButton_2.BackgroundColor = ComponentsInWindowColor;
     app.StimulationArtefactRejectionButton.BackgroundColor = ComponentsInWindowColor;
-
+    app.DeleteEventTriggerIndicesButton.BackgroundColor = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Artefact_Rejection_Window")    
@@ -626,12 +624,8 @@ if strcmp(Window,"ImportEvents")
     app.TextArea.BackgroundColor  = ComponentsInWindowColor;
     app.TextArea_2.BackgroundColor  = ComponentsInWindowColor;
 
-    app.DatatoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
-    app.EventChanneltoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.TimeWindowAfterEventssEditField.BackgroundColor  = ComponentsInWindowColor;
     app.TimeWindowBeforeEventssEditField.BackgroundColor  = ComponentsInWindowColor;
-
-    app.TextArea_3.BackgroundColor  = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"ExtractEvents")   
@@ -657,16 +651,12 @@ if strcmp(Window,"ExtractEvents")
     app.EventTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.TextArea.BackgroundColor  = ComponentsInWindowColor;
     app.TextArea_2.BackgroundColor  = ComponentsInWindowColor;
-    app.TextArea_3.BackgroundColor  = ComponentsInWindowColor;
 
     app.FileTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.AnalogThresholdVEditField.BackgroundColor  = ComponentsInWindowColor;
     app.EventTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.InputChannelSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
     
-
-    app.DatatoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
-    app.EventChanneltoUseDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.TimeWindowAfterEventssEditField.BackgroundColor  = ComponentsInWindowColor;
     app.TimeWindowBeforeEventssEditField.BackgroundColor  = ComponentsInWindowColor;
     
@@ -787,6 +777,9 @@ if strcmp(Window,"Event_Trial_Rejection")
     app.ThresholdEditField.BackgroundColor  = ComponentsInWindowColor;
     app.TextArea.BackgroundColor  = ComponentsInWindowColor;
 
+    app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventChannelSelectionDropDown.BackgroundColor  = ComponentsInWindowColor;
+
     app.ChannelofInterestDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.ClimfromtoEditField.BackgroundColor  = ComponentsInWindowColor;
     app.RejectTrialsfromtoEditField.BackgroundColor  = ComponentsInWindowColor;
@@ -878,8 +871,8 @@ if strcmp(Window,"EventERP")
     app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.ChannelSelectionDropDown_2.BackgroundColor  = ComponentsInWindowColor;
     app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
-    
-
+    app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventChannelSelectionDropDown.BackgroundColor  = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.ERPWindow.SingleERP.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -927,7 +920,8 @@ if strcmp(Window,"EventCSD")
     app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
     app.HammWindowEditField.BackgroundColor  = ComponentsInWindowColor;
     app.ClimminmaxEditField.BackgroundColor  = ComponentsInWindowColor;
-    
+    app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventTriggerChannel.BackgroundColor  = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.CSDWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -972,7 +966,11 @@ if strcmp(Window,"EventTF")
     app.AnalysisTypePanel.BackgroundColor  = WindowBackgroundColor;
     app.AnalysisTypePanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventTriggerChannel.BackgroundColor  = ComponentsInWindowColor;
+    app.DataSourceDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
+
     app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
     app.FrequencyRangeminmaxstepsEditField.BackgroundColor  = ComponentsInWindowColor;
     app.CycleWidthfromto23EditField.BackgroundColor  = ComponentsInWindowColor;
@@ -1019,6 +1017,8 @@ if strcmp(Window,"EventSpectrum")
     app.ChannelDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.FrequencyRangeHzEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventTriggerChannel.BackgroundColor  = ComponentsInWindowColor;
 
     app.DataSourceDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.EventSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
@@ -1493,7 +1493,7 @@ if strcmp(Window,"EventSpikeAnalysis")
     app.ClustertoshowDropDown.BackgroundColor   = ComponentsInWindowColor;
     app.EventRangeEditField.BackgroundColor   = ComponentsInWindowColor;
     app.BaselineWindowStartStopinsEditField.BackgroundColor   = ComponentsInWindowColor;
-    
+    app.EventChannelSelectionDropDown.BackgroundColor   = ComponentsInWindowColor;
     app.SpikeRateNumBinsEditField.BackgroundColor   = ComponentsInWindowColor;
     app.TimeWindowSpiketriggredLFPEditField.BackgroundColor   = ComponentsInWindowColor;
     
@@ -1744,4 +1744,131 @@ if strcmp(Window,'ASR_Window')
     app.BurstCriterioninStandardDevationsRange520EditField.BackgroundColor   = ComponentsInWindowColor;
     app.WindowCriterionRange00503EditField.BackgroundColor   = ComponentsInWindowColor;
 
+end
+
+if strcmp(Window,"EventPhaseSyncWindow")    
+    % texts to black
+    set(findall(app.PhaseSynchroFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.PhaseSynchroFigure.Color  = WindowBackgroundColor;
+    
+    app.SettingsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SettingsPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.Panel.BackgroundColor   = WindowBackgroundColor;
+    app.Panel.ForegroundColor   = WindowBackgroundColor;
+
+    app.MultipleTimeRangesComparisonPanel.BackgroundColor   = WindowBackgroundColor;
+    app.MultipleTimeRangesComparisonPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.ChannelSelectionDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.NarrowbandCutoffLowerHigherEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.NarrowbandFilterorderEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.ECHTFilterorderEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.TrialSelectionMatlabExpressionsEditField.BackgroundColor   = ComponentsInWindowColor;
+    
+    app.DataToExtractFromDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.EventChannelSelectionDropDown.BackgroundColor   = ComponentsInWindowColor;
+
+    app.TimeRange1fromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.TimeRange2fromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
+
+    app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.ChannelSelectionDropDown_2.BackgroundColor   = ComponentsInWindowColor;
+    app.CalculationMethodDropDown.BackgroundColor   = ComponentsInWindowColor;
+
+    app.UIAxes.Title.Color = 'k';
+    app.UIAxes.XLabel.Color = 'k';
+    app.UIAxes.YLabel.Color = 'k';
+
+    app.UIAxes.Color  = ComponentsInWindowColor;
+    app.UIAxes.XColor = 'k';  
+
+    app.UIAxes.XTickLabelMode = 'auto';  
+    app.UIAxes.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
+    
+    % Set title, xlabel, ylabel colors
+    app.UIAxes.Title.Color = 'k';
+    app.UIAxes.XLabel.Color = 'k';
+    
+    app.UIAxes.YLabel.Color = 'k';
+    app.UIAxes.YColor = 'k';
+
+    app.UIAxes_2.Title.Color = 'k';
+    app.UIAxes_2.XLabel.Color = 'k';
+    app.UIAxes_2.YLabel.Color = 'k';
+
+    app.UIAxes_2.Color  = ComponentsInWindowColor;
+    app.UIAxes_2.XColor = 'k';  
+
+    app.UIAxes_2.XTickLabelMode = 'auto';  
+    app.UIAxes_2.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
+    %app.UIAxes.FontColor = 'k';  % Tick label color
+    
+    % Set title, xlabel, ylabel colors
+    app.UIAxes_2.Title.Color = 'k';
+    app.UIAxes_2.XLabel.Color = 'k';
+    
+    app.UIAxes_2.YLabel.Color = 'k';
+    app.UIAxes_2.YColor = 'k';
+
+    app.UIAxes_3.Title.Color = 'k';
+    app.UIAxes_3.XLabel.Color = 'k';
+    app.UIAxes_3.YLabel.Color = 'k';
+
+    app.UIAxes_3.Color  = ComponentsInWindowColor;
+    app.UIAxes_3.XColor = 'k';  
+
+    app.UIAxes_3.XTickLabelMode = 'auto';  
+    app.UIAxes_3.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
+    
+    % Set title, xlabel, ylabel colors
+    app.UIAxes_3.Title.Color = 'k';
+    app.UIAxes_3.XLabel.Color = 'k';
+    
+    app.UIAxes_3.YLabel.Color = 'k';
+    app.UIAxes_3.YColor = 'k';
+
+end
+
+
+if strcmp(Window,'DeleteTriggerIndices')
+    % texts to black
+    set(findall(app.TriggerIndiceRejectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.TriggerIndiceRejectionUIFigure.Color  = WindowBackgroundColor;
+    
+    app.LeftPanel.BackgroundColor   = WindowBackgroundColor;
+    app.LeftPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.RightPanel.BackgroundColor   = WindowBackgroundColor;
+    app.RightPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.RejectionOptionsPanel.BackgroundColor   = WindowBackgroundColor;
+    app.RejectionOptionsPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.DataToExtractFromDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.EventChannelforStimulationDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.EventstoPlotDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.TriggerToRejectMatlabExpressionsEditField.BackgroundColor   = ComponentsInWindowColor;
+
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+    
+    app.UIAxes.Title.Color = 'k';
+    app.UIAxes.XLabel.Color = 'k';
+    app.UIAxes.YLabel.Color = 'k';
+
+    app.UIAxes.Color  = ComponentsInWindowColor;
+    app.UIAxes.XColor = 'k';  
+
+    app.UIAxes.XTickLabelMode = 'auto';  
+    app.UIAxes.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
+    
+    % Set title, xlabel, ylabel colors
+    app.UIAxes.Title.Color = 'k';
+    app.UIAxes.XLabel.Color = 'k';
+    
+    app.UIAxes.YLabel.Color = 'k';
+    app.UIAxes.YColor = 'k';
 end

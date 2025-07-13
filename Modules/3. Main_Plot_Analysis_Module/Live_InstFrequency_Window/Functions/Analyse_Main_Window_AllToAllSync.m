@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Analyse_Main_Window_AllToAllSync(Figure3,Hilbert_Phases,PlotAppearance,CurrentPlotData)
+function [CurrentPlotData] = Analyse_Main_Window_AllToAllSync(Figure3,Hilbert_Phases,PlotAppearance,CurrentPlotData,SelectedChannel)
 
 %% All To All synchronization
 
@@ -48,6 +48,13 @@ if isempty(SynchMat_handle)
 else
     set(SynchMat_handle,'CData', squeeze(synchmat(1,:,:)), 'Tag', 'SynchMat'); % Replace image data
 end
+
+%% costume y labels
+
+Figure3.YTick = 1:length(SelectedChannel);
+Figure3.YTickLabel = string(SelectedChannel);
+Figure3.XTick = 1:length(SelectedChannel);
+Figure3.XTickLabel = string(SelectedChannel);
 
 xlim(Figure3,[0.5 size(Hilbert_Phases,1)+0.5]);
 ylim(Figure3,[0.5 size(Hilbert_Phases,1)+0.5]);

@@ -1,22 +1,24 @@
-function [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,EventChannel,TimeWindowBefore,TimeWindowAfter,DatatoUse)
+function [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,EventChannel,TimearoundEvent,DataToExtractFrom,EventDataType)
 
 %________________________________________________________________________________________
 %% Function to extract event related data as a nchannel x nevents x ntime matrix
 
-% It is only computed once and the saved in the Data structure. Either
-% extracted from Raw or Preprocessed Data and for one event channel. 
+% Channel x trials x time matrix is extracted on the fly as needed, but
+% saved in the app.Data structure after each extraction and can be
+% retrieved from there
 
 % Inputs: 
 % 1.Data: Data structure with raw data, preprocessed data, event data and
 % the infio structure with infos about extracted events.
 % 2. EventChannel: Name of the event channel you want to calculate the ERD
 % data for; as char; i.e. 'DIN-04' for Intan (saved in Data.Info.EventChannelNames)
-% 3. TimeWindowBefore: Time in seconds to take before each event as double,
-% always positive!
-% 4. TimeWindowAfter: Time in seconds to take after each event as double,
-% always positive!
-% 5. DatatoUse: Type of data you want to extract event snippets for, as char either
-% "Preprocessed" or "Raw"
+% 3. TimeRange: double 1x2 vector with time before, then a space then time after (in seconds, both positive)
+% 5. DataToExtractFrom: Type of data you want to extract event snippets for, as char either
+% "Preprocessed Data" or "Raw Data"
+% 6. EventDataType: char, 'Raw Event Related Data" or "Preprocessed Event
+% Related Data". If the latter is selected, channel interpolation and trial
+% rejection are added to the normal event related data and saved in a
+% separate field in the second half of this code
 
 % Outputs:
 % 1. Data: Data object passed here with added field: Data.EventRelatedData
@@ -28,15 +30,18 @@ function [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,E
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-
-TimearoundEvent = [];
 EventChannelNr = [];
 
-if isfield(Data,'EventRelatedData')
-    msgbox("Warning: Event related data data already part of the dataset. Exisitng data will be removed.");
-    [Data,~] = Organize_Delete_Dataset_Components(Data,"EventRelatedData");
-end 
+%-------------------------------------------------------------------
+%% ---------------- Check Up and Event channel Indice ----------------
+%-------------------------------------------------------------------
 
+if isfield(Data,'EventRelatedData')
+    fieldsToDelete = {'EventRelatedData'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+end 
+% get Data.Events indice of selected event channel
 for i = 1:length(Data.Info.EventChannelNames)
     if strcmp(EventChannel,Data.Info.EventChannelNames{i})
         EventChannelNr = i;
@@ -48,67 +53,71 @@ if isempty(Data.Events{EventChannelNr})
     return;
 end
 
-TimearoundEvent(1) = str2double(TimeWindowBefore);
-TimearoundEvent(2) = str2double(TimeWindowAfter);
+%-------------------------------------------------------------------
+%% ---------------- Convert Time Around Event in Number of Samples ----------------
+%-------------------------------------------------------------------
 
-% Time around event
-if strcmp(DatatoUse,"Raw")
+if strcmp(DataToExtractFrom,"Raw Data")
     NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.NativeSamplingRate);
     NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.NativeSamplingRate);
     % Handling Downsampled data
-elseif strcmp(DatatoUse,"Preprocessed") && isfield(Data.Info,'DownsampledSampleRate')
+elseif strcmp(DataToExtractFrom,"Preprocessed Data") && isfield(Data.Info,'DownsampledSampleRate')
     NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.DownsampledSampleRate);
     NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.DownsampledSampleRate);
     TempOriginalEvents = Data.Events;
     Data.Events{EventChannelNr} = round(Data.Events{EventChannelNr}./Data.Info.DownsampleFactor);
     
-elseif strcmp(DatatoUse,"Preprocessed") && ~isfield(Data.Info,'DownsampledSampleRate')
+elseif strcmp(DataToExtractFrom,"Preprocessed Data") && ~isfield(Data.Info,'DownsampledSampleRate')
     NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.NativeSamplingRate);
     NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.NativeSamplingRate);
 end
 
 ntimepoints = NumSamplesBefore+NumSamplesAfter+1;
 
-h = waitbar(0, 'Extracting Events...', 'Name','Extracting Events...');
+h = waitbar(0, 'Extracting Event Related Data...', 'Name','Extracting Event Related Data...');
 
-if strcmp(DatatoUse,"Raw")
+%-------------------------------------------------------------------
+%% ---------------- Start Data Extraction ----------------
+%-------------------------------------------------------------------
+if strcmp(DataToExtractFrom,"Raw Data")
+    % Initialize
     Data.EventRelatedData = NaN(size(Data.Raw,1),length(Data.Events{EventChannelNr}),ntimepoints);
-    %Data.EventRelatedData = single(NaN(size(Data.Raw,1),length(Data.Events{EventChannelNr}),ntimepoints));
     % Loop over event indicies (trials)
     for nevents = 1:length(Data.Events{EventChannelNr})
         if Data.Events{EventChannelNr}(nevents)-NumSamplesBefore > 0 && Data.Events{EventChannelNr}(nevents)+NumSamplesAfter <= size(Data.Raw,2)
             Data.EventRelatedData(1:size(Data.Raw,1),nevents,1:ntimepoints) = Data.Raw(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
         else
-            disp(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
-            msgbox(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+            warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
         end
 
         % Update the progress bar
         fraction = nevents/length(Data.Events{EventChannelNr});
-        msg = sprintf('Extracting Events... (%d%% done)', round(100*fraction));
+        msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
         waitbar(fraction, h, msg);
-
     end
-elseif strcmp(DatatoUse,"Preprocessed")
+elseif strcmp(DataToExtractFrom,"Preprocessed Data")
+    % Initialize
     Data.EventRelatedData = NaN(size(Data.Preprocessed,1),length(Data.Events{EventChannelNr}),ntimepoints);
     % Loop over event indicies (trials)
     for nevents = 1:length(Data.Events{EventChannelNr})
+        % save data within sample number range
         if Data.Events{EventChannelNr}(nevents)-NumSamplesBefore > 0 && Data.Events{EventChannelNr}(nevents)+NumSamplesAfter <= size(Data.Preprocessed,2)
             Data.EventRelatedData(1:size(Data.Preprocessed,1),nevents,1:ntimepoints) = Data.Preprocessed(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
         else
-            disp(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
-            msgbox(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+            warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
         end
 
         % Update the progress bar
         fraction = nevents/length(Data.Events{EventChannelNr});
-        msg = sprintf('Extracting Events... (%d%% done)', round(100*fraction));
+        msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
         waitbar(fraction, h, msg);
-
     end
 end
 
-%% Event Data is NaN padded and events not firtting in time frames remain NaN. They have to be deleted
+%-------------------------------------------------------------------
+%% ---------------- Remains from old code, still in since initialization with NaN ----------------
+%-------------------------------------------------------------------
+% does not occur anymore! 
 DeleteIndicie = [];
 for nTrials = 1:size(Data.EventRelatedData,2)
     if isnan(Data.EventRelatedData(:,nTrials,:))
@@ -118,15 +127,45 @@ end
 
 Data.EventRelatedData(:,DeleteIndicie,:) = [];
 
-if strcmp(DatatoUse,"Preprocessed") && isfield(Data.Info,'DownsampledSampleRate')
+if strcmp(DataToExtractFrom,"Preprocessed Data") && isfield(Data.Info,'DownsampledSampleRate')
     Data.Events = TempOriginalEvents;
     clear TempOriginalEvents;
 end
 
-Data.Info.EventRelatedDataChannel = Data.Info.EventChannelNames{EventChannelNr};
-Data.Info.EventRelatedDataType = DatatoUse;
-Data.Info.EventRelatedDataTimeRange = [TimeWindowBefore,' ',TimeWindowAfter];
-Data.Info.EventRelatedActiveChannel = Data.Info.ProbeInfo.ActiveChannel;
 Data.EventRelatedData = single(Data.EventRelatedData);
 
 close(h);
+
+%-------------------------------------------------------------------
+%% ---------------- Preprocessed Event related data ----------------
+%-------------------------------------------------------------------
+if strcmp(EventDataType,"Preprocessed Event Related Data")
+    if ~isfield(Data.Info,'EventRelatedPreprocessing')
+        warning('No prepro information added for event related data but preprocessing requested. Step is skipped instead.')
+        return;
+    end
+    
+    %% ---------------- Create Prepro Dataset ----------------
+    Data.PreprocessedEventRelatedData = Data.EventRelatedData;
+    
+    %% ---------------- Delete Trials ----------------
+    if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+        % Find rejection indices for the currently selected event channel
+        Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
+        TrialrejectionindiciesCurrentChannel = find(Namevector == EventChannel);
+        % Select trials if event channel found
+        if ~isempty(TrialrejectionindiciesCurrentChannel)
+            TrialsToReject = Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel);
+        else
+            TrialsToReject = [];
+        end
+        
+        if ~isempty(TrialsToReject)
+            Data.PreprocessedEventRelatedData(:,TrialsToReject,:) = [];
+        end
+    end
+    %% ---------------- Interpolate Channel ----------------
+    if isfield(Data.Info.EventRelatedPreprocessing,'Channel Rejection')
+
+    end
+end

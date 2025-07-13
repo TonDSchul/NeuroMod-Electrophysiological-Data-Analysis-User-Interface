@@ -8,9 +8,7 @@ function [Data,EventChannelDropDown] = Import_Events_Add_Imported_Events(Data,Ev
 %________________________________________________________________________________________
 
 %% First maintaining GUI main data structure by deleting previous event data
-if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
-    msgbox("Warning: Events and event related data where already extracted. Previous data will be overwritten!");
-elseif isfield(Data,'Events')
+if isfield(Data,'Events')
     msgbox("Warning: Events where already extracted. Previous data will be overwritten!");
 end
 

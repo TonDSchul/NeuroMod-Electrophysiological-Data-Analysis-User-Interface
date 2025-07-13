@@ -1,8 +1,10 @@
-function  [GlobalYlim,CurrentPlotData] = Analyse_Main_Window_Plot_PhaseAngles(Figure1,Figure2,Phases,PhasesUnwrapped,AdjustedDownsampleRate,CurrentTime,GlobalYlim,LockYLIM,ColorMap,Method,PlotAppearance,CurrentPlotData)
+function  [GlobalYlim,CurrentPlotData] = Analyse_Main_Window_Plot_PhaseAngles(Data,Figure1,Figure2,Phases,PhasesUnwrapped,AdjustedDownsampleRate,CurrentTime,GlobalYlim,LockYLIM,ColorMap,Method,PlotAppearance,CurrentPlotData,EventData,SelectedEventIndice,EventPlot,ShowAnayzedData,DataToCompute)
+
+%CurrentTime = CurrentTime(1):1/AdjustedDownsampleRate:CurrentTime(1)+((size(Phases,2)-1)/AdjustedDownsampleRate);
 
 %% -------- PLOT Phase Angle Time Series ---------------
 %% Hilbert Transform
-if strcmp(Method,"Hilbert Transform")
+if strcmp(Method,"Hilbert Transform") || strcmp(Method,"Wavelet Convolution")
 
     Hilbert_handle = findobj(Figure1, 'Tag', 'Hilbert_handle');
     ECHT_handle = findobj(Figure1, 'Tag', 'ECHT_handle');
@@ -11,8 +13,6 @@ if strcmp(Method,"Hilbert Transform")
         delete(ECHT_handle)
     end
 
-    CurrentTimeHilbert = CurrentTime(1):1/AdjustedDownsampleRate:CurrentTime(1)+((size(Phases,2)-1)/AdjustedDownsampleRate);
-    
     if length(Hilbert_handle)>size(Phases,1)
         delete(Hilbert_handle(size(Phases,1)+1:end));
         Hilbert_handle = findobj(Figure1, 'Tag', 'Hilbert_handle');
@@ -20,7 +20,7 @@ if strcmp(Method,"Hilbert Transform")
 
     if isempty(Hilbert_handle)
         for nchannel = 1:size(Phases,1)
-            line(Figure1,CurrentTimeHilbert, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','Hilbert_handle');
+            line(Figure1,CurrentTime, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','Hilbert_handle');
         end
         xlabel(Figure1,PlotAppearance.PhaseSyncPlots.PATimeSeriesXLabel);
         ylabel(Figure1,PlotAppearance.PhaseSyncPlots.PATimeSeriesYLabel);
@@ -33,11 +33,11 @@ if strcmp(Method,"Hilbert Transform")
         Figure1.Box ="off";
     else
         for nchannel = 1:length(Hilbert_handle)
-            set(Hilbert_handle(nchannel),'XData',CurrentTimeHilbert ,'YData', Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','Hilbert_handle');
+            set(Hilbert_handle(nchannel),'XData',CurrentTime ,'YData', Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','Hilbert_handle');
         end
         if length(Hilbert_handle)<size(Phases,1)
             for nchannel = length(Hilbert_handle)+1:size(Phases,1)
-                line(Figure1,CurrentTimeHilbert, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','Hilbert_handle');
+                line(Figure1,CurrentTime, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','Hilbert_handle');
             end
         end
     end
@@ -51,7 +51,7 @@ elseif strcmp(Method,"Endpoint Corrected Hilbert Transform")
         delete(Hilbert_handle)
     end
     
-    CurrentTimeEcht = CurrentTime(1):1/AdjustedDownsampleRate:CurrentTime(1)+((size(Phases,2)-1)/AdjustedDownsampleRate);
+    CurrentTime = CurrentTime(1):1/AdjustedDownsampleRate:CurrentTime(1)+((size(Phases,2)-1)/AdjustedDownsampleRate);
     
     if length(ECHT_handle)>size(Phases,1)
         delete(ECHT_handle(size(Phases,1)+1:end));
@@ -60,7 +60,7 @@ elseif strcmp(Method,"Endpoint Corrected Hilbert Transform")
 
     if isempty(ECHT_handle)
         for nchannel = 1:size(Phases,1)
-            line(Figure1,CurrentTimeEcht, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','ECHT_handle');
+            line(Figure1,CurrentTime, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','ECHT_handle');
         end
         xlabel(Figure1,PlotAppearance.PhaseSyncPlots.PATimeSeriesXLabel);
         ylabel(Figure1,PlotAppearance.PhaseSyncPlots.PATimeSeriesYLabel);
@@ -73,39 +73,35 @@ elseif strcmp(Method,"Endpoint Corrected Hilbert Transform")
         Figure1.Box ="off";
     else
         for nchannel = 1:length(ECHT_handle)
-            set(ECHT_handle(nchannel),'XData',CurrentTimeEcht ,'YData', Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','ECHT_handle');
+            set(ECHT_handle(nchannel),'XData',CurrentTime ,'YData', Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','ECHT_handle');
         end
         if length(ECHT_handle)<size(Phases,1)
             for nchannel = length(ECHT_handle)+1:size(Phases,1)
-                line(Figure1,CurrentTimeEcht, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','ECHT_handle');
+                line(Figure1,CurrentTime, Phases(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PATimeSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','ECHT_handle');
             end
         end
     end
 
 end
 
-%% -------- PLOT Amplitude of complex result ---------------
-%%% Unwraped angles
-
-%% Hilbert Transform
-if strcmp(Method,"Hilbert Transform")
-
+%% -------- PLOT analyzed signal ---------------
+if ShowAnayzedData == 1
     HilbertUnwrap_handle = findobj(Figure2, 'Tag', 'HilbertUnwrap_handle');
     ECHTUnwrap_handle = findobj(Figure2, 'Tag', 'ECHTUnwrap_handle');
+    
+    CurrentTime = CurrentTime(1):1/AdjustedDownsampleRate:CurrentTime(1)+((size(DataToCompute,2)-1)/AdjustedDownsampleRate);
 
     if ~isempty(ECHTUnwrap_handle)
         delete(ECHTUnwrap_handle)
     end
-
-    if length(HilbertUnwrap_handle)>size(PhasesUnwrapped,1)
-        delete(HilbertUnwrap_handle(size(PhasesUnwrapped,1)+1:end));
+    if length(HilbertUnwrap_handle)>size(DataToCompute,1)
+        delete(HilbertUnwrap_handle(size(DataToCompute,1)+1:end));
         HilbertUnwrap_handle = findobj(Figure2, 'Tag', 'HilbertUnwrap_handle');
     end
-    
+
     if isempty(HilbertUnwrap_handle)
-        
-        for nchannel = 1:size(PhasesUnwrapped,1)
-            line(Figure2,CurrentTimeHilbert(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
+        for nchannel = 1:size(DataToCompute,1)
+            line(Figure2,CurrentTime(1:size(DataToCompute,2)), DataToCompute(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
         end
         xlabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpXLabel);
         ylabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpYLabel);
@@ -118,69 +114,118 @@ if strcmp(Method,"Hilbert Transform")
         Figure2.Box ="off";
     else
         for nchannel = 1:length(HilbertUnwrap_handle)
-            set(HilbertUnwrap_handle(nchannel),'XData',CurrentTimeHilbert(1:size(PhasesUnwrapped,2)) ,'YData', PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
+            set(HilbertUnwrap_handle(nchannel),'XData',CurrentTime(1:size(DataToCompute,2)) ,'YData', DataToCompute(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
         end
-        if length(HilbertUnwrap_handle)<size(PhasesUnwrapped,1)
-            for nchannel = length(HilbertUnwrap_handle)+1:size(PhasesUnwrapped,1)
-                line(Figure2,CurrentTimeHilbert(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
+        if length(HilbertUnwrap_handle)<size(DataToCompute,1)
+            for nchannel = length(HilbertUnwrap_handle)+1:size(DataToCompute,1)
+                line(Figure2,CurrentTime(1:size(DataToCompute,2)), DataToCompute(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
             end
         end
     end
-    
-    ylim(Figure2,[min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')])
-    if ~LockYLIM
-        GlobalYlim = [min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')];
-    end
-
-%% Echt Mehtod
-elseif strcmp(Method,"Endpoint Corrected Hilbert Transform")
-    
-    ECHTUnwrap_handle = findobj(Figure2, 'Tag', 'ECHTUnwrap_handle');
-    HilbertUnwrap_handle = findobj(Figure2, 'Tag', 'HilbertUnwrap_handle');
-
-    if ~isempty(HilbertUnwrap_handle)
-        delete(HilbertUnwrap_handle)
-    end
-
-    if length(ECHTUnwrap_handle)>size(PhasesUnwrapped,1)
-        delete(ECHTUnwrap_handle(size(PhasesUnwrapped,1)+1:end));
-        ECHTUnwrap_handle = findobj(Figure2, 'Tag', 'ECHTUnwrap_handle');
-    end
-
-    if isempty(ECHTUnwrap_handle)
-        for nchannel = 1:size(PhasesUnwrapped,1)
-            line(Figure2,CurrentTimeEcht(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','ECHTUnwrap_handle');
-        end
-        xlabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpXLabel);
-        ylabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpYLabel);
-        title(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpTitle);
-        Figure2.FontSize = PlotAppearance.PhaseSyncPlots.PAAmpFontSize;
-        Figure2.Color = PlotAppearance.PhaseSyncPlots.PAAmpBackgroundColor;
-        Figure2.XLabel.Color = 'k';
-        Figure2.XColor = 'k';  
-        Figure2.Title.Color = 'k';  
-        Figure2.Box ="off";
-    else
-
-        for nchannel = 1:length(ECHTUnwrap_handle)
-            set(ECHTUnwrap_handle(nchannel),'XData',CurrentTimeEcht(1:size(PhasesUnwrapped,2)) ,'YData', PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','ECHTUnwrap_handle');
-        end
-        if length(ECHTUnwrap_handle)<size(PhasesUnwrapped,1)
-            for nchannel = length(ECHTUnwrap_handle)+1:size(PhasesUnwrapped,1)
-                line(Figure2,CurrentTimeEcht(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','ECHTUnwrap_handle');
-            end
-        end
-    end
-
-    ylim(Figure2,[min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')])
-    if ~LockYLIM
-        GlobalYlim = [min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')];
-    end
+    xlim(Figure2,[CurrentTime(1),CurrentTime(end)])
+    xlim(Figure1,[CurrentTime(2),CurrentTime(end)])
 end
 
-xlim(Figure1,[CurrentTime(1),CurrentTime(end)])
-xlim(Figure2,[CurrentTime(1),CurrentTime(end)])
+if ShowAnayzedData == 0
+%% -------- PLOT Amplitude of complex result ---------------
+%%% Unwraped angles
 
+%% Hilbert Transform
+    if strcmp(Method,"Hilbert Transform") || strcmp(Method,"Wavelet Convolution")
+    
+        HilbertUnwrap_handle = findobj(Figure2, 'Tag', 'HilbertUnwrap_handle');
+        ECHTUnwrap_handle = findobj(Figure2, 'Tag', 'ECHTUnwrap_handle');
+    
+        if ~isempty(ECHTUnwrap_handle)
+            delete(ECHTUnwrap_handle)
+        end
+    
+        if length(HilbertUnwrap_handle)>size(PhasesUnwrapped,1)
+            delete(HilbertUnwrap_handle(size(PhasesUnwrapped,1)+1:end));
+            HilbertUnwrap_handle = findobj(Figure2, 'Tag', 'HilbertUnwrap_handle');
+        end
+        
+        if isempty(HilbertUnwrap_handle)
+            
+            for nchannel = 1:size(PhasesUnwrapped,1)
+                line(Figure2,CurrentTime(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
+            end
+            xlabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpXLabel);
+            ylabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpYLabel);
+            title(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpTitle);
+            Figure2.FontSize = PlotAppearance.PhaseSyncPlots.PAAmpFontSize;
+            Figure2.Color = PlotAppearance.PhaseSyncPlots.PAAmpBackgroundColor;
+            Figure2.XLabel.Color = 'k';
+            Figure2.XColor = 'k';  
+            Figure2.Title.Color = 'k';  
+            Figure2.Box ="off";
+        else
+            for nchannel = 1:length(HilbertUnwrap_handle)
+                set(HilbertUnwrap_handle(nchannel),'XData',CurrentTime(1:size(PhasesUnwrapped,2)) ,'YData', PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
+            end
+            if length(HilbertUnwrap_handle)<size(PhasesUnwrapped,1)
+                for nchannel = length(HilbertUnwrap_handle)+1:size(PhasesUnwrapped,1)
+                    line(Figure2,CurrentTime(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','HilbertUnwrap_handle');
+                end
+            end
+        end
+        
+        ylim(Figure2,[min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')])
+        if ~LockYLIM
+            GlobalYlim = [min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')];
+        end
+    
+    %% Echt Mehtod
+    elseif strcmp(Method,"Endpoint Corrected Hilbert Transform")
+        
+        ECHTUnwrap_handle = findobj(Figure2, 'Tag', 'ECHTUnwrap_handle');
+        HilbertUnwrap_handle = findobj(Figure2, 'Tag', 'HilbertUnwrap_handle');
+    
+        if ~isempty(HilbertUnwrap_handle)
+            delete(HilbertUnwrap_handle)
+        end
+    
+        if length(ECHTUnwrap_handle)>size(PhasesUnwrapped,1)
+            delete(ECHTUnwrap_handle(size(PhasesUnwrapped,1)+1:end));
+            ECHTUnwrap_handle = findobj(Figure2, 'Tag', 'ECHTUnwrap_handle');
+        end
+    
+        if isempty(ECHTUnwrap_handle)
+            for nchannel = 1:size(PhasesUnwrapped,1)
+                line(Figure2,CurrentTime(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','ECHTUnwrap_handle');
+            end
+            xlabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpXLabel);
+            ylabel(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpYLabel);
+            title(Figure2,PlotAppearance.PhaseSyncPlots.PAAmpTitle);
+            Figure2.FontSize = PlotAppearance.PhaseSyncPlots.PAAmpFontSize;
+            Figure2.Color = PlotAppearance.PhaseSyncPlots.PAAmpBackgroundColor;
+            Figure2.XLabel.Color = 'k';
+            Figure2.XColor = 'k';  
+            Figure2.Title.Color = 'k';  
+            Figure2.Box ="off";
+        else
+    
+            for nchannel = 1:length(ECHTUnwrap_handle)
+                set(ECHTUnwrap_handle(nchannel),'XData',CurrentTime(1:size(PhasesUnwrapped,2)) ,'YData', PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth, 'Color', ColorMap(nchannel,:),'Tag','ECHTUnwrap_handle');
+            end
+            if length(ECHTUnwrap_handle)<size(PhasesUnwrapped,1)
+                for nchannel = length(ECHTUnwrap_handle)+1:size(PhasesUnwrapped,1)
+                    line(Figure2,CurrentTime(1:size(PhasesUnwrapped,2)), PhasesUnwrapped(nchannel,:), 'LineWidth', PlotAppearance.PhaseSyncPlots.PAAmpSeriesWidth,'Color', ColorMap(nchannel,:),'Tag','ECHTUnwrap_handle');
+                end
+            end
+        end
+    
+        ylim(Figure2,[min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')])
+        if ~LockYLIM
+            GlobalYlim = [min(PhasesUnwrapped,[],'all'),max(PhasesUnwrapped,[],'all')];
+        end
+    end
+    
+    xlim(Figure1,[CurrentTime(1),CurrentTime(end)])
+    xlim(Figure2,[CurrentTime(1),CurrentTime(end)])
+end
+
+%% -------- Control Global Ylim ---------------
 if LockYLIM
     if isempty(GlobalYlim)
         Lim1 = [min(PhasesUnwrapped) max(PhasesUnwrapped),min(PhasesUnwrapped) max(PhasesUnwrapped)];
@@ -204,23 +249,35 @@ if LockYLIM
     end
 end
 
-%% save plotted data in case user wants to save 
-if exist("CurrentTimeEcht","var")
-    CurrentPlotData.PhaseAngleTimesXData = CurrentTimeEcht;
-elseif exist("CurrentTimeHilbert","var")
-    CurrentPlotData.PhaseAngleTimesXData = CurrentTimeHilbert;
+if ShowAnayzedData == 1
+    ylim(Figure2,[min(DataToCompute,[],'all') max(DataToCompute,[],'all')]);
+    ylabel(Figure2,'Signal [mV]')
+    title(Figure2,'Analyzed Signal All Active Channel')
 end
+
+%% --------------- Handle Events ---------------
+
+if strcmp(EventPlot,"Events")
+    Analyse_Main_Window_Plot_Events(Figure1,Data,CurrentTime,EventData,min(Phases,[],'all'),max(Phases,[],'all'),AdjustedDownsampleRate,SelectedEventIndice)
+    Analyse_Main_Window_Plot_Events(Figure2,Data,CurrentTime,EventData,GlobalYlim(1),GlobalYlim(2),AdjustedDownsampleRate,SelectedEventIndice)
+else
+    Eventline_handles = findobj(Figure1,'Type', 'line', 'Tag', 'Events');
+    delete(Eventline_handles); 
+    Eventline_handles = findobj(Figure2,'Type', 'line', 'Tag', 'Events');
+    delete(Eventline_handles); 
+end
+
+%% save plotted data in case user wants to save 
+
+CurrentPlotData.PhaseAngleTimesXData = CurrentTime;
 CurrentPlotData.PhaseAngleTimesSyncYData = Phases;
 CurrentPlotData.PhaseAngleTimesSyncCData = [];
 CurrentPlotData.PhaseAngleTimesSyncType = "Phase Angle Time Series";
 CurrentPlotData.PhaseAngleTimesSyncXTicks = Figure1.XTickLabel;
 
 %% save plotted data in case user wants to save 
-if exist("CurrentTimeEcht","var")
-    CurrentPlotData.PhaseAmplitudeEnvelopeXData = CurrentTimeEcht;
-elseif exist("CurrentTimeHilbert","var")
-    CurrentPlotData.PhaseAmplitudeEnvelopeXData = CurrentTimeHilbert;
-end
+
+CurrentPlotData.PhaseAmplitudeEnvelopeXData = CurrentTime;
 CurrentPlotData.PhaseAmplitudeEnvelopeYData = PhasesUnwrapped;
 CurrentPlotData.PhaseAmplitudeEnvelopeCData = [];
 CurrentPlotData.PhaseAmplitudeEnvelopeType = "All to All Active Channel Synhcronization Strength (Avg phase differences vector lengths)";

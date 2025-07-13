@@ -1,4 +1,9 @@
-function [GlobalYlim,texttoshow,CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(DataToCompute,Time,Samplefrequency,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,GlobalYlim,LockYLIM,StartIndex,StopIndex,WhatToDo,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,EventData,SelectedEventIndice,EventPlot,ShowAnayzedData)
+function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToCompute,Time,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,WhatToDo,BasedOnERP,ShowAnalyzedData,DataTypeSelected)
+
+
+if BasedOnERP
+    DataToCompute = squeeze(mean(DataToCompute,2));
+end
 
 %% ------------------------- Flag what was already computed ---------------------------
 % detect already present filter and downsample step
@@ -9,13 +14,10 @@ LowPassFlag = 0;
 texttoshow = [];
 
 % Distinguish between downsampled data and normal data
-if strcmp(DataTypeDropDown,'Raw Data')   
-    NarrowBandPresent = 0;
-    Downsampleflag = 0;
-    LowPassFlag = 0;
-elseif strcmp(DataTypeDropDown,'Preprocessed Data')
+if strcmp(DataTypeSelected,'Preprocessed Data')
     if isfield(Data.Info,'DownsampleFactor')
         Downsampleflag = 1;
+        Samplefrequency = Data.Info.DownsampledSampleRate;
         if isfield(Data.Info,'NarrowbandFilterMethod')
             NarrowBandPresent = 1;
         end
@@ -26,7 +28,7 @@ elseif strcmp(DataTypeDropDown,'Preprocessed Data')
         end
     else        
         Downsampleflag = 0;
-        
+        Samplefrequency = Data.Info.NativeSamplingRate;
         if isfield(Data.Info,'NarrowbandFilterMethod')
             NarrowBandPresent = 1;
         end
@@ -36,6 +38,11 @@ elseif strcmp(DataTypeDropDown,'Preprocessed Data')
             end
         end
     end
+else
+    Samplefrequency = Data.Info.NativeSamplingRate;
+    NarrowBandPresent = 0;
+    Downsampleflag = 0;
+    LowPassFlag = 0;
 end
 
 %% ------------------------- Low Pass and Downsample if necessary ---------------------------
@@ -49,14 +56,42 @@ FlagActualBandpass = 0;
 if ForceFilterOFF == 0
     if NarrowBandPresent == 0 
         if LowPassFlag == 0 && Downsampleflag == 0
-            % low pass
-            for nchannel = 1:size(DataToCompute,1)
-                [DataToCompute(nchannel,:), ~, ~] = ft_preproc_lowpassfilter(double(DataToCompute(nchannel,:)), Data.Info.NativeSamplingRate, 300, 4, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+            %% ------------------------- Low Pass ---------------------------
+            if BasedOnERP
+                for nchannel = 1:size(DataToCompute,1)
+                    [DataToCompute(nchannel,:), ~, ~] = ft_preproc_lowpassfilter(squeeze(double(DataToCompute(nchannel,:))), Data.Info.NativeSamplingRate, 300, 4, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+                end
+            else
+                for nchannel = 1:size(DataToCompute,1)
+                    for ntrials = 1:size(DataToCompute,2)
+                        [DataToCompute(nchannel,ntrials,:), ~, ~] = ft_preproc_lowpassfilter(squeeze(double(DataToCompute(nchannel,ntrials,:))), Data.Info.NativeSamplingRate, 300, 4, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+                    end
+                end
             end
-            %downsample
+            %% ------------------------- Downsample ---------------------------
             FsTarget = 1000;
             DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
-            DataToCompute = downsample(DataToCompute',DownsampleFactor)';
+            % dirty initialize
+            if BasedOnERP
+                a = downsample(squeeze(DataToCompute(1,:)),DownsampleFactor);
+                TempDataToCompute = NaN(size(DataToCompute,1),length(a));
+            else
+                a = downsample(squeeze(DataToCompute(1,1,:))',DownsampleFactor);
+                TempDataToCompute = NaN(size(DataToCompute,1),size(DataToCompute,2),length(a));
+            end
+            clear a
+            % compute over channel
+            for nchannel = 1:size(DataToCompute,1)
+                if BasedOnERP
+                    TempDataToCompute(nchannel,:) = downsample(DataToCompute(nchannel,:),DownsampleFactor);
+                else
+                    for ntrials = 1:size(DataToCompute,2)
+                        TempDataToCompute(nchannel,ntrials,:) = downsample(squeeze(DataToCompute(nchannel,ntrials,:)),DownsampleFactor);
+                    end
+                end
+            end
+            DataToCompute = TempDataToCompute;
+            clear TempDataToCompute;
             Time = downsample(Time,DownsampleFactor);
             Samplefrequency = FsTarget;
             FlagActualDownsample = 1;
@@ -65,7 +100,26 @@ if ForceFilterOFF == 0
             %downsample
             FsTarget = 1000;
             DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
-            DataToCompute = downsample(DataToCompute',DownsampleFactor)';
+            if BasedOnERP
+                a = downsample(squeeze(DataToCompute(1,:)),DownsampleFactor);
+                TempDataToCompute = NaN(size(DataToCompute,1),length(a));
+            else
+                a = downsample(squeeze(DataToCompute(1,1,:))',DownsampleFactor);
+                TempDataToCompute = NaN(size(DataToCompute,1),size(DataToCompute,2),length(a));
+            end
+            clear a
+
+            for nchannel = 1:size(DataToCompute,1)
+                if BasedOnERP
+                    TempDataToCompute(nchannel,:) = downsample(DataToCompute(nchannel,:),DownsampleFactor);
+                else
+                    for ntrials = 1:size(DataToCompute,2)
+                        TempDataToCompute(nchannel,ntrials,:) = downsample(squeeze(DataToCompute(nchannel,ntrials,:)),DownsampleFactor);
+                    end
+                end
+            end
+
+            DataToCompute = TempDataToCompute;
             Time = downsample(Time,DownsampleFactor);
             Samplefrequency = FsTarget;
             FlagActualDownsample = 1;
@@ -81,7 +135,26 @@ if ForceFilterOFF == 0
             %downsample
             FsTarget = 1000;
             DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
-            DataToCompute = downsample(DataToCompute',DownsampleFactor)';
+            if BasedOnERP
+                a = downsample(squeeze(DataToCompute(1,:)),DownsampleFactor);
+                TempDataToCompute = NaN(size(DataToCompute,1),length(a));
+            else
+                a = downsample(squeeze(DataToCompute(1,1,:))',DownsampleFactor);
+                TempDataToCompute = NaN(size(DataToCompute,1),size(DataToCompute,2),length(a));
+            end
+            clear a
+
+            for nchannel = 1:size(DataToCompute,1)
+                if BasedOnERP
+                    TempDataToCompute(nchannel,:) = downsample(DataToCompute(nchannel,:),DownsampleFactor);
+                else
+                    for ntrials = 1:size(DataToCompute,2)
+                        TempDataToCompute(nchannel,ntrials,:) = downsample(squeeze(DataToCompute(nchannel,ntrials,:)),DownsampleFactor);
+                    end
+                end
+            end
+
+            DataToCompute = TempDataToCompute;
             Time = downsample(Time,DownsampleFactor);
             Samplefrequency = FsTarget;
             FlagActualDownsample = 1;
@@ -98,7 +171,13 @@ if ForceFilterOFF == 0
     
         % apply the filter to the data
         for nchannel = 1:size(DataToCompute,1)
-            DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+           if BasedOnERP
+                DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+           else
+                for ntrials = 1:size(DataToCompute,2)
+                    DataToCompute(nchannel,ntrials,:) = filtfilt(filtkern,1,squeeze(double(DataToCompute(nchannel,ntrials,:)))); 
+                end
+           end
         end
         FlagActualBandpass = 1;
     end
@@ -165,5 +244,5 @@ end
 if strcmp(WhatToDo,"All") || strcmp(WhatToDo,"Startup") || strcmp(WhatToDo,"AnglesEnvelops")
     ColorMap = ColorMap(SelectedChannel,:);
 
-    [GlobalYlim,CurrentPlotData] = Analyse_Main_Window_Plot_PhaseAngles(Data,Figure4,Figure5,Phases,PhasesUnwrapped,Samplefrequency,Time,GlobalYlim,LockYLIM,ColorMap,Method,PlotAppearance,CurrentPlotData,EventData,SelectedEventIndice,EventPlot,ShowAnayzedData,DataToCompute(SelectedChannel,:));
+    [~,CurrentPlotData] = Analyse_Main_Window_Plot_PhaseAngles(Data,Figure4,Figure5,Phases,PhasesUnwrapped,Samplefrequency,Time,[0,1],0,ColorMap,Method,PlotAppearance,CurrentPlotData,[],[],'Non',ShowAnalyzedData,DataToCompute(SelectedChannel,:));
 end

@@ -427,11 +427,21 @@ if ProbeViewWindow == 0
         
             if strcmp(Window,'Main Window') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Main Plot Current Source Density') || strcmp(Window,'Main Plot Power Estimate') || strcmp(Window,'Main Plot Spike Rate') || strcmp(Window,'Main Plot Phase Synchronization')
               
-                Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
+                %Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
                 
                 app.Mainapp.ChannelChange = "ProbeView";
     
                 Organize_Prepare_Plot_and_Extract_GUI_Info(app.Mainapp,0,"Subsequent","Static",app.Mainapp.PlotEvents,app.Mainapp.Plotspikes);
+                
+                if isscalar(app.Mainapp.ActiveChannel)
+                    app.Mainapp.UIAxes.YTickMode = 'auto';
+                    app.Mainapp.UIAxes.YTickLabelMode = 'auto';
+                    ylabel(app.Mainapp.UIAxes,"Signal [mV]");
+                else
+                    app.Mainapp.UIAxes.YTick = [];         % Remove Y ticks
+                    app.Mainapp.UIAxes.YTickLabel = {};    % Remove Y tick labels
+                    ylabel(app.Mainapp.UIAxes,"");
+                end
             end
            
             if strcmp(Window,'Static Spectrum Window') || strcmp(Window,'All Windows Opened')
@@ -474,20 +484,37 @@ if ProbeViewWindow == 0
                     [app] = Utility_ProbeChange_Plot_EventSpikes(app);
                 end
             end
-
-            if strcmp(Window,'Event ERP Window') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Event CSD Window') || strcmp(Window,'Event CSD Window')|| strcmp(Window,'Event Static Spectrum Window')  || strcmp(Window,'Event Time Frequency Power Window') 
-                if ~isempty(app.Mainapp.EventLFPERP) || ~isempty(app.Mainapp.EventLFPCSD) || ~isempty(app.Mainapp.EventLFPSSP) || ~isempty(app.Mainapp.EventLFPTF)
-                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
-                    if strcmp(Window,'Event CSD Window') && ~isempty(app.Mainapp.EventLFPCSD) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPCSD)
-                        [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'CSD');
-                    elseif strcmp(Window,'Event ERP Window') && ~isempty(app.Mainapp.EventLFPERP) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPERP)
-                        [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'ERP');
-                    elseif strcmp(Window,'Event Static Spectrum Window') && ~isempty(app.Mainapp.EventLFPSSP) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPSSP)
-                        [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'EventSpectrum');
-                    elseif strcmp(Window,'Event Time Frequency Power Window') && ~isempty(app.Mainapp.EventLFPTF) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPTF)
-                        [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'TF');
+            
+            if strcmp(Window,'All Windows Opened') || strcmp(Window,'Delete Event Trigger Window')
+                if isprop(app.Mainapp,'EventIndiceRejectionWindow')
+                    if ~isempty(app.Mainapp.EventIndiceRejectionWindow)
+                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
+                        %% Extract and plot stim artefacts
+                        if ~strcmp(app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value,"Mean over all Trigger")
+                            EventToPlot = str2double(app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value);
+                        else
+                            EventToPlot = 1:length(app.Mainapp.Data.Events{1});
+                        end
+            
+                        Organize_Plot_Trigger_Indices(app.Mainapp.Data,app.Mainapp.EventIndiceRejectionWindow.UIAxes,EventToPlot,app.Mainapp.EventIndiceRejectionWindow.EventTime,app.Mainapp.ActiveChannel,app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.Slider.Value,app.Mainapp.EventIndiceRejectionWindow.EventChannelforStimulationDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.TimearoundEvent,app.Mainapp.EventIndiceRejectionWindow.DataToExtractFromDropDown.Value,"Raw Event Related Data",app.Mainapp.EventIndiceRejectionWindow.ColorMap)
                     end
                 end
+            end
+
+            if strcmp(Window,'Event CSD Window') && ~isempty(app.Mainapp.EventLFPCSD) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPCSD)
+                [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'CSD');
+            end
+            if strcmp(Window,'Event ERP Window') && ~isempty(app.Mainapp.EventLFPERP) || strcmp(Window,'All Windows Opened')  && ~isempty(app.Mainapp.EventLFPERP)
+                [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'ERP');
+            end
+            if strcmp(Window,'Event Static Spectrum Window') && ~isempty(app.Mainapp.EventLFPSSP) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPSSP)
+                [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'EventSpectrum');
+            end
+            if strcmp(Window,'Event Time Frequency Power Window') && ~isempty(app.Mainapp.EventLFPTF) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPTF)
+                [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'TF');
+            end
+            if strcmp(Window,'Event Phase Synchronization') && ~isempty(app.Mainapp.EventPhaseSynchro) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventPhaseSynchro)
+                [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'PhaseSync');
             end
 
             if strcmp(Window,'Prepro Artefact Rejection') || strcmp(Window,'All Windows Opened')
@@ -495,6 +522,11 @@ if ProbeViewWindow == 0
                     [~,app.Mainapp.PreproArtefactRejection.StimArtefactInfo] = Preprocess_Extract_and_Plot_Stimulation_Artefact(app.Mainapp.Data, app.Mainapp.PreproArtefactRejection.TimeAroundEventsEditField_2.Value ,app.Mainapp.PreproArtefactRejection.TimeAroundEventsEditField.Value, app.Mainapp.PreproArtefactRejection.EventChannelforStimulationDropDown.Value, app.Mainapp.PreproArtefactRejection.EventstoPlotDropDown.Value, app.Mainapp.PreproArtefactRejection.Slider.Value, app.Mainapp.PreproArtefactRejection.UIAxes, app.Mainapp.ActiveChannel);            
                 end
             end
+
+            Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
+
+            app.ChannelSelectionEditField.Value = '';
+
         end
     end
 end

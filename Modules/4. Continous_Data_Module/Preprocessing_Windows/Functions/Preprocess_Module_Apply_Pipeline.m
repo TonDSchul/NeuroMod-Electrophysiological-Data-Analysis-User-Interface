@@ -492,42 +492,7 @@ for i = 1:numel(fieldsStruct2)
     end
 end
 
-%% If event data extracted based on preprocesssed data, extract again
-nrindependentsteps = 0;
-ExtractEventDataAgaian = 1;
 
-for i = 1:length(PreprocessingSteps)
-    if strcmp(PreprocessingSteps(i),'CutStart')
-        nrindependentsteps = nrindependentsteps+1;
-    end
-    if strcmp(PreprocessingSteps(i),'CutEnd')
-        nrindependentsteps = nrindependentsteps+1;
-    end
-    if strcmp(PreprocessingSteps(i),'ChannelDeletion')
-        nrindependentsteps = nrindependentsteps+1;
-    end
-end
-
-if nrindependentsteps ~= 0 && nrindependentsteps==numel(PreprocessingSteps)
-    ExtractEventDataAgaian = 0;
-end
-
-if isfield(Data,'EventRelatedData') && ExtractEventDataAgaian == 1
-    if strcmp(Data.Info.EventRelatedDataType,'Preprocessed') 
-        msgbox("Warning: Event Related Data was extracted based on preprocesssed data and is extracted again");
-        spaceindicie = find(Data.Info.EventRelatedDataTimeRange == ' ');
-        Timebefore = Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1));
-        Timeafter = Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end);
-        [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,Data.Info.EventRelatedDataChannel,Timebefore,Timeafter,Data.Info.EventRelatedDataType);
-    end
-end
-
-if isfield(Data,'PreprocessedEventRelatedData') && ExtractEventDataAgaian == 1
-    fieldsToDelete = {'PreprocessedEventRelatedData'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-    msgbox("Warning: Preprocessed Event Related Data had to be deleted and has to be extracted again");
-end
 
 
 

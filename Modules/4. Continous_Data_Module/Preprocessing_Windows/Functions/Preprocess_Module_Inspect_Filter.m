@@ -55,10 +55,11 @@ if isfield(PreProInfo,'FilterKernel')
                 % Visualize
                 figure()
                 subplot(121)
-                plot(filtkern, 'linew', 2)
-                xlabel('Samples')
+                Timevec = ((0:length(filtkern)-1) - floor(length(filtkern)/2)) / SampleRate * 1000;  % in milliseconds
+                plot(Timevec,filtkern, 'linew', 2)
+                xlabel('Time[ms]')
 
-                title(['Filter kernel (fir1 - ' PreProInfo.FilterType ')'])
+                title(['Filter Kernel (fir1 - ' PreProInfo.FilterType ')'])
              
                 axis square
                 
@@ -78,10 +79,10 @@ if isfield(PreProInfo,'FilterKernel')
                 
                 plot([1 1]*Cutoff, get(gca, 'ylim'), 'r:')
                 set(gca, 'xlim', [0 Cutoff*4])
-                xlabel('Frequency (Hz)'), ylabel('Filter gain')
+                xlabel('Frequency (Hz)'), ylabel('Filter Gain')
                 legend({'Actual';'Ideal'})
 
-                title('Frequency response')
+                title('Frequency Response')
              
             end
         
@@ -104,10 +105,11 @@ if isfield(PreProInfo,'FilterKernel')
                 % Visualize
                 figure()
                 subplot(121)
-                stem(impulse_response, 'filled')
-                xlabel('Samples')
+                Timevec = (0:length(impulse_response)-1) / SampleRate * 1000;  % in milliseconds
+                stem(Timevec,impulse_response, 'filled')
+                xlabel('Time [ms]')
                 
-                title(['Impulse response (butter - ' PreProInfo.FilterType ')'])
+                title(['Impulse Response (Butter - ' PreProInfo.FilterType ')'])
                 
                 axis square
                 
@@ -126,9 +128,9 @@ if isfield(PreProInfo,'FilterKernel')
                 
                 plot([1 1]*Cutoff, get(gca, 'ylim'), 'r:')
                 set(gca, 'xlim', [0 Cutoff*4])
-                xlabel('Frequency (Hz)'), ylabel('Filter gain')
+                xlabel('Frequency (Hz)'), ylabel('Filter Gain')
                 legend({'Actual';'Ideal'})
-                title('Frequency response')
+                title('Frequency Response')
                 
             end
         else
@@ -154,9 +156,10 @@ if isfield(PreProInfo,'FilterKernel')
                     %%% visualize the filter kernel
                     figure()
                     subplot(121)
-                    plot(filtkern,'linew',2)
-                    xlabel('Samples')
-                    title(['Filter kernel (fir1) with ' num2str(nyquist*2) 'Hz samplerate'])
+                    Timevec = ((0:length(filtkern)-1) - floor(length(filtkern)/2)) / SampleRate * 1000;  % in milliseconds
+                    plot(Timevec,filtkern,'linew',2)
+                    xlabel('Time [ms]')
+                    title(['Filter Kernel (fir1) With ' num2str(nyquist*2) 'Hz Samplerate'])
                     axis square
                     
                     % plot amplitude spectrum of the filter kernel
@@ -168,10 +171,12 @@ if isfield(PreProInfo,'FilterKernel')
                     plot([1 1]*Cutoff(1),get(gca,'ylim'),'r:')
                     
                     % make the plot look nicer
-                    set(gca,'xlim',[0 Cutoff(1)*4])%,'ylim',[-.05 1.05])
-                    xlabel('Frequency (Hz)'), ylabel('Filter gain')
+                    set(gca,'xlim',[0 Cutoff(2)+20])%,'ylim',[-.05 1.05])
+                    xlabel('Frequency (Hz)'), 
+                    ylabel('Filter Gain')
+                    
                     legend({'Actual';'Ideal'})
-                    title(['Frequency response with ' num2str(nyquist*2) 'Hz samplerate']);
+                    title(['Frequency Response With ' num2str(nyquist*2) 'Hz Samplerate']);
                 end
                 %% ----------------------------------- Butter
                 if strcmp(PreProInfo.NarrowbandFilterType,"Butterworth IR")
@@ -200,10 +205,11 @@ if isfield(PreProInfo,'FilterKernel')
                     figure()
                     
                     subplot(121)
-                    stem(impulse_response, 'filled')  % b = numerator (impulse response for FIR, coefficients for IIR)
-                    xlabel('Samples')
-                    xlabel('Amplitude')
-                    title(['Filter impulse_response (butter) with ' num2str(nyquist*2) 'Hz samplerate'])
+                    Timevec = (0:length(impulse_response)-1) / SampleRate * 1000;  % in milliseconds
+                    stem(Timevec,impulse_response, 'filled')  % b = numerator (impulse response for FIR, coefficients for IIR)
+                    xlabel('Time [ms]')
+                    ylabel('Amplitude')
+                    title(['Filter Impulse Response (Butter) With ' num2str(nyquist*2) 'Hz Samplerate'])
                     axis square
                     
                     % Plot amplitude spectrum of the filter
@@ -215,10 +221,11 @@ if isfield(PreProInfo,'FilterKernel')
                     plot([1 1]*Cutoff(1), get(gca, 'ylim'), 'r:')
                     
                     % Make the plot look nicer
-                    set(gca, 'xlim', [0 Cutoff(1)*4])
-                    xlabel('Frequency (Hz)'), ylabel('Filter gain')
+                    set(gca,'xlim',[0 Cutoff(2)+20])%,'ylim',[-.05 1.05])
+                    xlabel('Frequency (Hz)')
+                    ylabel('Filter Gain')
                     legend({'Actual';'Ideal'})
-                    title(['Frequency response with ' num2str(nyquist*2) 'Hz samplerate'])
+                    title(['Frequency Response With ' num2str(nyquist*2) 'Hz Samplerate'])
                 end
             end
 
@@ -245,8 +252,9 @@ if isfield(PreProInfo,'FilterKernel')
                     % Visualize
                     figure()
                     subplot(121)
-                    plot(filtkern, 'linew', 2)
-                    xlabel('Samples')
+                    Timevec = ((0:length(filtkern)-1) - floor(length(filtkern)/2)) / SampleRate * 1000;  % in milliseconds
+                    plot(Timevec,filtkern, 'linew', 2)
+                    xlabel('Time [ms]')
                     title(['Filter kernel (fir1 - bandstop) with ',num2str(nyquist*2),'Hz samplerate'])
                     axis square
                     
@@ -264,9 +272,9 @@ if isfield(PreProInfo,'FilterKernel')
                     plot([1 1]*Cutoff(2), get(gca, 'ylim'), 'r:')
                     
                     set(gca, 'xlim', [0, Cutoff(2)*4])
-                    xlabel('Frequency (Hz)'), ylabel('Filter gain')
+                    xlabel('Frequency (Hz)'), ylabel('Filter Gain')
                     legend({'Actual','Ideal'})
-                    title(['Frequency response with ',num2str(nyquist*2),'Hz samplerate'])
+                    title(['Frequency Response With ',num2str(nyquist*2),'Hz Samplerate'])
                 end
             
                 if strcmp(PreProInfo.BandStopFilterType, "Butterworth IR")
@@ -282,9 +290,10 @@ if isfield(PreProInfo,'FilterKernel')
                     % Visualize
                     figure()
                     subplot(121)
-                    stem(impulse_response, 'filled')
-                    xlabel('Samples')
-                    title(['Impulse response (butter - bandstop) with ',num2str(nyquist*2),'Hz samplerate'])
+                    Timevec = (0:length(impulse_response)-1) / SampleRate * 1000;  % in milliseconds
+                    stem(Timevec,impulse_response, 'filled')
+                    xlabel('Time [ms]')
+                    title(['Impulse Response (Butter - Bandstop) With ',num2str(nyquist*2),'Hz Samplerate'])
                     axis square
                     
                     subplot(122), hold on
@@ -300,14 +309,11 @@ if isfield(PreProInfo,'FilterKernel')
                     plot([1 1]*Cutoff(2), get(gca, 'ylim'), 'r:')
                     
                     set(gca, 'xlim', [0, Cutoff(2)*4])
-                    xlabel('Frequency (Hz)'), ylabel('Filter gain')
+                    xlabel('Frequency (Hz)'), ylabel('Filter Gain')
                     legend({'Actual','Ideal'})
                     title(['Frequency response with ',num2str(nyquist*2),'Hz samplerate'])
                 end
             end
-
-
-
         end
 
     end

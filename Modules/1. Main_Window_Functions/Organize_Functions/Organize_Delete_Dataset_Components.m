@@ -80,10 +80,7 @@ elseif strcmp(ComponentToDelete,"EventRelatedData")
     fieldsToDelete = {'EventRelatedData'};
     % Delete fields
     Data = rmfield(Data, fieldsToDelete);
-    
-    fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
-    Data.Info = rmfield(Data.Info, fieldsToDelete);
-    
+      
     if isfield(Data,'EventRelatedSpikes')
         fieldsToDelete = {'EventRelatedSpikes'};
         % Delete fields
@@ -99,6 +96,11 @@ elseif strcmp(ComponentToDelete,"EventRelatedData")
     
     if isfield(Data.Info,'EventRelatedPreprocessing')
         fieldsToDelete = {'EventRelatedPreprocessing'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'EventRelatedDataInfo')
+        fieldsToDelete = {'EventRelatedDataInfo'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
@@ -123,7 +125,7 @@ elseif strcmp(ComponentToDelete,"Events")
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
        
-        fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
+        fieldsToDelete = {'EventRelatedDataTimeRange','EventRelatedActiveChannel'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
@@ -136,6 +138,11 @@ elseif strcmp(ComponentToDelete,"Events")
 
     if isfield(Data.Info,'EventRelatedPreprocessing')
         fieldsToDelete = {'EventRelatedPreprocessing'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'EventRelatedDataInfo')
+        fieldsToDelete = {'EventRelatedDataInfo'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
     
@@ -218,31 +225,6 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
         fieldsToDelete = {'Preprocessed'};
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
-    end
-
-    if isfield(Data.Info,'EventRelatedDataType')
-        if strcmp(Data.Info.EventRelatedDataType,"Preprocessed")
-            msgbox("Event related data is based on preprocessed data and will be deleted");
-            if isfield(Data,'EventRelatedData')
-                fieldsToDelete = {'EventRelatedData'};
-                % Delete fields
-                Data = rmfield(Data, fieldsToDelete);
-                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
-                Data.Info = rmfield(Data.Info, fieldsToDelete);
-            end
-            if isfield(Data,'PreprocessedEventRelatedData')
-                fieldsToDelete = {'PreprocessedEventRelatedData'};
-                % Delete fields
-                Data = rmfield(Data, fieldsToDelete);
-                
-                if isfield(Data.Info,'EventRelatedPreprocessing')
-                    fieldsToDelete = {'EventRelatedPreprocessing'};
-                    % Delete fields
-                    Data.Info = rmfield(Data.Info, fieldsToDelete);
-                end
-
-            end
-        end
     end
 
 elseif strcmp(ComponentToDelete,"Raw")

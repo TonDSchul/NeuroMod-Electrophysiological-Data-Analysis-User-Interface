@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel,PlotAppearance)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel,PlotAppearance,EventDataToExtractFrom)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth for event related data
@@ -36,6 +36,8 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Ove
 % 11. CurrentPlotData: structure saving results to export.
 % 12. SelectedEvents: 1 x 2 double holding events user seleted, i.e. [1,10]
 % for events 1 to 10 
+% 13. EventDataToExtractFrom: char, name of the event channel, event related
+% data is extracted (to set time which depends on downsampling, which depends on whether the user selected raw or preprocessed data)
 
 % Outputs:
 % 1. PowerSpecResults: always empty here
@@ -65,14 +67,14 @@ else % If same event --> no mean
 end
 
 %% Compute Spectrum over Depth 
-if strcmp(Data.Info.EventRelatedDataType,"Raw")
+if strcmp(EventDataToExtractFrom,"Raw Data")
     nChansInFile = size(DataToAnalyse,1);  
     [BandPower.lfpByChannel, BandPower.allPowerEst, BandPower.F, BandPower.allPowerVar] = ...
     lfpBandPower([], Data.Info.NativeSamplingRate, nChansInFile, [], DataToAnalyse,TextArea);
     BandPower.allPowerEst = BandPower.allPowerEst';
     BandPower.marginalChans = 1;
     BandPower.freqBands = {[1.5 4], [4 10], [10 30], [30 80], [80 200]};
-elseif strcmp(Data.Info.EventRelatedDataType,"Preprocessed")
+elseif strcmp(EventDataToExtractFrom,"Preprocessed Data")
     nChansInFile = size(DataToAnalyse,1);  
     if ~isfield(Data.Info,'DownsampleFactor')
         [BandPower.lfpByChannel, BandPower.allPowerEst, BandPower.F, BandPower.allPowerVar] = ...

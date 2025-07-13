@@ -9,7 +9,9 @@ phase_data(2,:) = Channel2Data;
 phaseDifferences = phase_data(2,:)-phase_data(1,:);
 
 downsamplefactor = round(size(phaseDifferences,2)/2000);
-phaseDifferences = downsample(phaseDifferences,downsamplefactor);
+if downsamplefactor ~= 0
+    phaseDifferences = downsample(phaseDifferences,downsamplefactor);
+end
 % Build angle and radius matrices for each line: [0, theta]
 theta = [zeros(1, length(phaseDifferences)); phaseDifferences];  % 2 x N
 radii = [zeros(1, length(phaseDifferences)); ones(1, length(phaseDifferences))];  % 2 x N

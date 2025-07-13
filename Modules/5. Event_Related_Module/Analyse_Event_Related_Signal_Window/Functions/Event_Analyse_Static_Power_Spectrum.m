@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData,PlotAppearance,SelectedEvents)
+function [CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,Figure,DataType,DataSource,SelectedChannel,ChannelText,FrequencyRangeHzEditField,CurrentPlotData,PlotAppearance,SelectedEvents,DataToExtractFrom)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum of event related data using pwelch method
@@ -26,7 +26,9 @@ function [CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,Figure,Dat
 % like linewidth
 % 10. SelectedEvents: 1 x 2 double holding events user seleted, i.e. [1,10]
 % for events 1 to 10 
-
+% 11. DataToExtractFrom: char, either 'Raw Data' or 'Preprocessed Data' to
+% designate from which dataset component event related data was extracted
+% from
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them. See below to see which fields and data
@@ -79,7 +81,7 @@ end
 
 %if strcmp(DataSource,"Raw Event Related Data")
 NonNaN = ~isnan(DataToAnalyse);
-if isfield(Data.Info, 'DownsampleFactor')
+if isfield(Data.Info, 'DownsampleFactor') && strcmp(DataToExtractFrom,'Preprocessed Data')
     [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.DownsampledSampleRate);
 else
     [Welchpowspect,Freq] = pwelch(double(DataToAnalyse(NonNaN)),[],[],[],Data.Info.NativeSamplingRate);

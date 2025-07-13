@@ -12,14 +12,10 @@ if strcmp(ModuleFunctionName,"Extract Events/TTL")
     
 elseif strcmp(ModuleFunctionName,"Preprocessing")
 
-    if ~isfield(app.Data,'EventRelatedData')
+    if ~isfield(app.Data.Info,'EventChannelNames')
         msgbox("Error: No event related data found. Please first extract events and event related data");
     else
-        if isempty(app.Data.EventRelatedData)
-            msgbox("Error: No event related data found. Please first extract events and event related data");
-        else
-            app.PreproEventsMainWindow = Preprocessing_Events_Main_Window(app);
-        end
+        app.PreproEventsMainWindow = Preprocessing_Events_Main_Window(app);
     end
 
 elseif strcmp(ModuleFunctionName,"Import Events/TTL")
@@ -33,8 +29,8 @@ elseif strcmp(ModuleFunctionName,"Import Events/TTL")
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ImportEvents");
 
 elseif strcmp(ModuleFunctionName,"LFP Analysis")
-    if ~isfield(app.Data,'EventRelatedData')
-        msgbox("Error: No event related data found. Please first extract events and event related data");
+    if ~isfield(app.Data.Info,'EventChannelNames')
+        msgbox("Error: No event related information found. Please first extract events to set event related information");
     else
         app.LFPEventsMainWindow = Analyse_Event_Related_Signal(app);
     end
@@ -63,7 +59,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         app.CurrentPlotData = rmfield(app.CurrentPlotData, {'MainXData', 'MainYData','MainCData', 'MainType', 'MainXTicks'});
     end
     
-    if ~isfield(app.Data,'EventRelatedData')
+    if ~isfield(app.Data.Info,'EventChannelNames')
         msgbox("Error: No event related data found. Please first extract events and event related data");
     else
         if ~isfield(app.Data,'Spikes')
@@ -90,11 +86,12 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
         end
 
         StandardDataType = 'Raw Event Related Data';
+        StandardEventChannel = app.Data.Info.EventChannelNames{1};
 
         if ~strcmp(app.Data.Info.SpikeType,"Internal")
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0,StandardDataType);
+            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0,StandardDataType,StandardEventChannel);
         else
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0,StandardDataType);
+            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0,StandardDataType,StandardEventChannel);
         end
 
         if Error == 0
@@ -106,34 +103,36 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
     end
 
 elseif strcmp(ModuleFunctionName,"Unit Analysis")
-    if ~isfield(app.Data,'EventRelatedData')
-        msgbox("Error: No event related data found. Please first extract events and event related data");
-    else
-        if ~isfield(app.Data,'Spikes')
-            msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
-            return;
-        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
-            %% Start GUI
-            StandardDataType = 'Raw Event Related Data';
-
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0,StandardDataType);
-
-            if isfield(app.Data.Spikes,"Waveforms")
-                Continous_Waveform_Analysis_Window(app,"EventWindow");
-            end
-        elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
-            StandardDataType = 'Raw Event Related Data';
-
-            [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0,StandardDataType);
-
-            if isfield(app.Data.Spikes,"Waveforms")
-                if isfield(app.Data.Info,'SpikeSorting')
-                    Continous_Waveform_Analysis_Window(app,"EventWindow");
-                else
-                    msgbox("No Spike Sorting Data found for Internal Spike Analysis.")
-                end
-            end
-        end       
-    end
+    % if ~isfield(app.Data.Info,'EventChannelNames')
+    %     msgbox("Error: No event related data found. Please first extract events and event related data");
+    % else
+    %     if ~isfield(app.Data,'Spikes')
+    %         msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
+    %         return;
+    %     elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Kilosort') || isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'SpikeInterface')
+    %         %% Start GUI
+    %         StandardDataType = 'Raw Event Related Data';
+    %         StandardEventChannel = app.Data.Info.EventChannelNames{1};
+    % 
+    %         [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Kilosort',0,StandardDataType,StandardEventChannel);
+    % 
+    %         if isfield(app.Data.Spikes,"Waveforms")
+    %             Continous_Waveform_Analysis_Window(app,"EventWindow");
+    %         end
+    %     elseif isfield(app.Data,'Spikes') && strcmp(app.Data.Info.SpikeType,'Internal')
+    %         StandardDataType = 'Raw Event Related Data';
+    %         StandardEventChannel = app.Data.Info.EventChannelNames{1};
+    % 
+    %         [app.Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(app.Data,'Internal',0,StandardDataType,StandardEventChannel);
+    % 
+    %         if isfield(app.Data.Spikes,"Waveforms")
+    %             if isfield(app.Data.Info,'SpikeSorting')
+    %                 Continous_Waveform_Analysis_Window(app,"EventWindow");
+    %             else
+    %                 msgbox("No Spike Sorting Data found for Internal Spike Analysis.")
+    %             end
+    %         end
+    %     end       
+    % end
 end               
 

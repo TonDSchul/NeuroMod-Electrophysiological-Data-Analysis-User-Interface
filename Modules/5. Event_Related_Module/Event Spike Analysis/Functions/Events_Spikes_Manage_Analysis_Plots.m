@@ -1,4 +1,4 @@
-function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance,ActiveChannel,EventDataType)
+function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance,ActiveChannel,EventDataType,EventChannelName)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for event kilosort spikes based on user input
@@ -47,6 +47,8 @@ function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,Spik
 % standard. 
 % 19. EventDataType: char, either 'Raw Event Related Data' or 'Preprocessed
 % Event Related Data'. 
+% 20. EventChannelName: char, name of the event channel for which event
+% related spiokes are extracted
 
 % Outputs:
 % 1. Data: main app data structure 
@@ -126,7 +128,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     
     %% No again normalized to event time for spike rate
 
-    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0,EventDataType);
+    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0,EventDataType,EventChannelName);
    
     if Error == 1
         return;

@@ -1,4 +1,4 @@
-function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,ChannelSpacing,ChannelSelection,CSDClim,Figure,DatatoPlot,TimeRangetoPlot,Plottype,LockCLim,TwoORThreeD,CurrentPlotData,PlotAppearance)
+function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(DatatoPlot,Time,hamwidth,ChannelSpacing,CSDClim,Figure,LockCLim,TwoORThreeD,CurrentPlotData,PlotAppearance,Data,EventData,Samplefrequency,SelectedEventIndice,PlotEvent,DataType)
 
 %________________________________________________________________________________________
 
@@ -21,7 +21,7 @@ function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,Channe
 % limits have to be changed. Only applies if LockCLim = 1, 
 % 5. Figure: axes object of figure to plot CSD in
 % DatatoPlot: nchannel x n timepoints single matrix of data to calculate csd with
-% 6. TimeRangetoPlot: Time vector as double with one time point for each
+% 6. Time: Time vector as double with one time point for each
 % sample of DatatoPlot
 % 7. Plottype: string, "Initial" if plotted for first time or if figure handles are
 % supposed to be overwritten. "Non" otherwise 
@@ -33,6 +33,7 @@ function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,Channe
 % case user wants to export them
 % 11. PlotAppearance: structure holding information about plot appearances
 % the user can select
+% DataType: char, either 'Raw  Data' or 'Preprocessed Data'
 
 % Output:
 % 1. currentClim: global clim - either unchanged from previous csd plot if
@@ -45,15 +46,17 @@ function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(hamwidth,Channe
 
 %________________________________________________________________________________________
 
+% Distinguish between downsampled data and normal data
 nChan = size(DatatoPlot,1);
 ds = (0:nChan)*ChannelSpacing; %depth in micrometers given 50 µm spacing
 
-[csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth);
+[csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth,Data,DataType);
 
 %% Plot 
 
-xlim(Figure,[TimeRangetoPlot(1),TimeRangetoPlot(end)]);
-ylim(Figure,[ds(1),ds(end-1)]);
+xlim(Figure,[Time(1),Time(end)]);
+DepthDiff = (ds(2) - ds(1))/2;
+
 
 if strcmp(TwoORThreeD,"TwoD")
     PowerDepth_handles = findobj(Figure, 'Tag', 'PowerDepth');
@@ -63,7 +66,7 @@ if strcmp(TwoORThreeD,"TwoD")
     end
     % 2D Plot
     if isempty(PowerDepth_handles)
-        imagesc(Figure,TimeRangetoPlot, ds(1:size(csd,2)),csd','Tag','PowerDepth');
+        imagesc(Figure,Time, ds(1:size(csd,2)),csd','Tag','PowerDepth');
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
         cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;
@@ -85,7 +88,7 @@ if strcmp(TwoORThreeD,"TwoD")
         Figure.Box ="off";
 
     else
-        set(PowerDepth_handles(1),'XData', TimeRangetoPlot, 'YData', ds(1:size(csd,2)), ...
+        set(PowerDepth_handles(1),'XData', Time, 'YData', ds(1:size(csd,2)), ...
         'CData', csd','Tag','PowerDepth');
     end
 
@@ -112,7 +115,7 @@ elseif strcmp(TwoORThreeD,"ThreeD")
     if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
         
         % 3D Plot
-        surf(Figure,TimeRangetoPlot,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')
+        surf(Figure,Time,ds(1:size(csd,2)),csd','EdgeColor', 'none','Tag','PowerDepth3D')
         % % 2D Plot
         titlestring = strcat("Current Source Density Analysis of Main Window Plot");
         title(Figure,titlestring);
@@ -135,7 +138,7 @@ elseif strcmp(TwoORThreeD,"ThreeD")
         cbar_handle.Label.Color = 'k';        % Sets the color of the label text
     else
         % 3D Plot
-        set(PowerDepth3D_handles(1),'XData', TimeRangetoPlot,'YData', ds(1:size(csd,2)),'CData',csd','ZData',csd','EdgeColor', 'none','Tag','PowerDepth3D')
+        set(PowerDepth3D_handles(1),'XData', Time,'YData', ds(1:size(csd,2)),'CData',csd','ZData',csd','EdgeColor', 'none','Tag','PowerDepth3D')
 
     end
 
@@ -145,6 +148,15 @@ elseif strcmp(TwoORThreeD,"ThreeD")
 
 end
 
+ylim(Figure,[ds(1)-DepthDiff,ds(end-1)+DepthDiff]);
+
+%% --------------- Handle Events ---------------
+if strcmp(PlotEvent,'Events')
+    Analyse_Main_Window_Plot_Events(Figure,Data,Time,EventData,0-DepthDiff,ds(size(csd,2))+DepthDiff,Samplefrequency,SelectedEventIndice)
+else
+    Eventline_handles = findobj(Figure,'Type', 'line', 'Tag', 'Events');
+    delete(Eventline_handles); 
+end
 %% Clim 
 
 cmlimscsd = abs([min(csd,[],'all') max(csd,[],'all')]);
@@ -169,7 +181,7 @@ else
 end
 
 %% save plotted data in case user wants to save 
-CurrentPlotData.XData = TimeRangetoPlot;
+CurrentPlotData.XData = Time;
 CurrentPlotData.YData = ds(1:size(csd,2));
 CurrentPlotData.CData = csd';
 CurrentPlotData.Type = "Current Source Density";

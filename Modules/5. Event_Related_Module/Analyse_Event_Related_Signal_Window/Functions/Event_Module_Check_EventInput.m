@@ -1,0 +1,60 @@
+function [EventFieldValue] = Event_Module_Check_EventInput(EventFieldValue,Data,EventSelected,EventDataType,StartUp)
+
+for i = 1:length(Data.Info.EventChannelNames)
+    if strcmp(EventSelected,Data.Info.EventChannelNames{i})
+        EventChannelNr = i;
+    end
+end
+
+if strcmp(EventDataType,'Raw Event Related Data')
+    AlleventNr = length(Data.Events{EventChannelNr});
+else %% if prepro and channel deleted make it differetm
+    AlleventNr = length(Data.Events{EventChannelNr});
+    if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+
+        Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
+        TrialrejectionindiciesCurrentChannel = find(Namevector == Data.Info.EventChannelNames{EventChannelNr});
+
+        if ~isempty(TrialrejectionindiciesCurrentChannel)
+            AlleventNr = AlleventNr - length(Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel));
+        end
+    end
+end
+
+if StartUp
+    EventFieldValue = strcat('1:',num2str(AlleventNr));
+end
+
+if contains(EventFieldValue,',')
+    if ~contains(EventFieldValue,'[') || ~contains(EventFieldValue,']')
+        EventFieldValue = strcat('[',EventFieldValue,']');
+    end
+end
+
+if strcmp(EventDataType,'Raw Event Related Data')
+    try
+        EventNr = eval(EventFieldValue);
+    catch
+        EventNr = 1:AlleventNr;
+        EventFieldValue = strcat(num2str(min(EventNr)),':',num2str(max(EventNr)));
+    end
+
+    if length(EventNr)>AlleventNr || sum(EventNr>AlleventNr) ~= 0 || isempty(EventNr)
+        msgbox("Error: Trigger range exceeds existing number of triggers! Plotting all trigger.")
+        EventNr = 1:AlleventNr;
+        EventFieldValue = strcat(num2str(min(EventNr)),':',num2str(max(EventNr)));
+    end
+else
+    try
+        EventNr = eval(EventFieldValue);
+    catch
+        EventNr = 1:AlleventNr;
+        EventFieldValue = strcat(num2str(min(EventNr)),':',num2str(max(EventNr)));
+    end
+
+    if length(EventNr)>AlleventNr || sum(EventNr>AlleventNr) ~= 0 || isempty(EventNr)
+        msgbox("Error: Trigger range exceeds existing number of triggers! Plotting all trigger.")
+        EventNr = 1:AlleventNr;
+        EventFieldValue = strcat(num2str(min(EventNr)),':',num2str(max(EventNr)));
+    end
+end

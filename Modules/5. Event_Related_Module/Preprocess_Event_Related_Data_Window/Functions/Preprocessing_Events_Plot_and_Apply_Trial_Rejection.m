@@ -1,4 +1,4 @@
-function [EventRelatedData,EventsToPlot,TrialsToReject,ThresCrossingTrials] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject,EventsToPlot,PlotThreshold,Threshold)
+function [EventRelatedData,EventsToPlot,TrialsToReject,ThresCrossingTrials] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject,EventsToPlot,PlotThreshold,Threshold,EventChannelname)
 
 %________________________________________________________________________________________
 %% Function to apply and plot event/trial rejection
@@ -26,6 +26,8 @@ function [EventRelatedData,EventsToPlot,TrialsToReject,ThresCrossingTrials] = Pr
 % everything considerably when having a lot of events.
 % 9. PlotThreshold: logical 1 or 0 (empty for non)
 % 10. Threshold: double, threshold to automatically detect trials to delete
+% 11. EventChannelname: char, name of event channel for which trials are
+% rejected
 
 % Outputs: 
 % 1. EventRelatedData: nchannel x ntrials x ntime single matrix with modified event
@@ -94,59 +96,110 @@ else
     msgbox("Warning: trigger to plot could not be determined. Taking all trigger as default!")
 end
 
-%% Check if Trials to be rejected are within trialrange of dataset
-
-if length(EventsToPlot)>size(EventRelatedData,2) || sum(EventsToPlot>size(EventRelatedData,2))
-    msgbox("Error: One or more trigger to plot not in range of available trigger! Returning.");
-    return;
+%% ------------------------------------------------
+%% ---------------- Check If selected trials where already deleted ----------------
+%% ------------------------------------------------
+AlreadyRejectedTrials = [];
+if isfield(Data.Info,'EventRelatedPreprocessing')
+    if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+        % Find rejection indices for the currently selected event channel
+        Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
+        TrialrejectionindiciesCurrentChannel = find(Namevector == EventChannelname);
+        % Select trials if event channel found
+        if ~isempty(TrialrejectionindiciesCurrentChannel)
+            AlreadyRejectedTrials = Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel);
+        else
+            AlreadyRejectedTrials = [];
+        end
+    end
+end
+if ~isempty(TrialsToReject) 
+    % check if trials where already deleted
+    if ~isempty(AlreadyRejectedTrials)
+        if ~isempty(intersect(AlreadyRejectedTrials, TrialsToReject))
+            msgbox(strcat("Error: Trial(s) number ",num2str(intersect(AlreadyRejectedTrials, TrialsToReject))," where already deleted! Returning"));
+            return;
+        end
+    end
 end
 
-if length(TrialsToReject)>size(EventRelatedData,2) || sum(TrialsToReject>size(EventRelatedData,2))
-    msgbox("Error: One or more trigger to reject not in range of available trigger! Returning.");
-    return;
+%% ------------------------------------------------
+%% ---------------- Set up vector with all presevered trial identities ----------------
+%% ------------------------------------------------
+% get original trial number and delte trial numbers for ylabel of broadband
+% plot
+EventChannelnr = [];
+for i = 1:length(Data.Info.EventChannelNames)
+    if strcmp(Data.Info.EventChannelNames{i},EventChannelname)
+        EventChannelnr = i;
+    end
 end
 
-
-if length(TrialsToReject) == size(EventRelatedData,2)
-    msgbox("Error: Not possible to reject all Trials!");
-    TrialsToReject = [];
-    return;
+% delete already rejected trials
+AllTrials = 1:length(Data.Events{EventChannelnr});
+if ~isempty(AlreadyRejectedTrials)
+    AllTrials(AlreadyRejectedTrials) = [];
 end
 
+% delete TrialRejection
+IndiceToDelete = [];
+if ~isempty(TrialsToReject)
+    for i = 1:length(TrialsToReject)
+        IndiceToDelete = [IndiceToDelete,find(AllTrials==TrialsToReject(i))];
+        AllTrials(find(AllTrials==TrialsToReject(i))) = NaN;
+    end
+end
+
+AllTrials2 = 1:length(AllTrials);
+
+%% ---------------- Set Data at deleted trial indicies to NaN ----------------
 IndiciesToDelete = zeros(size(EventRelatedData,2),1)+1;
 
 IndiciesToDelete(EventsToPlot) = 0;
 
-IndiciesToDelete(TrialsToReject) = 1;
+IndiciesToDelete(IndiceToDelete) = 1;
 
 EventRelatedData(:,IndiciesToDelete==1,:) = NaN;
 
-%% Check Threshold Crossings
-
+%% ------------------------------------------------
+%% ---------------- Check Threshold Crossings ----------------
+%% ------------------------------------------------
 for ntrials = 1:size(EventRelatedData,2)
-    if sum(EventRelatedData(ChannelSelection,ntrials,:) > abs(Threshold)) > 0 || sum(EventRelatedData(ChannelSelection,ntrials,:) < -abs(Threshold)) > 0
-        ThresCrossingTrials = [ThresCrossingTrials,ntrials];
+    % Currenrealtrila = find(AllTrials ntrials);
+    if ~isnan(AllTrials)
+        if sum(EventRelatedData(ChannelSelection,ntrials,:) > abs(Threshold)) > 0 || sum(EventRelatedData(ChannelSelection,ntrials,:) < -abs(Threshold)) > 0
+            ThresCrossingTrials = [ThresCrossingTrials,AllTrials(ntrials)];
+        end
     end
 end
 
+AllTrials(isnan(AllTrials))=[];
+NumTrials = length(AllTrials);
+
+%% ------------------------------------------------
+%% ---------------- Plotting ----------------
+%% ------------------------------------------------
+
 %% Check if Trials to be rejected are within trialrange of dataset
-
-ERP = mean(squeeze(EventRelatedData(ChannelSelection,:,:)),1,'omitnan');
-
-NTrials(1) = sum(IndiciesToDelete==0);
-NTrials(2) = length(EventsToPlot);
-NumTrials = min(NTrials);
-
+if length(find(IndiciesToDelete==0))>1
+    ERP = mean(squeeze(EventRelatedData(ChannelSelection,:,:)),1,'omitnan');
+else % just one trial
+    ERP = squeeze(EventRelatedData(ChannelSelection,:,:));
+end
 %% Plot Broadband
 hold(TopFigure, 'on' )
 cla(TopFigure);
 TopFigure.NextPlot = "replace";
-imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1),squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)))
+if length(find(IndiciesToDelete==0))>1
+    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1),squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)))
+else % just one trial
+    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:))',1),squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:))')
+end
 set(TopFigure,'YDir','normal');
 titlestring = strcat("Broadband Plot Channel ",OriginalChannelSelection);
 TopFigure.FontSize = 10;
 xline(TopFigure,0,'Color','k','LineStyle','--','LineWidth',2);
-ylabel(TopFigure,'Trials/Events')
+ylabel(TopFigure,'Trial Identities (Trial Number)')
 title(TopFigure,titlestring)
 xlabel(TopFigure,'Time [s]')
 xlim(TopFigure,[Time(1) Time(end)]); % since this signal was low pass filtered at 200Hz
@@ -159,8 +212,28 @@ end
 cbar_handle=colorbar('peer',TopFigure,'location','EastOutside');
 cbar_handle.Label.String = "Signal [mV/mm^2]";
 cbar_handle.Label.Rotation = 270;
-hold(TopFigure, 'off' )
+cbar_handle.Label.Color = 'k';   
+cbar_handle.Color = 'k';   
+TopFigure.XLabel.Color = [0 0 0];
+TopFigure.XColor = [0 0 0];
+TopFigure.YLabel.Color = [0 0 0];
+TopFigure.YColor = [0 0 0];
+TopFigure.Title.Color  = [0 0 0];
+TopFigure.Box  = 0;
+ylim(TopFigure,[0.5,min(length(AllTrials),length(EventsToPlot))+0.5])
+drawnow;
+%% costume y labels
+a = string(AllTrials);
+b = string(AllTrials2);
 
+for i = 1:length(a)
+    a(i) = strcat(a(i),'(',b(i),')');
+end
+
+TopFigure.YTick = 1:length(a);
+TopFigure.YTickLabel = string(a);
+
+hold(TopFigure, 'off' )
 %% ERP
 TrialsHandle = findobj(BottomFigure, 'Tag', 'Trials');
 ERPHandle = findobj(BottomFigure, 'Tag', 'ERP');
@@ -209,18 +282,18 @@ else
     set(ERPHandle(1), 'XData', Time, 'YData',ERP,'Color','k','LineWidth',2, 'Tag', 'ERP');
     MeanERP = ERPHandle(1);
 end
+EventRelatedData(:,IndiciesToDelete==1,:) = [];
 % plot trials
-for i = 1:NumTrials % loop over trials
-    CurrentTrial = find(IndiciesToDelete==0);
+for i = 1:size(EventRelatedData,2) % loop over trials
     if isempty(TrialsHandle)
-        h = line(BottomFigure,Time,squeeze(EventRelatedData(ChannelSelection,CurrentTrial(i),:)),'LineWidth',.5,'Tag','Trials');
+        h = line(BottomFigure,Time,squeeze(EventRelatedData(ChannelSelection,i,:)),'LineWidth',.5,'Tag','Trials');
         set(h,'color',[1 1 1]*.75);
     else
         if i<=length(TrialsHandle)
-            set(TrialsHandle(i), 'XData', Time, 'YData',squeeze(EventRelatedData(ChannelSelection,CurrentTrial(i),:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
+            set(TrialsHandle(i), 'XData', Time, 'YData',squeeze(EventRelatedData(ChannelSelection,i,:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
             h(1) = TrialsHandle(1);
         else
-            line(BottomFigure,Time,squeeze(EventRelatedData(ChannelSelection,CurrentTrial(i),:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
+            line(BottomFigure,Time,squeeze(EventRelatedData(ChannelSelection,i,:)),'Color',[1 1 1]*.75,'LineWidth',.5,'Tag','Trials');
         end
     end
 end
@@ -241,20 +314,31 @@ xlim(BottomFigure,[min(Time) max(Time)]);
 ylim(BottomFigure,[min(min(squeeze(EventRelatedData(ChannelSelection,:,:)))) max(max(squeeze(EventRelatedData(ChannelSelection,:,:))))]);
 xlabel(BottomFigure,'Time [s]');
 ylabel(BottomFigure,'Potential [mV]');
+BottomFigure.XLabel.Color = [0 0 0];
+BottomFigure.XColor = [0 0 0];
+BottomFigure.YLabel.Color = [0 0 0];
+BottomFigure.YColor = [0 0 0];
+BottomFigure.Title.Color  = [0 0 0];
+BottomFigure.Box  = 0;
+
 
 if PlotThreshold == 1 
     % Add legend only once
     if isempty(findobj(BottomFigure, 'Type', 'legend'))
-        % Create legend and then set its 'HandleVisibility' to 'off'
-        legendHandle = legend([h(1), MeanERP, eventline,threshline(1)], {'Trials/Events', 'ERP', 'Trigger', 'Thresh'});
-        set(legendHandle, 'HandleVisibility', 'off');
+        try
+            % Create legend and then set its 'HandleVisibility' to 'off'
+            legendHandle = legend([h(1), MeanERP, eventline,threshline(1)], {'Trials/Events', 'ERP', 'Trigger', 'Thresh'});
+            set(legendHandle, 'HandleVisibility', 'off');
+        end
     end
 else
     % Add legend only once
     if isempty(findobj(BottomFigure, 'Type', 'legend'))
-        % Create legend and then set its 'HandleVisibility' to 'off'
-        legendHandle = legend([h(1), MeanERP, eventline], {'Trials/Events', 'ERP', 'Trigger'});
-        set(legendHandle, 'HandleVisibility', 'off');
+        try
+            % Create legend and then set its 'HandleVisibility' to 'off'
+            legendHandle = legend([h(1), MeanERP, eventline], {'Trials/Events', 'ERP', 'Trigger'});
+            set(legendHandle, 'HandleVisibility', 'off');
+        end
     end
 end
 

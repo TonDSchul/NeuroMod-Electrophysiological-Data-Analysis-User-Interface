@@ -171,5 +171,5 @@ else
     uistack(Artefactline1, 'top');
     uistack(Artefactline2, 'top');
     % Add legend for the three specific lines
-    legend(Figure,[eventline, Artefactline1, Artefactline2], {'Event', 'Artefact Start', 'Artefact End'}, 'Location', 'northeast');
+    legend(Figure,[eventline, Artefactline1, Artefactline2], {'Trigger', 'Artefact Start', 'Artefact End'}, 'Location', 'northeast');
 end

@@ -1,4 +1,4 @@
-function Preprocessing_Events_PopulateInfoText(TextArea,Data)
+function Preprocessing_Events_PopulateInfoText(TextArea,Data,EventChannelSelectionDropDown)
 
 %________________________________________________________________________________________
 %% Function to show what preprocessing steps were applied already to event related data in windoww the user selects the prepro step
@@ -11,14 +11,15 @@ function Preprocessing_Events_PopulateInfoText(TextArea,Data)
 % prepro infos (shown when string or char is saved as TextArea.Value)
 % 2. Data: main app data structure with Data.PreprocessedEventRelatedData, 
 % Data.EventRelatedPreprocessing and Data.Info fields
+% 3. EventChannelSelectionDropDown: char, name of the event channel 
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
 if isfield(Data.Info,'EventRelatedPreprocessing')
-    [nchannel,ntrials,ntime] = size(Data.PreprocessedEventRelatedData);
-    TextArea.Value = ["Please select the kind of preprocessing you want to conduct. After saving changes to the dataset, the conducted steps will be shown in this window.","","Preprocessed Event Related Data found with dimensions:","","Nr Channel: ",num2str(nchannel),"Nr Trigger: ",num2str(ntrials),"Nr Time Points:", num2str(ntime),"","Already applied preprocessing:"];
+
+    TextArea.Value = ["Please select the kind of preprocessing you want to conduct. After saving changes to the dataset, the conducted steps will be shown in this window.";"Preprocessing steps for event related data found:"];
     infoString = [];
     fields = fieldnames(Data.Info.EventRelatedPreprocessing);
     for k = 1:numel(fields)
@@ -41,7 +42,27 @@ if isfield(Data.Info,'EventRelatedPreprocessing')
     TextArea.Value = [currentValue;"";infoString];
 
 else
-    TextArea.Value = "Event data was not preprocessed yet. Please select the kind of preprocessing you want to conduct. After saving changes to the dataset, the conducted steps will be shown in this window.";
-    [nchannel,ntrials,ntime] = size(Data.EventRelatedData);
-    TextArea.Value = [TextArea.Value,"","Event Data has following dimensions:","","Nr Channel: ",num2str(nchannel),"Nr Trigger: ",num2str(ntrials),"Nr Time Points:", num2str(ntime)];
+    
+    TextArea.Value = "Event data for the currently selected event channel was not preprocessed yet. Please select the kind of preprocessing you want to conduct. After saving changes to the dataset, the conducted steps will be shown in this window.";
+    EventIndice = [];
+    for i = 1:length(Data.Info.EventChannelNames)
+        if strcmp(EventChannelSelectionDropDown,Data.Info.EventChannelNames{i})
+            EventIndice = i;
+            break;
+        end
+    end
+    
+    if ~isempty(EventIndice)
+        ntrials = length(Data.Events{EventIndice});
+    end
+    nchannel = size(Data.Raw,1);
+    
+    if isfield(Data,'Preprocessed')
+        TextArea.Value = [TextArea.Value;"Preprocessed data found to extract from with the following steps applied:"];
+        [texttoshow] = Preprocessing_Events_ExtractPreprocessingStep(Data);
+        TextArea.Value = [TextArea.Value;texttoshow];
+    end
+    
+    TextArea.Value{end+1} = '';
+    TextArea.Value{end+1} = convertStringsToChars(strcat("Event Data has following dimensions: ","Number Channel: ",num2str(nchannel),", Number Trigger: ",num2str(ntrials)));
 end

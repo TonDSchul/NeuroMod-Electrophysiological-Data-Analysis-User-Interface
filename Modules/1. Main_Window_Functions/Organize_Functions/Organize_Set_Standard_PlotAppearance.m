@@ -103,7 +103,7 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     
     % LineWidth
     PlotAppearance.ERPWindow.MultipleERP.MeanLineWidth = 1; % 
-    PlotAppearance.ERPWindow.MultipleERP.TriggerLineWidth = 1; % 
+    PlotAppearance.ERPWindow.MultipleERP.TriggerLineWidth = 2; % 
 
     % Color
     PlotAppearance.ERPWindow.MultipleERP.TriggerColor = [1,0,0]; % red
