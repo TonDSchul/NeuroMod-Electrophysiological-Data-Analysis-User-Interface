@@ -485,16 +485,85 @@ if Activated
     if strcmp(Window,"LiveECHT") || strcmp(Window,"All")
         if ~isempty(app.LiveECHTWindow) && isvalid(app.LiveECHTWindow)
             
+            app.LiveECHTWindow.DataTypeDropDown.Tooltip = "Select whether phase is calculated based on raw or preprocessed data.";
+            app.LiveECHTWindow.CalculationMethodDropDown.Tooltip = "Select the method to calculate phase. ECHT is the Matlab Hilbert implementation with an additional narrowband filter coefficient multiplied with the fft result.";
+            app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Tooltip = "Enter the cutoff frequency for the automatically applied narrowband filter (if not already present in preprocessed data). Also used as cutoff for the ECHT narrowband filter. Format: [lowerF,higherF]";
+
+            app.LiveECHTWindow.NarrowbandFilterorderEditField.Tooltip = "Enter the filter order for the automatically applied narrowband filter. NOT used for ECHT narrowband filter!";
+            app.LiveECHTWindow.ECHTFilterorderEditField.Tooltip = "Enter the filter order for the Echt narrowband filter.";
+            app.LiveECHTWindow.LockYlimCheckBox.Tooltip = "Click to lock the ylim of the lower plot to the max value.";
+            app.LiveECHTWindow.ForceFilterOFFCheckBox.Tooltip = "Click to activate/deactivate automatically filtering the signal. Let always active for Hilbert transform.";
+
             app.LiveECHTWindow.ChannelSelectionDropDown.Tooltip = "Select the channel for which you want to compute the ECHT";
+            app.LiveECHTWindow.ChannelSelectionDropDown.Tooltip = "Select the channel for which you want to compute the ECHT";
+
+            app.LiveECHTWindow.ChangeLowPassParameterMenu.Tooltip = "Change filter parameter for the automatically applied low-pass filter (done to be able to downsample without aliasing).";
+            app.LiveECHTWindow.ShowDataAnalysedMenu.Tooltip = "Use the inst. frequency plot to show the narrowband pass filtered signal used for phase calculation instead.";
+            app.LiveECHTWindow.ChangeFilterTypeMenu.Tooltip = "Select the kind of narrowband filter type used for narrowband filtering.";
+            
+        end
+    end
+    
+    %% LIVE ECHT Events
+    if strcmp(Window,"EventECHT") || strcmp(Window,"All")
+        if ~isempty(app.EventPhaseSynchro) && isvalid(app.EventPhaseSynchro)
+            
+            app.EventPhaseSynchro.DataToExtractFromDropDown.Tooltip = "Select if event related data is extracted from raw or preprocessed data.";
+            app.EventPhaseSynchro.EventChannelSelectionDropDown.Tooltip = "Select the event channel for which event related data is extracted.";
+            app.EventPhaseSynchro.DataTypeDropDown.Tooltip = "Select whether time frequency power is calculate for raw or preprocessed event related data.";
+
+            app.EventPhaseSynchro.CalculationMethodDropDown.Tooltip = "Select the method to calculate phase. ECHT is the Matlab Hilbert implementation with an additional narrowband filter coefficient multiplied with the fft result.";
+            app.EventPhaseSynchro.NarrowbandCutoffLowerHigherEditField.Tooltip = "Enter the cutoff frequency for the automatically applied narrowband filter (if not already present in preprocessed data). Also used as cutoff for the ECHT narrowband filter. Format: [lowerF,higherF]";
+            
+            app.EventPhaseSynchro.TrialSelectionMatlabExpressionsEditField.Tooltip = "Enter the trials for which phase is calculated. Format: Matlab Expressions.";
+
+            app.EventPhaseSynchro.NarrowbandFilterorderEditField.Tooltip = "Enter the filter order for the automatically applied narrowband filter. NOT used for ECHT narrowband filter!";
+            app.EventPhaseSynchro.ECHTFilterorderEditField.Tooltip = "Enter the filter order for the Echt narrowband filter.";
+            app.EventPhaseSynchro.ForceFilterOFFCheckBox.Tooltip = "Click to activate/deactivate automatically filtering the signal. Let always active for Hilbert transform.";
+
+            app.EventPhaseSynchro.ChannelSelectionDropDown.Tooltip = "Select the channel for which you want to compute the ECHT";
+            app.EventPhaseSynchro.ChannelSelectionDropDown.Tooltip = "Select the channel for which you want to compute the ECHT";
+
+            app.EventPhaseSynchro.ChangeLowPassParameterMenu.Tooltip = "Change filter parameter for the automatically applied low-pass filter (done to be able to downsample without aliasing).";
+            app.EventPhaseSynchro.ShowDataAnalysedMenu.Tooltip = "Use the inst. frequency plot to show the narrowband pass filtered signal used for phase calculation instead.";
+            app.EventPhaseSynchro.ChangeFilterTypeMenu.Tooltip = "Select the kind of narrowband filter type used for narrowband filtering.";
+            
+        end
+    end
+
+    %% Load Spike Sorting results
+    if strcmp(Window,"LoadSorting") || strcmp(Window,"All")
+        if ~isempty(app.LoadfromKilosortWindowWindow) && isvalid(app.LoadfromKilosortWindowWindow)
+            app.LoadfromKilosortWindowWindow.SpikeSorterDropDown.Tooltip = "Select the sorter for which you want to load sorting results.";
+            app.LoadfromKilosortWindowWindow.AmplitudeScalingFactorEditField.Tooltip = "If Kilosort was used, spike amplitudes are saved as integers and have to be converted back to mV which this factor. This factor is generated and saved automatically when saving data for spike sorting with Kilosort. Autosearched folder shown above is also searched through for this factor.";
+
+            app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "Manaully select the folder in which spike sorting results of one of the support sorters is saved.";
+            app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "Manaully select the amplitude scaling factor .mat file created when saving data for spike sorters.";
+
+            app.LoadButton.DropDown.Tooltip = "Click to load sorting results with the parameters above.";
+        end
+    end
+    
+    %% Save Spike Sorting results
+    if strcmp(Window,"SaveSorting") || strcmp(Window,"All")
+        if ~isempty(app.SaveforKilosortWindowWindow) && isvalid(app.SaveforKilosortWindowWindow)
+            app.SaveforKilosortWindowWindow.Dataset.Tooltip = "Choose whether you want to save your raw or preprocessed dataset. Recommended: raw dataset.";
+            app.SaveforKilosortWindowWindow.SaveFormatDropDown_2.Tooltip = "Specify whether you want to save for later use in the external Kilosort GUI (export as .dat file with int16 or int32 format) or in SpikeInterface (.dat file with double as format (float64))";
+
+            app.SaveforKilosortWindowWindow.SaveFormatDropDown.Tooltip = "Select whether you want to save data for Kilosort in int16 or int32 format. No choice when saving for SpikeInterface.";
+            app.SaveforKilosortWindowWindow.SelectFolderManuallyButton.Tooltip = "Manaully select a folder to save data in for spike sorting.";
         end
     end
 
     %disp("Tooltips turned ON");
 
-else % Not activated
+%--------------------------------------------------------------------------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------------------------------------------------------------------------
+else %% Not activated
+    
     %% Main Window
     if strcmp(Window,"MainWindow") || strcmp(Window,"All")
-        app.TimeRangeViewBox.Tooltip= "";
+        app.TimeRangeViewBox.Tooltip = "";
         app.Button.Tooltip = "";
         app.Button_2.Tooltip = "";
     
@@ -511,20 +580,48 @@ else % Not activated
         app.DropDown_2.Tooltip = "";
     
         app.EventChannelDropDown.Tooltip = "";
-    end
 
+        app.TextArea.Tooltip = "";
+    end
+    
     %% Extract Data window
     if strcmp(Window,"ExtractDataWindow") || strcmp(Window,"All")
         if ~isempty(app.ExtractDataWindow) && isvalid(app.ExtractDataWindow)
-            app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.ExtractDataWindow.RecordingSystemDropDown.Tooltip = "";
             app.ExtractDataWindow.FileTypeDropDown.Tooltip = "";
             app.ExtractDataWindow.AdditionalAmplificationFactorEditField.Tooltip = "";
             app.ExtractDataWindow.AddProbeInformationButton.Tooltip = "";
-  
+            app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.ExtractDataWindow.ExtractDataButton.Tooltip = "";
         end
     end
+
+    %% Save Data window
+    if strcmp(Window,"SaveDataWindow") || strcmp(Window,"All")
+        if ~isempty(app.SaveDataWindow) && isvalid(app.SaveDataWindow)
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
+            app.SaveDataWindow.SaveTypeDropDown.Tooltip = "";
+            app.SaveDataWindow.SelectAllButton.Tooltip = "";
+            
+            app.SaveDataWindow.RawDataButton.Tooltip = "";
+            app.SaveDataWindow.PreprocessedDataButton.Tooltip = "";
+            app.SaveDataWindow.SpikeIndiciesButton.Tooltip = "";
+            app.SaveDataWindow.EventRelatedDataButton.Tooltip = "";
+            app.SaveDataWindow.EventTimesButton.Tooltip = "";
+            app.SaveDataWindow.PreprocessedEventRelatedDataButton.Tooltip = "";
+        end
+    end
+
+    %% Load Data window
+    if strcmp(Window,"LoadDataWindow") || strcmp(Window,"All")
+        if ~isempty(app.LoadDataWindow) && isvalid(app.LoadDataWindow)
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
+            app.LoadDataWindow.SelectDifferentFolderButton.Tooltip = "";
+            app.LoadDataWindow.DropDown_2.Tooltip = "";
+        end
+    end
+
     %% Probe Layout Window
     if strcmp(Window,"SetProbeInfoWindow") || strcmp(Window,"All")
         if ~isempty(app.ExtractDataWindow) && isvalid(app.ExtractDataWindow)
@@ -536,6 +633,9 @@ else % Not activated
                     app.ExtractDataWindow.ProbeLayoutWindow.HorizontalOffsetumEditField.Tooltip = "";
                     app.ExtractDataWindow.ProbeLayoutWindow.VerticalOffsetumEditField.Tooltip = "";
             
+                    app.ExtractDataWindow.ProbeLayoutWindow.VerticalOffsetumEditField_2.Tooltip = "";
+                    app.ExtractDataWindow.ProbeLayoutWindow.CheckBox.Tooltip = "";
+   
                     app.ExtractDataWindow.ProbeLayoutWindow.ActiveChannelField.Tooltip = "";
                     app.ExtractDataWindow.ProbeLayoutWindow.ChannelOrderField.Tooltip = "";
             
@@ -543,7 +643,11 @@ else % Not activated
                     app.ExtractDataWindow.ProbeLayoutWindow.LoadActiveChannelSelectionButton.Tooltip = "";
             
                     app.ExtractDataWindow.ProbeLayoutWindow.SetProbeInformationandContinueButton.Tooltip = "";
-                    app.ExtractDataWindow.ProbeLayoutWindow.ShowChannelSpacingCheckBox.Tooltip = "";
+                    app.ExtractDataWindow.ProbeLayoutWindow.ShowChannelSpacingCheckBox.Tooltip = ""; 
+                    
+                    app.ExtractDataWindow.ProbeLayoutWindow.ReverseTopandBottomChannelNumberCheckBox.Tooltip = "";
+                    app.ExtractDataWindow.ProbeLayoutWindow.ReverseTopandBottomChannelNumberCheckBox_2.Tooltip = "";
+
                 end
             end
         end
@@ -561,16 +665,17 @@ else % Not activated
     %% Live Spike Rate
     if strcmp(Window,"LiveSpikeRate") || strcmp(Window,"All")
         if ~isempty(app.PSTHApp) && isvalid(app.PSTHApp)
-            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.PSTHApp.Slider.Tooltip = "";
             app.PSTHApp.LockYLimCheckBox.Tooltip = "";
             app.PSTHApp.DownsampleCheckBox.Tooltip = "";
         end
     end
+
     %% Live main window plot Power Estimate
     if strcmp(Window,"LivePowerEstimate") || strcmp(Window,"All")
         if ~isempty(app.SpectralEstApp) && isvalid(app.SpectralEstApp)
-            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.SpectralEstApp.LockYLimCheckBox.Tooltip = "";
             app.SpectralEstApp.DataTypeDropDown.Tooltip = "";
         end
@@ -578,7 +683,7 @@ else % Not activated
     %% Live CSD
     if strcmp(Window,"LiveCSD") || strcmp(Window,"All")
         if ~isempty(app.CSDApp) && isvalid(app.CSDApp)
-            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.CSDApp.HammWindowEditField.Tooltip = "";
             app.CSDApp.LockCLimCheckBox.Tooltip = "";
             app.CSDApp.DataTypeDropDown.Tooltip = "";
@@ -588,29 +693,51 @@ else % Not activated
     %% Preprocessing Window
     if strcmp(Window,"Preprocessing") || strcmp(Window,"All")
         if ~isempty(app.PreproWindow) && isvalid(app.PreproWindow)
-            app.PreproWindow.AddtoPipelineButton.Tooltip = "";
-            app.PreproWindow.AddtoPipelineButton_2.Tooltip = "";
-            app.PreproWindow.AddtoPipelineButton_3.Tooltip = "";
-            app.PreproWindow.AddtoPipelineButton_4.Tooltip = "";
-            
-            app.PreproWindow.PlotExampleButton.Tooltip = "";
-            app.PreproWindow.PlotExampleButton_2.Tooltip = "";
-            app.PreproWindow.PlotExampleButton_4.Tooltip = "";
-            app.PreproWindow.PlotExampleButton_3.Tooltip = "";
+            if isprop(app.PreproWindow,'PreprocessingWindowUIFigure')
+                %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
+                app.PreproWindow.AddtoPipelineButton.Tooltip = "";
+                app.PreproWindow.AddtoPipelineButton_2.Tooltip = "";
+                app.PreproWindow.AddtoPipelineButton_3.Tooltip = "";
+                app.PreproWindow.AddtoPipelineButton_4.Tooltip = "";
+                
+                app.PreproWindow.PlotExampleButton.Tooltip = "";
+                app.PreproWindow.PlotExampleButton_2.Tooltip = "";
+                app.PreproWindow.PlotExampleButton_4.Tooltip = "";
+                app.PreproWindow.PlotExampleButton_3.Tooltip = "";
+    
+                app.PreproWindow.DeleteChannelButton.Tooltip = "";
+                app.PreproWindow.CutStartandEndofRecordingButton_2.Tooltip = "";
+                app.PreproWindow.StimulationArtefactRejectionButton.Tooltip = "";
+                app.PreproWindow.ArtefactSubspaceReconstructionButton.Tooltip = "";
+                app.PreproWindow.DeleteEventTriggerIndicesButton.Tooltip = "";
+                
+                app.PreproWindow.DeleteLastPipelineEntryButton.Tooltip = "";
+                
+                app.PreproWindow.StartPipelineButton.Tooltip = "";
+            end
+        end
+    end
+    
+    %% Stim artefact rejection
+    if strcmp(Window,"StimArtefactRejection") || strcmp(Window,"All")
+        if ~isempty(app.PreproArtefactRejection) && isvalid(app.PreproArtefactRejection)
 
-            app.PreproWindow.DeleteChannelButton.Tooltip = "";
-            app.PreproWindow.CutStartandEndofRecordingButton_2.Tooltip = "";
-            app.PreproWindow.StimulationArtefactRejectionButton.Tooltip = "";
+            app.PreproArtefactRejection.EventChannelforStimulationDropDown.Tooltip = "";
+            app.PreproArtefactRejection.EventstoPlotDropDown.Tooltip = "";
+            app.PreproArtefactRejection.TimeAroundEventsEditField_3.Tooltip = "";
+            app.PreproArtefactRejection.TimeAroundEventsEditField.Tooltip = "";
+
+            app.PreproArtefactRejection.TimeAroundEventsEditField_2.Tooltip = "";
+            app.PreproArtefactRejection.AddArtefactRejectiontoPipelineButton.Tooltip = "";
+            app.PreproArtefactRejection.Slider.Tooltip = "";
             
-            app.PreproWindow.DeleteLastPipelineEntryButton.Tooltip = "";
-            
-            app.PreproWindow.StartPipelineButton.Tooltip = "";
         end
     end
 
     %% Continous Static Spectrum Analysis
     if strcmp(Window,"ConStaticSpectrum") || strcmp(Window,"All")
         if ~isempty(app.ContStaticSpectrumWindow) && isvalid(app.ContStaticSpectrumWindow)
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.ContStaticSpectrumWindow.AnalysisDropDown.Tooltip = "";
             app.ContStaticSpectrumWindow.ChannelDropDown.Tooltip = "";
             app.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Tooltip = "";
@@ -620,6 +747,7 @@ else % Not activated
         end
     end
 
+    %% Cont spike analysis
     if strcmp(Window,"ConSpikes") || strcmp(Window,"All")
         if ~isempty(app.ConInternalSpikesWindow) && isvalid(app.ConInternalSpikesWindow) || ~isempty(app.ConKilosortSpikesWindow) && isvalid(app.ConKilosortSpikesWindow)
             if ~isempty(app.ConInternalSpikesWindow) && isvalid(app.ConInternalSpikesWindow)
@@ -641,28 +769,120 @@ else % Not activated
             end
         end
     end
-    
+
     %% Extract Events window
     if strcmp(Window,"EventExtraction") || strcmp(Window,"All")
         if ~isempty(app.EventExtractionWindow) && isvalid(app.EventExtractionWindow) 
-           
+    
             app.EventExtractionWindow.RecordingSystem.Tooltip = "";
             app.EventExtractionWindow.FileTypeDropDown.Tooltip = "";
             app.EventExtractionWindow.NrInputChinfolderEditField.Tooltip = "";
             app.EventExtractionWindow.AnalogThresholdVEditField.Tooltip = "";
             app.EventExtractionWindow.InputChannelSelectionEditField.Tooltip = "";
-
+    
+            app.EventExtractionWindow.EventTypeDropDown.Tooltip = "";
+    
+            app.EventExtractionWindow.LoadCostumeTriggerIdentityButton.Tooltip = "";
+    
             app.EventExtractionWindow.SetFoldermanuallyButton.Tooltip = "";
             app.EventExtractionWindow.PlotInputChannelButton.Tooltip = "";
             app.EventExtractionWindow.StartEventExtractionButton.Tooltip = "";
-
-            app.EventExtractionWindow.DatatoUseDropDown.Tooltip = "";
-            app.EventExtractionWindow.EventChanneltoUseDropDown.Tooltip = "";
+    
             app.EventExtractionWindow.TimeWindowAfterEventssEditField.Tooltip = "";
             app.EventExtractionWindow.TimeWindowBeforeEventssEditField.Tooltip = "";
-
-            app.EventExtractionWindow.ExtractEventRelatedDataButton.Tooltip = "";
-
+    
+        end
+    end
+    
+    %% Import Events window
+    if strcmp(Window,"ImportEvents") || strcmp(Window,"All")
+        if ~isempty(app.ImportEventTTLWindow) && isvalid(app.ImportEventTTLWindow) 
+    
+            app.ImportEventTTLWindow.InputChannelSelectionEditField.Tooltip = "";
+            app.ImportEventTTLWindow.InputChannelSelectionEditField_2.Tooltip = "";
+    
+            app.ImportEventTTLWindow.SelectFilecsvortxtButton.Tooltip = "";
+            app.ImportEventTTLWindow.PlotEventDataButton.Tooltip = "";
+            app.ImportEventTTLWindow.TakeasnewEventDataButton.Tooltip = "";
+    
+            app.ImportEventTTLWindow.TimeWindowAfterEventssEditField.Tooltip = "";
+            app.ImportEventTTLWindow.TimeWindowBeforeEventssEditField.Tooltip = "";
+    
+        end
+    end
+    
+    %% Event ERP
+    if strcmp(Window,"EventERP") || strcmp(Window,"All")
+        if ~isempty(app.EventLFPERP) && isvalid(app.EventLFPERP)
+    
+            app.EventLFPERP.DataToExtractFromDropDown.Tooltip = "";
+            app.EventLFPERP.EventChannelSelectionDropDown.Tooltip = "";
+            app.EventLFPERP.DataTypeDropDown.Tooltip = "";
+            app.EventLFPERP.ChannelSelectionDropDown_2.Tooltip = "";
+    
+            app.EventLFPERP.EventNumberSelectionEditField.Tooltip = "";
+            app.EventLFPERP.Slider.Tooltip = "";
+    
+        end
+    end
+    
+    %% Event CSD
+    if strcmp(Window,"EventCSD") || strcmp(Window,"All")
+        if ~isempty(app.EventLFPCSD) && isvalid(app.EventLFPCSD)
+    
+            app.EventLFPCSD.DataToExtractFromDropDown.Tooltip = "";
+            app.EventLFPCSD.EventTriggerChannel.Tooltip = "";
+            app.EventLFPCSD.DataTypeDropDown.Tooltip = "";
+            app.EventLFPCSD.EventNumberSelectionEditField.Tooltip = "";
+    
+            app.EventLFPCSD.HammWindowEditField.Tooltip = "";
+            app.EventLFPCSD.ClimminmaxEditField.Tooltip = "";
+            app.EventLFPCSD.AutoClimButton.Tooltip = "";
+    
+        end
+    end
+    
+    %% Event Static Spectrum Analysis
+    if strcmp(Window,"EventStaticSpectrum") || strcmp(Window,"All")
+        if ~isempty(app.EventLFPSSP) && isvalid(app.EventLFPSSP)
+    
+            app.EventLFPSSP.DataToExtractFromDropDown.Tooltip = "";
+            app.EventLFPSSP.EventTriggerChannel.Tooltip = "";
+    
+            app.EventLFPSSP.EventSelectionEditField.Tooltip = "";
+            app.EventLFPSSP.AnalysisDropDown.Tooltip = "";
+            app.EventLFPSSP.ChannelDropDown.Tooltip = "";
+            app.EventLFPSSP.FrequencyRangeHzEditField.Tooltip = "";
+    
+            app.EventLFPSSP.DataTypeDropDown.Tooltip = "";
+            app.EventLFPSSP.DataSourceDropDown.Tooltip = "";
+    
+        end
+    end
+    
+    %% Event Time Frequency Power
+    if strcmp(Window,"EventTimeFrequencyPower") || strcmp(Window,"All")
+        if ~isempty(app.EventLFPTF) && isvalid(app.EventLFPTF)
+    
+            app.EventLFPTF.DataToExtractFromDropDown.Tooltip = "";
+            app.EventLFPTF.EventTriggerChannel.Tooltip = "";
+    
+            app.EventLFPTF.DataSourceDropDown.Tooltip = "";
+            app.EventLFPTF.EventNumberSelectionEditField.Tooltip = "";
+            app.EventLFPTF.FrequencyRangeminmaxstepsEditField.Tooltip = "";
+            app.EventLFPTF.CycleWidthfromto23EditField.Tooltip = "";
+            app.EventLFPTF.ClimminmaxEditField.Tooltip = "";
+            app.EventLFPTF.AutoClimButton.Tooltip = "";
+    
+            app.EventLFPTF.WaveletTypeDropDown.Tooltip = "";
+    
+            app.EventLFPTF.TimeFrequencyCheckBox.Tooltip = "";
+            app.EventLFPTF.IntertrialPhaseClusteringCheckBox.Tooltip = "";
+    
+            app.EventLFPTF.PhaseindependentCheckBox.Tooltip = "";
+            app.EventLFPTF.PhaselockedCheckBox.Tooltip = "";
+            app.EventLFPTF.NonphaselockedCheckBox.Tooltip = "";
+    
         end
     end
 
@@ -674,25 +894,21 @@ else % Not activated
                 app.EventInternalSpikesWindow.ClustertoshowDropDown.Tooltip = "";
                 app.EventInternalSpikesWindow.BaselineNormalizeCheckBox.Tooltip = "";
                 app.EventInternalSpikesWindow.BaselineWindowStartStopinsEditField.Tooltip = "";
-                
                 app.EventInternalSpikesWindow.TimeWindowSpiketriggredLFPEditField.Tooltip = "";
                 app.EventInternalSpikesWindow.EventRangeEditField.Tooltip = "";
                 app.EventInternalSpikesWindow.SpikeRateNumBinsEditField.Tooltip = "";
-            
             else
                 app.EventKilosortSpikesWindow.AnalysisTypeDropDown.Tooltip = "";
                 app.EventKilosortSpikesWindow.ClustertoshowDropDown.Tooltip = "";
                 app.EventKilosortSpikesWindow.BaselineNormalizeCheckBox.Tooltip = "";
                 app.EventKilosortSpikesWindow.BaselineWindowStartStopinsEditField.Tooltip = "";
-                
                 app.EventKilosortSpikesWindow.TimeWindowSpiketriggredLFPEditField.Tooltip = "";
                 app.EventKilosortSpikesWindow.EventRangeEditField.Tooltip = "";
                 app.EventKilosortSpikesWindow.SpikeRateNumBinsEditField.Tooltip = "";
-            
             end
         end
     end
-
+    
     %% Extract Spikes
     if strcmp(Window,"ExtractSpikes") || strcmp(Window,"All")
         if ~isempty(app.SpikeExtractionWindow) && isvalid(app.SpikeExtractionWindow) 
@@ -700,19 +916,15 @@ else % Not activated
             app.SpikeExtractionWindow.ThresholdEditField.Tooltip = "";
             app.SpikeExtractionWindow.MeanDropDown.Tooltip = "";
             app.SpikeExtractionWindow.FilterVerticalSpikeArtefactsCheckBox.Tooltip = "";
-            
             app.SpikeExtractionWindow.FilterDoubleSpikeIndiciesCheckBox.Tooltip = "";
             app.SpikeExtractionWindow.VerticalSpikeOffsetToleranceSamplesEditField.Tooltip = "";
             app.SpikeExtractionWindow.MinDepthofArtefactmEditField.Tooltip = "";
-            
             app.SpikeExtractionWindow.TimeOffsettoCombineSpikeIndiciessEditField.Tooltip = "";
             app.SpikeExtractionWindow.StartSpikeDetectionButton.Tooltip = "";
-
             app.SpikeExtractionWindow.OptionsDropDown_2.Tooltip = "";
             app.SpikeExtractionWindow.SortallChannelTogetherCheckBox.Tooltip = "";
             app.SpikeExtractionWindow.SortforIndividualChannelCheckBox.Tooltip = "";
             app.SpikeExtractionWindow.RUNButton_2.Tooltip = "";
-
             app.SpikeExtractionWindow.Label.Tooltip = "";
             app.SpikeExtractionWindow.SetOutputFolderManuallyButton.Tooltip = "";
         end
@@ -760,7 +972,6 @@ else % Not activated
             app.AutorunWindow.ProbeDesignButton.Tooltip = "";
             app.AutorunWindow.SelectFolderButton.Tooltip = "";
             app.AutorunWindow.ExecuteSelectedConfigButton.Tooltip = "";
-            
         end
     end
 
@@ -786,6 +997,21 @@ else % Not activated
         end
     end
 
+    %% Delete trigger indices
+    if strcmp(Window,"Deletetriggerindices") || strcmp(Window,"All")
+        if ~isempty(app.EventIndiceRejectionWindow) && isvalid(app.EventIndiceRejectionWindow)
+            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
+            app.EventIndiceRejectionWindow.DataToExtractFromDropDown.Tooltip = "";
+            app.EventIndiceRejectionWindow.EventChannelforStimulationDropDown.Tooltip = "";
+            
+            app.EventIndiceRejectionWindow.EventstoPlotDropDown.Tooltip = "";
+            app.EventIndiceRejectionWindow.TriggerToRejectMatlabExpressionsEditField.Tooltip = "";
+            app.EventIndiceRejectionWindow.DeleteSelectedEventButton.Tooltip = "";
+
+            app.EventIndiceRejectionWindow.Slider.Tooltip = "";
+        end
+    end
+
     %% Manage Dataset Window
     if strcmp(Window,"ManageDataset") || strcmp(Window,"All")
         if ~isempty(app.Manage_Dataset_ComponentsWindow) && isvalid(app.Manage_Dataset_ComponentsWindow)
@@ -796,11 +1022,74 @@ else % Not activated
     %% LIVE ECHT
     if strcmp(Window,"LiveECHT") || strcmp(Window,"All")
         if ~isempty(app.LiveECHTWindow) && isvalid(app.LiveECHTWindow)
-            app.LiveECHTWindow.DownsampledSampleRateHzEditField.Tooltip = "";
-            app.LiveECHTWindow.CenterFrequencyHzEditField.Tooltip = "";
+            
+            app.LiveECHTWindow.DataTypeDropDown.Tooltip = "";
+            app.LiveECHTWindow.CalculationMethodDropDown.Tooltip = "";
+            app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Tooltip = "";
+
+            app.LiveECHTWindow.NarrowbandFilterorderEditField.Tooltip = "";
+            app.LiveECHTWindow.ECHTFilterorderEditField.Tooltip = "";
+            app.LiveECHTWindow.LockYlimCheckBox.Tooltip = "";
+            app.LiveECHTWindow.ForceFilterOFFCheckBox.Tooltip = "";
+
             app.LiveECHTWindow.ChannelSelectionDropDown.Tooltip = "";
+            app.LiveECHTWindow.ChannelSelectionDropDown.Tooltip = "";
+
+            app.LiveECHTWindow.ChangeLowPassParameterMenu.Tooltip = "";
+            app.LiveECHTWindow.ShowDataAnalysedMenu.Tooltip = "";
+            app.LiveECHTWindow.ChangeFilterTypeMenu.Tooltip = "";
+            
+        end
+    end
+    
+    %% LIVE ECHT Events
+    if strcmp(Window,"EventECHT") || strcmp(Window,"All")
+        if ~isempty(app.EventPhaseSynchro) && isvalid(app.EventPhaseSynchro)
+            
+            app.EventPhaseSynchro.DataToExtractFromDropDown.Tooltip = "";
+            app.EventPhaseSynchro.EventChannelSelectionDropDown.Tooltip = "";
+            app.EventPhaseSynchro.DataTypeDropDown.Tooltip = "";
+
+            app.EventPhaseSynchro.CalculationMethodDropDown.Tooltip = "";
+            app.EventPhaseSynchro.NarrowbandCutoffLowerHigherEditField.Tooltip = "";
+            
+            app.EventPhaseSynchro.TrialSelectionMatlabExpressionsEditField.Tooltip = "";
+
+            app.EventPhaseSynchro.NarrowbandFilterorderEditField.Tooltip = "";
+            app.EventPhaseSynchro.ECHTFilterorderEditField.Tooltip = "";
+            app.EventPhaseSynchro.ForceFilterOFFCheckBox.Tooltip = "";
+
+            app.EventPhaseSynchro.ChannelSelectionDropDown.Tooltip = "";
+            app.EventPhaseSynchro.ChannelSelectionDropDown.Tooltip = "";
+
+            app.EventPhaseSynchro.ChangeLowPassParameterMenu.Tooltip = "";
+            app.EventPhaseSynchro.ShowDataAnalysedMenu.Tooltip = "";
+            app.EventPhaseSynchro.ChangeFilterTypeMenu.Tooltip = "";
+            
         end
     end
 
+    %% Load Spike Sorting results
+    if strcmp(Window,"LoadSorting") || strcmp(Window,"All")
+        if ~isempty(app.LoadfromKilosortWindowWindow) && isvalid(app.LoadfromKilosortWindowWindow)
+            app.LoadfromKilosortWindowWindow.SpikeSorterDropDown.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.AmplitudeScalingFactorEditField.Tooltip = "";
 
+            app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "";
+
+            app.LoadButton.DropDown.Tooltip = "";
+        end
+    end
+    
+    %% Save Spike Sorting results
+    if strcmp(Window,"SaveSorting") || strcmp(Window,"All")
+        if ~isempty(app.SaveforKilosortWindowWindow) && isvalid(app.SaveforKilosortWindowWindow)
+            app.SaveforKilosortWindowWindow.Dataset.Tooltip = "";
+            app.SaveforKilosortWindowWindow.SaveFormatDropDown_2.Tooltip = "";
+
+            app.SaveforKilosortWindowWindow.SaveFormatDropDown.Tooltip = "";
+            app.SaveforKilosortWindowWindow.SelectFolderManuallyButton.Tooltip = "";
+        end
+    end   
 end

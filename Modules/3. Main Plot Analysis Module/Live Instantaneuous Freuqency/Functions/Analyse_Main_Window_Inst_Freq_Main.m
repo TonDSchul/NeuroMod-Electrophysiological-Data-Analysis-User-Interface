@@ -1,4 +1,4 @@
-function [GlobalYlim,texttoshow,CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(DataToCompute,Time,Samplefrequency,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,GlobalYlim,LockYLIM,StartIndex,StopIndex,WhatToDo,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,EventData,SelectedEventIndice,EventPlot,ShowAnayzedData,LowPassSettings)
+function [GlobalYlim,texttoshow,CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(DataToCompute,Time,Samplefrequency,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,GlobalYlim,LockYLIM,StartIndex,StopIndex,WhatToDo,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,EventData,SelectedEventIndice,EventPlot,ShowAnayzedData,LowPassSettings,FilterType)
 
 %% ------------------------- Flag what was already computed ---------------------------
 % detect already present filter and downsample step
@@ -93,12 +93,22 @@ if ForceFilterOFF == 0
         % filter parameters
         nyquist = Samplefrequency/2;
         
-        % filter kernel
-        filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
-    
-        % apply the filter to the data
-        for nchannel = 1:size(DataToCompute,1)
-            DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+        if strcmp(FilterType,"Butter")
+            [b, a] = butter(filterorder, Cutoff / nyquist, 'bandpass');
+
+            % apply the filter to the data
+            for nchannel = 1:size(DataToCompute,1)
+                DataToCompute(nchannel,:) = filtfilt(b,a,double(DataToCompute(nchannel,:))); 
+            end
+            
+        elseif strcmp(FilterType,"FIR")
+            % filter kernel
+            filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
+        
+            % apply the filter to the data
+            for nchannel = 1:size(DataToCompute,1)
+                DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+            end
         end
         FlagActualBandpass = 1;
     end

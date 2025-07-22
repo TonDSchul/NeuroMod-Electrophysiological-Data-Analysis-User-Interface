@@ -248,7 +248,7 @@ if strcmp(Type,"PhaseAngleAmplitude") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.PhaseSyncPlots.PAAmpXLabel = "Time (s)";
     PlotAppearance.PhaseSyncPlots.PAAmpYLabel = "Frequency [Hz]";
-    PlotAppearance.PhaseSyncPlots.PAAmpTitle = "Instantaneous Phase All Active Channel";
+    PlotAppearance.PhaseSyncPlots.PAAmpTitle = "Instantaneous Frequency All Active Channel";
     PlotAppearance.PhaseSyncPlots.PAAmpFontSize = 11;
 
     PlotAppearance.PhaseSyncPlots.PAAmpBackgroundColor = StandardBackgroundColor; % grey

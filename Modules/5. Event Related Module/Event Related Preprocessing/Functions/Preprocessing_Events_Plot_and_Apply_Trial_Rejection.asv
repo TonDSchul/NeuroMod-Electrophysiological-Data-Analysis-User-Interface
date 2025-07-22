@@ -138,7 +138,8 @@ end
 % delete already rejected trials
 AllTrials = 1:length(Data.Events{EventChannelnr});
 if ~isempty(AlreadyRejectedTrials)
-    AllTrials(AlreadyRejectedTrials) = [];
+    AllTrials(AlreadyRejectedTrials) = NaN;
+    EventRelatedData(:,AlreadyRejectedTrials,:) = NaN;
 end
 
 % delete TrialRejection
@@ -147,33 +148,42 @@ if ~isempty(TrialsToReject)
     for i = 1:length(TrialsToReject)
         IndiceToDelete = [IndiceToDelete,find(AllTrials==TrialsToReject(i))];
         AllTrials(find(AllTrials==TrialsToReject(i))) = NaN;
+        EventRelatedData(:,find(AllTrials==TrialsToReject(i)),:) = NaN;
     end
 end
 
 AllTrials2 = 1:length(AllTrials);
 
 %% ---------------- Set Data at deleted trial indicies to NaN ----------------
-IndiciesToDelete = zeros(size(EventRelatedData,2),1)+1;
+%IndiciesToDelete = zeros(size(EventRelatedData,2),1);
 
-IndiciesToDelete(EventsToPlot) = 0;
+%IndiciesToDelete(EventsToPlot) = 0;
 
-IndiciesToDelete(IndiceToDelete) = 1;
+%IndiciesToDelete(IndiceToDelete) = 1;
 
-EventRelatedData(:,IndiciesToDelete==1,:) = NaN;
+%EventRelatedData(:,IndiciesToDelete==1,:) = NaN;
 
 %% ------------------------------------------------
 %% ---------------- Check Threshold Crossings ----------------
 %% ------------------------------------------------
-for ntrials = 1:size(EventRelatedData,2)
-    % Currenrealtrila = find(AllTrials ntrials);
-    if ~isnan(AllTrials)
-        if sum(EventRelatedData(ChannelSelection,ntrials,:) > abs(Threshold)) > 0 || sum(EventRelatedData(ChannelSelection,ntrials,:) < -abs(Threshold)) > 0
-            ThresCrossingTrials = [ThresCrossingTrials,AllTrials(ntrials)];
+for ntrials = AllTrials
+    if ~isnan(ntrials) %~isnan(AllTrials(ntrials))
+        if max(EventRelatedData(ChannelSelection,ntrials,:)) > abs(Threshold) || min(EventRelatedData(ChannelSelection,ntrials,:)) < -abs(Threshold)
+            ThresCrossingTrials = [ThresCrossingTrials,ntrials];
         end
     end
 end
 
+EventRelatedData(:,isnan(AllTrials),:) = [];
+
+if EventsToPlot>size(EventRelatedData,2)
+    EventRelatedData = EventRelatedData(:,:,:);
+else
+    EventRelatedData = EventRelatedData(:,EventsToPlot,:);
+end
+
 AllTrials(isnan(AllTrials))=[];
+AllTrials2(isnan(AllTrials2))=[];
 NumTrials = length(AllTrials);
 
 %% ------------------------------------------------
@@ -181,7 +191,7 @@ NumTrials = length(AllTrials);
 %% ------------------------------------------------
 
 %% Check if Trials to be rejected are within trialrange of dataset
-if length(find(IndiciesToDelete==0))>1
+if size(EventRelatedData,2)>1
     ERP = mean(squeeze(EventRelatedData(ChannelSelection,:,:)),1,'omitnan');
 else % just one trial
     ERP = squeeze(EventRelatedData(ChannelSelection,:,:));
@@ -190,10 +200,10 @@ end
 hold(TopFigure, 'on' )
 cla(TopFigure);
 TopFigure.NextPlot = "replace";
-if length(find(IndiciesToDelete==0))>1
-    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1),squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)))
+if size(EventRelatedData,2)>1
+    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,:,:)),1),squeeze(EventRelatedData(ChannelSelection,:,:)))
 else % just one trial
-    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:))',1),squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:))')
+    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,:,:))',1),squeeze(EventRelatedData(ChannelSelection,:,:))')
 end
 set(TopFigure,'YDir','normal');
 titlestring = strcat("Broadband Plot Channel ",OriginalChannelSelection);
@@ -203,9 +213,9 @@ ylabel(TopFigure,'Trial Identities (Trial Number)')
 title(TopFigure,titlestring)
 xlabel(TopFigure,'Time [s]')
 xlim(TopFigure,[Time(1) Time(end)]); % since this signal was low pass filtered at 200Hz
-if size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1) ~= 1
-    ylim(TopFigure,[1 size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1)]); % since this signal was low pass filtered at 200Hz
-elseif size(squeeze(EventRelatedData(ChannelSelection,IndiciesToDelete==0,:)),1) == 1
+if size(squeeze(EventRelatedData(ChannelSelection,:,:)),1) ~= 1
+    ylim(TopFigure,[1 size(squeeze(EventRelatedData(ChannelSelection,:,:)),1)]); % since this signal was low pass filtered at 200Hz
+elseif size(squeeze(EventRelatedData(ChannelSelection,:,:)),1) == 1
     ylim(TopFigure,[0.5 1.5]); % since this signal was low pass filtered at 200Hz
 end
 
@@ -230,14 +240,17 @@ for i = 1:length(a)
     a(i) = strcat(a(i),'(',b(i),')');
 end
 
-if length(a)>50
+if length(EventsToPlot)>50
+    atemp = [];
     for i = 1:10:length(a)
         atemp = [atemp,a(i)];
     end
+    TopFigure.YTick = 1:10:length(a);
+    TopFigure.YTickLabel = string(atemp);
+else
+    TopFigure.YTick = 1:length(a);
+    TopFigure.YTickLabel = string(a);
 end
-
-TopFigure.YTick = 1:length(atemp);
-TopFigure.YTickLabel = string(atemp);
 
 hold(TopFigure, 'off' )
 %% ERP
@@ -288,7 +301,7 @@ else
     set(ERPHandle(1), 'XData', Time, 'YData',ERP,'Color','k','LineWidth',2, 'Tag', 'ERP');
     MeanERP = ERPHandle(1);
 end
-EventRelatedData(:,IndiciesToDelete==1,:) = [];
+
 % plot trials
 for i = 1:size(EventRelatedData,2) % loop over trials
     if isempty(TrialsHandle)

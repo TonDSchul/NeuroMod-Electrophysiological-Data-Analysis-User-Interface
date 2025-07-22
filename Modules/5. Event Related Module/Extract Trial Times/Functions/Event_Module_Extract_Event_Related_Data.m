@@ -137,7 +137,7 @@ Data.EventRelatedData = single(Data.EventRelatedData);
 close(h);
 
 %-------------------------------------------------------------------
-%% ---------------- Preprocessed Event related data ----------------
+%% ---------------- Preprocessed Event Related Data On The Fly ----------------
 %-------------------------------------------------------------------
 if strcmp(EventDataType,"Preprocessed Event Related Data")
     if ~isfield(Data.Info,'EventRelatedPreprocessing')
@@ -165,7 +165,18 @@ if strcmp(EventDataType,"Preprocessed Event Related Data")
         end
     end
     %% ---------------- Interpolate Channel ----------------
-    if isfield(Data.Info.EventRelatedPreprocessing,'Channel Rejection')
+    if isfield(Data.Info.EventRelatedPreprocessing,'ChannelRejectionChannel')
+         % Find rejection indices for the currently selected event channel
+        Namevector = split(string(Data.Info.EventRelatedPreprocessing.ChannelRejectionEventChannelNames), ',');
+        ChannelrejectionindiciesCurrentChannel = find(Namevector == EventChannel);
+        % Select trials if event channel found
+        if ~isempty(ChannelrejectionindiciesCurrentChannel)
+            ChanneltoReject = Data.Info.EventRelatedPreprocessing.ChannelRejectionChannel(ChannelrejectionindiciesCurrentChannel);
+        else
+            ChanneltoReject = [];
+        end
+
+        [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Interpolate_Channel(Data.EventRelatedData,ChanneltoReject);
 
     end
 end

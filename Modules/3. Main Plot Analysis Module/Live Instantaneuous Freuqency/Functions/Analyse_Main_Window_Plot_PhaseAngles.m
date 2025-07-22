@@ -253,6 +253,9 @@ if ShowAnayzedData == 1
     ylim(Figure2,[min(DataToCompute,[],'all') max(DataToCompute,[],'all')]);
     ylabel(Figure2,'Signal [mV]')
     title(Figure2,'Analyzed Signal All Active Channel')
+else
+    ylabel(Figure2,'Frequency [Hz]')
+    title(Figure2,'Instantaneous Frequency')
 end
 
 %% --------------- Handle Events ---------------

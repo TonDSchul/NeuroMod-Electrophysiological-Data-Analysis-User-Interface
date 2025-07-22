@@ -821,14 +821,16 @@ if strcmp(Window,"Event_Trial_Rejection")
 end
 
 if strcmp(Window,"EventChannelRejection")   
-    set(findall(app.ChannelRejectionWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    set(findall(app.ChannelInterpolationWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.ChannelRejectionWindowUIFigure.Color  = WindowBackgroundColor;
+    app.ChannelInterpolationWindowUIFigure.Color  = WindowBackgroundColor;
     
     app.ChannelSettingsPanel.BackgroundColor  = WindowBackgroundColor;
     app.ChannelSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
     app.RejectChannelFormat11or110EditField.BackgroundColor  = ComponentsInWindowColor;
+    app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventChannelSelectionDropDown.BackgroundColor  = ComponentsInWindowColor;
 
     app.UIAxes.Color  = ComponentsInWindowColor;
     app.UIAxes.XColor = 'k';  
@@ -1656,9 +1658,9 @@ end
 
 if strcmp(Window,"InstFrequWindow")    
     % texts to black
-    set(findall(app.InstantaneousFrequencyUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    set(findall(app.InstantaneousPhaseandFrequencyUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.InstantaneousFrequencyUIFigure.Color  = WindowBackgroundColor;
+    app.InstantaneousPhaseandFrequencyUIFigure.Color  = WindowBackgroundColor;
     
     app.SettingsPanel.BackgroundColor   = WindowBackgroundColor;
     app.SettingsPanel.ForegroundColor   = WindowBackgroundColor;

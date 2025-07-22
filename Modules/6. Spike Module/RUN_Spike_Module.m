@@ -13,6 +13,7 @@ if strcmp(ModuleFunctionName,"Spike Detection and Sorting")
 elseif strcmp(ModuleFunctionName,"Save for Spike Sorting")
     
     app.SaveforKilosortWindowWindow = Save_for_Spike_Sorting_Window(app);
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"SaveSorting");
     
 elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
     
@@ -25,5 +26,6 @@ elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
     end
 
     app.LoadfromKilosortWindowWindow = Load_Spike_Sorting_Window(app);
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LoadSorting");
            
 end

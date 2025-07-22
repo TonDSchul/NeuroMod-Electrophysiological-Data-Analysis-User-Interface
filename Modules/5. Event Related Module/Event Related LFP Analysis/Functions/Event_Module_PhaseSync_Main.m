@@ -1,4 +1,4 @@
-function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToCompute,Time,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,WhatToDo,BasedOnERP,ShowAnalyzedData,DataTypeSelected)
+function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToCompute,Time,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,WhatToDo,BasedOnERP,ShowAnalyzedData,DataTypeSelected,LowPassSettings,FilterType)
 
 
 if BasedOnERP
@@ -59,12 +59,12 @@ if ForceFilterOFF == 0
             %% ------------------------- Low Pass ---------------------------
             if BasedOnERP
                 for nchannel = 1:size(DataToCompute,1)
-                    [DataToCompute(nchannel,:), ~, ~] = ft_preproc_lowpassfilter(squeeze(double(DataToCompute(nchannel,:))), Data.Info.NativeSamplingRate, 300, 4, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+                    [DataToCompute(nchannel,:), ~, ~] = ft_preproc_lowpassfilter(squeeze(double(DataToCompute(nchannel,:))), Data.Info.NativeSamplingRate, LowPassSettings.Cutoff, LowPassSettings.FilterOrder, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
                 end
             else
                 for nchannel = 1:size(DataToCompute,1)
                     for ntrials = 1:size(DataToCompute,2)
-                        [DataToCompute(nchannel,ntrials,:), ~, ~] = ft_preproc_lowpassfilter(squeeze(double(DataToCompute(nchannel,ntrials,:))), Data.Info.NativeSamplingRate, 300, 4, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+                        [DataToCompute(nchannel,ntrials,:), ~, ~] = ft_preproc_lowpassfilter(squeeze(double(DataToCompute(nchannel,ntrials,:))), Data.Info.NativeSamplingRate, LowPassSettings.Cutoff, LowPassSettings.FilterOrder, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
                     end
                 end
             end
@@ -166,17 +166,32 @@ if ForceFilterOFF == 0
         % filter parameters
         nyquist = Samplefrequency/2;
         
-        % filter kernel
-        filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
+        if strcmp(FilterType,"FIR")
+            % filter kernel
+            filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
+        elseif strcmp(FilterType,"Butter")
+            % filter kernel
+            [b, a] = butter(filterorder, Cutoff/nyquist, 'bandpass');
+        end
     
         % apply the filter to the data
         for nchannel = 1:size(DataToCompute,1)
            if BasedOnERP
-                DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+               if strcmp(FilterType,"FIR")
+                    DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+               else
+                    DataToCompute(nchannel,:) = filtfilt(b,a,double(DataToCompute(nchannel,:))); 
+               end
            else
-                for ntrials = 1:size(DataToCompute,2)
-                    DataToCompute(nchannel,ntrials,:) = filtfilt(filtkern,1,squeeze(double(DataToCompute(nchannel,ntrials,:)))); 
-                end
+               if strcmp(FilterType,"FIR")
+                    for ntrials = 1:size(DataToCompute,2)
+                        DataToCompute(nchannel,ntrials,:) = filtfilt(filtkern,1,squeeze(double(DataToCompute(nchannel,ntrials,:)))); 
+                    end
+               else
+                    for ntrials = 1:size(DataToCompute,2)
+                        DataToCompute(nchannel,ntrials,:) = filtfilt(b,a,squeeze(double(DataToCompute(nchannel,ntrials,:)))); 
+                    end
+               end
            end
         end
         FlagActualBandpass = 1;
@@ -186,7 +201,7 @@ end
 
 %% ----------------------Populate Info Field with what was done--------------------------------------------------------
 
-[texttoshow] = Analyse_Main_Window_Populate_Processing_Info(FlagActualDownsample,FlagActualLowPass,FlagActualBandpass,Samplefrequency);
+[texttoshow] = Analyse_Main_Window_Populate_Processing_Info(FlagActualDownsample,FlagActualLowPass,FlagActualBandpass,Samplefrequency,LowPassSettings);
 
 %% ----------------------Channel Selection, Phase calculation--------------------------------------------------------
 
