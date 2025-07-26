@@ -147,13 +147,13 @@ https://github.com/fieldtrip/fieldtrip
 
 Data and event extraction of Open Ephys data formats is handled by the Open Ephys Matlab Tools. As a template, the 'load_all_formats.m' function was used and completly modified. The remaining funcions are unchanged. It is also used as the source for the read_npy.m function. 
 
-Check out the **Open Ephys Matlab Tools**: 
+Check out **Open Ephys Matlab Tools**: 
 
 https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
 
 Spike sorting with Mountainsort 5, SpykingCircus 2 and Kilosort 4 in the GUI is implemented via a costume python script that uses the SpikeInterface library. 
 
-Check out the **SpikeInterface**: 
+Check out **SpikeInterface**: 
 
 https://github.com/SpikeInterface/spikeinterface
 
@@ -162,6 +162,18 @@ Spike Sorting for internally detected spikes (with thresholding) is done using t
 Check out the **Wave_clus 3 Toolbox**: 
 
 https://github.com/csn-le/wave_clus?tab=readme-ov-file#wave_clus-3
+
+Artefact Subspace Reconstruction is done usign the Clean_rawdata EEGLAB plug-in from Github
+
+Check out **Artefact Subspace Reconstruction Repository**: 
+
+https://github.com/sccn/clean_rawdata
+
+Endpoint Corrected Hilbert Transform Calculation is handled using the echt.m function from the supplementary code from:
+S. R. Schreglmann1*, D. Wang*, R. Peach*, J. Li, X. Zhang, E. Panella, 
+       E. S. Boyden, M. Barahona, S. Santaniello, K. P. Bhatia, J. Rothwel, N. Grossman
+       "Non-invasive Amelioration of Essential Tremor via Phase-Locked
+       Disruption of its Temporal Coherence".
 
 Lastly, some functions from the cortex-lab Github page were used ('Spikes' repository) for spike analysis and LFP Band power analysis. Almost all functions used were modified to make to fit the purpose of this GUI.
 
