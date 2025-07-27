@@ -11,7 +11,7 @@ This module cannot be switched with another modules since its essential!
 
 Remarks about extraction of raw amplifier data from supported recording formats:
 
-Neuralynx and Plexon data extraction is fully handled by fieldtrip, see: https://github.com/fieldtrip/fieldtrip. In the data extraction window the ft_read_header and ft_read_data functions are called with the folder and file the user selected.
+Neuralynx data extraction is fully handled by fieldtrip, see: https://github.com/fieldtrip/fieldtrip. In the data extraction window the ft_read_header and ft_read_data functions are called with the folder and file the user selected.
 
 For Open Ephys data formats the Open Ephys Analysis Tools are used, see: https://github.com/open-ephys/open-ephys-matlab-tools/tree/main. They are implemented and called through a costume compatibility function called 'Open_Ephys_Load_All_Formats.m'
 
@@ -20,14 +20,16 @@ For Spike2 Analysis, the user is required to install the Spike2 MATLAB SON Inter
 For extracting data from Intan recordings, the Intan_RHD2000_Data_Extraction function is used. It originally stems from Intan under: https://intantech.com/downloads.html?tabSelect=Software&yPos=0
 The functions used can be found in the RHD/RHS File Utilities, Matlab File Readers options of that website. NOTE: This function was heavily modified to fit the purpose of this GUI!
 
-Since all files except those from fieldtrip are modified OR require compatibility functions, updating the toolboxes will very probably lead to errors!
+Since all files except those from fieldtrip are modified OR require compatibility functions, updating the individual toolbox files in this GUI will very probably lead to errors!
 
 *****************
 
 Remarks about the folder structure when saving or loading data:
 
-1. For saving and loading data, the standard folder structure is 'Your_Recording_Path/Matlab/Name_Of_Recording_Folder.dat'. Saving your toolbox data this way will enable you to load the saved data in the autorun functionality without any additional effort later on.
-2. The Loading Data Window will auto-search the folder 'GUI_Path/Example Data' for saved files. Saving your toolbox results there ensures you can quickly load saved toolbox data without having to select folders. 
+1. For saving and loading data, the standard folder structure is 'Path_to_GUI/Recording Data/Saved GUI Data'. GUI data saved there is autodected on startup of the load data window and can be immediately loaded. 
+NOTE: When saving GUI data in 'Your_Recording_Path/Matlab/Name_Of_Recording_Folder.dat' will enable you to load the saved data in the autorun functionality without any additional effort later on!
+
+2. The Loading Data Window will auto-search the folder 'Path_to_GUI/Saved GUI Dataa' for saved files. Saving GUI data there ensures you can quickly load it without having to select a folder. 
 
 Where to save depends on what you want to do efficiently.
 
@@ -37,9 +39,10 @@ General Remarks:
 
 Each folder in this module contains one (or more) app windows for the respective functionality as well as a folder called "Functions" with all main functions necessary for this module.
 Each analysis the user can pick in this module is made out of an app window that is called in the main window when the user clicks in RUN of this module. 
-NOTE: Some functionalities for running the app windows require utility and organize functions from the "1. Main_Window_Functions" folder.
+
+NOTE: Some functionalities for running the app windows require utility and organize functions from the "1. Main Window Functions" folder.
 All necessary functions for data extraction, loading or saving are designed in a way that you can also use them outside the GUI. You just have to specify the parameters of the app window manually. See AutorunConfig variable in the Autonrun_Config files.
-The following workflows stem from the GUI. What is used outside the GUI is specified. The autorun functionality involves all aspects of the Toolbox possible and feasible to do outside of the GUI. Refer to those functions to get into more detail.
+The following workflows stems from the GUI. What is used outside the GUI is specified. The autorun functionality involves all aspects (i.e. functions) of this GUI possible and feasible to do outside of the GUI. Refer to those functions to get more details.
 
 __________________________
 GUI workflow for loading data:

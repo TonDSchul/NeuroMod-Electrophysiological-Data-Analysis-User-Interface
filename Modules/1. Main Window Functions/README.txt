@@ -4,7 +4,7 @@ Author: Tony de Schultz
 ______________________________________________
 
 
-This folder contains all functions and app windows needed for the organization, initiation and functionality of the main window as well as extra utilities for other modules. 
+This folder contains all functions and app windows needed for the organization, initiation and functionality of the main window as well as extra utilities for other modules and windows. 
 
 *****************
 

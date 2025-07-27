@@ -73,7 +73,7 @@ if strcmp(Format,".dat")
             mmf = memmapfile(FullPath, 'Format', {'int16', [nchan ntime], 'x'});
             Datatoload.Raw = mmf.Data.x(1:nchan,1:dN);
             Datatoload.Raw = single(Datatoload.Raw) / Header.Info.scalingFactor;
-            Datatoload.Preprocessed = Datatoload.Raw;
+            %Datatoload.Preprocessed = Datatoload.Raw;
 
         elseif Header.Whattosave(1) == 1 && Header.Whattosave(2) == 1
   

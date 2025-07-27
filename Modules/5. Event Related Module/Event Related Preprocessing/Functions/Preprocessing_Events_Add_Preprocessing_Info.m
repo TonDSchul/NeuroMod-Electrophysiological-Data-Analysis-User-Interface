@@ -69,30 +69,32 @@ if strcmp(EventRelatedPreprocessingType,'Channel Rejection')
 
 elseif strcmp(EventRelatedPreprocessingType,'Trial Rejection')
     %% ------------ Check if Trials to be rejected are within trialrange of dataset ------------
-    if ~isempty(TrialSelection) 
-        AlreadyRejectedTrials = [];
-        if isfield(Data.Info,'EventRelatedPreprocessing')
-            if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
-                % Find rejection indices for the currently selected event channel
-                Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
-                TrialrejectionindiciesCurrentChannel = find(Namevector == EventChannelName);
-                % Select trials if event channel found
-                if ~isempty(TrialrejectionindiciesCurrentChannel)
-                    AlreadyRejectedTrials = Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel);
-                else
-                    AlreadyRejectedTrials = [];
-                end
-            end
-        end
-        % check if trials where already deleted
-        if ~isempty(AlreadyRejectedTrials)
-            if ~isempty(intersect(AlreadyRejectedTrials, TrialSelection))
-                msgbox(strcat("Error: Trial(s) number ",num2str(intersect(AlreadyRejectedTrials, TrialSelection))," where already deleted! Returning"));
-                Error = 1;
-                return;
-            end
-        end
-    end
+    % if ~isempty(TrialSelection) 
+    %     AlreadyRejectedTrials = [];
+    %     if isfield(Data.Info,'EventRelatedPreprocessing')
+    %         if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+    %             %Find rejection indices for the currently selected event channel
+    %             Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
+    %             TrialrejectionindiciesCurrentChannel = find(Namevector == EventChannelName);
+    %             %Select trials if event channel found
+    %             if ~isempty(TrialrejectionindiciesCurrentChannel)
+    %                 AlreadyRejectedTrials = Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel);
+    %             else
+    %                 AlreadyRejectedTrials = [];
+    %             end
+    %         end
+    %     end
+    % 
+    %     % check if trials where already deleted
+    %     if ~isempty(AlreadyRejectedTrials)
+    %         %% Now change currently selected channel in true channel idenetites based on already rejected trials
+    %         if ~isempty(intersect(AlreadyRejectedTrials, TrialSelection))
+    %             msgbox(strcat("Error: Trial(s) number ",num2str(intersect(AlreadyRejectedTrials, TrialSelection))," where already deleted! Returning"));
+    %             Error = 1;
+    %             return;
+    %         end
+    %     end
+    % end
 
 
     %% ------------ Add Info that trial rejection was done ------------
@@ -110,7 +112,14 @@ elseif strcmp(EventRelatedPreprocessingType,'Trial Rejection')
     %% ------------ trials affected by channel rejection ------------
     % one to one mapping between trials rejected and event channel names
     if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials') % add if already existent
-        Data.Info.EventRelatedPreprocessing.TrialRejectionTrials = [Data.Info.EventRelatedPreprocessing.TrialRejectionTrials,TrialSelection];
+        % newly delted trials are not in indice space of orignal
+        % eventrelated data. So indices have to be converted.
+        %for example first deleteion: trial 10. Then open again, user can
+        %again select trial 10. But now this correspinds to trial 11 in the
+        %orignal trial space
+        [NewTrialsToDelete] = Preprocessing_Events_Get_Original_Trial_Indice(TrialSelection,Data.Info.EventRelatedPreprocessing.TrialRejectionTrials);
+
+        Data.Info.EventRelatedPreprocessing.TrialRejectionTrials = [Data.Info.EventRelatedPreprocessing.TrialRejectionTrials,NewTrialsToDelete];
         repeatedEventChannelName = strjoin(repmat({EventChannelName}, 1, length(TrialSelection)), ',');
         Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames = strcat(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames,',',repeatedEventChannelName);
     else % new if not existent

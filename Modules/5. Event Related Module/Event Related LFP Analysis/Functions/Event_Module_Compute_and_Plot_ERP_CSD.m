@@ -166,15 +166,55 @@ if isempty(CSD)
             ylim(Figure,[0.5 size(EventRelatedData,2) + 0.5]); 
 
             TempYlim = [0.5 size(EventRelatedData,2)+0.5];  % for event line y limits
-            ylabel(Figure,'Trials')
-            
-            if length(1:length(EventNr))<=50
-                Figure.YTick = 1:length(EventNr);
-                Figure.YTickLabel = string(EventNr);
+
+            if strcmp(DataType,"Preprocessed Event Related Data")
+                if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+                    ylabel(Figure,'Trial Identities (Trial Numbers)')
+                    %% costume y labels
+                    TrialNumbers = string(1:size(Data.PreprocessedEventRelatedData,2));
+                    
+                    OriginalTrials = 1:size(Data.EventRelatedData,2);
+                    OriginalTrials(ismember(OriginalTrials,Data.Info.EventRelatedPreprocessing.TrialRejectionTrials)) = [];
+                    TrialIdentities = string(OriginalTrials);
+                    
+                    a = strings;
+                    for i = 1:length(TrialNumbers)
+                        a(i) = strcat(TrialIdentities(i),"(",TrialNumbers(i),")");
+                    end
+                    
+                    if length(1:length(EventNr))>=50
+                        atemp = [];
+                        for i = 1:10:length(a)
+                            atemp = [atemp,a(i)];
+                        end
+                        Figure.YTick = 1:10:length(a);
+                        Figure.YTickLabel = string(atemp);
+                    else
+                        Figure.YTick = 1:length(a);
+                        Figure.YTickLabel = string(a);
+                    end
+                else
+                    ylabel(Figure,'Trial Numbers')
+                    if length(1:length(EventNr))<=50
+                        Figure.YTick = 1:length(EventNr);
+                        Figure.YTickLabel = string(EventNr);
+                    else
+                        Figure.YTick = 1:10:length(EventNr);
+                        Figure.YTickLabel = string(1:10:length(EventNr));
+                    end
+                end
             else
-                Figure.YTick = 1:10:length(EventNr);
-                Figure.YTickLabel = string(1:10:length(EventNr));
+                ylabel(Figure,'Trial Numbers')
+                if length(1:length(EventNr))<=50
+                    Figure.YTick = 1:length(EventNr);
+                    Figure.YTickLabel = string(EventNr);
+                else
+                    Figure.YTick = 1:10:length(EventNr);
+                    Figure.YTickLabel = string(1:10:length(EventNr));
+                end
             end
+
+
             
             set(Figure, 'YDir', 'normal') 
 

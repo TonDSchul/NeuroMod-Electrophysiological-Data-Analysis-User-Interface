@@ -540,7 +540,7 @@ if Activated
             app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "Manaully select the folder in which spike sorting results of one of the support sorters is saved.";
             app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "Manaully select the amplitude scaling factor .mat file created when saving data for spike sorters.";
 
-            app.LoadButton.DropDown.Tooltip = "Click to load sorting results with the parameters above.";
+            app.LoadfromKilosortWindowWindow.LoadButton.Tooltip = "Click to load sorting results with the parameters above.";
         end
     end
     

@@ -5,11 +5,18 @@ ______________________________________________
 
 This is the standard folder to save your costume channel orders, kilosort channelmaps and quick load probe information for your probe design in (from the GUI). 
 
-1. Channel orders are saved as a .mat file for GUI internal use and can be loaded and saved in the 'Probe_Layout_Window'. To save enter a channel order an click the save channel order button.
+Folder Descriptions:
 
-2. Kilosort channel maps can be created based on the same information in the 'Probe_Layout_Window'. They are necessary for Kilosort to work properly. 
-   You can create them yourself in Kilosort, however doing it here is easier and ensures full compatibility of channel maps actually used by Kilosort and expected by the GUI.
+1. Active Channel:       Contains .mat files with a vector called ActiveChannel holding all active channel saved for a specific probe layout.
+2. Channel Order:        Contains .mat files with a vector called Channelorder holding a costume channel order saved for a specific probe layout.
+3. Kilosort Channelmaps: Contains .mat files with all variables needed to load a costume probe layout into the external Kilosort GUI.
+4. Saved Probe Layouts:  Contains .mat files with a structure holding all variables needed to load a costume probe layout back into this GUI.
+5. Trajectories:         Contains .mat files with all variables needed to load a probe trajectory saved with the Neuropixels Trajectory Explorer (can be opened in the Raw Data Extraction window when an allen brain atlas is selected (see README for more information)).
 
-3. Quick load probe information can also be saved in the 'Probe_Layout_Window' and selected in the menu on top of the 'Extract Data Window'. This way you don't have to select channel order and channel spacing every time you want to extract a recording for which probe information are not changing.
+General Remarks:
+
+All .mat files for folders 1 to 4 can be saved and loaded in the Probe Layout Window (and loaded int the Extract Raw Data Window). It is recommended to save in those folders for the autodetection to work so that you can quickly select a file in the menu rather than first having to select a costume folder. 
+
+Kilosort channel maps can be created in Kilosort thee Kilosort GUI itself, however doing it here is easier and ensures full compatibility of channel maps actually used by Kilosort and expected by the GUI.
 
 

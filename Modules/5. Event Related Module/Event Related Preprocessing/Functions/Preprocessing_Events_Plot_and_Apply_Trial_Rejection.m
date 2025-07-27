@@ -99,29 +99,29 @@ end
 %% ------------------------------------------------
 %% ---------------- Check If selected trials where already deleted ----------------
 %% ------------------------------------------------
-AlreadyRejectedTrials = [];
-if isfield(Data.Info,'EventRelatedPreprocessing')
-    if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
-        % Find rejection indices for the currently selected event channel
-        Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
-        TrialrejectionindiciesCurrentChannel = find(Namevector == EventChannelname);
-        % Select trials if event channel found
-        if ~isempty(TrialrejectionindiciesCurrentChannel)
-            AlreadyRejectedTrials = Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel);
-        else
-            AlreadyRejectedTrials = [];
-        end
-    end
-end
-if ~isempty(TrialsToReject) 
-    % check if trials where already deleted
-    if ~isempty(AlreadyRejectedTrials)
-        if ~isempty(intersect(AlreadyRejectedTrials, TrialsToReject))
-            msgbox(strcat("Error: Trial(s) number ",num2str(intersect(AlreadyRejectedTrials, TrialsToReject))," where already deleted! Returning"));
-            return;
-        end
-    end
-end
+% AlreadyRejectedTrials = [];
+% if isfield(Data.Info,'EventRelatedPreprocessing')
+%     if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+%         % Find rejection indices for the currently selected event channel
+%         Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');
+%         TrialrejectionindiciesCurrentChannel = find(Namevector == EventChannelname);
+%         % Select trials if event channel found
+%         if ~isempty(TrialrejectionindiciesCurrentChannel)
+%             AlreadyRejectedTrials = Data.Info.EventRelatedPreprocessing.TrialRejectionTrials(TrialrejectionindiciesCurrentChannel);
+%         else
+%             AlreadyRejectedTrials = [];
+%         end
+%     end
+% end
+% if ~isempty(TrialsToReject) 
+%     % check if trials where already deleted
+%     if ~isempty(AlreadyRejectedTrials)
+%         if ~isempty(intersect(AlreadyRejectedTrials, TrialsToReject))
+%             msgbox(strcat("Error: Trial(s) number ",num2str(intersect(AlreadyRejectedTrials, TrialsToReject))," where already deleted! Returning"));
+%             return;
+%         end
+%     end
+% end
 
 %% ------------------------------------------------
 %% ---------------- Set up vector with all presevered trial identities ----------------
@@ -135,12 +135,6 @@ for i = 1:length(Data.Info.EventChannelNames)
     end
 end
 
-% delete already rejected trials
-
-% if ~isempty(AlreadyRejectedTrials)
-%     AllTrials(AlreadyRejectedTrials) = [];
-% end
-
 % delete TrialRejection
 AllTrials = 1:size(EventRelatedData,2);
 IndiceToDelete = [];
@@ -153,15 +147,6 @@ if ~isempty(TrialsToReject)
 end
 
 AllTrials2 = 1:length(AllTrials);
-
-%% ---------------- Set Data at deleted trial indicies to NaN ----------------
-%IndiciesToDelete = zeros(size(EventRelatedData,2),1);
-
-%IndiciesToDelete(EventsToPlot) = 0;
-
-%IndiciesToDelete(IndiceToDelete) = 1;
-
-%EventRelatedData(:,IndiciesToDelete==1,:) = NaN;
 
 %% ------------------------------------------------
 %% ---------------- Check Threshold Crossings ----------------
@@ -239,25 +224,75 @@ TopFigure.Title.Color  = [0 0 0];
 TopFigure.Box  = 0;
 ylim(TopFigure,[0.5,min(length(AllTrials),length(EventsToPlot))+0.5])
 drawnow;
-%% costume y labels
-a = string(AllTrials);
-b = string(AllTrials2);
 
-for i = 1:length(a)
-    a(i) = strcat(a(i),'(',b(i),')');
-end
-
-if length(EventsToPlot)>50
-    atemp = [];
-    for i = 1:10:length(a)
-        atemp = [atemp,a(i)];
+if isfield(Data.Info,'EventRelatedPreprocessing')
+    if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
+        %% costume y labels
+        TrialNumbers = string(AllTrials);
+        
+        OriginalTrials = 1:size(Data.EventRelatedData,2);
+        OriginalTrials(ismember(OriginalTrials,Data.Info.EventRelatedPreprocessing.TrialRejectionTrials)) = [];
+        TrialIdentities = string(OriginalTrials);
+        
+        a = strings;
+        for i = 1:length(TrialNumbers)
+            a(i) = strcat(TrialIdentities(i),'(',TrialNumbers(i),')');
+        end
+        
+        if length(EventsToPlot)>50
+            atemp = [];
+            for i = 1:10:length(a)
+                atemp = [atemp,a(i)];
+            end
+            TopFigure.YTick = 1:10:length(a);
+            TopFigure.YTickLabel = string(atemp);
+        else
+            TopFigure.YTick = 1:length(a);
+            TopFigure.YTickLabel = string(a);
+        end
+    else
+        %% costume y labels
+        TrialNumbers = string(AllTrials);
+            
+        a = strings;
+        for i = 1:length(TrialNumbers)
+            a(i) = strcat(TrialNumbers(i),'(',TrialNumbers(i),')');
+        end
+        
+        if length(EventsToPlot)>50
+            atemp = [];
+            for i = 1:10:length(a)
+                atemp = [atemp,a(i)];
+            end
+            TopFigure.YTick = 1:10:length(a);
+            TopFigure.YTickLabel = string(atemp);
+        else
+            TopFigure.YTick = 1:length(a);
+            TopFigure.YTickLabel = string(a);
+        end
     end
-    TopFigure.YTick = 1:10:length(a);
-    TopFigure.YTickLabel = string(atemp);
 else
-    TopFigure.YTick = 1:length(a);
-    TopFigure.YTickLabel = string(a);
+    %% costume y labels
+        TrialNumbers = string(AllTrials);
+            
+        a = strings;
+        for i = 1:length(TrialNumbers)
+            a(i) = strcat(TrialNumbers(i),'(',TrialNumbers(i),')');
+        end
+        
+        if length(EventsToPlot)>50
+            atemp = [];
+            for i = 1:10:length(a)
+                atemp = [atemp,a(i)];
+            end
+            TopFigure.YTick = 1:10:length(a);
+            TopFigure.YTickLabel = string(atemp);
+        else
+            TopFigure.YTick = 1:length(a);
+            TopFigure.YTickLabel = string(a);
+        end
 end
+
 
 hold(TopFigure, 'off' )
 %% ERP

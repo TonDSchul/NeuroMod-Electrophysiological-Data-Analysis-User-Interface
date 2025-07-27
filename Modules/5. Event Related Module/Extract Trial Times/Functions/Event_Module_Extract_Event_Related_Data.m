@@ -74,7 +74,11 @@ end
 
 ntimepoints = NumSamplesBefore+NumSamplesAfter+1;
 
-h = waitbar(0, 'Extracting Event Related Data...', 'Name','Extracting Event Related Data...');
+if strcmp(EventDataType,"Preprocessed Event Related Data")
+    h = waitbar(0, 'Extracting Preprocessed Event Related Data...', 'Name','Extracting Preprocessed Event Related Data...');
+else
+    h = waitbar(0, 'Extracting Event Related Data...', 'Name','Extracting Event Related Data...');
+end
 
 %-------------------------------------------------------------------
 %% ---------------- Start Data Extraction ----------------
@@ -92,7 +96,11 @@ if strcmp(DataToExtractFrom,"Raw Data")
 
         % Update the progress bar
         fraction = nevents/length(Data.Events{EventChannelNr});
-        msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
+        if strcmp(EventDataType,"Preprocessed Event Related Data")
+            msg = sprintf('Extracting Preprocessed Event Related Data... (%d%% done)', round(100*fraction));
+        else
+            msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
+        end
         waitbar(fraction, h, msg);
     end
 elseif strcmp(DataToExtractFrom,"Preprocessed Data")
@@ -109,7 +117,11 @@ elseif strcmp(DataToExtractFrom,"Preprocessed Data")
 
         % Update the progress bar
         fraction = nevents/length(Data.Events{EventChannelNr});
-        msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
+        if strcmp(EventDataType,"Preprocessed Event Related Data")
+            msg = sprintf('Extracting Preprocessed Event Related Data... (%d%% done)', round(100*fraction));
+        else
+            msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
+        end
         waitbar(fraction, h, msg);
     end
 end
@@ -144,10 +156,7 @@ if strcmp(EventDataType,"Preprocessed Event Related Data")
         warning('No prepro information added for event related data but preprocessing requested. Step is skipped instead.')
         return;
     end
-    
-    %% ---------------- Create Prepro Dataset ----------------
-    Data.PreprocessedEventRelatedData = Data.EventRelatedData;
-    
+        
     %% ---------------- Delete Trials ----------------
     if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
         % Find rejection indices for the currently selected event channel
@@ -159,6 +168,9 @@ if strcmp(EventDataType,"Preprocessed Event Related Data")
         else
             TrialsToReject = [];
         end
+        
+        %% ---------------- Create Prepro Dataset ----------------
+        Data.PreprocessedEventRelatedData = Data.EventRelatedData;
         
         if ~isempty(TrialsToReject)
             Data.PreprocessedEventRelatedData(:,TrialsToReject,:) = [];
@@ -175,8 +187,13 @@ if strcmp(EventDataType,"Preprocessed Event Related Data")
         else
             ChanneltoReject = [];
         end
-
-        [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Interpolate_Channel(Data.EventRelatedData,ChanneltoReject);
+        
+        if isfield(Data,'PreprocessedEventRelatedData')
+            %% ---------------- Create Prepro Dataset ----------------
+            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Interpolate_Channel(Data.PreprocessedEventRelatedData,ChanneltoReject);
+        else
+            [Data.PreprocessedEventRelatedData] = Preprocessing_Events_Interpolate_Channel(Data.EventRelatedData,ChanneltoReject);
+        end
 
     end
 end

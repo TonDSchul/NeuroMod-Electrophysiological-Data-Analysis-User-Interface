@@ -50,70 +50,51 @@ elseif Whattosave(1) == 0 && Whattosave(2) == 1
     msgbox("Warning: Only preprocessed data is saved. When loading this dataset, GUI will copy preprocessed data and take it as raw data.");
 end
 
+%% -------------------- Only Raw Data -------------------- 
 if Whattosave(1) == 1 && Whattosave(2) == 0 
-
     %% If just Raw Data saved: Delete preprocessing infos from Data.Info structure.
     % They all come after the field "ChannelOrder
     % Find the index of the specific field
     [Data,Error] = Organize_Delete_Dataset_Components(Data,"Preprocessed");
 end
+
+%% -------------------- Only Preprocessed Data -------------------- 
  % If only Preprocessed Data saved: Delete Raw, leave everything else as it
  % is. When loading: Raw Data = Preprocessed
 if Whattosave(1) == 0 && Whattosave(2) == 1
     if isfield(Data,"Preprocessed")
-        if isfield(Data,'Raw')
-            fieldsToDelete = {'Raw'};
+        Data.Raw = Data.Preprocessed;
+        if isfield(Data,'Preprocessed')
+            fieldsToDelete = {'Preprocessed'};
             % Delete fields
             Data = rmfield(Data, fieldsToDelete);
         end
         if isfield(Data.Info,'DownsampleFactor')
+            % prepro info as new standard info
             Data.Time = Data.TimeDownsampled;
             Data.Info.NativeSamplingRate = Data.Info.DownsampledSampleRate;
-            Data.Info.num_data_points = length(Data.Time);
+            Data.Info.num_data_points = length(Data.TimeDownsampled);
     
-            fieldsToDelete = {'TimeDownsampled','DownsampledSampleRate'};
+            fieldsToDelete = {'DownsampledSampleRate'};
+            % Delete fields
+            Data.Info = rmfield(Data.Info, fieldsToDelete);
+
+            fieldsToDelete = {'TimeDownsampled'};
             % Delete fields
             Data = rmfield(Data, fieldsToDelete);
+
+
             fieldsToDelete = {'DownsampleFactor'};
             % Delete fields
             Data.Info = rmfield(Data.Info, fieldsToDelete);
         end
-    
-        if isfield(Data.Info,'EventRelatedDataType')
-            if strcmp(Data.Info.EventRelatedDataType,"Raw")
-                msgbox("Event related data is based on raw data and will be deleted");
-                if isfield(Data,'EventRelatedData')
-                    fieldsToDelete = {'EventRelatedData'};
-                    % Delete fields
-                    Data = rmfield(Data, fieldsToDelete);
-                    fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
-                    Data.Info = rmfield(Data.Info, fieldsToDelete);
-                end
-                if isfield(Data,'PreprocessedEventRelatedData')
-                    fieldsToDelete = {'PreprocessedEventRelatedData'};
-                    % Delete fields
-                    Data = rmfield(Data, fieldsToDelete);
-            
-                    if isfield(Data.Info,'EventRelatedPreprocessing')
-                        fieldsToDelete = {'EventRelatedPreprocessing'};
-                        % Delete fields
-                        Data.Info = rmfield(Data.Info, fieldsToDelete);
-                    end 
-                end
-            end
-        end
-        if isfield(Data,'EventRelatedSpikes')
-            fieldsToDelete = {'EventRelatedSpikes'};
-            % Delete fields
-            Data = rmfield(Data, fieldsToDelete);
-        end
-
     else
         Whattosave(1) = 1;
         Whattosave(2) = 0;
     end
 end
 
+%% -------------------- Raw and Preprocessed Data -------------------- 
 if Whattosave(1) == 1 && Whattosave(2) == 1
     if ~isfield(Data,"Preprocessed")
         Whattosave(2) = 0;
@@ -126,18 +107,11 @@ if Whattosave(1) == 1 && Whattosave(2) == 1
         Data.Info.num_data_points_Downsampled = length(Data.TimeDownsampled);
     end
 end
-
+%% -------------------- Event Data-------------------- 
 if Whattosave(3) == 0
-    % If no events saved: Delete Info fields about events
     if isfield(Data,'Events')
-        fieldsToDelete = {'Events'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-        if isfield(Data.Info,'EventChannelType')
-            fieldsToDelete = {'EventChannelType', 'EventChannelNames'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
+        % If no events saved: Delete Info fields about events
+        [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
     end
 else
     if ~isfield(Data,'Events')
@@ -148,42 +122,10 @@ else
         end
     end
 end
-
+%% -------------------- Spike Data-------------------- 
 if Whattosave(4) == 0
     if isfield(Data,'Spikes')
-        fieldsToDelete = {'Spikes'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-        if isfield(Data.Info,'SpikeDetectionThreshold')
-            fieldsToDelete = {'SpikeDetectionThreshold'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-        if isfield(Data.Info,'KilosortScalingFactor')
-            fieldsToDelete = {'KilosortScalingFactor'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-    
-        if isfield(Data.Info,'SpikeSorting')
-            fieldsToDelete = {'SpikeSorting'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-    
-        if isfield(Data.Info,'Sorter')
-            fieldsToDelete = {'Sorter'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-    
-        if isfield(Data.Info,'SpikeDetectionNrStd')
-            fieldsToDelete = {'SpikeDetectionNrStd'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-
-        Data.Info.SpikeType = "Non";
+        [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
     end
 else
     if ~isfield(Data,'Spikes')
@@ -194,88 +136,76 @@ else
         end
     end
 end
-
+%% -------------------- Event Related Data-------------------- 
 if Whattosave(5) == 0
     if isfield(Data,'EventRelatedData')
+        [Data,~] = Organize_Delete_Dataset_Components(Data,"EventRelatedData");
+    end
+else
+    % First delete, then ask which settings 
+    if isfield(Data,'EventRelatedData')
         fieldsToDelete = {'EventRelatedData'};
-        % Delete fields
         Data = rmfield(Data, fieldsToDelete);
+    end
 
-        if Whattosave(6) == 0
-            if isfield(Data.Info,'EventRelatedDataChannel')
-                fieldsToDelete = {'EventRelatedDataChannel','EventRelatedDataType','EventRelatedDataTimeRange','EventRelatedActiveChannel'};
-                Data.Info = rmfield(Data.Info, fieldsToDelete);
-
-                if isfield(Data.Info,'EventRelatedPreprocessing')
-                    fieldsToDelete = {'EventRelatedPreprocessing'};
-                    % Delete fields
-                    Data.Info = rmfield(Data.Info, fieldsToDelete);
-                end 
+    if ~isfield(Data,'EventRelatedData')
+        ERDParameterWindow = Ask_ERD_Parameter(Data,"Raw Event Related Data");
+        
+        uiwait(ERDParameterWindow.AskForEventRelatedDataExtractionUIFigure);
+        
+        if isvalid(ERDParameterWindow)
+            if ~isempty(ERDParameterWindow.ERDParameter)
+                [Data,~] = Event_Module_Extract_Event_Related_Data(Data,ERDParameterWindow.ERDParameter.EventChannel,ERDParameterWindow.ERDParameter.TimearoundEvent,ERDParameterWindow.ERDParameter.DatatoExtractFrom,"Raw Event Related Data");
+            else
+                msgbox("No event related data extracted.")
+            end
+            try
+                delete(ERDParameterWindow)
+            end
+        else
+            msgbox("No event related data extracted.")
+            try
+                delete(ERDParameterWindow)
             end
         end
     end
 
-    if isfield(Data,'EventRelatedSpikes')
-        fieldsToDelete = {'EventRelatedSpikes'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-    end
-else
-    if ~isfield(Data,'EventRelatedSpikes')
+    if ~isfield(Data,'EventRelatedData')
         Whattosave(5) = 0;
     else
-        if isempty(Data.EventRelatedSpikes)
+        if isempty(Data.EventRelatedData)
             Whattosave(5) = 0;
         end
     end
 end
-
+%% -------------------- Preprocessed Event Related Data-------------------- 
 if Whattosave(6) == 0
     if isfield(Data,'PreprocessedEventRelatedData')
-        fieldsToDelete = {'PreprocessedEventRelatedData'};
-        % Delete fields
-        Data = rmfield(Data, fieldsToDelete);
-
-        if isfield(Data.Info,'EventRelatedPreprocessingType')
-            fieldsToDelete = {'EventRelatedPreprocessingType'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-
-        if isfield(Data.Info,'TrialRejectionChannel')
-            fieldsToDelete = {'TrialRejectionChannel'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-        if isfield(Data.Info,'TrialRejectionTrials')
-            fieldsToDelete = {'TrialRejectionTrials'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-
-        if isfield(Data.Info,'ArtefactRejectionChannel')
-            fieldsToDelete = {'ArtefactRejectionChannel'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-        if isfield(Data.Info,'ArtefactRejectionTrials')
-            fieldsToDelete = {'ArtefactRejectionTrials'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-        if isfield(Data.Info,'ArtefactRejectionTimeRange')
-            fieldsToDelete = {'ArtefactRejectionTimeRange'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-
-        if isfield(Data.Info,'ChannelRejectionChannel')
-            fieldsToDelete = {'ChannelRejectionChannel'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-        if isfield(Data.Info,'ChannelRejectionTrials')
-            fieldsToDelete = {'ChannelRejectionTrials'};
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-        
-        Data.Info.EventRelatedActiveChannel = Data.Info.ProbeInfo.ActiveChannel;
-        
+        [Data,~] = Organize_Delete_Dataset_Components(Data,"PreprocessedEventRelatedData");        
     end
 else
+    % First delete, then ask which settings 
+    if isfield(Data,'PreprocessedEventRelatedData')
+        fieldsToDelete = {'PreprocessedEventRelatedData'};
+        Data = rmfield(Data, fieldsToDelete);
+    end
+
+    if ~isfield(Data,'PreprocessedEventRelatedData')
+        ERDParameterWindowPrepr = Ask_ERD_Parameter(Data,"Preprocessed Event Related Data");
+        
+        uiwait(ERDParameterWindowPrepr.AskForEventRelatedDataExtractionUIFigure);
+        
+        if isvalid(ERDParameterWindowPrepr)
+            if ~isempty(ERDParameterWindowPrepr.ERDParameter)
+                [Data,~] = Event_Module_Extract_Event_Related_Data(Data,ERDParameterWindowPrepr.ERDParameter.EventChannel,ERDParameterWindowPrepr.ERDParameter.TimearoundEvent,ERDParameterWindowPrepr.ERDParameter.DatatoExtractFrom,"Preprocessed Event Related Data");
+            else
+                msgbox("No preprocessed event related data extracted.")
+            end
+        else
+            msgbox("No preprocessed event related data extracted.")
+        end
+    end
+    
     if ~isfield(Data,'PreprocessedEventRelatedData')
         Whattosave(6) = 0;
     else
@@ -285,6 +215,7 @@ else
     end
 end
 
+%% -------------------- Save -------------------- 
 PathToSave = (strcat(executablefolder,'\Recording Data\Saved GUI Data\'));
 
 if ~isempty(Data)
@@ -454,18 +385,18 @@ if ~isempty(Data)
             filenamePrepro = filename; 
 
             % Find the maximum absolute value in the vector
-            maxAbsValue = max(max(abs(Data.Preprocessed)));
+            maxAbsValue = max(max(abs(Data.Raw)));
             
             % Calculate the scaling factor
             scalingFactor = double(int16Max) / double(maxAbsValue);
             Data.Info.scalingFactor = scalingFactor;
             % Apply the scaling factor
-            Data.Preprocessed = int16(Data.Preprocessed .* scalingFactor);
+            Data.Raw = int16(Data.Raw .* scalingFactor);
 
             h = waitbar(0, 'Saving data...', 'Name','Saving data...');
             cN = 1000;  % number of steps/chunks
             % Divide the data into chunks (last chunk is smaller than the rest)
-            dN = size(Data.Preprocessed,2);
+            dN = size(Data.Raw,2);
             % Check if numSteps is an integer
             if mod(dN, cN) ~= 0
                 % If not, adjust chunks to be the closest divisor of nTimePoints
@@ -481,7 +412,7 @@ if ~isempty(Data)
                waitbar(fraction, h, msg);
                % Save the next data chunk
                %chunkData = Data.Preprocessed(:,dataIdx(chunkIdx+1) : dataIdx(chunkIdx+2)-1);
-               fwrite(fidPrepro,Data.Preprocessed(:,dataIdx(chunkIdx+1) : dataIdx(chunkIdx+2)-1), 'int16');
+               fwrite(fidPrepro,Data.Raw(:,dataIdx(chunkIdx+1) : dataIdx(chunkIdx+2)-1), 'int16');
             end
 
             fclose(fidPrepro);
@@ -517,3 +448,6 @@ else
     f = msgbox("An Error occured in 'Module_SaveData' function. Please check the 'Whattosave' Variable and that there is data in the strucutre to save.");
 end
 
+try
+    delete(ERDParameterWindowPrepr)
+end

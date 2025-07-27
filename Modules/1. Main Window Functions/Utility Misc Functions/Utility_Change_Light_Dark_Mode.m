@@ -1887,3 +1887,15 @@ if strcmp(Window,'AskForFilterSettingsInstFrequ')
     app.CutoffFreuqencyEditField.BackgroundColor   = ComponentsInWindowColor;
     app.FilterOrderEditField.BackgroundColor   = ComponentsInWindowColor;
 end
+
+
+if strcmp(Window,"Ask_For_ERD_Parameter")    
+    % texts to black
+    set(findall(app.AskForEventRelatedDataExtractionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.AskForEventRelatedDataExtractionUIFigure.Color  = WindowBackgroundColor;
+
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.DataToExtractFromDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.EventChannelSelectionDropDown.BackgroundColor   = ComponentsInWindowColor;
+end
