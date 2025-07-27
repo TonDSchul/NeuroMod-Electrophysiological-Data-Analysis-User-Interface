@@ -185,7 +185,7 @@ https://github.com/cortex-lab/spikes
 
 > ### **How to Install SpikeInterface for Spike Sorting in Neuromod**
 
-First you have to install python and anaconda. To make sure there are no permission errors, set the anaconda promt to open always with admin rights. **Optional:** Create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment and type 'conda activate <YourEnvironmentName>' to activate the environment. Then install the necessary packages using these commands: (Alternatively just copy paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment)
+First you have to install Python and Anaconda. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights. **Optional:** Create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment ('conda activate <YourEnvironmentName>') and install the necessary packages using these commands: (Alternatively just copy paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment)
 For some of the following packages you need to install Visual Studios C++ as well!
 
 ```python
@@ -215,7 +215,7 @@ pip uninstall torch
 conda install pytorch pytorch-cuda=11.8 -c pytorch -c nvidia
 ```
 
-To load sorting results from SpikeInterface spike sorting that you create with your own code or the respective package GUI's OUTSIDE of Neuromod, you need to save the results as .npy files with the export_to_phy function (like the native Kilosort output) and you additionally need to save a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface: 
+To load sorting results from SpikeInterface spike sorting that you create with your own code or the respective package GUI's OUTSIDE of Neuromod, you need to save the results as .npy files for example with the export_to_phy function (like the native Kilosort output) and you additionally need to save a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface: 
 
 ```python
 compute_dict = {
@@ -232,9 +232,7 @@ export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=F
 
 If you install Kilosort in your SpikeInterface environment and the error occurs: invalid literal for int() with base 10: 'KMeans is known to have a memory leak on Windows with MKL', follow these instructions to change your environmental variables in windows: https://stackoverflow.com/questions/69596239/how-to-avoid-memory-leak-when-dealing-with-kmeans-for-example-in-this-code-i-am
 
-**IMPORTANT:** When you execute SpikeInterface for the first time within Neuromod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administartor! Otherwise the command window won't open, but sorting is conducted anyway! You just don't know when it finishes.
-
-After selecting it, a command window opens showing you the progress of the SpikeInterface sorting. If this command window should not open, right clickt the python.exe you selected, click properties change the 'compatibility' settings under properties of the python exe and 
+**IMPORTANT:** When you execute SpikeInterface for the first time within Neuromod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. In doubt activate the environment (see above) and type in echo %CONDA_PREFIX% to see the path for the python.exe. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
 
 > ### **About Performance**
 > 
@@ -250,23 +248,23 @@ GraphicsRenderer: 'OpenGL Hardware'
          Details: [1×1 struct]
 ```
 
-When saving your dataset for later use in the GUI, raw and preprocessed is saved as a .dat file in binary format independent of the format of the original dataset. This saves not only memory, but also enables to load the raw and preprocessed dataset within seconds (given they are saved on a SSD)
+When saving your dataset for later use in the GUI, raw and preprocessed is saved as a .dat file in binary format independent of the format of the original dataset. This saves not only memory, but also enables to load the raw and preprocessed dataset within seconds (given they are saved on a SSD).
 
 > ### **General Remarks**
 
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
-- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\6. Modified\ . When you just update the not modified files, there is no guarantue that they will be compatible with the modified files.
-- Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatitbility errors with other tools, specifcally the open ephys tools. For some reason I dont know, the open ephys tool wont work with all fieldtrip files in the GUI directory.
-- If you encounter errors or things I missed, have questions or want to incorpaorate one of the tools more in depth, please dont hesitate to contact me.
+- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\6. Modified\ . When you just update the not modified files, there is no guarantee that they will be compatible with the modified files.
+- Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatibility errors with other tools, specifically the open ephys tools which won't work with all fieldtrip files in the GUI directory.
+- If you encounter errors or things I missed, have questions or want to incorporate one of the tools more in depth, please don't hesitate to contact me.
     
 > ## **Rules and Philosophy of the Toolbox**
 > 
-- First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone with (almost) every recording type can use it. 
-- All relevant analysis and data parts are saved in a single structure with a limited and clear amount of fields that every window shares. Changes in one window are automatically available in another window.
-- All interactive parts like buttons, checkboxes and so on that are disabled (grey and cant be clicked on) can be activated by conducting the necessary analysis step before. For example, to enable to ‘Event Data’ checkbox on the right of the main window, you first have to extract events. 
-- If the user tries to do an analysis without proper preprocessing or enters a wrong format into any field requiring user input, values are either autocorrected and/or the user gets a message why the operation is not possible. The aim is to give an explanation of what to do when an error occurs, not only throw out an error nobody understands. 
-- In every window that loads or saves some kind of data, these windows will first search autoset folders for information to show. I.e. when opening the 'Event Extraction' window, it will autosearch the recording path raw data was extracted from for files holding event data. The same holds true for spike sorting. When saving your dataset for spike sorting, a folder will automatically be suggested. If data is saved in this folder, all windows concerned with loading this kind of data are autosearching those locations, enabling on-click loads. Of course, there is always an option to manually select a folder too. 
-- All functions are designed in a way that they can be easily used outside of the user interface with just a few support functions, including all visualizations. This enables the Autorun functionality of the GUI, where you can apply all analysis and plots in a loop to several recordings.
+- First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone - including students and beginners can comfortably use it. 
+- All relevant analysis and data parts are saved in a single structure with a limited and clear amount of fields that every window shares. Changes in one window are automatically available in another window if its contents are updated.
+- All interactive parts like buttons, checkboxes and so on that are disabled (grey and cant be clicked on) can be activated by conducting the necessary analysis step before.
+- If the user tries to do an analysis without proper preprocessing or enters a wrong format into any field requiring user input, values are either autocorrected and/or the user gets a message why the operation is not possible. The aim is to give an explanation of what to do when an error occurs, not just what the error is.
+- In every window that loads or saves some kind of data, these windows will first search auto-set folders for information to show. I.e. when opening the 'Event Extraction' window, it will auto-search the recording path raw data was extracted from for files holding event data. The same holds true for spike sorting. When saving your dataset for spike sorting, a folder will automatically be suggested. If data is saved in this folder, all windows concerned with loading this kind of data are auto-searching those locations, enabling on-click loads. Of course, there is always an option to manually select a folder too. 
+- All functions are designed in a way that they can be used outside of the user interface with just a few support functions, including all visualizations. This enables the 'Autorun' functionality of the GUI, where you can apply all analysis and plots in a loop to several recordings.
 
 > ## **Disclaimer, License and Contact**
 This toolbox was created and is maintained by a single person as part of a PhD project and hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
