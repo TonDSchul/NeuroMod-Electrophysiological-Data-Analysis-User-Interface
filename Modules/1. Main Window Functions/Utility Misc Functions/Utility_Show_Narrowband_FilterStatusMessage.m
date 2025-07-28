@@ -1,5 +1,26 @@
 function InformationTextArea = Utility_Show_Narrowband_FilterStatusMessage(Data,InformationTextArea,DropDown)
 
+%________________________________________________________________________________________
+%% Function to populate the info field showing preprocessing steps applied for phase sync analysis
+
+% This function is called in the phase sync windows after analysis was
+% finsihed
+
+% Input Arguments:
+% 1. Data: main app data objects with all relevant data components
+% 2. InformationTextArea: text area from the respective window in which
+% info is shown
+% 3. DropDown: main window dropdown menu, either 'Raw Data' or 'Preprocessed Data'
+
+% Output Arguments:
+% 1. Corrected_Input: char with either the original input when its format
+% is proper, char with standardvalue if format was violated
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 NBF = 0;
 DS = 0;
 

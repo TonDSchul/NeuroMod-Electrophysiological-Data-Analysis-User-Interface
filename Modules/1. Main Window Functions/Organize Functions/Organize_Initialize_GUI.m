@@ -27,9 +27,7 @@ function [app] = Organize_Initialize_GUI (app,Type,Data,HeaderInfo,SampleRate,Se
 % only applicable when Type = "VariableDefinition"
 % 7. RecordingType: string specifying the recording system when Type =
 %"Extracting", Options: "IntanDat", "IntanRHD", "Spike2", "Open Ephys"
-% 8. PreviousChannelDeletetion: 1 if channel were deleted, 0 if not. Not
-% inplemented yet, but prb necesary in future to delete channel in the
-% middle of the probe (not beginning with first or ending with last channel)
+% 8. PreviousChannelDeletetion: not needed anymore!!
 % 9. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
 % 10. Load_Data_Window_Info: structure holding probe info like
 % channelspacing or nrchannel

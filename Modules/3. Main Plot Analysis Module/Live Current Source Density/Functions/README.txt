@@ -24,7 +24,7 @@ File: Analyse_Main_Window_CSD.m
 % limits have to be changed. Only applies if LockCLim = 1, 
 % 5. Figure: axes object of figure to plot CSD in
 % DatatoPlot: nchannel x n timepoints single matrix of data to calculate csd with
-% 6. TimeRangetoPlot: Time vector as double with one time point for each
+% 6. Time: Time vector as double with one time point for each
 % sample of DatatoPlot
 % 7. Plottype: string, "Initial" if plotted for first time or if figure handles are
 % supposed to be overwritten. "Non" otherwise 
@@ -36,6 +36,17 @@ File: Analyse_Main_Window_CSD.m
 % case user wants to export them
 % 11. PlotAppearance: structure holding information about plot appearances
 % the user can select
+% 12. Data: main window data structure with all relevant data components
+% 13. EventData: vector with all event indices of the currently selected
+% event channel in the main window
+% 14. Samplefrequency: double, current sample frequency in Hz. Not from
+% Data.Info in case data was downsampled --> autodetection before this fct
+% is called which smaplerate is correct
+% 15. SelectedEventIndice: Indicie of the event channel that is currently
+% selected, out of all event channel (from cell array in Data.Info.EventChannelNames)
+% 16. PlotEvent: char from Main window, 'Events' to show that events are plotted and potentially part of the current data window being analysed 
+% 17. DataType: char, either 'Preprocessed Data' or 'Raw Data' to analyse
+% for the raw or preprocessed GUI dataset
 
 % Output:
 % 1. currentClim: global clim - either unchanged from previous csd plot if
@@ -63,6 +74,8 @@ File: Analyse_Main_Window_Compute_CSD.m
 % (Data.Info.ChannelSpacing) NOTE: gets converted in mm!
 % 3: hamwidth: Width of Hamm Window to smooth data in time and depth as
 % uneven double, recommended: 5
+% 4. Data: main app data structure
+% 5. DataType: char, either 'Preprocessed Data' or 'Raw Data'
 
 % Output:
 % 1. csd: nchannel x time x csd matrix containing the current source density

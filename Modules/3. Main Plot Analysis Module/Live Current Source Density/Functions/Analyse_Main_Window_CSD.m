@@ -33,7 +33,17 @@ function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(DatatoPlot,Time
 % case user wants to export them
 % 11. PlotAppearance: structure holding information about plot appearances
 % the user can select
-% DataType: char, either 'Raw  Data' or 'Preprocessed Data'
+% 12. Data: main window data structure with all relevant data components
+% 13. EventData: vector with all event indices of the currently selected
+% event channel in the main window
+% 14. Samplefrequency: double, current sample frequency in Hz. Not from
+% Data.Info in case data was downsampled --> autodetection before this fct
+% is called which smaplerate is correct
+% 15. SelectedEventIndice: Indicie of the event channel that is currently
+% selected, out of all event channel (from cell array in Data.Info.EventChannelNames)
+% 16. PlotEvent: char from Main window, 'Events' to show that events are plotted and potentially part of the current data window being analysed 
+% 17. DataType: char, either 'Preprocessed Data' or 'Raw Data' to analyse
+% for the raw or preprocessed GUI dataset
 
 % Output:
 % 1. currentClim: global clim - either unchanged from previous csd plot if

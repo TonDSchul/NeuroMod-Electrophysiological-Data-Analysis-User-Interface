@@ -572,3 +572,6 @@ else
         end
     end
 end
+
+Figure.YLabel.Color = 'k';
+Figure.YColor = 'k';  

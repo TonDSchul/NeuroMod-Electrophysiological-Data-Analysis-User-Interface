@@ -1,5 +1,17 @@
 function Utility_Create_StandAlone_App_Paths(executableFolder)
 
+%________________________________________________________________________________________
+%% Function to automatically dcreate folder required for different functions of the GUI, mainly to be able to save and laod in standrad save locations
+
+% Input:
+% 1. executableFolder: from main window, the folder in which GUI is
+% located, saved as part of the main window object on GUI startup
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Recording Folder
 RecordingFolder(1) = strcat(executableFolder,"/Recording Data/");
 if ~isfolder(RecordingFolder(1))

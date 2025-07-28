@@ -1,5 +1,29 @@
 function [OutputSignal] =  Utility_Translate_Into_EEGLAB_struc(Signal,PPStep,Data,Downsampling,PreProInfo)
 
+%________________________________________________________________________________________
+%% Function to convert GUI data structure in to strcuture readable by eeglab 
+
+
+% This function is executed when the user wants to conduct artefact
+% subspace reconstruction in the preprocessing window
+
+% Inputs: 
+% 1. Signal: channel x times matrix to do rejection for
+% 2. PPStep: double, number of the current preprocessing step applied (in which ASR is executed)
+% 3. Data: main app data structure with all relevant data components
+% 4. Downsampling: double, 1 if data was downsampled before
+% 5. PreProInfo: structure holding prepro information for each step
+% applied -- also ASR info
+
+
+% Outputs:
+% 1. OutputSignal: channel x times matrix with cleaned dataset
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 EEG.data = Signal; % Assign the input data to the EEG structure
 
 if Downsampling == 1

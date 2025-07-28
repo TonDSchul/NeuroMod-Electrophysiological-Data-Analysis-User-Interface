@@ -19,7 +19,9 @@ function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module
 % 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
 % 6. AdditionalAmpFactor: double, additional amplification raw data is
 % multiplied by
-% 7. NrChannel: from probe layout windoiw, just for spike2
+% 7. NrChannel: char, from probe layout window, just for spike2
+% 8. NrRows: char, from probe layout window, number of rows with data
+% channel , just for spike2
 
 % Output: 
 % 1. Data: nchannel x ntimepoints matrix as single 

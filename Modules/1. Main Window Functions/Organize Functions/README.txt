@@ -100,9 +100,7 @@ File: Organize_Initialize_GUI.m
 % only applicable when Type = "VariableDefinition"
 % 7. RecordingType: string specifying the recording system when Type =
 %"Extracting", Options: "IntanDat", "IntanRHD", "Spike2", "Open Ephys"
-% 8. PreviousChannelDeletetion: 1 if channel were deleted, 0 if not. Not
-% inplemented yet, but prb necesary in future to delete channel in the
-% middle of the probe (not beginning with first or ending with last channel)
+% 8. PreviousChannelDeletetion: not needed anymore!!
 % 9. Time: double array with time point for each value of the raw dataset. Becomes app.Data.Time when Type = "VariableDefinition"
 % 10. Load_Data_Window_Info: structure holding probe info like
 % channelspacing or nrchannel
@@ -149,6 +147,46 @@ File: Organize_Jump_in_Time.m
 
  ###################################################### 
 
+File: Organize_Plot_Trigger_Indices.m
+%________________________________________________________________________________________
+
+%% Function to plot event related data around trigger
+
+% This function is called in the Trigger Deletion Window to plot data
+% around each selected trigger.
+
+
+% Inputs: 
+% 1. Data: main app object holding all main dataset components
+% 2. Figure: app.UIAxes object handle from app to plot in
+% 3. EventToPlot: double, trigger number selected to plot (except mean was selected)
+% 4. Time: double vector with time plotted around events, specified in the
+% app window
+% 5. ActiveChannel: double vector with all currently active channel from
+% the probe view window
+% 6. EventstoPlotDropDown: char, from event to plot dropdown, to check if it is "Mean over all Trigger" 
+% 7. SpacingSlider: double, spacing selected in the slider of the app
+% window
+% 8. EventTriggerChannel: Name of the event channel from which trigger are
+% extracted, from Info.EventChannelNames
+% 9. TimearoundEvent: 1x2 double with time around event (before and after trigger, both positive)
+% DataToExtractFromDropDown: char, either 'Raw Data' or 'Preprocessed
+% Data', depending from which dataset channel data is extracted
+% DataSourceDropDown: char, either 'Raw Event Related Data' or 'Preprocessed Event Related Data'
+% ColorMap: nchannel x 3 parula color map
+
+% Output:
+% app object with updated app.CurrentTimePoints value capturing the first time
+% point of the main window plot that is shown (in samples)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Organize_Prepare_Plot_and_Extract_GUI_Info.m
 %________________________________________________________________________________________
 
@@ -158,9 +196,9 @@ File: Organize_Prepare_Plot_and_Extract_GUI_Info.m
 
 % Inputs: 
 % 1. app: app object of GUI main window
-% 2. PlotTime: Time in samples of the first datapoint plotted
-% 3. TimePlotInitial: string specifying what is plotted in time plot. So far only
-% Otions: "Initial"
+% 2. PlotTime: 1 or 0, specifying whether time plot should be updated
+% 3. TimePlotInitial: string specifying if time plot is hard-resetted. So far only
+% Otions: "Initial" (hard reset) or "subsequent"
 % 4. DataPlotType: string specifying if movie or normal single plot is
 % executed/selected. Either "Static" or "Movie"
 % 5. EventPlot: string, "Events" to plot events, any other string to not
@@ -193,11 +231,9 @@ File: Organize_Reset_Main_Plot.m
 % 1. app: app object of the extract data window to access the
 % Load_Data_Window_Info variable which holds the loaded channel order and
 % channelspacing 
-% 2. DeleteChannelData: double, 1 or 0, determines whether main data plot
+% 2. DeleteChannelData: Hard reset of data plot; double, 1 or 0, determines whether main data plot
 %channeldata is deleted. Can be set to 0 if only event or spike data
 %changes
-% 3. DeleteTimePlot: double, 1 or 0, determines whether time plot is
-% deleted and plotted again - set to 1 if events are extracted
 % 4: KeepEvents: double, 1 or 0, determines whether events lines should continue to be shown
 % when they were already selected - set 1 when spikes are extracted to keep
 % event line plots, set to 0 to delete event line plots
@@ -206,6 +242,26 @@ File: Organize_Reset_Main_Plot.m
 % spike plots, set to 0 to delete spike plots
 % 6: ReplaceDataType: double, 1 or 0, set to 1 the set plotted datatype to
 % 'Raw Data', otherwise userselection is not changed
+% 8: PlotTime: number of samples time plot currently is set to
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Organize_Set_MainWindow_Dropdown.m
+%________________________________________________________________________________________
+
+%% Function to reset the dropwdonw menu of the main app window enabling to select events or spikes and raw/preprocessed data as well as event channel names
+
+% This function gets called whenever dataset components are changed 
+
+% Input:
+% 1. app: Main window app object
+% 2. Data: Main object data stuccture with all relevant data components
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -1,5 +1,20 @@
 function [app] = Organize_Set_MainWindow_Dropdown(app,Data)
 
+%________________________________________________________________________________________
+
+%% Function to reset the dropwdonw menu of the main app window enabling to select events or spikes and raw/preprocessed data as well as event channel names
+
+% This function gets called whenever dataset components are changed 
+
+% Input:
+% 1. app: Main window app object
+% 2. Data: Main object data stuccture with all relevant data components
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Plot Selection
 % Plot Addons
 PreviousAddonSelection = app.DropDown_2.Value;

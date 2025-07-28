@@ -1,5 +1,21 @@
 function [Filterorder] = Utility_Determine_FIR_FilterOrder(app,LowFrequency)
 
+%________________________________________________________________________________________
+%% Function to automatically determine an appropriate filter order for FIR filters 
+
+% this is used every time the user sqitches a selected filter to FIR (or at standard in the phase sync window when not changed by the user)
+
+% Input:
+% 1. LowFrequency: double, lower frequency part (either cutoff for low/high pass or lower cutoff for narrowband)
+
+% Outout:
+% 1.Filterorder: string with determined filter order
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if strcmp(app.Mainapp.DropDown.Value,'Preprocessed Data') && isfield(app.Mainapp.Data.Info,'DownsampleFactor')  
     TimeDuration = str2double(app.Mainapp.TimeRangeViewBox.Value(1:end-1));
     StartIndex = app.Mainapp.CurrentTimePoints;
@@ -33,17 +49,3 @@ else
         Filterorder = num2str(round( 3*(SampleRate/LowFrequency)));
     end
 end
-
-
-
-
-
-% if SampleRate >= 1000
-% 
-% else
-%     if StopIndex-StartIndex<SampleRate
-%         Filterorder = num2str(round( 4*StopIndex-StartIndex/LowFrequency ));
-%     else
-%         Filterorder = num2str(round( 4*SampleRate/LowFrequency ));
-%     end
-% end

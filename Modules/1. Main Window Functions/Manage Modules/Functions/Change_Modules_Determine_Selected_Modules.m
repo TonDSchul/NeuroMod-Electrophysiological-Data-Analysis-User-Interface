@@ -61,6 +61,7 @@ if ChangeApp
     end
     
     %% Populate Main Window areas
+    % only 4 cells left!
     Placeholder = {};
 
     app.ListBox_6.Items = Placeholder;

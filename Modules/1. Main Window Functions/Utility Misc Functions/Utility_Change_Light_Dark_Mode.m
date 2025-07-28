@@ -1,5 +1,25 @@
 function app = Utility_Change_Light_Dark_Mode(app,Window)
 
+%________________________________________________________________________________________
+%% Function to change the color scheme of EVERY window in the GUI. This is first to enable the user to select different colotschemes.
+%% But also it circumvents issues when activating the matlab dark mode (i.e. automatic black plot background in which things sometimes are harder to see)
+
+% At the start of this function colors for colorschemes are created. One
+% color is for the general backround and one for all selectable/editable
+% fields an plots (two color scheme).
+% This function is executed in the startup section of every window with
+% Window variabel holding info which window it is 
+% In normal GUI operation user can select a colorscheme or Mode. Based on
+
+% Input Arguments:
+% 1. app: main window app object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 if isfield(app,'Mainapp') || isprop(app,'Mainapp') || ~isprop(app,'Image')
     try
         Mode = app.Mainapp.Colorscheme;

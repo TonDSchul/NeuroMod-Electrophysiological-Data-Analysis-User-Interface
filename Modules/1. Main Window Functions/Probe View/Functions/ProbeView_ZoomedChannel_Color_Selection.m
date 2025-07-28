@@ -75,11 +75,11 @@ if ChannelRows == 1
             if mod(LoopIteration, 2) == 0
                 faceColor = 'k'; 
             else
-                faceColor = [0.8 0.8 0.8]; 
+                faceColor = [0.5 0.5 0.5]; 
             end
         else
             if mod(LoopIteration, 2) == 0
-                faceColor = [0.8 0.8 0.8]; 
+                faceColor = [0.5 0.5 0.5]; 
             else
                 faceColor = 'k'; 
             end
@@ -116,7 +116,7 @@ if ChannelRows == 2
     if nrows == 1
         if mod(FirstZoomChannel, 2) == 1
             if mod(LoopIteration, 2) == 0
-                faceColor = [0.8 0.8 0.8]; 
+                faceColor = [0.5 0.5 0.5]; 
             else
                 faceColor = 'k';
             end
@@ -124,7 +124,7 @@ if ChannelRows == 2
             if mod(LoopIteration, 2) == 0
                 faceColor = 'k'; 
             else
-                faceColor = [0.8 0.8 0.8]; 
+                faceColor = [0.5 0.5 0.5]; 
             end
         end
     %% Currently in loop: Right Row
@@ -133,11 +133,11 @@ if ChannelRows == 2
             if mod(LoopIteration, 2) == 0
                 faceColor = 'k'; 
             else
-                faceColor = [0.8 0.8 0.8];
+                faceColor = [0.5 0.5 0.5];
             end
         else
             if mod(LoopIteration, 2) == 0
-                faceColor = [0.8 0.8 0.8];
+                faceColor = [0.5 0.5 0.5];
             else
                 faceColor = 'k'; 
             end

@@ -1,4 +1,18 @@
 function Utility_DeleteUnusedFunctions()
+
+%________________________________________________________________________________________
+%% Function to automatically delete functions not part of a list of functions
+
+% this is a leftover from getting a small subset of fieldtrip functions to
+% filter data. Within thos filter fieldtrip functions, a looot of other functions
+% from a few different locations within fieldtrip are used. Here I just
+% wanted to delete those that are not required.
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 % Define the folder containing the 1000 functions
 folderPath = 'C:\Users\tonyd\Desktop\1. FieldTrip'; % Change this to your actual folder path
 

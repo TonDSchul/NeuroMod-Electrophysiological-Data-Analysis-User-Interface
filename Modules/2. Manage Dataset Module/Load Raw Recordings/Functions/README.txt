@@ -234,6 +234,8 @@ File: Manage_Dataset_Module_CheckFolderContents.m
 
 % Input:
 % 1. ChannelOrder: To display channelorder in the textarea of the Extract_Data_Window app window
+% 2. PathToOpen: char, path to auto-open when windows file explorer is used
+% to get folder selection from user
 
 % Output: 
 % 1. Formatsfound: string array saving the format from AllFormats variable
@@ -283,7 +285,9 @@ File: Manage_Dataset_Module_Extract_Raw_Recording_Main.m
 % 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
 % 6. AdditionalAmpFactor: double, additional amplification raw data is
 % multiplied by
-% 7. NrChannel: from probe layout windoiw, just for spike2
+% 7. NrChannel: char, from probe layout window, just for spike2
+% 8. NrRows: char, from probe layout window, number of rows with data
+% channel , just for spike2
 
 % Output: 
 % 1. Data: nchannel x ntimepoints matrix as single 
@@ -315,10 +319,12 @@ File: Manage_Dataset_Module_Show_ProbeInfo_and_Path.m
 
 % Input:
 % 1. app: extract data window object
-% Load_Data_Window_Info: structure with info about selected folder and probe.
-% ProbeInfoOrFolder: string, specifies what to do when, either "ProbeInfo" OR
+% 2. Load_Data_Window_Info: structure with info about selected folder and probe.
+% 3. ProbeInfoOrFolder: string, specifies what to do when, either "ProbeInfo" OR
 % "FolderSelection" OR "AutorunFolderSelection", deoending on which info
 % the user changed
+% 4: PathToOpen: char, path to auto-open when windows file explorer is used
+% to get folder selection from user
 
 % Output: 
 % 1. Load_Data_Window_Info: same as input struvture

@@ -133,6 +133,29 @@ File: UIAxes_2ButtonDown.m
 
  ###################################################### 
 
+File: Utility_Change_Light_Dark_Mode.m
+%________________________________________________________________________________________
+%% Function to change the color scheme of EVERY window in the GUI. This is first to enable the user to select different colotschemes.
+%% But also it circumvents issues when activating the matlab dark mode (i.e. automatic black plot background in which things sometimes are harder to see)
+
+% At the start of this function colors for colorschemes are created. One
+% color is for the general backround and one for all selectable/editable
+% fields an plots (two color scheme).
+% This function is executed in the startup section of every window with
+% Window variabel holding info which window it is 
+% In normal GUI operation user can select a colorscheme or Mode. Based on
+
+% Input Arguments:
+% 1. app: main window app object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Utility_CreateChannelNames.m
 %________________________________________________________________________________________
 %% Function to create standard channel names (Channel1, Channel2 and so on)
@@ -141,6 +164,39 @@ File: Utility_CreateChannelNames.m
 
 % Input Arguments:
 % 1. app: app object with fields 'Data.Raw' needed for max channel nr
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Create_StandAlone_App_Paths.m
+%________________________________________________________________________________________
+%% Function to automatically dcreate folder required for different functions of the GUI, mainly to be able to save and laod in standrad save locations
+
+% Input:
+% 1. executableFolder: from main window, the folder in which GUI is
+% located, saved as part of the main window object on GUI startup
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_DeleteUnusedFunctions.m
+%________________________________________________________________________________________
+%% Function to automatically delete functions not part of a list of functions
+
+% this is a leftover from getting a small subset of fieldtrip functions to
+% filter data. Within thos filter fieldtrip functions, a looot of other functions
+% from a few different locations within fieldtrip are used. Here I just
+% wanted to delete those that are not required.
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -165,6 +221,40 @@ File: Utility_Delete_Units.m
 % Output Arguments:
 % 1. Data: main window structure holding dataset with deleted spikes of the
 % selected unit
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_DetermineUsedFunctions.m
+%________________________________________________________________________________________
+%% Function to determine which functions are part of a scriupt being executed
+
+% Output: AllFiles = liost with all function names
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Determine_FIR_FilterOrder.m
+%________________________________________________________________________________________
+%% Function to automatically determine an appropriate filter order for FIR filters 
+
+% this is used every time the user sqitches a selected filter to FIR (or at standard in the phase sync window when not changed by the user)
+
+% Input:
+% 1. LowFrequency: double, lower frequency part (either cutoff for low/high pass or lower cutoff for narrowband)
+
+% Outout:
+% 1.Filterorder: string with determined filter order
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -245,6 +335,18 @@ File: Utility_Extract_Function_Headers_to_txt.m
 
  ###################################################### 
 
+File: Utility_Find_Strings_in_GUI_Files.m
+%________________________________________________________________________________________
+%% Small utitlity function to find specific strings like input arguments in all .m files of a selected folder
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Utility_Get_Plot_Data.m
 %________________________________________________________________________________________
 %% Function to export plotted/analysed data from each window with the menu option to do so
@@ -276,7 +378,7 @@ File: Utility_Get_Plot_Data.m
 % "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
 % Utility_Save_Data_as_MAT functions
 
-% Outout Arguments:
+% Output Arguments:
 % 1. PlottedData: structure holding data that was plotted in case something
 % about it was changed
 
@@ -436,6 +538,31 @@ File: Utility_Show_Info_Loaded_Data.m
 
  ###################################################### 
 
+File: Utility_Show_Narrowband_FilterStatusMessage.m
+%________________________________________________________________________________________
+%% Function to populate the info field showing preprocessing steps applied for phase sync analysis
+
+% This function is called in the phase sync windows after analysis was
+% finsihed
+
+% Input Arguments:
+% 1. Data: main app data objects with all relevant data components
+% 2. InformationTextArea: text area from the respective window in which
+% info is shown
+% 3. DropDown: main window dropdown menu, either 'Raw Data' or 'Preprocessed Data'
+
+% Output Arguments:
+% 1. Corrected_Input: char with either the original input when its format
+% is proper, char with standardvalue if format was violated
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Utility_SimpleCheckInputs.m
 %________________________________________________________________________________________
 %% Function to check whether user input into a field like the channelnr obeys format regulations
@@ -445,7 +572,7 @@ File: Utility_SimpleCheckInputs.m
 
 % Input Arguments:
 % 1. Input: input to be checked as char. I diretly pass the app.Button.Value
-% 2. Type: string, options: "One" to chekc format of a single number, "Two"
+% 2. Type: string, options: "One" to check format of a single number, "Two"
 % for two numbers seperated by a comma
 % 3. StandardValues: char containing a value the original input gets
 % replaced by when the format is violated
@@ -461,6 +588,33 @@ File: Utility_SimpleCheckInputs.m
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Translate_Into_EEGLAB_struc.m
+%________________________________________________________________________________________
+%% Function to convert GUI data structure in to strcuture readable by eeglab 
+
+
+% This function is executed when the user wants to conduct artefact
+% subspace reconstruction in the preprocessing window
+
+% Inputs: 
+% 1. Signal: channel x times matrix to do rejection for
+% 2. PPStep: double, number of the current preprocessing step applied (in which ASR is executed)
+% 3. Data: main app data structure with all relevant data components
+% 4. Downsampling: double, 1 if data was downsampled before
+% 5. PreProInfo: structure holding prepro information for each step
+% applied -- also ASR info
+
+
+% Outputs:
+% 1. OutputSignal: channel x times matrix with cleaned dataset
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
 

@@ -24,6 +24,7 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,KeepEvents,KeepSpikes,Re
 % 6: ReplaceDataType: double, 1 or 0, set to 1 the set plotted datatype to
 % 'Raw Data', otherwise userselection is not changed
 % 8: PlotTime: number of samples time plot currently is set to
+
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 

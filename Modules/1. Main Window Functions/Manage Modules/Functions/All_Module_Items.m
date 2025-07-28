@@ -11,9 +11,29 @@ function [Module,app] = All_Module_Items(app,ChangeApp,ModuleOrder)
 % can build yourself depending on what option the user selected in the
 % module selection field.
 % To get started, use the fifth cell array below containing the example
-% module. Just add your own code to the module app window and your own
+% module or add a sixth cell yourself. Just add your own code to the module app window and your own
 % functions to that folder to get your onw analysis running with the rest of
 % the Toolbox.
+
+% Inputs: 
+% 1. ChangeApp: double, 1 to execute module switching code, 0 to not (and only get modules back)
+% 2. ModuleOrder: vector with 4 numbers. Order of modules to use in respect
+% to the original strcuture size with all modules, coming from the
+% All_Module_Items.m function (saved in GUI_Path/Modules/MISC/Variables/ModuleOrder.mat)
+% ---> if 1,2,3,4, The first 4 defined modules are currently selected
+
+% Outputs: 
+% Module: cell array with each cell containing a module.
+
+%% General Remarks:
+% the Module cell array contains ALL modules defined/available !!! Which
+% modules are currently available is determined in the
+% Change_Modules_Determine_Selected_Modules.m function below
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
 
 %% Main Plot Analysis Module
 Module{1}.Title = 'Main Plot Analysis Module';

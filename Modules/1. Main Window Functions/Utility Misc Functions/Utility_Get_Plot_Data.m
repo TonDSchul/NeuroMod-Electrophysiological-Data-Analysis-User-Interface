@@ -29,7 +29,7 @@ function PlottedData = Utility_Get_Plot_Data(PlottedData,Data,Format,executableF
 % "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
 % Utility_Save_Data_as_MAT functions
 
-% Outout Arguments:
+% Output Arguments:
 % 1. PlottedData: structure holding data that was plotted in case something
 % about it was changed
 

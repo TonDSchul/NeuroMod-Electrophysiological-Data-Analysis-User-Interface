@@ -1,7 +1,10 @@
 function [app] = ProbeViewClickCallback(app, event, Window)
 
 %________________________________________________________________________________________
-%% Function to handle click on the probe view window -- only clicks not on a line but blank space
+%% Function to handle click on the probe view window -- only clicks not on a line but blank space!
+
+% It only changes the current probe view position along the probe
+% --> app.FirstZoomChannel changes!
 
 % Inputs: 
 % 1. app: Probe View app window

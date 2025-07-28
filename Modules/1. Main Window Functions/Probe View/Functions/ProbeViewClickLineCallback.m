@@ -3,6 +3,10 @@ function [app] = ProbeViewClickLineCallback(app, event, Window)
 %________________________________________________________________________________________
 %% Function to handle click on the probe view window -- only clicks not on a line or rectangle
 
+% this functions handles all the magic happening when the user clicks a
+% channel --> recognize clicekd channel, delete it from active channel and call
+% analysis/plot functions from openend windows to update plotted data.
+
 % Inputs: 
 % 1. app: Probe View app window
 % 2. event: click event holding x and y position

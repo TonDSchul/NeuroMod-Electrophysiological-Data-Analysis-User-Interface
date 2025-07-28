@@ -1,5 +1,13 @@
 function Utility_Find_Strings_in_GUI_Files()
 
+%________________________________________________________________________________________
+%% Small utitlity function to find specific strings like input arguments in all .m files of a selected folder
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 % Define the folder to search
 folderPath = 'C:\Users\tonyd\Documents\LIN\PhD\Proj. Ephys GUI';
 

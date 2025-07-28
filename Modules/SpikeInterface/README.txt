@@ -3,9 +3,11 @@ NeuroMod Toolbox; SpikeInterface README
 Author: Tony de Schultz
 ______________________________________________
 
-This folder contains all costume python scripts to run SpikeInterface. 
+This folder contains all costume python scripts to run SpikeInterface. It also contains a folder with .mat files holding spike sorting parameter that can be saved in the 'Spike Detection and Sorting' Window.
 
 SpikeInterface_Sorting.py is the main function that is executed by - and receives arguments from the MATLAB 'Spike Detection and Sorting' window (ProbeInfo, file of binary file and sorting parameters). It runs the individual functions for individual pipeline parts defined in the SpikeInterface_FunctionDeclaration.py function. Every script uses the SpikeInterface library. 
+
+In order to be able to execute a python script via MATLAB, a path for the python.exe file in the environment in which SpikeInterface is installed has to be provided. 
 
 The sorting parameter for the spikesorters are saved as a sorting_parameters.json file (saves a maltab cell coming from Spike_Module_ShowSpikeSortingSettings.m)
 Example code:
@@ -15,7 +17,7 @@ fid = fopen(jsonFilePath, 'w');
 fwrite(fid, SortingParameters, 'char');
 fclose(fid);
 
-After sorting was succsefull, the main script save the results as .npy files with the export_to_phy function (like the native Kilosort output) and additionally saves a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface:
+After sorting was successful, the main script saves the results as .npy files with the export_to_phy function (like the native Kilosort output) and additionally saves a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface:
 
 compute_dict = {
         .......

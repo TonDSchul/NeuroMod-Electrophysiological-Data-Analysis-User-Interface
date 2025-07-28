@@ -1,5 +1,42 @@
 function Organize_Plot_Trigger_Indices(Data,Figure,EventToPlot,Time,ActiveChannel,EventstoPlotDropDown,SpacingSlider,EventTriggerChannel,TimearoundEvent,DataToExtractFromDropDown,DataSourceDropDown,ColorMap)
 
+%________________________________________________________________________________________
+
+%% Function to plot event related data around trigger
+
+% This function is called in the Trigger Deletion Window to plot data
+% around each selected trigger.
+
+
+% Inputs: 
+% 1. Data: main app object holding all main dataset components
+% 2. Figure: app.UIAxes object handle from app to plot in
+% 3. EventToPlot: double, trigger number selected to plot (except mean was selected)
+% 4. Time: double vector with time plotted around events, specified in the
+% app window
+% 5. ActiveChannel: double vector with all currently active channel from
+% the probe view window
+% 6. EventstoPlotDropDown: char, from event to plot dropdown, to check if it is "Mean over all Trigger" 
+% 7. SpacingSlider: double, spacing selected in the slider of the app
+% window
+% 8. EventTriggerChannel: Name of the event channel from which trigger are
+% extracted, from Info.EventChannelNames
+% 9. TimearoundEvent: 1x2 double with time around event (before and after trigger, both positive)
+% DataToExtractFromDropDown: char, either 'Raw Data' or 'Preprocessed
+% Data', depending from which dataset channel data is extracted
+% DataSourceDropDown: char, either 'Raw Event Related Data' or 'Preprocessed Event Related Data'
+% ColorMap: nchannel x 3 parula color map
+
+% Output:
+% app object with updated app.CurrentTimePoints value capturing the first time
+% point of the main window plot that is shown (in samples)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 [SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
 %% -------------------- Extract Event Related Data -------------------- 

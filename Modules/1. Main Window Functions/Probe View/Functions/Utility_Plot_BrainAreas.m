@@ -7,6 +7,12 @@ function Utility_Plot_BrainAreas(Figure,ProbeBrainAreas,ActiveChannel,SwitchTopB
 % Inputs: 
 % 1. Figure: Figure object of probe view window
 % 2. ProbeBrainAreas: Structure holding trajectorx explorer info
+% 3. ActiveChannel: double vector with all channel currentlyx being active
+% 4. SwitchTopBottomChannel: double, 1 or 0 whether to reverse top/bottom
+% channel number (if 1, upmost channel = last channel number)
+% 5. ChannelSpacing: double, channelspacing between channel in um
+% 6. ChannelRows: double, number of channel rows on probe design
+% 7. NumChannel: double number of channel per channel row
 
 % Outputs:
 % 1. app: Probe View app window
