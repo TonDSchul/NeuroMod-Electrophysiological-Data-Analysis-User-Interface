@@ -163,17 +163,28 @@ Check out the **Wave_clus 3 Toolbox**:
 
 https://github.com/csn-le/wave_clus?tab=readme-ov-file#wave_clus-3
 
-Artefact Subspace Reconstruction is done usign the Clean_rawdata EEGLAB plug-in from Github
+Artefact Subspace Reconstruction is done using the Clean_rawdata EEGLAB plug-in from Github
 
 Check out **Artefact Subspace Reconstruction Repository**: 
 
 https://github.com/sccn/clean_rawdata
 
 Endpoint Corrected Hilbert Transform Calculation is handled using the echt.m function from the supplementary code from:
+
 S. R. Schreglmann1*, D. Wang*, R. Peach*, J. Li, X. Zhang, E. Panella, 
        E. S. Boyden, M. Barahona, S. Santaniello, K. P. Bhatia, J. Rothwel, N. Grossman
        "Non-invasive Amelioration of Essential Tremor via Phase-Locked
        Disruption of its Temporal Coherence".
+
+Brain Areas can be assigned to parts of the defined probe design using the Neuropixels trajectory explorer. The files remain unmodified and come with this GUI to be able to start the Trajectory explorer from GUI windows (Extract Raw Recordings window and Probe Layout window). Probe trajectories saved with the explorer can be loaded into the GUI to assign brain area labels to the probe. 
+
+Check out **Neuropixels Trajectory Explorer**: 
+
+https://github.com/petersaj/neuropixels_trajectory_explorer
+
+**NOTE:** For the trajectory explorer to work you just need to download the Allen CCF mouse atlas and save it in the main directory of the GUI; available at:
+
+https://osf.io/fv7ed/files/osfstorage
 
 Lastly, some functions from the cortex-lab Github page were used ('Spikes' repository) for spike analysis and LFP Band power analysis. Almost all functions used were modified to make to fit the purpose of this GUI.
 
