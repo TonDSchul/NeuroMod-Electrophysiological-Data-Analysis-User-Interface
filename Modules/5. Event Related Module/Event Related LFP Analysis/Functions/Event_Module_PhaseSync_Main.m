@@ -1,5 +1,62 @@
 function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToCompute,Time,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,WhatToDo,BasedOnERP,ShowAnalyzedData,DataTypeSelected,LowPassSettings,FilterType)
 
+%________________________________________________________________________________________
+%% Function to manage phase analysis of event related data
+
+% executed when the user changes the for example the event channel
+% selection for which Event related data is anylszed. This is bc
+% preprocessing is bound to a certain event channel
+
+% Inputs: 
+% 1. DataToCompute: channel x trials x time matrix with data to analyse
+% 2 Time: 1 x n time vector for event related data
+% 3. Figure1: plot figure handle to plot phase angle differences over time on
+% unit circle
+% 4. Figure3: plot figure handle to plot all to all phase synchronization
+% 5. Figure4: plot figure handle to plot phase angle time series over
+% channel
+% 6. Figure5: plot figure handle to plot phase angle amplitude envelope over
+% channel
+% 7. Data: main data structure
+% 8. ChannelToCompare: double 1 x 2 vector with channel to compare phase
+% angles for in the unot circle
+% 9. Cutoff
+% 10. NarrowbandOrder: double, filter order of narrowband filter applied if
+% necessary and for narrowband filter in ecHT method
+% 11. ActiveChannel: 1 x n double with all currently active channel in the
+% probe view window
+% 12. DataTypeDropDown: either 'Raw Event Related Data' or 'Preprocessed Event Related Data' 
+% 13. PlotAppearance: struc with appearances of plot components like line
+% colors and linewidths
+% 14. ColorMap: nchannel x 3 matrix with parula colormap
+% 15. Method: char, Which method the user selcts to compute the phase angles,
+% either "Endpoint Corrected Hilbert Transform" OR "Hilbert Transform" OR "Wavelet Convolution"
+% 16. ForceFilterOFF: double 1 or 0, if 1 then additional filters liek
+% narrowband and low pass for downsampling are disabled
+% 17. ECHTFilterorder: double, filter order for narrowband in ecHT mehtod
+% 18. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+% 19. WhatToDo: char, what to compute, either 'All' OR 'Startup' OR
+% 'AllToAllDifferences' OR 'AnglesEnvelops'
+% 20. BasedOnERP: 1 or 0, 1 of analssis is done with mean over all trials
+% (ERP) or 0 for supertrial (not implemented yet, only 1 works)
+% 21. ShowAnalyzedData: double 1 or 0, 1 to show data phase was calculated
+% with rather than phase angle amplitude envelops
+% 22. DataTypeSelected: char, dataset to extract event related data from,
+% wither 'Raw Data' or 'Preprocessed Data'
+% 23. LowPassSettings: struc with fields: LowPassSettings.Cutoff, LowPassSettings.FilterOrder
+% 24. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
+% 25. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
+
+% Outputs:
+% 1. texttoshow: text to show filter infoes in of filter steps that where
+% applied
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 if BasedOnERP
     DataToCompute = squeeze(mean(DataToCompute,2));

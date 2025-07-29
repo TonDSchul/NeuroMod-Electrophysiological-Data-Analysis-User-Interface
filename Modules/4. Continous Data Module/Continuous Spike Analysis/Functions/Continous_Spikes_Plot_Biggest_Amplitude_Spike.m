@@ -1,4 +1,4 @@
-function CurrentPlotData = Continous_Kilosort_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,units,rgbMatrix,CurrentPlotData)
+function CurrentPlotData = Continous_Spikes_Plot_Biggest_Amplitude_Spike(Figure,Data,units,rgbMatrix,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% Function to plot biggest template of waveforms

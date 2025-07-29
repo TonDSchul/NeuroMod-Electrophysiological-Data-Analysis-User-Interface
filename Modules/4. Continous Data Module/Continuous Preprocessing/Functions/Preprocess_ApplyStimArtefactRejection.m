@@ -19,6 +19,9 @@ function [Data] = Preprocess_ApplyStimArtefactRejection(Data,Info,Events,PreproI
 % 4. PreproInfo: strcuture holding the infos about added preprocessing
 % steps (paramater to apply), comes from
 % Preprocess_Module_Construct_Pipeline.m when adding a step to the pipeline
+% 5.SampleRate: double, sample rate after signal was potentially
+% downsampled
+% 6. Downsampled: 1 or 0, 1 if downsampled, 0 otherwise
 
 % Output: 
 % 1. Data: Either corrected Data.Raw or correctr Data.Preprocessed data from the main dataset, depending on whether its the first preprocessing step . 

@@ -1,5 +1,28 @@
 function [EventRelatedData] = Preprocessing_Events_Interpolate_Channel(EventRelatedData,Rejectedchan)
 
+%________________________________________________________________________________________
+%% Function to interpolate channel in event related data based on specified event related preprocessing steps
+
+% Since event related data and preprocessed event related data are
+% extracted on the fly, this function applies channel rejection in the
+% Event_Module_Extract_Event_Related_Data.m function
+
+% called in Event_Module_Extract_Event_Related_Data.m
+
+% Inputs: 
+% 1. EventRelatedData: nchannel x ntrials x time matrix with event related
+% data
+% 2. Rejectedchan: double vector with channel to interpolate
+
+% Outputs:
+% 1. EventRelatedData: nchannel x ntrials x time matrix with channel
+% interpolation being applied
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 if ~isempty(Rejectedchan)
     Rejectedchan = unique(Rejectedchan);  % Ensure uniqueness
     Rejectedchan = sort(Rejectedchan);

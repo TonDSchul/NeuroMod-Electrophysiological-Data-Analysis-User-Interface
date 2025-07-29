@@ -4,6 +4,10 @@ function [Phases,PhasesUnwrapped] = Analyse_Main_Window_Hilbert_Echt_Wavelet(Dat
 
 %% Function to compute phase angle time series and amplitude envelope for a signal using different methods 
 
+% The wavelet convolution method is based on the "Complete neural
+% signal processing and analysis: Zero to hero" workshop by Michael Cohen
+% on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
+
 % Inputs:
 % 1. Data: nchannel x ntime matrix with the signal
 % 2. Method: Which method the user selcts to compute the phase angles,

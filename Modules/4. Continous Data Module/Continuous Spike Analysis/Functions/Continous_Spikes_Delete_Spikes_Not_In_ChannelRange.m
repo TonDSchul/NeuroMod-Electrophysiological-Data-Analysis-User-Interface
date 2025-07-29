@@ -14,6 +14,8 @@ function [SpikeTimes,SpikePositions,DeleteSpikePositions] = Continous_Spikes_Del
 % 4: Channel_Selection: 1 x 2 double with channelselction of user, i.e.
 % [1,10] for channel 1 to 10
 % 5: SpikeType: type of spike data as char, either 'Internal' OR 'Kilosort'
+% 6. ALLActiveChannel: double vector, all activ channel defined when
+% extracting the dataset
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double with indicie of each spike in samples

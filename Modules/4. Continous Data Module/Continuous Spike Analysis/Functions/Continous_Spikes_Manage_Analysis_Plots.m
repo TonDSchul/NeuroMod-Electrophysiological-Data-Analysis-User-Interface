@@ -43,6 +43,8 @@ function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,Pl
 % 16. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 17. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 18. PlotAppearance: structure holding plot style information like color
+% and linewidth
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info

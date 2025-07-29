@@ -36,6 +36,13 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % 13. PlotAppearance: structure holding info about plot appearances the user
 % might have modified.
 % 14. ERPChannel: char, Channel for ERP Plot on top
+% 15. DataType: char, either 'Raw Event Related Data' or 'Preprocessed Event Related Data'
+% 16. SingleChannelPlotType: ERP plot type of single channel plot on top.
+% if 0: all trials in grey lines, mean in black line. 0: imagesc plot with
+% every trial and ERP overlayed
+% 17. EventNr: double, nr of trigger shown. So that in imagsc plot y axis labels
+% can be spaced farther if there are many trigger
+
 
 % Outputs:
 % 1. CSDClim

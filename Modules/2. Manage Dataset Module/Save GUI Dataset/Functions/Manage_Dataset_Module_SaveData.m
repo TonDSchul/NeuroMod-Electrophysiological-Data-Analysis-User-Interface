@@ -61,6 +61,8 @@ end
 %% -------------------- Only Preprocessed Data -------------------- 
  % If only Preprocessed Data saved: Delete Raw, leave everything else as it
  % is. When loading: Raw Data = Preprocessed
+DownsampleFlag = 0;
+DownsampleFactor = [];
 if Whattosave(1) == 0 && Whattosave(2) == 1
     if isfield(Data,"Preprocessed")
         Data.Raw = Data.Preprocessed;
@@ -70,6 +72,9 @@ if Whattosave(1) == 0 && Whattosave(2) == 1
             Data = rmfield(Data, fieldsToDelete);
         end
         if isfield(Data.Info,'DownsampleFactor')
+            DownsampleFlag = 1;
+            DownsampleFactor = Data.Info.DownsampleFactor;
+
             % prepro info as new standard info
             Data.Time = Data.TimeDownsampled;
             Data.Info.NativeSamplingRate = Data.Info.DownsampledSampleRate;
@@ -149,6 +154,21 @@ else
     end
 
     if ~isfield(Data,'EventRelatedData')
+        % if only prepro data saved and downsampled: adjust event indices!
+        if Whattosave(1) == 0 && Whattosave(2) == 1 && DownsampleFlag == 1
+            msgbox("Warning: Only downsampled preprocessed data saved. Loading spike sorting data or event data based on the original sampling rate wont work anymore!")
+            warning("Only downsampled preprocessed data saved. Loading spike sorting data or event trigger times based on the original sampling rate wont work anymore!")
+            % adjust event data to downsampled data
+            if ~isempty(DownsampleFactor)
+                warning("Aplying downsampled factor to event indices!")
+                for i = 1:length(Data.Events)
+                    Data.Events{i} = round(Data.Events{i}/DownsampleFactor);
+                end
+            end
+            warning("Aplying downsampled factor to spike times!")
+            Data.Spikes.SpikeTimes = round(Data.Spikes.SpikeTimes/DownsampleFactor); 
+        end
+        
         ERDParameterWindow = Ask_ERD_Parameter(Data,"Raw Event Related Data");
         
         uiwait(ERDParameterWindow.AskForEventRelatedDataExtractionUIFigure);
@@ -322,8 +342,7 @@ if ~isempty(Data)
                fwrite(fidRaw,Data.Raw(:,dataIdx(chunkIdx+1) : dataIdx(chunkIdx+2)-1), 'int16');
             end
             fclose(fidRaw);
-            close(h);
-
+            
         elseif Whattosave(1) == 1 && Whattosave(2) == 1
             filenameRaw = filename; 
  
@@ -379,8 +398,7 @@ if ~isempty(Data)
                 end
             end
             fclose(fidPrepro);
-            close(h);
-
+            
         elseif Whattosave(1) == 0 && Whattosave(2) == 1
             filenamePrepro = filename; 
 
@@ -432,7 +450,8 @@ if ~isempty(Data)
             Data = rmfield(Data, fieldsToDelete);
         end
 
-        h = waitbar(100, 'Saving Info as .mat file (and event related data if selected)...', 'Name','Saving Info as .mat file...');
+        msg = sprintf('Saving data... (%d%% done)', round(100));
+               waitbar(fraction, h, msg);
 
         Data.Whattosave = [Whattosave(1),Whattosave(2)];
         filenameInfo = [filename(1:end-4),'_Info'];
@@ -441,11 +460,14 @@ if ~isempty(Data)
         disp(['Variables saved to: ' filepath]);
         disp("Saving Data finished");
 
-        close(h);
     end
     
 else
     f = msgbox("An Error occured in 'Module_SaveData' function. Please check the 'Whattosave' Variable and that there is data in the strucutre to save.");
+end
+
+try 
+    close(h);
 end
 
 try

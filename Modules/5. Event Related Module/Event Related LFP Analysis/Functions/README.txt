@@ -51,7 +51,9 @@ File: Event_Analyse_Static_Power_Spectrum.m
 % like linewidth
 % 10. SelectedEvents: 1 x 2 double holding events user seleted, i.e. [1,10]
 % for events 1 to 10 
-
+% 11. DataToExtractFrom: char, either 'Raw Data' or 'Preprocessed Data' to
+% designate from which dataset component event related data was extracted
+% from
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them. See below to see which fields and data
@@ -59,6 +61,57 @@ File: Event_Analyse_Static_Power_Spectrum.m
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Event_Module_Check_EventInput.m
+%________________________________________________________________________________________
+%% Function to check whether the selection of trigger in event related analysis windows is proper
+
+% executed on starup of event related LFP analysis windows or when the user
+% changes the selction of triggers
+
+% Inputs: 
+% 1. EventFieldValue: char, input of user
+% 2. Data: main window data object
+% 3. EventSelected: char, name of the event channel for which trigger are
+% checked
+% 4. EventDataType: char, either 'Raw Event Related Data' OR 'Preprocessed
+% Event Related Data' -- prepro data can have less trigger
+% 5. StartUp: double, 1 or 0 whether this function is execute on window
+% startup or not
+%
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Event_Module_Check_Event_Preprocessing.m
+%________________________________________________________________________________________
+%% Function to check whether event related data was preprocessed to fill selection dropdown menu
+
+% executed when the user changes the for example the event channel
+% selection for which Event related data is anylszed. This is bc
+% preprocessing is bound to a certain event channel
+
+% Inputs: 
+% 1. Data: main window data object
+% 3. EventChannelSelection: char, name of the event channel for which trigger are
+% checked
+% 4. CurrentValue: Currently selected value (either 'Raw Event Related Data' OR 'Preprocessed Event Related Data')
+% --> this is so selection of prepro data can be preserved when selecting
+% another event channel
+
+% Outputs:
+% 1. EventDataTypeField: Determined content of selection dropdown menu (dropdown.Items)
+% 2. Value: Current value selected in the selection dropdown menu (dropdown.Value)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
 
@@ -101,6 +154,13 @@ File: Event_Module_Compute_and_Plot_ERP_CSD.m
 % 13. PlotAppearance: structure holding info about plot appearances the user
 % might have modified.
 % 14. ERPChannel: char, Channel for ERP Plot on top
+% 15. DataType: char, either 'Raw Event Related Data' or 'Preprocessed Event Related Data'
+% 16. SingleChannelPlotType: ERP plot type of single channel plot on top.
+% if 0: all trials in grey lines, mean in black line. 0: imagesc plot with
+% every trial and ERP overlayed
+% 17. EventNr: double, nr of trigger shown. So that in imagsc plot y axis labels
+% can be spaced farther if there are many trigger
+
 
 % Outputs:
 % 1. CSDClim
@@ -165,6 +225,68 @@ File: Event_Module_Organize_TF_Window_Inputs.m
 %TF.FreqRange: 1x3 double [from,steps,to]
 %TF.FilterRange: 1x2 double [from,to]
 %TF.FilterOrder 1x1 double
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Event_Module_PhaseSync_Main.m
+%________________________________________________________________________________________
+%% Function to check whether event related data was preprocessed to fill selection dropdown menu
+
+% executed when the user changes the for example the event channel
+% selection for which Event related data is anylszed. This is bc
+% preprocessing is bound to a certain event channel
+
+% Inputs: 
+% 1. DataToCompute: channel x trials x time matrix with data to analyse
+% 2 Time: 1 x n time vector for event related data
+% 3. Figure1: plot figure handle to plot phase angle differences over time on
+% unit circle
+% 4. Figure3: plot figure handle to plot all to all phase synchronization
+% 5. Figure4: plot figure handle to plot phase angle time series over
+% channel
+% 6. Figure5: plot figure handle to plot phase angle amplitude envelope over
+% channel
+% 7. Data: main data structure
+% 8. ChannelToCompare: double 1 x 2 vector with channel to compare phase
+% angles for in the unot circle
+% 9. Cutoff
+% 10. NarrowbandOrder: double, filter order of narrowband filter applied if
+% necessary and for narrowband filter in ecHT method
+% 11. ActiveChannel: 1 x n double with all currently active channel in the
+% probe view window
+% 12. DataTypeDropDown: either 'Raw Event Related Data' or 'Preprocessed Event Related Data' 
+% 13. PlotAppearance: struc with appearances of plot components like line
+% colors and linewidths
+% 14. ColorMap: nchannel x 3 matrix with parula colormap
+% 15. Method: char, Which method the user selcts to compute the phase angles,
+% either "Endpoint Corrected Hilbert Transform" OR "Hilbert Transform" OR "Wavelet Convolution"
+% 16. ForceFilterOFF: double 1 or 0, if 1 then additional filters liek
+% narrowband and low pass for downsampling are disabled
+% 17. ECHTFilterorder: double, filter order for narrowband in ecHT mehtod
+% 18. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+% 19. WhatToDo: char, what to compute, either 'All' OR 'Startup' OR
+% 'AllToAllDifferences' OR 'AnglesEnvelops'
+% 20. BasedOnERP: 1 or 0, 1 of analssis is done with mean over all trials
+% (ERP) or 0 for supertrial (not implemented yet, only 1 works)
+% 21. ShowAnalyzedData: double 1 or 0, 1 to show data phase was calculated
+% with rather than phase angle amplitude envelops
+% 22. DataTypeSelected: char, dataset to extract event related data from,
+% wither 'Raw Data' or 'Preprocessed Data'
+% 23. LowPassSettings: struc with fields: LowPassSettings.Cutoff, LowPassSettings.FilterOrder
+% 24. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
+% 25. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
+
+% Outputs:
+% 1. texttoshow: text to show filter infoes in of filter steps that where
+% applied
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -406,6 +528,8 @@ File: Event_Power_Spectrum_Over_Depth.m
 % 11. CurrentPlotData: structure saving results to export.
 % 12. SelectedEvents: 1 x 2 double holding events user seleted, i.e. [1,10]
 % for events 1 to 10 
+% 13. EventDataToExtractFrom: char, name of the event channel, event related
+% data is extracted (to set time which depends on downsampling, which depends on whether the user selected raw or preprocessed data)
 
 % Outputs:
 % 1. PowerSpecResults: always empty here

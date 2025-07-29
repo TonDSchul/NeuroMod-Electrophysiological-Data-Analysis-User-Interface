@@ -15,7 +15,7 @@ function [Data] = Preprocessing_Module_Cut_Time(Data,CutType,CutTime,Preprocessi
 % 4: PreprocessingSteps: string array with names of preprocessing steps
 % captured in the gui. The are computed in the order specified in the
 % array. Options: % Preprocessing ethod to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd"
-% 5: current iteration of preprocessing steps execute, as double (index of PreprocessingSteps currently executed)
+% 5: PPSteps: current iteration of preprocessing steps execute, as double (index of PreprocessingSteps currently executed)
 
 % NOTE: If Kilosort spike data extracted: Spike data gets deleted. It could
 % be modified accordingly, but would then differ in time from the file

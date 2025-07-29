@@ -1,4 +1,4 @@
-function [EventRelatedData] = Preprocessing_Events_Channel_Rejection(Data,EventRelatedData,Time,Rejectedchan,ChannelSpacing,Figure,Type,ActiveChannel)
+function [EventRelatedData] = Preprocessing_Events_Channel_Rejection(Data,EventRelatedData,Time,Rejectedchan,ChannelSpacing,Figure,Type,AllActiveChannel)
 
 %________________________________________________________________________________________
 %% Function to execute channel rejection and interpolation event preprocessing step
@@ -14,6 +14,8 @@ function [EventRelatedData] = Preprocessing_Events_Channel_Rejection(Data,EventR
 % 5. Figure: axes object of channel rejection prepro app window to plot
 % result in
 % 6. Type: selects if results should be plotted, Otions: 'InterpolatedOnly' OR 'PlotOnly' OR 'All'
+% 7. AllActiveChannel: double vector with all active channel in the probe
+% design (not the currently active ones)
 
 % Outputs:
 % 1. EventRelatedData: nchannel x nevents x ntime single matrix with modified event related data
@@ -31,7 +33,7 @@ if strcmp(Type,'InterpolatedOnly') || strcmp(Type,'All')
     end
    
     if Data.Info.ProbeInfo.SwitchTopBottomChannel == 0
-        [Rejectedchan] = Organize_Convert_ActiveChannel_to_DataChannel(ActiveChannel,Rejectedchan,'MainWindow');
+        [Rejectedchan] = Organize_Convert_ActiveChannel_to_DataChannel(AllActiveChannel,Rejectedchan,'MainWindow');
     else
         ReversedActiveChannel = (str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows)+1)-Data.Info.ProbeInfo.ActiveChannel;
         [Rejectedchan] = Organize_Convert_ActiveChannel_to_DataChannel(ReversedActiveChannel,Rejectedchan,'MainWindow');

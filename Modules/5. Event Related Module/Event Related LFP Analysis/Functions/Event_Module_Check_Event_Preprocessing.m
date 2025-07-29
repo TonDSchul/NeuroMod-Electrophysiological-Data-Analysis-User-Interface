@@ -1,5 +1,28 @@
 function [EventDataTypeField,Value]= Event_Module_Check_Event_Preprocessing(Data,EventChannelSelection,CurrentValue)
 
+%________________________________________________________________________________________
+%% Function to check whether event related data was preprocessed to fill selection dropdown menu
+
+% executed when the user changes the for example the event channel
+% selection for which Event related data is anylszed. This is bc
+% preprocessing is bound to a certain event channel
+
+% Inputs: 
+% 1. Data: main window data object
+% 3. EventChannelSelection: char, name of the event channel for which trigger are
+% checked
+% 4. CurrentValue: Currently selected value (either 'Raw Event Related Data' OR 'Preprocessed Event Related Data')
+% --> this is so selection of prepro data can be preserved when selecting
+% another event channel
+
+% Outputs:
+% 1. EventDataTypeField: Determined content of selection dropdown menu (dropdown.Items)
+% 2. Value: Current value selected in the selection dropdown menu (dropdown.Value)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 OriginalValue = [];
 
 if ~isempty(CurrentValue)

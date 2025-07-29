@@ -40,6 +40,8 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum
 % 11. CurrentPlotData: structure saving results to export.
 % 12. ActiveChannel: double vector containing channel active in the probe
 % view window
+% 13. PlotAppearance: structure holding current default of plot appearances
+% like linewidths
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed

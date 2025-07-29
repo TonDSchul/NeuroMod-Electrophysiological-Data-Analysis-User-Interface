@@ -19,6 +19,13 @@ function [Data,Info,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,Info,
 % 5. TextArea: app object of textarea to show info. Can be empty variable
 % when execute outside of GUI
 
+% Outputs:
+% 1. Data: Data structure holding Raw, Preprocessed data and Info structure
+% 2. Info: currently added prepro infos of all components part of the
+% pipeline
+% 3. TextArea: content of textarea field in prepro window in case warning
+% has to be displayed (line 61) 
+
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 

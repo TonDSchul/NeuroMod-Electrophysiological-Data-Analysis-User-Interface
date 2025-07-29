@@ -1,5 +1,25 @@
 function [EventFieldValue] = Event_Module_Check_EventInput(EventFieldValue,Data,EventSelected,EventDataType,StartUp)
 
+%________________________________________________________________________________________
+%% Function to check whether the selection of trigger in event related analysis windows is proper
+
+% executed on starup of event related LFP analysis windows or when the user
+% changes the selction of triggers
+
+% Inputs: 
+% 1. EventFieldValue: char, input of user
+% 2. Data: main window data object
+% 3. EventSelected: char, name of the event channel for which trigger are
+% checked
+% 4. EventDataType: char, either 'Raw Event Related Data' OR 'Preprocessed
+% Event Related Data' -- prepro data can have less trigger
+% 5. StartUp: double, 1 or 0 whether this function is execute on window
+% startup or not
+%
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 for i = 1:length(Data.Info.EventChannelNames)
     if strcmp(EventSelected,Data.Info.EventChannelNames{i})
         EventChannelNr = i;

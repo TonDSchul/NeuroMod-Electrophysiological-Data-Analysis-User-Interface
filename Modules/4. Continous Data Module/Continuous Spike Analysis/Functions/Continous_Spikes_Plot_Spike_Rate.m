@@ -26,6 +26,8 @@ function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,Sp
 % to have
 % 14. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 15. PlotAppearance: structure holding plot style information like color
+% and linewidth
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in

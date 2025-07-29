@@ -37,6 +37,7 @@ function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelP
 % 11. Eventstoshow: char indicating the event to show in the plot; Either 'Non' or char with event channel name, like 'DIN-04'
 % 12: Waveforms: nspikes x ntimewaveforms matrix with waveforms for each
 % spikes (spikes in Data.Spikes.Waveforms)
+% 13. ActiveChannel: double vector, currently user defined active channel from probe view window
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double in seconds and within the

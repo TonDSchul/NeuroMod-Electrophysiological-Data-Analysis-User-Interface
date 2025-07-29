@@ -28,8 +28,11 @@ File: Analyse_Main_Window_Static_Power_Spectrum.m
 % case user wants to export them
 % 9. PlotAppearance: structure holding current default of plot appearances
 % like linewidth
-
+% 10. WindowSize: char from editfield, window size for Pwelch
 % Outputs:
+% 11. UseCostumeWindowSize: logical 1 or 0, whether costume window size
+% should be applied
+
 % 1. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them. See below to see which fields and data
 
@@ -83,6 +86,8 @@ File: Continous_Power_Spectrum_Over_Depth.m
 % 11. CurrentPlotData: structure saving results to export.
 % 12. ActiveChannel: double vector containing channel active in the probe
 % view window
+% 13. PlotAppearance: structure holding current default of plot appearances
+% like linewidths
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed

@@ -57,6 +57,8 @@ File: Continous_Spikes_Delete_Spikes_Not_In_ChannelRange.m
 % 4: Channel_Selection: 1 x 2 double with channelselction of user, i.e.
 % [1,10] for channel 1 to 10
 % 5: SpikeType: type of spike data as char, either 'Internal' OR 'Kilosort'
+% 6. ALLActiveChannel: double vector, all activ channel defined when
+% extracting the dataset
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double with indicie of each spike in samples
@@ -117,6 +119,8 @@ File: Continous_Spikes_Manage_Analysis_Plots.m
 % 16. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 17. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 18. PlotAppearance: structure holding plot style information like color
+% and linewidth
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info
@@ -223,6 +227,8 @@ File: Continous_Spikes_Plot_Spike_Rate.m
 % to have
 % 14. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 15. PlotAppearance: structure holding plot style information like color
+% and linewidth
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -339,6 +345,7 @@ File: Continous_Spikes_Prepare_Plots.m
 % 11. Eventstoshow: char indicating the event to show in the plot; Either 'Non' or char with event channel name, like 'DIN-04'
 % 12: Waveforms: nspikes x ntimewaveforms matrix with waveforms for each
 % spikes (spikes in Data.Spikes.Waveforms)
+% 13. ActiveChannel: double vector, currently user defined active channel from probe view window
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double in seconds and within the

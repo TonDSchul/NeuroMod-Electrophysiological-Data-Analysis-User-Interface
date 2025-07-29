@@ -18,6 +18,8 @@ function [ArtefactRelatedData,StimArtefactInfo] = Preprocess_Extract_and_Plot_St
 % event,i.e. '1' for the first ttl
 % 5. SpacingSlider: double, spacing between channel for plotting
 % 6. Figure: figure object handle to plot data (in seconds)
+% 7. ActiveChannel: double vector with all active channel in the probe view
+% window
 
 % Output: 
 % 1. ArtefactRelatedData: nchannel x ntime x nevents matrix containg the data that is plotted. 

@@ -22,9 +22,28 @@ File: Preprocess_ApplyStimArtefactRejection.m
 % 4. PreproInfo: strcuture holding the infos about added preprocessing
 % steps (paramater to apply), comes from
 % Preprocess_Module_Construct_Pipeline.m when adding a step to the pipeline
+% 5.SampleRate: double, sample rate after signal was potentially
+% downsampled
+% 6. Downsampled: 1 or 0, 1 if downsampled, 0 otherwise
 
 % Output: 
 % 1. Data: Either corrected Data.Raw or correctr Data.Preprocessed data from the main dataset, depending on whether its the first preprocessing step . 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Preprocess_DeleteLastPipeline_Entry.m
+%________________________________________________________________________________________
+
+%% Function to delete the last preprocessing pipeline step added
+
+%Input/Output:
+% app: preprocessing app window object
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -49,10 +68,12 @@ File: Preprocess_Extract_and_Plot_Stimulation_Artefact.m
 % 3. EventChannelforStimulationDropDown: Name of the event channel from
 % which event indicies are taken. Identical to names in Data.Info.EventChannelNames
 % 4. EventstoPlotDropDown: char, which event ttl's to plot from the selected
-% event channel. Either 'Mean over all Events' OR the number of the
+% event channel. Either 'Mean over all Trials' OR the number of the
 % event,i.e. '1' for the first ttl
 % 5. SpacingSlider: double, spacing between channel for plotting
 % 6. Figure: figure object handle to plot data (in seconds)
+% 7. ActiveChannel: double vector with all active channel in the probe view
+% window
 
 % Output: 
 % 1. ArtefactRelatedData: nchannel x ntime x nevents matrix containg the data that is plotted. 
@@ -154,9 +175,9 @@ File: Preprocess_Module_Construct_Pipeline.m
 % 1. type: char name of preprocessing step applied. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd"
 % 2. Info: Structure of preprocessing app that gets filled based on the other inputs to this function to save infos for later preprocessing. % NOTE: % Paremeters Saved in app.Info variable (NOT THE MAINAPP Original DATA)!! Only applied to the
 % mainapp data after preprocessing pipeline finsihed. Has to be already saved here bc multiple filter can be applied. 
-% 3. PreprocessingSteps: tring array that get filled with the name of the preprocesing step added and displayed in the textbox of the
-% preprocessing window. When Pipiline is executed it loops over those names and based on the name applies the corresponding preprocessing function. 
-% 4: PlotExample: true or false, if true all of the stuff here is temporary
+% 3. PreprocessingSteps: string array with the name of the preprocesing steps added and displayed in the textbox of the
+% preprocessing window. When Pipeline is executed it loops over those names and based on the name applies the corresponding preprocessing function. 
+% 4: PlotExample: true or false, if true everything is temporary
 % to plot an example of what the preprocessing would look like.
 % 5. FilterMethod: char with name of filter when filtering selected. Either "Low-Pass" OR "High-Pass" OR "Band-Stop" OR "Median Filter" OR "Narrowband"
 % 6. FilterType: char input Options: "Butterworth IR" OR "FIR-1" OR "Firls" 
@@ -170,8 +191,7 @@ File: Preprocess_Module_Construct_Pipeline.m
 % time around event to reject in samples (both numbers positive, i.e.
 % 150,150) and SelectedEventChannelName: Name of the event channel to
 % take the artefact indicie from. Comes from Data.Info.EventChannelNames
-% IMPORTANT: if no artefact rejection, dont pass this variable or set it
-% empty
+% IMPORTANT: empty when no artefact rejection
 
 % Output: 
 % 1. Info (app.Info, not part of the original main window dataset!). Holds
@@ -206,6 +226,13 @@ File: Preprocess_Module_Delete_Old_Settings.m
 % 4. ChannelDeletion: double array of channels to be deleted
 % 5. TextArea: app object of textarea to show info. Can be empty variable
 % when execute outside of GUI
+
+% Outputs:
+% 1. Data: Data structure holding Raw, Preprocessed data and Info structure
+% 2. Info: currently added prepro infos of all components part of the
+% pipeline
+% 3. TextArea: content of textarea field in prepro window in case warning
+% has to be displayed (line 61) 
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -284,6 +311,54 @@ File: Preprocess_Module_Set_Filter_Parameter.m
 
  ###################################################### 
 
+File: Preprocessing_Check_Band_Stop_Conditions.m
+%________________________________________________________________________________________
+
+%% Function to check whether data was low pass filtered and downsampled before applying band stop.
+% If not, a window opens asking the user if he wants to add these steps
+%  automatically
+
+%Input:
+% app: preprocessing app window object
+
+% Outputs:
+% 1. Proceed: 1 or 0, 1 if user proceeded with selection and asomething is
+% added to the pipeline
+% 2. ExtraPrepro: 1 or 0, 1 if extra preprocessing steps have to be added
+% 3. NewSampleFrequency: Not used currently! 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Preprocessing_Check_NarrowBand_Conditions.m
+%________________________________________________________________________________________
+
+%% Function to check whether data was low pass filtered and downsampled before applying narrowband filter.
+% If not, a window opens asking the user if he wants to add these steps
+%  automatically before the narrowband filter
+
+%Input:
+% app: preprocessing app window object
+
+% Outputs:
+% 1. Proceed: 1 or 0, 1 if user proceeded with selection and asomething is
+% added to the pipeline
+% 2. ExtraPrepro: 1 or 0, 1 if extra preprocessing steps have to be added
+% 3. NewSampleFrequency: Not used currently! 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Preprocessing_Module_Cut_Time.m
 %________________________________________________________________________________________
 
@@ -300,7 +375,7 @@ File: Preprocessing_Module_Cut_Time.m
 % 4: PreprocessingSteps: string array with names of preprocessing steps
 % captured in the gui. The are computed in the order specified in the
 % array. Options: % Preprocessing ethod to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd"
-% 5: current iteration of preprocessing steps execute, as double (index of PreprocessingSteps currently executed)
+% 5: PPSteps: current iteration of preprocessing steps execute, as double (index of PreprocessingSteps currently executed)
 
 % NOTE: If Kilosort spike data extracted: Spike data gets deleted. It could
 % be modified accordingly, but would then differ in time from the file

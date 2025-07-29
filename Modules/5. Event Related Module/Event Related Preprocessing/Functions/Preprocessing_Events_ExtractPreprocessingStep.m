@@ -1,5 +1,23 @@
 function [texttoshow] = Preprocessing_Events_ExtractPreprocessingStep(Data)
 
+%________________________________________________________________________________________
+%% Function to save all preprocessing steps that are part of the current dataset
+% (preprocessing applied to get Data.Preprocessed)
+
+% called in Preprocessing_Events_PopulateInfoText.m to show already applied
+% prepro steps and settings in text area of main window in which event
+% related LFP analysis is selcted
+
+% Inputs: 
+% 1. Data: main window data object with all relevant data components
+
+% Outputs:
+% 1. texttoshow: cell array containings strings with prepro steps and settings already applied
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 PreproStruc = [];
 
 if isfield(Data.Info,'FilterMethod')

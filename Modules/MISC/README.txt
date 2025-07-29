@@ -8,17 +8,18 @@ This folder contains permanently saved files usually not modified or if, then au
 Variables are:
 1. 'CEDS64Path.mat' file, holding the path to the MATLAB Son Library for analysis of Spike2 data. 
 This variable is autosaved and updated automatically if necessary.
-2. Template_PlotAppearance.mat: saves to standrad plot appearances of the GUI (when the user resets to default, those are the settings taken) - read if no PlotAppearance.mat is saved (costume plot appearance)
-3. Template_ModuleOrder.mat: saves default modules shown on startup of the main window. This is called when the user presses the button to reset module order to default. - read if no ModuleOrder.mat is saved (costume module order)
+2. PlotAppearance: saves the costume plot appearances the user saved. Only if they where modified and saved as new default
+3. ModuleOrder: saves costume modules shown on startup of the main window the user selected and saves as new default. 
 4. Python_Conda_Path.mat: saves the path to the python.exe for the conda environment SpikeInterface is installed in
 5. ShowToolTipsSetting.mat: saves whether tooltips should be shown for next startup
+6. SavedColorScheme.mat: saves the GUI colorscheme (light/dark;dark/light) that is loaded when the GUI is opened
+7. Example_Events.csv: example file containing 50 trigger times in samples to load into the 'Import Trigger Times'
+8. Example_Events.txt: example file containing 50 trigger times in samples to load into the 'Import Trigger Times'
+9. ExampleTriggerIdentities.txt: example file containing trigger identities for trigger. This can be loaded in the 'Extract Trigger Times' to divide a single event channel with 50 triggers into two different event channel called T1 and T2 (see text file contents) with 25 trigger each
+---------------------- Take these example files as reference for the expected format! ------------------
 
-Optionally: 
-1. PlotAppearance: saves the costume plot appearances the user saved. Only if they where modified and saved as new default
-2. ModuleOrder: saves costume modules shown on startup of the main window the user selected and saves as new default. 
 
-
-Also, there are files in the Default(do not edit!) folder containing templates for all standard configs available right out of the box, namely:
+Also, there are files in the 'Default Autorun Configs (do not edit!)' folder containing templates for all standard configs available right out of the box, namely:
 
 1. Autorun_Config_TEMPLATE_INTAN_DAT_Analysis
 2. Autorun_Config_TEMPLATE_INTAN_RHD_Analysis
@@ -26,6 +27,6 @@ Also, there are files in the Default(do not edit!) folder containing templates f
 4. Autorun_Config_TEMPLATE_OPEN_EPHYS_Analysis
 5. Autorun_Config_TEMPLATE_Spike2_Analysis
 
-They should not be modified, since they serve as the default templates you can select when resetting a config file to default. However,yo can of cours add your own Templates 
+Those are the standard/default config files you can reset the currently selected config file to in the autorun window 
 
 This folder also contains the Logo and the pictures for the readme file and Licenses of other toolboxes used.

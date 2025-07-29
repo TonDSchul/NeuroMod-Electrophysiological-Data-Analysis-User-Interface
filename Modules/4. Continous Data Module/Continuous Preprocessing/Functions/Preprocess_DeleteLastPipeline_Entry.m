@@ -1,5 +1,17 @@
 function app = Preprocess_DeleteLastPipeline_Entry(app)
 
+%________________________________________________________________________________________
+
+%% Function to delete the last preprocessing pipeline step added
+
+%Input/Output:
+% app: preprocessing app window object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if strcmp(app.PreprocessingSteps(end),"High-Pass") || strcmp(app.PreprocessingSteps(end),"Low-Pass")
     if isfield(app.Info,'FilterMethod')
         % Fields to delete

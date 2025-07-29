@@ -8,14 +8,7 @@ File: Preprocessing_Events_Add_Preprocessing_Info.m
 % This function populates main window Data.Info field 
 % Gets called after preprocessing step was applied to dataset
 
-% Note: Since preprocessing was already applied when this function is called, the Data.Info structure 
-% already contains the specific kind of preprocessing applied as
-% Data.Info.EventRelatedPreprocessing (as char)
-% It can contain following options: 'TrialRejectionChannel' OR
-% 'ChannelRejectionTrials' OR 'ArtefactRejectionChannel' OR
-% 'ArtefactRejectionTrials' OR 'ArtefactRejectionTimeRange'. It is important here because
-% prepro steps can be applied multiple times. Therefore Data.Info
-% fields with event prepro info is NOT overwritten. Instead it takes the old
+% Note:  Data.Info fields with event prepro info is NOT overwritten. Instead it takes the old
 % fields and adds new parameter to it.
 
 % Inputs: 
@@ -23,12 +16,10 @@ File: Preprocessing_Events_Add_Preprocessing_Info.m
 % 2. EventRelatedPreprocessingType: char, type of preprocessing applied;
 % Options: 'Artefact Rejection' OR 'Channel Rejection' OR 'Trial Rejection'
 % 3. ChannelSelection: 1 x 2 double for which channel preprocessiing step was applied
-% i.e. [1,10] for channel 1 to 10
-% 4. TrialSelection: 1 x 2 double for which events preprocessiing step was applied
-% i.e. [1,10] for events 1 to 10
-% 5. TimeRangeArtefact: 1 x 2 double capturing the stop and start time of
-% the artefact rejection step if applied
-% i.e. [1,10] for events 1 to 10
+% i.e. [1,10] for channel 1 to 10; in GUI:all channel
+% 4. TrialSelection: 1 x n double vector with trial indicies to delete
+% 5. EventChannelName: char, name of the event channel for which
+% preprocessing was applied
 
 % Outputs:
 % 1.Data: Main Window data structure with the info field.
@@ -50,12 +41,13 @@ File: Preprocessing_Events_Channel_Rejection.m
 % 1. EventRelatedData: nchannel x nevents x ntime single matrix with event
 % related data
 % 2. Time: double time vector, same length as ntime, in seconds
-% 3. Channel: 1x2 double with channel to be deleted, i.e. [1,10] for
-% channel 1 to 10 
+% 3. Rejectedchan: 1xn double vector with channel to be deleted
 % 4. ChannelSpacing: double in um (Data.Info.ChannelSpacing)
 % 5. Figure: axes object of channel rejection prepro app window to plot
 % result in
 % 6. Type: selects if results should be plotted, Otions: 'InterpolatedOnly' OR 'PlotOnly' OR 'All'
+% 7. AllActiveChannel: double vector with all active channel in the probe
+% design (not the currently active ones)
 
 % Outputs:
 % 1. EventRelatedData: nchannel x nevents x ntime single matrix with modified event related data
@@ -114,6 +106,81 @@ File: Preprocessing_Events_Check_Inputs_Artefact_Rejection.m
 
  ###################################################### 
 
+File: Preprocessing_Events_ExtractPreprocessingStep.m
+%________________________________________________________________________________________
+%% Function to save all preprocessing steps that are part of the current dataset
+% (preprocessing applied to get Data.Preprocessed)
+
+% called in Preprocessing_Events_PopulateInfoText.m to show already applied
+% prepro steps and settings in text area of main window in which event
+% related LFP analysis is selcted
+
+% Inputs: 
+% 1. Data: main window data object with all relevant data components
+
+% Outputs:
+% 1. texttoshow: cell array containings strings with prepro steps and settings already applied
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Preprocessing_Events_Get_Original_Trial_Indice.m
+%________________________________________________________________________________________
+%% Function to convert current trigger/trial selection to true trigger indices.
+
+% This function is only called when the user rejects trials from one event
+% channel two times. Example: This is because after the first trial rejection, range
+% is not 1-50 anymore but 1-40 with trials 1:10 deleted. So if rejection window opens again, user
+% can reject trials 1 to 40. If he again selects to delete trials 1 to 10,
+% it is truly trial 20-30 in repsect to the whole event related dataset he
+% wants to delete!
+
+% called in Preprocessing_Events_Add_Preprocessing_Info.m
+
+% Inputs: 
+% 1. CurrentIndices: Trials currently selected to delete
+% 2. DeletedTrials: Already deleted trials (Data.Info.EventRelatedPreprocessing.TrialRejectionTrials)
+
+% Outputs:
+% 1. OriginalTrialNumbers: true trial indices to delete
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Preprocessing_Events_Interpolate_Channel.m
+%________________________________________________________________________________________
+%% Function to interpolate channel in event related data based on specified event related preprocessing steps
+
+% Since event related data and preprocessed event related data are
+% extracted on the fly, this function applies channel rejection in the
+% Event_Module_Extract_Event_Related_Data.m function
+
+% called in Event_Module_Extract_Event_Related_Data.m
+
+% Inputs: 
+% 1. EventRelatedData: nchannel x ntrials x time matrix with event related
+% data
+% 2. Rejectedchan: double vector with channel to interpolate
+
+% Outputs:
+% 1. EventRelatedData: nchannel x ntrials x time matrix with channel
+% interpolation being applied
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Preprocessing_Events_Plot_and_Apply_Trial_Rejection.m
 %________________________________________________________________________________________
 %% Function to apply and plot event/trial rejection
@@ -128,7 +195,7 @@ File: Preprocessing_Events_Plot_and_Apply_Trial_Rejection.m
 % related data
 % 2. Time: 1 x ntime double with time values for each time point of event
 % realted data ('real' time with negative values)
-% 3. Type: char, determines what is done her, Either 'OnlyReject' OR 'RejectandPlot' OR 'Plot'
+% 3. Type: char, only 'Plot so far'
 % 4. TopFigure: Figure axes handle to top figure of trial rejection window
 % plotting ERP
 % 5. BottomFigure: Figure axes handle to bottom figure of trial rejection window
@@ -137,6 +204,12 @@ File: Preprocessing_Events_Plot_and_Apply_Trial_Rejection.m
 % is done for all channel automatically
 % 7. TrialsToReject: char with trial selection of preprocessing window, as
 % char, i.e. '1,10' for events 1 to 10
+% 8. EventsToPlot: double vector, sets events to plot since plotting can slow down
+% everything considerably when having a lot of events.
+% 9. PlotThreshold: logical 1 or 0 (empty for non)
+% 10. Threshold: double, threshold to automatically detect trials to delete
+% 11. EventChannelname: char, name of event channel for which trials are
+% rejected
 
 % Outputs: 
 % 1. EventRelatedData: nchannel x ntrials x ntime single matrix with modified event
@@ -163,6 +236,7 @@ File: Preprocessing_Events_PopulateInfoText.m
 % prepro infos (shown when string or char is saved as TextArea.Value)
 % 2. Data: main app data structure with Data.PreprocessedEventRelatedData, 
 % Data.EventRelatedPreprocessing and Data.Info fields
+% 3. EventChannelSelectionDropDown: char, name of the event channel 
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

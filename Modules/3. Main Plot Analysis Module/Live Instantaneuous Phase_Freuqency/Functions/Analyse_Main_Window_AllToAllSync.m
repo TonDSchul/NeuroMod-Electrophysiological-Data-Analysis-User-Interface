@@ -4,6 +4,10 @@ function [CurrentPlotData] = Analyse_Main_Window_AllToAllSync(Figure3,Hilbert_Ph
 
 %% Function to compute All to All channel phase synchronization 
 
+% The first part of this function is based on the "Complete neural
+% signal processing and analysis: Zero to hero" workshop by Michael Cohen
+% on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
+
 % Inputs:
 % 1. Figure3: handle to figure object of phase sync figure to plot in
 % 2. Hilbert_Phases: hilbert phase results (in degree) --> angle(analytical hilbert signal)

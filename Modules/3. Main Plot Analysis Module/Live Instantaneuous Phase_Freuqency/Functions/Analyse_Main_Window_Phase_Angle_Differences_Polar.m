@@ -4,6 +4,10 @@ function CurrentPlotData = Analyse_Main_Window_Phase_Angle_Differences_Polar(Cha
 
 %% Function to plot phase angle differences between two channel in a polar unit circle plot
 
+% This function is based on the "Complete neural
+% signal processing and analysis: Zero to hero" workshop by Michael Cohen
+% on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
+
 % Inputs:
 % 1. Channel1Data: 1 x n vector with data of channel 1 in currentlyx viewed
 % data snippet
