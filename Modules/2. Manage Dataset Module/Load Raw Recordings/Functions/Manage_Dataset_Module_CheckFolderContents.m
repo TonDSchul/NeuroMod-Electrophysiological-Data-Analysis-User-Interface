@@ -1,4 +1,4 @@
-function [Formatsfound,TextAreaText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(ProbeInfo,PathToOpen)
+function [Formatsfound,TextAreaText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(ProbeInfo,PathToOpen,JustCheck,SelectedFolder)
 
 %________________________________________________________________________________________
 
@@ -24,6 +24,10 @@ function [Formatsfound,TextAreaText,ProbeInfoText,RecordingSystemDropDownItems,F
 % 1. ChannelOrder: To display channelorder in the textarea of the Extract_Data_Window app window
 % 2. PathToOpen: char, path to auto-open when windows file explorer is used
 % to get folder selection from user
+% 3. JustCheck: double 1 or 0, if 1 no folder selection, just check a
+% folder!
+% 4. SelectedFolder: char, folder to check for data format when JustCheck
+% is 1
 
 % Output: 
 % 1. Formatsfound: string array saving the format from AllFormats variable
@@ -66,10 +70,12 @@ stringArray = [];
 %% Get user selected folder and save as SelectedFolder
 % Prompt the user to select a folder
 
-if isfolder(PathToOpen)
-    SelectedFolder = uigetdir(PathToOpen,'Select a folder with your recording data');
-else
-    SelectedFolder = uigetdir('Select a folder with your recording data');
+if JustCheck == 0
+    if isfolder(PathToOpen)
+        SelectedFolder = uigetdir(PathToOpen,'Select a folder with your recording data');
+    else
+        SelectedFolder = uigetdir('Select a folder with your recording data');
+    end
 end
 
 if SelectedFolder == 0

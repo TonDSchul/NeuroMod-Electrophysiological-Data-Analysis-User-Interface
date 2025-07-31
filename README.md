@@ -196,8 +196,7 @@ https://github.com/cortex-lab/spikes
 
 > ### **How to Install SpikeInterface for Spike Sorting in Neuromod**
 
-First you have to install Python and Anaconda. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights. **Optional:** Create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Activate your environment ('conda activate <YourEnvironmentName>') and install the necessary packages using these commands: (Alternatively just copy paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment)
-For some of the following packages you need to install Visual Studios C++ as well!
+First you have to install Python, Anaconda and Visual Studios C++. After you done this, you have to type 'Anaconda Prompt' in your windows search bar and open the prompt window. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights (right-click, properties, security tab, give full control to user OR click on the compatibility tab and enable to execute it as an administrator). **Optional:** In the Anaconda Prompt, create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After creating the anvironment, activate your it ('conda activate <YourEnvironmentName>') and install the necessary packages using the following commands. Alternatively just copy-paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment.
 
 ```python
 pip install "spikeinterface[full]"
@@ -219,6 +218,11 @@ pip install pyuac
 pip install pypiwin32
 ```
 
+**IMPORTANT:** When you execute SpikeInterface for the first time within Neuromod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costume environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
+
+Selecting a valid python.exe file will save it's location in a .mat file in 'Neuromod_Path/Modules/MISC/Variables (do not edit)/Python_Conda_Path.mat'. When the location of the environment you installed all packages in changes or you copy the files of Neuromod to a new PC with different paths, either delete this vartiable manually, or use the menu bar on top of the Neurmod main window. Select 'Extras', 'Delete Saved Paths' and click 'Python Path to Spikeinterface Environment' to delete it. When you want to conduct spike sorting afterwards, you are asked again for a new location of the python.exe.
+The same holds true for the path to the Spike2 CEDS64ML folder when you want to load Spike2 recordings.
+
 To use Kilosort 4 GPU support, you might need to enter the following commmands (see https://github.com/MouseLand/Kilosort): 
 
 ```python
@@ -227,6 +231,9 @@ conda install pytorch pytorch-cuda=11.8 -c pytorch -c nvidia
 ```
 
 To load sorting results from SpikeInterface spike sorting that you create with your own code or the respective package GUI's OUTSIDE of Neuromod, you need to save the results as .npy files for example with the export_to_phy function (like the native Kilosort output) and you additionally need to save a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface: 
+
+
+If you install Kilosort in your SpikeInterface environment and the error occurs: invalid literal for int() with base 10: 'KMeans is known to have a memory leak on Windows with MKL', follow these instructions to change your environmental variables in windows: https://stackoverflow.com/questions/69596239/how-to-avoid-memory-leak-when-dealing-with-kmeans-for-example-in-this-code-i-am
 
 ```python
 compute_dict = {
@@ -240,10 +247,6 @@ SpikePositions = ext_SpikeLocations.get_data()
 savemat('YourFolder', mdic)
 export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=False)
 ```
-
-If you install Kilosort in your SpikeInterface environment and the error occurs: invalid literal for int() with base 10: 'KMeans is known to have a memory leak on Windows with MKL', follow these instructions to change your environmental variables in windows: https://stackoverflow.com/questions/69596239/how-to-avoid-memory-leak-when-dealing-with-kmeans-for-example-in-this-code-i-am
-
-**IMPORTANT:** When you execute SpikeInterface for the first time within Neuromod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. In doubt activate the environment (see above) and type in echo %CONDA_PREFIX% to see the path for the python.exe. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
 
 > ### **About Performance**
 > 

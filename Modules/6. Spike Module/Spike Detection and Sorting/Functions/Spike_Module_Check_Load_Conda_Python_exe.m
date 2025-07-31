@@ -21,7 +21,7 @@ Python_Conda_Environment_Path = [];
 PathVariableLocation = strcat(executablefolder,"\Modules\MISC\Variables (do not edit)\Python_Conda_Path.mat");
 
 if ~isfile(PathVariableLocation)
-    msgbox("In order to be able to execute python functions within your conda base environment, you have to specify the path of your python.exe in that environment. The typical path is: 'C:\ProgramData\anaconda3\python.exe'. Also be aware of the Python/Matlab version compatibility table available at: https://de.mathworks.com/support/requirements/python-compatibility.html?s_tid=srchtitle_site_search_1_python%20compatibility.")
+    msgbox("This code has to execute a python function to open and work with Spikeinterface. In order to be able to execute a python function within the anaconda environment (costume or base environment) you installed Spikeinterface in, you have to specify the path of your python.exe in that environment. The typical path is: 'C:\ProgramData\anaconda3\python.exe'. Also be aware of the Python/Matlab version compatibility table available at: https://de.mathworks.com/support/requirements/python-compatibility.html?s_tid=srchtitle_site_search_1_python%20compatibility. In doubt look in the README file!")
     
     % Prompt the user to select a file
     [filename, filepath] = uigetfile({'*.*', 'All Files (*.*)'}, 'Select a File');
@@ -46,7 +46,8 @@ else
         catch
             disp("Could not delete previously saved variable.")
         end
-        msgbox("In order to be able to execute python functions within your conda base environment, you have to specify the path of your python.exe in that environment. The typical path is: 'C:\ProgramData\anaconda3\python.exe'. Also be aware of the Python/Matlab version compatibility table available at: https://de.mathworks.com/support/requirements/python-compatibility.html?s_tid=srchtitle_site_search_1_python%20compatibility.")
+        msgbox("This code has to execute a python function to open and work with Spikeinterface. In order to be able to execute a python function within the anaconda environment (costume or base environment) you installed Spikeinterface in, you have to specify the path of your python.exe in that environment. The typical path is: 'C:\ProgramData\anaconda3\python.exe'. Also be aware of the Python/Matlab version compatibility table available at: https://de.mathworks.com/support/requirements/python-compatibility.html?s_tid=srchtitle_site_search_1_python%20compatibility. In doubt look in the README file!")
+       
         % Prompt the user to select a file
         [filename, filepath] = uigetfile({'*.*', 'All Files (*.*)'}, 'Select a File');
         
@@ -61,6 +62,6 @@ else
             save(PathVariableLocation,'Python_Conda_Environment_Path')
         end
     else
-        disp("Conda Python.exe loaded and found succefully!")
+        disp("SpikeInterface Conda Python.exe loaded and found succefully!")
     end
 end

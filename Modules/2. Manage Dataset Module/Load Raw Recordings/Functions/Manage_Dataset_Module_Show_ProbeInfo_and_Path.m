@@ -1,4 +1,4 @@
-function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder,PathToOpen)
+function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder,PathToOpen,JustCheck,FolderToCheck)
 
 %________________________________________________________________________________________
 
@@ -14,6 +14,9 @@ function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Datas
 % the user changed
 % 4: PathToOpen: char, path to auto-open when windows file explorer is used
 % to get folder selection from user
+% 5. JustCheck: double, 1 or 0; 1 to just check a folder and not ask to
+% seelct a new one
+% 6. FolderToCheck: char, path to the folder to check if JustCheck is 1
 
 % Output: 
 % 1. Load_Data_Window_Info: same as input struvture
@@ -139,7 +142,7 @@ end
 if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"AutorunFolderSelection")
     
 
-    [Formatsfound,FolderContentsText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(app.ProbeInfoandPath,PathToOpen);
+    [Formatsfound,FolderContentsText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(app.ProbeInfoandPath,PathToOpen,JustCheck,FolderToCheck);
 
     if SelectedFolder == 0
         FolderContentsText = strcat("No folder selected!");
