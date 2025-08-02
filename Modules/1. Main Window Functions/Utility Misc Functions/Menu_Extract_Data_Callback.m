@@ -92,6 +92,9 @@ else
     end
 end
 
+NeoTextNoFolder = ["No folder or file selected to pass to NEO:";"";"Using the NeuralEnsemble Neo library to extract data from a raw recording. If using NEO for the first time, you are asked for a path to the python.exe in the environment you installed Neo in. Please refer to the README how to install NEO and select the python.exe.";"";"First select a folder or file containing your recording data. Supported are all recording formats in the 'Select Recording System' dropdown menu.";" **NOTE** When you want to load Blackrock, NeuroExplorer or Plexon file formats, select a recording file, not a path! All recording formats in the 'Select Recording System' dropdown menu are supported. Selecting 'NEO Format Autodetection' will automatically detect the recording type. If that should not work, you can try without format autodetection by selecting your recording system in this window directly.";"";"**NOTE** Please make sure that the standard folder structure created by the recording software is NOT changed and the recording folder only contains files and folder created by the recording software!";"";"After selecting a folder, specify probe information. Required fields are channel number and channel spacing to specify the probe geometry. Active channel specify the amount and identity of probe channels you recorded from. The number of channels in your recording has to be the same as the number of elements in your active channel selection!";"";"After setting the probe information you can start the data extraction.";"This opens a python console prompt window showing the progress of data extraction. If something should not work, activate the 'Keep Console Open' checkbox to see potential error messages (and make sure to press enter in the console after the python script finished!). If the folder should NOT contain a suitable recording, you are being informed about it here. In doubt refer to the NEO documentation what folder or file to select for what recording type (for example there are differences between legacy and new open ephys recordings).";"";"After Neo extracted data, it is saved in the selected recording folder (extra folder is created) as a .dat file for channel data and .mat file for metadata. Those files are automatically loaded by Neuromod as soon as the python console closes and successfully saved the extracted recording. If you want to load the same dataset a second time, activate the 'Load Already Saved .dat file' checkbox to just load the .dat and .mat files saved earlier."];
+NeoTextWithFolder = ["Using the NeuralEnsemble Neo library to extract data from a raw recording. If using NEO for the first time, you are asked for a path to the python.exe in the environment you installed Neo in. Please refer to the README how to install NEO and select the python.exe.";"";"First select a folder or file containing your recording data. Supported are all recording formats in the 'Select Recording System' dropdown menu.";" **NOTE** When you want to load Blackrock, NeuroExplorer or Plexon file formats, select a recording file, not a path! All recording formats in the 'Select Recording System' dropdown menu are supported. Selecting 'NEO Format Autodetection' will automatically detect the recording type. If that should not work, you can try without format autodetection by selecting your recording system in this window directly.";"";"**NOTE** Please make sure that the standard folder structure created by the recording software is NOT changed and the recording folder only contains files and folder created by the recording software!";"";"After selecting a folder, specify probe information. Required fields are channel number and channel spacing to specify the probe geometry. Active channel specify the amount and identity of probe channels you recorded from. The number of channels in your recording has to be the same as the number of elements in your active channel selection!";"";"After setting the probe information you can start the data extraction.";"This opens a python console prompt window showing the progress of data extraction. If something should not work, activate the 'Keep Console Open' checkbox to see potential error messages (and make sure to press enter in the console after the python script finished!). If the folder should NOT contain a suitable recording, you are being informed about it here. In doubt refer to the NEO documentation what folder or file to select for what recording type (for example there are differences between legacy and new open ephys recordings).";"";"After Neo extracted data, it is saved in the selected recording folder (extra folder is created) as a .dat file for channel data and .mat file for metadata. Those files are automatically loaded by Neuromod as soon as the python console closes and successfully saved the extracted recording. If you want to load the same dataset a second time, activate the 'Load Already Saved .dat file' checkbox to just load the .dat and .mat files saved earlier."];
+
 %% Fill UI Text field accordingly
 if strcmp(Window,"Extract Data")
     if strcmp(app.ProbeTrajectoryInfo,"Loaded")
@@ -105,19 +108,36 @@ if strcmp(Window,"Extract Data")
         ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.ProbeInfoandPath .NrChannel);strcat("Channel Spacing: ",app.ProbeInfoandPath .ChannelSpacing);strcat("Nr Channel Rows: ",app.ProbeInfoandPath .NumberChannelRows);"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(app.ProbeInfoandPath.OffSetRows));strcat("Nr Active Channel: ",num2str(length(app.ProbeInfoandPath .ActiveChannel)))];
 
         if isempty(app.ProbeInfoandPath.selectedFolder)
-            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText;"";trajectorText];
+            if strcmp(app.RecordingSystemDropDown_2.Value,"NeuralEnsemble NEO Python Library")
+                ProbeInfoText = [NeoTextNoFolder;"";"Probe Information:";"";ProbeInfoText;"";trajectorText];
+            else
+                ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText;"";trajectorText];
+            end
+
             app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText;"";trajectorText];
+            if strcmp(app.RecordingSystemDropDown_2.Value,"NeuralEnsemble NEO Python Library")
+                app.TextArea.Value = ["Path to recording folder that is passed to NEO:";"";app.ProbeInfoandPath.selectedFolder;"";NeoTextWithFolder;"";ProbeInfoText;"";trajectorText];
+            else
+                app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath.selectedFolder;"";ProbeInfoText;"";trajectorText];
+            end
         end
     else
         ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.ProbeInfoandPath .NrChannel);strcat("Channel Spacing: ",app.ProbeInfoandPath .ChannelSpacing);strcat("Nr Channel Rows: ",app.ProbeInfoandPath .NumberChannelRows);"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(app.ProbeInfoandPath.OffSetRows));strcat("Nr Active Channel: ",num2str(length(app.ProbeInfoandPath .ActiveChannel)))];
 
-        if isempty(app.ProbeInfoandPath .selectedFolder)
-            ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText;"";trajectorText];
+        if isempty(app.ProbeInfoandPath.selectedFolder)
+            if strcmp(app.RecordingSystemDropDown_2.Value,"NeuralEnsemble NEO Python Library")
+                ProbeInfoText = [NeoTextNoFolder;"";"Probe Information:";"";ProbeInfoText;"";trajectorText];
+            else
+                ProbeInfoText = ["Data Folder: not defined";"";ProbeInfoText;"";trajectorText];
+            end
             app.TextArea.Value = ProbeInfoText;
         else
-            app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText;"";trajectorText];
+            if strcmp(app.RecordingSystemDropDown_2.Value,"NeuralEnsemble NEO Python Library")
+                app.TextArea.Value = ["Path to recording folder that is passed to NEO:";"";app.ProbeInfoandPath.selectedFolder;"";NeoTextWithFolder;"";ProbeInfoText;"";trajectorText];
+            else
+                app.TextArea.Value = ["Data Folder:";"";app.ProbeInfoandPath .selectedFolder;"";ProbeInfoText;"";trajectorText];
+            end
         end
     end
 end

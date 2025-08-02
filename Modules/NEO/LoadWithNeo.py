@@ -4,7 +4,6 @@ Created on Thu Jul 31 16:12:47 2025
 
 @author: tonyd
 """
-import time
 import os
 import sys
 import pyuac
@@ -12,95 +11,324 @@ import numpy as np
 import scipy.io
 import neo
 
-from neo.io import OpenEphysBinaryIO
-import os
+from neo.io import get_io
 
+def create_save_folder(selected_folder):
+    """
+    Given a selected folder, create a sibling folder with ' Neo SaveFile' suffix.
+    """
+    # Get parent dir and base folder name
+    parent_dir = os.path.dirname(selected_folder)
+    base_name = os.path.basename(selected_folder)
 
-def main(FolderName,JustLoad):
- 
-    # Load Open Ephys Binary data
-    print("Starting Data Extraction with NEO from " + FolderName)
-    
-    print("Loading Data with format " )
-    
-    #if Format == "New Open Ephys Format":
-    # test 
-    #if OpenEphysBinaryRawIO.is_supported(FolderName):
-    #    result_string = "Folder contains a valid Open Ephys Binary recording."
-    reader = neo.io.OpenEphysBinaryIO(FolderName)
-    #else:
-    #    result_string = "Folder does NOT contain a valid Open Ephys Binary recording."
-        
-    # Save to .txt file
-    #SaveFileName = FolderName + "/NeoRawData/ExtractionInfo.txt"
-    #with open(SaveFileName, "w") as f:
-    #    f.write(result_string)
-        
-    blocks = reader.read(lazy=False)
-    block = blocks[0]
-    segment = block.segments[0]
-    
-    analogsignals = segment.analogsignals
-    
-    Amp_Signal_Object = analogsignals[0]
-    
-    RawData = Amp_Signal_Object 
-    
-    print("Loading Data Finished")
-    
-    print("Prepraring Data to Save (this might take a while)")
-    # Build data matrix 
-    data = np.vstack([asig.magnitude.flatten() for asig in RawData])  # shape: (channels, samples)
-    
-    # check of folder exists and if necessary create it
-    save_dir = os.path.join(FolderName, "NeoRawData")
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-        
-    SaveFileName = FolderName + "/NeoRawData/NEO_Saved_Channel_Data.dat"
-    print("Saving Channel Data to " + SaveFileName)
-    data.astype(np.float32).tofile(SaveFileName)  # Save as .dat
-    
-    # Extract metadata
-    sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
-    units = [str(asig.units.dimensionality) for asig in analogsignals]
-    channel_names = [asig.name for asig in analogsignals]
-    channel_ids = [asig.annotations.get('channel_id', i) for i, asig in enumerate(analogsignals)]
-    
-    # Save metadata as .mat
-    SaveFileName = FolderName + "/NeoRawData/NEO_Saved_MetaData.mat"
-    print("Saving Metadata to " + SaveFileName)
-    scipy.io.savemat(SaveFileName, {
-        'sampling_rate': sampling_rate,
-        'units': units,
-        'channel_names': channel_names,
-        'channel_ids': channel_ids,
-        'n_channels': data.shape[1],
-        'n_samples': data.shape[0]
-    })
-    
-    print("Finished!")
+    # Construct new folder name
+    new_folder_name = f"{base_name} Neo SaveFile"
+    new_folder_path = os.path.join(parent_dir, new_folder_name)
 
+    # Create the folder if it doesn't exist
+    if not os.path.exists(new_folder_path):
+        os.makedirs(new_folder_path)
+        print(f"Created folder: {new_folder_path}")
+    else:
+        print(f"Folder already exists: {new_folder_path}")
+
+    return new_folder_path
+
+def main(FolderName,JustLoad,RecordingSystemSelection):
+    try:
+        # -----------------------------------------------------------------------
+        ''' First Create a Save Folder to save results in for Matlab to load'''
+        # -----------------------------------------------------------------------
+        # call save folder function
+        NEO_Save_Path = create_save_folder(FolderName)
+        # show info and save in Data Logger file
+        print("Created Folder to Save Channel Data and Metadata for matlab to read: " + NEO_Save_Path)
+        result_string = ("Created Folder to Save Channel Data and Metadata for matlab to read: " + NEO_Save_Path)
+        print("Starting Data Extraction with NEO from " + FolderName)
+        result_string = result_string + "Starting Data Extraction with NEO from " + FolderName
+        print("Checking if a suitable recording format is found in selected folder:")
+        result_string = result_string + "Checking if a suitable recording format is found in selected folder:"
+        
+        # Save to .txt file
+        DataLoggerSaveFileName = NEO_Save_Path + "/Logger.txt"
+        with open(DataLoggerSaveFileName, "w") as f:
+            f.write(result_string+"\n")
+        
+        result_string = None
+        reader = None
+        
+        # -----------------------------------------------------------------------
+        ''' Autodetect Recording System with NEO'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "NEO Format Autodetection":
+            try:
+                reader = get_io(FolderName)
+                result_string = (f"Detected IO class: {reader.__class__.__name__}")
+                print(f"Detected IO class: {reader.__class__.__name__}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a compatible IO: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a compatible IO: {e}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+        # -----------------------------------------------------------------------
+        ''' Load Data Without Autodetection based on User Input'''
+        # -----------------------------------------------------------------------
+        # -----------------------------------------------------------------------
+        ''' Neuralynx'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "Neuralynx":
+            try:
+                reader = neo.io.NeuralynxIO(dirname=FolderName)
+                result_string = (f"Use IO class: {RecordingSystemSelection}")
+                print(f"Use IO class: {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a recording with type {RecordingSystemSelection}: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a recording with type {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+        # -----------------------------------------------------------------------
+        ''' Plexon'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "Plexon":
+            try:
+                reader = neo.io.PlexonIO(filename=FolderName)
+                result_string = (f"Use IO class: {RecordingSystemSelection}")
+                print(f"Use IO class: {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a recording with type {RecordingSystemSelection}: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a recording with type {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+           
+        # -----------------------------------------------------------------------
+        ''' Tucker Davis'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "TdT (Tucker-Davis Technologies)":
+            
+            try:
+                reader = neo.io.TdtIO(dirname=FolderName)
+                result_string = (f"Use IO class: {RecordingSystemSelection}")
+                print(f"Use IO class: {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a recording with type {RecordingSystemSelection}: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a recording with type {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+        
+        # -----------------------------------------------------------------------
+        ''' New Open ephys binary format'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "New Open Ephys Format":
+            try:
+                reader = neo.io.OpenEphysBinaryIO(dirname=FolderName)
+                result_string = (f"Use IO class: {RecordingSystemSelection}")
+                print(f"Use IO class: {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a recording with type {RecordingSystemSelection}: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a recording with type {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+        # -----------------------------------------------------------------------
+        ''' Legacy Open ephys format'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "Legacy Open Ephys Format":
+            try:
+                reader = neo.io.OpenEphysIO(dirname=FolderName)
+                result_string = (f"Use IO class: {RecordingSystemSelection}")
+                print(f"Use IO class: {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a recording with type {RecordingSystemSelection}: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a recording with type {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+        
+        # -----------------------------------------------------------------------
+        ''' NeuroExplorer format'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "NeuroExplorer":
+            try:
+                reader = neo.io.NeuroExplorerIO(filename=FolderName)
+                result_string = (f"Use IO class: {RecordingSystemSelection}")
+                print(f"Use IO class: {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a recording with type {RecordingSystemSelection}: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a recording with type {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+        # -----------------------------------------------------------------------
+        ''' Blackrock format'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection == "Blackrock":
+            try:
+                reader = neo.io.BlackrockIO(filename=FolderName)
+                result_string = (f"Use IO class: {RecordingSystemSelection}")
+                print(f"Use IO class: {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+                    
+            except Exception as e:
+                
+                result_string = (f"Neo could not detect a recording with type {RecordingSystemSelection}: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
+                print(f"Neo could not detect a recording with type {RecordingSystemSelection}")
+                
+                with open(DataLoggerSaveFileName, "a") as f:
+                    f.write(result_string+"\n")
+            
+        print("Starting Data Extraction with NEO from " + FolderName)
+        result_string = "Starting Data Extraction with NEO from " + FolderName
+        with open(DataLoggerSaveFileName, "a") as f:
+            f.write(result_string+"\n")
+            
+        blocks = reader.read(lazy=False)
+        block = blocks[0]
+        segment = block.segments[0]
+        
+        analogsignals = segment.analogsignals
+        
+        Amp_Signal_Object = analogsignals[0]
+        
+        RawData = Amp_Signal_Object 
+        
+        print("Loading Data Finished")
+        result_string = "Loading Data Finished"
+        with open(DataLoggerSaveFileName, "a") as f:
+            f.write(result_string+"\n")
+            
+        print("Prepraring Data to Save")
+        result_string = "Prepraring Data to Save"
+        with open(DataLoggerSaveFileName, "a") as f:
+            f.write(result_string+"\n")
+        
+        Method = 1
+        # Build data matrix
+        try:
+            data = RawData.magnitude.T  # shape will be (n_channels, n_samples)
+            Method = 1
+        except Exception:
+            data = np.vstack([asig.magnitude.flatten() for asig in RawData]) 
+            Method = 2
+        result_string = "Method: " + str(Method)
+        with open(DataLoggerSaveFileName, "a") as f:
+            f.write(result_string+"\n")
+            
+            
+        SaveFileName = NEO_Save_Path + "/NEO_Saved_Channel_Data.dat"
+        print("Saving Channel Data to " + SaveFileName + " (this might take a while)")
+        result_string = "Saving Channel Data to " + SaveFileName
+        with open(DataLoggerSaveFileName, "a") as f:
+            f.write(result_string+"\n")
+        
+        data.astype(np.float32).tofile(SaveFileName)  # Save as .dat
+        
+        # Extract metadata
+        sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
+        units = [str(asig.units.dimensionality) for asig in analogsignals]
+        channel_names = [asig.name for asig in analogsignals]
+        channel_ids = [asig.annotations.get('channel_id', i) for i, asig in enumerate(analogsignals)]
+        
+        # Save metadata as .mat
+        SaveFileName = NEO_Save_Path + "/NEO_Saved_MetaData.mat"
+        print("Saving Metadata to " + SaveFileName)
+        result_string = "Saving Metadata to " + SaveFileName
+        with open(DataLoggerSaveFileName, "a") as f:
+            f.write(result_string+"\n")
+        
+        if Method == 2:
+            scipy.io.savemat(SaveFileName, {
+                'sampling_rate': sampling_rate,
+                'units': units,
+                'channel_names': channel_names,
+                'channel_ids': channel_ids,
+                'n_channels': data.shape[1],
+                'n_samples': data.shape[0]        
+            })
+        else:
+            scipy.io.savemat(SaveFileName, {
+                'sampling_rate': sampling_rate,
+                'units': units,
+                'channel_names': channel_names,
+                'channel_ids': channel_ids,
+                'n_channels': data.shape[0],
+                'n_samples': data.shape[1]        
+            })
+        
+        print("Finished!")
+        result_string = "Finished!"
+        with open(DataLoggerSaveFileName, "a") as f:
+            f.write(result_string+"\n")
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        print("Traceback details:")
+        import traceback
+        traceback.print_exc()  # Print detailed error information
+    finally:
+        input("Press Enter to exit...")
+        
 if __name__ == "__main__":
-    
-    file_path = sys.argv[1]
-    KeepConsoleOpen = sys.argv[2]
-    JustLoad = sys.argv[3]
-    
+
+    KeepConsoleOpen = sys.argv[2]   
+    KeepConsoleOpen = int(KeepConsoleOpen)
+
     if KeepConsoleOpen == 1:
         try:
             # Access arguments
             file_path = sys.argv[1]
-            KeepConsoleOpen = sys.argv[2]
             JustLoad = sys.argv[3]
+            RecordingSystemSelection = sys.argv[4]
+            
+            JustLoad = int(JustLoad)
             
             if not pyuac.isUserAdmin():
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad)  # Already an admin here.
+                main(file_path,JustLoad,RecordingSystemSelection)  # Already an admin here.
     
-        
         except Exception as e:
             print(f"An error occurred: {e}")
             print("Traceback details:")
@@ -108,17 +336,22 @@ if __name__ == "__main__":
             traceback.print_exc()  # Print detailed error information
         finally:
             input("Press Enter to exit...")
-    else:
+    
+    
+    if KeepConsoleOpen == 0:
         # Access arguments
         file_path = sys.argv[1]
-        KeepConsoleOpen = sys.argv[2]
         JustLoad = sys.argv[3]
+        RecordingSystemSelection = sys.argv[4]
+        
+        JustLoad = int(JustLoad)
         
         if not pyuac.isUserAdmin():
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad)  # Already an admin here.
+            main(file_path,JustLoad,RecordingSystemSelection)  # Already an admin here.
+        
             
     
 

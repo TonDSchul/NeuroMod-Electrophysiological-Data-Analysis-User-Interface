@@ -58,7 +58,6 @@ if strcmp(Format,".dat")
         if Header.Whattosave(1) == 1 && Header.Whattosave(2) == 0
             dN = ntime;
             Datatoload.Raw = NaN(nchan,ntime);
-            Datatoload.Raw = NaN(nchan,ntime);
             mmf = memmapfile(FullPath, 'Format', {'int16', [nchan ntime], 'x'});
 
             Datatoload.Raw = mmf.Data.x(1:nchan,1:dN);

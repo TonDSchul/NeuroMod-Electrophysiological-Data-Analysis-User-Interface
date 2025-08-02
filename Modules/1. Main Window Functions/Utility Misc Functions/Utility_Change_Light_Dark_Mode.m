@@ -163,6 +163,7 @@ if strcmp(Window,"ExtractDataWindow")
     app.TextArea.BackgroundColor   = ComponentsInWindowColor;
     app.TextArea_3.BackgroundColor = ComponentsInWindowColor;
     app.TextArea_4.BackgroundColor = WindowBackgroundColor;
+    app.RecordingSystemDropDown_2.BackgroundColor = ComponentsInWindowColor;
 
     app.ExtractionOptionsPanel.BackgroundColor = WindowBackgroundColor;
     app.ExtractionOptionsPanel.ForegroundColor = WindowBackgroundColor;

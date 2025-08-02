@@ -49,6 +49,10 @@ if Activated
             app.ExtractDataWindow.AddProbeInformationButton.Tooltip = "Click to specify probe information necessary to start data extraction. Alternatively load saved probe information using the menu above.";
             app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder containing ONE recording of the supported formats. To analyse multiple recordings one after another consider using the Autorun function of this GUI (see menu in main window).";
             app.ExtractDataWindow.ExtractDataButton.Tooltip = "Only if folder and probe information was specified.";
+
+            app.ExtractDataWindow.RecordingSystemDropDown_2.Tooltip = "Select which code based you want to use to extract your recording data. The Neuroensemble NEO library is a python package  which supports other file formats than NeuroMod does natively and can be used with a few clicks and installations. See the README file for more information. Use NEO for Neuralynx, Plexon, Blackrock and NeuroExplorer recordings. Open Ephys recordings are supported by NeuroMod and NEO, so you can choose. For all other supported recording formats use Neuromod.";
+            app.ExtractDataWindow.KeepConsoleOpen_2.Tooltip = "When you already extracted a recording with NEO, NeuroMod saves the channel and metadata in a new folder. Those can be directly loaded without having to access NEO, greatly increasing loading speed when loading multiple times.";
+            app.ExtractDataWindow.KeepConsoleOpen.Tooltip = "Activate to keep the python console that opens when using NEO open to see progress of the data extraction and if some error occurs, like NEO being unable to find a supported format in the selected folder/file.";
         end
     end
 

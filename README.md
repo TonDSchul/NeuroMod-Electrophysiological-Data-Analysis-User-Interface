@@ -6,16 +6,16 @@
 
 ** Warning: Currently only Matlab Versions 2023a or newer are supported **
 
-Neuromod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
-It seamlessly integrates established toolboxes such as Kilosort, Open Ephys Tools, Fieldtrip and SpikeInterface for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between matlab and python packages.
+NeuroMod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
+It seamlessly integrates established toolboxes such as Kilosort, SpikeInterface, NEO, Open Ephys Tools and Fieldtrip for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between Matlab and Python packages.
 
 The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
 This design ensures a smooth, code-free user experience, offering helpful guidance while still having full control over the analysis.
 
-Since the requirements for analysis and visualization can be wastly different and should be editable, the modular design philosophy of the user interface enables you to easily integrate your own analysis module into the GUI. All you have to do is to open the Matlab App Designer and copy a few lines of code from the manual, giving real time access to the whole dataset. When your app window is ready, it can be activated with a few clicks in the GUI, integrating it into the rest of the analysis ecosystem. 
-Lastly an autorun functionality can be used to automatically apply all analysis and visulatzation methods available in the GUI to multiple recordings in a folder and save analysis plots and results independent of the GUI.   
+Since the requirements for analysis and visualization can be vastly different and should be editable, the modular design philosophy of the user interface enables you to easily integrate your own analysis module into the GUI. All you have to do is to open the Matlab App Designer and copy a few lines of code from the manual, giving real time access to the whole dataset. When your app window is ready, it can be activated with a few clicks in the GUI, integrating it into the rest of the analysis ecosystem. 
+Lastly an autorun functionality can be used to automatically apply all analysis and visualization methods available in the GUI to multiple recordings in a folder and save analysis plots and results independent of the GUI.   
 
-As a result, Neuromod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings with your own pipeline. 
+As a result, NeuroMod is not only ideal for teaching and evaluating recording quality before or after sessions but also for comprehensive data analysis of one or multiple recordings with your own pipeline. 
 
 > ## **Table of Contents**
 > 
@@ -31,6 +31,8 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
 
   - [How to Install SpikeInterface for Spike Sorting in Neuromod](#how-to-install-spikeinterface-for-spike-sorting-in-neuromod)
 
+  - [How to Install NeuralEnsemble NEO to extend supported file formats in Neuromod](#how-to-install-neuralensemble-NEO)
+
   - [About Performance](#about-performance)
 
   - [General Remarks](#general-remarks)
@@ -43,9 +45,13 @@ As a result, Neuromod is not only ideal for teaching and evaluating recording qu
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-The toolbox currently supports formats recorded with the Open Ephys GUI, Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from the Open Ephys GUI recorded with Neuropixels, Open Ephys and Intan acquisition boards; .dat and .rhd files from the Intan RHX and RHD software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
+NeuroMod supports data extraction from raw recording data with two different 'libraries' - first the NeuroMod and MATLAB intern data extraction and second data extraction using the NeuralEnsemble NEO Python package. Both support recordings obtained with the Open Ephys GUI and Neuralynx recordings. 
 
-Besides the continous data stream, event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analyzed, enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
+NeuroMod itself currently supports formats recorded with the Open Ephys GUI, Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from the Open Ephys GUI recorded with Neuropixels, Open Ephys and Intan acquisition boards; .dat and .rhd files from the Intan RHX and RHD software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
+
+With the NEO package you can further extract data recorded with Plexon (.plx, .pl2), Neuralynx (ncs...), TDT (Tucker Davis Technologies), Open Ephys (binary files and Neuropixels recordings), Blackrock and NeuroExplorer (.nex) recording systems.
+
+Besides the continuous data stream, event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analyzed, enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components as well as event related spike analysis.
 
 Since the supported recording systems are used with a wide range of probes designs, a fully interactive probe design and probe view window enables to set arbitrary probe designs while always having an overview and full control over which channel are used for the analysis. Even Neuropixel probe designs with hundreds of recording channels almost freely distributed over the whole shank can be analysed without loosing oversight.
@@ -137,7 +143,21 @@ When you extract .smrx for the first time, you are asked to select the folder in
 
 > ### **Overview of Other Toolboxes Used**
 
-Some aspects of data extraction and analysis are handled by other toolboxes than the native Matlab ones, which dont have to be installed since the required functions are included in the source code (Data Path\Modules\Toolboxes).
+Spike Sorting with Mountainsort 5 and Spykingcircus2 as well as raw recording data extraction of some formats are handled by python libraries, that are called and executed via costume python functions. More specifically, SpikeInterface for spike sorting and NeuralEnsemble NEO for data extraction, which have to be installed manually but can then be used via NeuroMod without any coding. See below for more information.
+
+Spike sorting with Mountainsort 5, SpykingCircus 2 is implemented via a costume python script that uses the SpikeInterface library. 
+
+Check out **SpikeInterface**: 
+
+https://github.com/SpikeInterface/spikeinterface
+
+Data extraction of Neuralynx, Open Ephys, Plexon, Blackrock and NeuroExplorer file formats is done via the NeuralEnsemble NEO python package and a costume python script.
+
+Check out **NeuralEnsemble NEO**: 
+
+https://neo.readthedocs.io/en/latest/index.html
+
+Some aspects of data extraction and analysis are handled by other toolboxes than the native Matlab ones, which do not have to be installed since the required functions are included in the source code (Data Path\Modules\Toolboxes). 
 
 Specifically, the data and event extraction of Neuralynx file formats (.ncs, .nve) are handled completely by Fieldtrip using the 'ft_read_data.m' and 'ft_read_header.m' functions. Moreover, Fieldtrip is used to for filtering data in the preprocessing window. Involved functions remained unchanged, there are just costum functions to coordinate them. 
 
@@ -150,12 +170,6 @@ Data and event extraction of Open Ephys data formats is handled by the Open Ephy
 Check out **Open Ephys Matlab Tools**: 
 
 https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
-
-Spike sorting with Mountainsort 5, SpykingCircus 2 and Kilosort 4 in the GUI is implemented via a costume python script that uses the SpikeInterface library. 
-
-Check out **SpikeInterface**: 
-
-https://github.com/SpikeInterface/spikeinterface
 
 Spike Sorting for internally detected spikes (with thresholding) is done using the Wave_clus 3 Toolbox from Github.
 
@@ -192,11 +206,11 @@ Check out the **Spikes repository from the Cortex-Lab**:
 
 https://github.com/cortex-lab/spikes
 
-- Under GUI_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
+- Under NeuroMod_Path\Modules\MISC\LICENSES you can find the LICENSE and Citation files for those toolboxes.
 
-> ### **How to Install SpikeInterface for Spike Sorting in Neuromod**
+> ### **How to Install SpikeInterface for Spike Sorting in NeuroMod**
 
-First you have to install Python, Anaconda and Visual Studios C++. After you done this, you have to type 'Anaconda Prompt' in your windows search bar and open the prompt window. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights (right-click, properties, security tab, give full control to user OR click on the compatibility tab and enable to execute it as an administrator). **Optional:** In the Anaconda Prompt, create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After creating the anvironment, activate your it ('conda activate <YourEnvironmentName>') and install the necessary packages using the following commands. Alternatively just copy-paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment.
+First you have to install Python, Anaconda and Visual Studios C++. After you done this, you have to type 'Anaconda Prompt' in your windows search bar and open the prompt window. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights (right-click, properties, security tab, give full control to user OR click on the compatibility tab and enable to execute it as an administrator). **Optional:** In the Anaconda Prompt, create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After creating the environment, activate your it ('conda activate <YourEnvironmentName>') and install the necessary packages using the following commands. Alternatively just copy-paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment.
 
 ```python
 pip install "spikeinterface[full]"
@@ -218,12 +232,12 @@ pip install pyuac
 pip install pypiwin32
 ```
 
-**IMPORTANT:** When you execute SpikeInterface for the first time within Neuromod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costume environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
+**IMPORTANT:** When you execute SpikeInterface for the first time within NeuroMod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costume environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
 
-Selecting a valid python.exe file will save it's location in a .mat file in 'Neuromod_Path/Modules/MISC/Variables (do not edit)/Python_Conda_Path.mat'. When the location of the environment you installed all packages in changes or you copy the files of Neuromod to a new PC with different paths, either delete this vartiable manually, or use the menu bar on top of the Neurmod main window. Select 'Extras', 'Delete Saved Paths' and click 'Python Path to Spikeinterface Environment' to delete it. When you want to conduct spike sorting afterwards, you are asked again for a new location of the python.exe.
+Selecting a valid python.exe file will save it's location in a .mat file in 'NeuroMod_Path/Modules/MISC/Variables (do not edit)/Python_Conda_Path.mat'. When the location of the environment you installed all packages in changes or you copy the files of NeuroMod to a new PC with different paths, either delete this variable manually, or use the menu bar on top of the NeurMod main window. Select 'Extras', 'Delete Saved Paths' and click 'Python Path to Spikeinterface Environment' to delete it. When you want to conduct spike sorting afterwards, you are asked again for a new location of the python.exe.
 The same holds true for the path to the Spike2 CEDS64ML folder when you want to load Spike2 recordings.
 
-To use Kilosort 4 GPU support, you might need to enter the following commmands (see https://github.com/MouseLand/Kilosort): 
+To use Kilosort 4 GPU support, you might need to enter the following commands (see https://github.com/MouseLand/Kilosort): 
 
 ```python
 pip uninstall torch
@@ -247,6 +261,20 @@ SpikePositions = ext_SpikeLocations.get_data()
 savemat('YourFolder', mdic)
 export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=False)
 ```
+
+> ### **How to Install NeuralEnsemble NEO**
+
+> To install the NEO python package, you have to follow the same steps as described in the first paragraph about the installation of SpikeInterface. So install the necessary programs, create a Anaconda environment and activate it. The type in the following command to install NEO:
+
+```python
+pip install neo[nixio,tiffio]
+```
+For more information visit: https://neo.readthedocs.io/en/latest/install.html
+
+**IMPORTANT:** When you execute NEO for the first time within NeuroMod, it will ask you for the path of a python.exe in the anaconda environment you installed the NEO in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costume environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but data extraction is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
+
+Selecting a valid python.exe file will save it's location in a .mat file in 'NeuroMod_Path/Modules/MISC/Variables (do not edit)/NEO_Python_Conda_Path.mat'. When the location of the environment you installed all packages in changes or you copy the files of NeuroMod to a new PC with different paths, either delete this variable manually, or use the menu bar on top of the NeuroMod main window. Select 'Extras', 'Delete Saved Paths' and click 'Python Path to Spikeinterface Environment' to delete it. When you want to conduct spike sorting afterwards, you are asked again for a new location of the python.exe.
+The same holds true for the path to the Spike2 CEDS64ML folder when you want to load Spike2 recordings.
 
 > ### **About Performance**
 > 

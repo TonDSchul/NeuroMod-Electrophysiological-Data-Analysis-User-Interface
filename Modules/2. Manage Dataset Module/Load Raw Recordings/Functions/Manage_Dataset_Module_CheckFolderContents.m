@@ -171,47 +171,47 @@ if sum(contains(Formatsfound,".dat")) >= 1 || sum(contains(Formatsfound,".rhd"))
     end
 end
 
-%% Neuralynx
+%% Neuralynx ---- done via NEO now
 % Loop through all file formats explicitely supported
-FileTypeSelection = {};
-currentit = 1;
-if sum(contains(Formatsfound,".ncs")) >= 1 || sum(contains(Formatsfound,".nse")) >= 1 || sum(contains(Formatsfound,".dma")) >= 1 || sum(contains(Formatsfound,".sdma")) >= 1
-    
-    RecordingSystemDropDownItems = {};
-    RecordingSystemDropDownItems{1} = 'Neuralynx';
+% FileTypeSelection = {};
+% currentit = 1;
+% if sum(contains(Formatsfound,".ncs")) >= 1 || sum(contains(Formatsfound,".nse")) >= 1 || sum(contains(Formatsfound,".dma")) >= 1 || sum(contains(Formatsfound,".sdma")) >= 1
+% 
+%     RecordingSystemDropDownItems = {};
+%     RecordingSystemDropDownItems{1} = 'Neuralynx';
+% 
+%     for i = 1:length(Formatsfound)
+%         if sum(contains(Formatsfound(i),".ncs")) >= 1
+%             FileTypeSelection{currentit} = 'neuralynx_ncs';
+%         elseif sum(contains(Formatsfound(i),".nse")) >= 1
+%             FileTypeSelection{currentit} = 'neuralynx_nse';
+%         elseif sum(contains(Formatsfound(i),".dma")) >= 1
+%             FileTypeSelection{currentit} = 'neuralynx_dma';
+%         elseif sum(contains(Formatsfound(i),".sdma")) >= 1
+%             FileTypeSelection{currentit} = 'neuralynx_sdma';
+%         end
+%         currentit = currentit+1;
+%     end
+%     FileTypeDropDownItems = FileTypeSelection;
+% end
 
-    for i = 1:length(Formatsfound)
-        if sum(contains(Formatsfound(i),".ncs")) >= 1
-            FileTypeSelection{currentit} = 'neuralynx_ncs';
-        elseif sum(contains(Formatsfound(i),".nse")) >= 1
-            FileTypeSelection{currentit} = 'neuralynx_nse';
-        elseif sum(contains(Formatsfound(i),".dma")) >= 1
-            FileTypeSelection{currentit} = 'neuralynx_dma';
-        elseif sum(contains(Formatsfound(i),".sdma")) >= 1
-            FileTypeSelection{currentit} = 'neuralynx_sdma';
-        end
-        currentit = currentit+1;
-    end
-    FileTypeDropDownItems = FileTypeSelection;
-end
-
-%% Plexon
+%% Plexon -- done via NEO now
 % Loop through all file formats explicitely supported
-FileTypeSelection = {};
-currentit = 1;
-if sum(contains(Formatsfound,".plx")) >= 1 
-    
-    RecordingSystemDropDownItems = {};
-    RecordingSystemDropDownItems{1} = 'Plexon';
-
-    for i = 1:length(Formatsfound)
-        if sum(contains(Formatsfound(i),".plx")) >= 1
-            FileTypeSelection{currentit} = 'plexon_plx';
-        end
-        currentit = currentit+1;
-    end
-    FileTypeDropDownItems = FileTypeSelection;
-end
+% FileTypeSelection = {};
+% currentit = 1;
+% if sum(contains(Formatsfound,".plx")) >= 1 
+% 
+%     RecordingSystemDropDownItems = {};
+%     RecordingSystemDropDownItems{1} = 'Plexon';
+% 
+%     for i = 1:length(Formatsfound)
+%         if sum(contains(Formatsfound(i),".plx")) >= 1
+%             FileTypeSelection{currentit} = 'plexon_plx';
+%         end
+%         currentit = currentit+1;
+%     end
+%     FileTypeDropDownItems = FileTypeSelection;
+% end
 
 %% Spike2
 if sum(contains(Formatsfound,".smrx")) >= 1 
@@ -236,7 +236,6 @@ end
 
 %% Wrap up
 if ~isfield(ProbeInfo,'NrChannel')
-
     ProbeInfoText = ["Data Folder:";SelectedFolder;"";"Probe Info:";"";"not defined"];
 else
     if isempty(ProbeInfo.NrChannel)
