@@ -45,8 +45,6 @@ else
     ModifiedSaveFile = strcat(NeoSaveFolder(1:dashindice(end)),Foldername," Neo SaveFile");
 end
 
-
-
 if ~isfolder(ModifiedSaveFile)
     warning(strcat("NEO Output folder could not be found! After succesfull data extraction with NEO, data is saved in folder: ",ModifiedSaveFile))
     Data = [];

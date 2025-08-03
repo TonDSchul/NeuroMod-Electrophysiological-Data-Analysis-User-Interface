@@ -173,27 +173,27 @@ end
 
 %% Neuralynx ---- done via NEO now
 % Loop through all file formats explicitely supported
-% FileTypeSelection = {};
-% currentit = 1;
-% if sum(contains(Formatsfound,".ncs")) >= 1 || sum(contains(Formatsfound,".nse")) >= 1 || sum(contains(Formatsfound,".dma")) >= 1 || sum(contains(Formatsfound,".sdma")) >= 1
-% 
-%     RecordingSystemDropDownItems = {};
-%     RecordingSystemDropDownItems{1} = 'Neuralynx';
-% 
-%     for i = 1:length(Formatsfound)
-%         if sum(contains(Formatsfound(i),".ncs")) >= 1
-%             FileTypeSelection{currentit} = 'neuralynx_ncs';
-%         elseif sum(contains(Formatsfound(i),".nse")) >= 1
-%             FileTypeSelection{currentit} = 'neuralynx_nse';
-%         elseif sum(contains(Formatsfound(i),".dma")) >= 1
-%             FileTypeSelection{currentit} = 'neuralynx_dma';
-%         elseif sum(contains(Formatsfound(i),".sdma")) >= 1
-%             FileTypeSelection{currentit} = 'neuralynx_sdma';
-%         end
-%         currentit = currentit+1;
-%     end
-%     FileTypeDropDownItems = FileTypeSelection;
-% end
+FileTypeSelection = {};
+currentit = 1;
+if sum(contains(Formatsfound,".ncs")) >= 1 || sum(contains(Formatsfound,".nse")) >= 1 || sum(contains(Formatsfound,".dma")) >= 1 || sum(contains(Formatsfound,".sdma")) >= 1
+
+    RecordingSystemDropDownItems = {};
+    RecordingSystemDropDownItems{1} = 'Neuralynx';
+
+    for i = 1:length(Formatsfound)
+        if sum(contains(Formatsfound(i),".ncs")) >= 1
+            FileTypeSelection{currentit} = 'neuralynx_ncs';
+        elseif sum(contains(Formatsfound(i),".nse")) >= 1
+            FileTypeSelection{currentit} = 'neuralynx_nse';
+        elseif sum(contains(Formatsfound(i),".dma")) >= 1
+            FileTypeSelection{currentit} = 'neuralynx_dma';
+        elseif sum(contains(Formatsfound(i),".sdma")) >= 1
+            FileTypeSelection{currentit} = 'neuralynx_sdma';
+        end
+        currentit = currentit+1;
+    end
+    FileTypeDropDownItems = FileTypeSelection;
+end
 
 %% Plexon -- done via NEO now
 % Loop through all file formats explicitely supported

@@ -227,12 +227,13 @@ elseif strcmp(RecordingType,"Open Ephys")
     if ~isempty(startTimestamp)
         startTimestamp = round(Data.Info.startTimestamp*Data.Info.NativeSamplingRate);
     else
-        msgbox("Warning: No aquisition start time stamp found. Cannot correct trigger times if recording and aquistion start are different.")
+        msgbox("Warning: No acquisition start time stamp found. Cannot correct trigger times if recording and aquistion start are different.")
     end
     
     [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Data,Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp,Data.Info.AllRecordingIndicies);
     
-    % account for time being cut (cut start and cut end)
+    % account for time being cut (cut start and cut end) ------ ONLY FOR
+    % OPEN EPHYS!! FOR OTHERS THIS IS MANAGED BELOW
     for i = 1:length(Data.Events)
         if isfield(Data.Info,'CutStart')
             index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
@@ -265,62 +266,15 @@ elseif strcmp(RecordingType,"Open Ephys")
 
 elseif strcmp(RecordingType,"Neuralynx")
 
-    % check if .nce files found in recording folder
-    FilesIndex = {};
-    [stringarray] = Utility_Extract_Contents_of_Folder(Path);
-    FilesIndex = endsWith(stringarray, ".nev");
-    FileEndingsExist = sum(FilesIndex);
-    
-    Filename = strcat(Path,'\',stringarray{FilesIndex==1});
-    
-    % extract events
-    [event] = Extract_Events_Module_Extract_Events_Neuralynx(Filename,Path);
-    
-    % Just Select samples of the eventtypoe selected
-    eventcell = {event.type};
-    selectedfielytypeindicies = zeros(1,length({event.type}))+1;
-    for i = 1:length({event.type})
-        if strcmp(eventcell{i},FileTypeDropDown)
-            selectedfielytypeindicies(i) = 1;
-        else
-            selectedfielytypeindicies(i) = 0;
-        end
-    end
-
-    Eventsamples = double(cell2mat({event.sample}));
-    Eventsamples(selectedfielytypeindicies==0) = [];
-
-    if ~isempty(Eventsamples) 
+    [event,Texttoshow] = Extract_Events_Module_Load_Neuralynx_Events(Data,Path);
         
-        if sum(Eventsamples>length(Data.Time))>0
-            msgbox("Warning: Trigger outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
-            Eventsamples(Eventsamples>length(Data.Time)) = [];
-            if isempty(Eventsamples)
-                msgbox("Warning: All trigger indicies had to be deleted.");
-                Data.Events = [];
-            end
-        end
-
-        if ~isempty(Eventsamples)
-            for i = 1:length(Eventsamples)
-                Data.Events{1}(i) = double(Eventsamples(i));
-            end
-            % Event 1 always sample 1
-            if Data.Events{1}(1) == 1
-                Data.Events{1}(1) = [];
-                msgbox("Warning: First sample is always 1 and gets deleted.");
-            end
-            Zerosamples = Data.Events{1} == 0;
-    
-            if sum(Zerosamples) > 0
-                Data.Events{1}(Zerosamples==1) = [];
-                msgbox("Warning: Indice of zero detected and deleted.")
-            end
-        end
-    else
-        Data.Events = [];
+    if isempty(event)
+        msgbox("No Neuralynx events could be extracted from file!");
+        return;
     end
-
+    
+    [Data.Events,EventChannelNames] = Extract_Events_Module_Neuralynx_Manage_Events_Main(event,Data,InputChannelSelection);
+    
 elseif strcmp(RecordingType,"Spike2")
     
     %% Check whether Json library is installed necessray to analyze this format
@@ -414,44 +368,54 @@ elseif strcmp(RecordingType,"Spike2")
         [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,[],"Spike2",str2double(Threshold),EventData,EventInfoType);
 
     end
-end
 
-
-%% Check for weird input channel characteristics, assuming event dara is more or less equally spaced 
-%(closer to each other than mean distance between samples minus std)
-
-NoiseIndices = cell(size(Data.Events));
-FoundBadEvents = 0;
-
-for i = 1:length(Data.Events)
-    SampleDiffs = diff(Data.Events{i});
-
-    SampleDiffMean = mean(SampleDiffs);
-    SampleDiffStd = std(SampleDiffs);
+elseif strcmp(RecordingType,"NEO")
+    Error = 0;
+    if sum(EventInfo.event_samples>length(Data.Time))>0
+        msgbox("Warning: Trigger outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
+        
+        EventInfo.event_labels(EventInfo.event_samples>length(Data.Time)) = [];
+        EventInfo.event_channels(EventInfo.event_samples>length(Data.Time)) = [];
+        EventInfo.event_samples(EventInfo.event_samples>length(Data.Time)) = [];
+        
+        if isempty(EventInfo.event_samples)
+            msgbox("Warning: All trigger indicies had to be deleted.");
+            Data.Events = [];
+            Error = 1;
+        end
+    end
     
-    NoiseIndices{i} = find(SampleDiffs <= SampleDiffMean - SampleDiffStd);
+    EventChannelNames = cell(1,length(unique(EventInfo.event_channels)));
+    for i = 1:length(InputChannelSelection)
+        EventChannelNames{i} = convertStringsToChars(strcat("Event Ch ",num2str(InputChannelSelection(i))));
+    end
     
-    if ~isempty(NoiseIndices{i})
-        FoundBadEvents = 1;
+    if Error == 0
+        UniqueChannel = unique(EventInfo.event_channels);
+        SelecteChannelIndice = UniqueChannel==InputChannelSelection;
+        
+        UniqueChannel(SelecteChannelIndice==0) = [];
+        Data.Events = cell(1,sum(SelecteChannelIndice));
+        DeleteIndice = [];
+        
+        for neventchannel = 1:length(UniqueChannel)
+            CurrentChannelIndice = EventInfo.event_channels == UniqueChannel(neventchannel);
+            
+            if sum(CurrentChannelIndice)>0
+                Data.Events{neventchannel} = EventInfo.event_samples(CurrentChannelIndice); % adjust by recording time stamp!
+            else
+                Data.Events{neventchannel} = [];
+                DeleteIndice = [DeleteIndice,neventchannel];
+            end
+        end
+        
+        if ~isempty(DeleteIndice)
+            Data.Events(DeleteIndice) = [];
+        end
     end
 end
 
-% if FoundBadEvents == 1
-%     %msgbox(strcat(num2str(length(NoiseIndices))," Events/TTLs found that are closer to other event triggers than the mean distance between event triggers minus their standard deviation is. If the time inbetween event triggers is supposed to be (roughly) the same, there are prb noise spikes in your event trigger data!"))
-%     app = Clean_Events(Data,NoiseIndices,FileTypeDropDown);
-% 
-%     uiwait(app.CleanEventTriggerUIFigure);
-%     % Wait for the app to close
-% 
-%     if isvalid(app)
-%         Data = app.Data;
-%         delete(app)
-%     else
-%         msgbox("Clean events window closed before changes could be applied to dataset! Continuing with event extraction.")
-%     end
-% end
-
-
+%% Wrap Up and Cleaning
 if isfield(Data,'Events') 
     if ~isempty(Data.Events)
         Eventstodelete = [];
@@ -521,9 +485,14 @@ if isfield(Data,'Events')
                     end
                 elseif strcmp(RecordingType,"Neuralynx")
                     EventChannelDropDown = {};
-                    Data.Info.EventChannelNames{i} = FileTypeDropDown;
+                    Data.Info.EventChannelNames = EventChannelNames;
                     Data.Info.EventChannelType = ".nev";
-                    EventChannelDropDown{i} = Data.Info.EventChannelNames{i};
+                elseif strcmp(RecordingType,"NEO")
+
+                    Data.Info.EventChannelType = "NEO";
+                    EventChannelDropDown = {};
+                    Data.Info.EventChannelNames = EventChannelNames;
+
                 elseif strcmp(RecordingType,"Spike2")
                     Data.Info.Spike2EventChannelToTake = convertStringsToChars(Data.Info.Spike2EventChannelToTake);
                     commaindicie = find(Data.Info.Spike2EventChannelToTake==',');

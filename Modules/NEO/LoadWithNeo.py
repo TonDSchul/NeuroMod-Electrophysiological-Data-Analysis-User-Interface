@@ -34,7 +34,7 @@ def create_save_folder(selected_folder):
 
     return new_folder_path
 
-def main(FolderName,JustLoad,RecordingSystemSelection):
+def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
     try:
         # -----------------------------------------------------------------------
         ''' First Create a Save Folder to save results in for Matlab to load'''
@@ -60,7 +60,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection):
         # -----------------------------------------------------------------------
         ''' Autodetect Recording System with NEO'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection == "NEO Format Autodetection":
+        if RecordingSystemSelection == "NEO Format Autodetection" or RecordingSystemSelection == "EventExtraction":
             try:
                 reader = get_io(FolderName)
                 result_string = (f"Detected IO class: {reader.__class__.__name__}")
@@ -68,7 +68,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection):
                 
                 with open(DataLoggerSaveFileName, "a") as f:
                     f.write(result_string+"\n")
-                    
+                
             except Exception as e:
                 
                 result_string = (f"Neo could not detect a compatible IO: {e}. Please make sure you preserve the original recording folder and file structure without any additional files in it!")
@@ -217,7 +217,10 @@ def main(FolderName,JustLoad,RecordingSystemSelection):
                 
                 with open(DataLoggerSaveFileName, "a") as f:
                     f.write(result_string+"\n")
-            
+        
+        # -----------------------------------------------------------------------
+        ''' Access Data in Loaded Recording'''
+        # -----------------------------------------------------------------------
         print("Starting Data Extraction with NEO from " + FolderName)
         result_string = "Starting Data Extraction with NEO from " + FolderName
         with open(DataLoggerSaveFileName, "a") as f:
@@ -237,64 +240,152 @@ def main(FolderName,JustLoad,RecordingSystemSelection):
         result_string = "Loading Data Finished"
         with open(DataLoggerSaveFileName, "a") as f:
             f.write(result_string+"\n")
-            
-        print("Prepraring Data to Save")
-        result_string = "Prepraring Data to Save"
-        with open(DataLoggerSaveFileName, "a") as f:
-            f.write(result_string+"\n")
         
+        # -----------------------------------------------------------------------
+        ''' Format channel Data to save as .dat gile'''
+        # -----------------------------------------------------------------------
         Method = 1
-        # Build data matrix
-        try:
-            data = RawData.magnitude.T  # shape will be (n_channels, n_samples)
-            Method = 1
-        except Exception:
-            data = np.vstack([asig.magnitude.flatten() for asig in RawData]) 
-            Method = 2
-        result_string = "Method: " + str(Method)
-        with open(DataLoggerSaveFileName, "a") as f:
-            f.write(result_string+"\n")
+        if RecordingSystemSelection != "EventExtraction":
+            print("Prepraring Data to Save")
+            result_string = "Prepraring Data to Save"
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
             
             
-        SaveFileName = NEO_Save_Path + "/NEO_Saved_Channel_Data.dat"
-        print("Saving Channel Data to " + SaveFileName + " (this might take a while)")
-        result_string = "Saving Channel Data to " + SaveFileName
-        with open(DataLoggerSaveFileName, "a") as f:
-            f.write(result_string+"\n")
+            # Build data matrix
+            try:
+                data = RawData.magnitude.T  # shape will be (n_channels, n_samples)
+                Method = 1
+            except Exception:
+                data = np.vstack([asig.magnitude.flatten() for asig in RawData]) 
+                Method = 2
+            result_string = "Method: " + str(Method)
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+            
+        # -----------------------------------------------------------------------
+        ''' Save Channel Data'''
+        # -----------------------------------------------------------------------
+        if RecordingSystemSelection != "EventExtraction":
+            SaveFileName = NEO_Save_Path + "/NEO_Saved_Channel_Data.dat"
+            print("Saving Channel Data to " + SaveFileName + " (this might take a while)")
+            result_string = "Saving Channel Data to " + SaveFileName
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+            
+            data.astype(np.float32).tofile(SaveFileName)  # Save as .dat
         
-        data.astype(np.float32).tofile(SaveFileName)  # Save as .dat
-        
+        # -----------------------------------------------------------------------
+        ''' Save MetaData'''
+        # -----------------------------------------------------------------------
         # Extract metadata
         sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
         units = [str(asig.units.dimensionality) for asig in analogsignals]
         channel_names = [asig.name for asig in analogsignals]
         channel_ids = [asig.annotations.get('channel_id', i) for i, asig in enumerate(analogsignals)]
         
-        # Save metadata as .mat
-        SaveFileName = NEO_Save_Path + "/NEO_Saved_MetaData.mat"
-        print("Saving Metadata to " + SaveFileName)
-        result_string = "Saving Metadata to " + SaveFileName
+        if RecordingSystemSelection != "EventExtraction":
+            # Save metadata as .mat
+            SaveFileName = NEO_Save_Path + "/NEO_Saved_MetaData.mat"
+            print("Saving Metadata to " + SaveFileName)
+            result_string = "Saving Metadata to " + SaveFileName
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+            
+            if Method == 2:
+                scipy.io.savemat(SaveFileName, {
+                    'sampling_rate': sampling_rate,
+                    'units': units,
+                    'channel_names': channel_names,
+                    'channel_ids': channel_ids,
+                    'n_channels': data.shape[1],
+                    'n_samples': data.shape[0]        
+                })
+            else:
+                scipy.io.savemat(SaveFileName, {
+                    'sampling_rate': sampling_rate,
+                    'units': units,
+                    'channel_names': channel_names,
+                    'channel_ids': channel_ids,
+                    'n_channels': data.shape[0],
+                    'n_samples': data.shape[1]        
+                })
+        
+        # -----------------------------------------------------------------------
+        ''' Save Event Data if present'''
+        # -----------------------------------------------------------------------
+        
+        print("Checking for Event Data")
+        result_string = "Checking for Event Data"
         with open(DataLoggerSaveFileName, "a") as f:
             f.write(result_string+"\n")
         
-        if Method == 2:
+        all_labels = []
+        all_times = []
+        all_channels = []
+        
+        reader.parse_header()
+        nb_event_channel = reader.event_channels_count()
+        
+        for chan_index in range(nb_event_channel):
+            nb_event = reader.event_count(block_index=0, seg_index=0, event_channel_index=chan_index)
+            if nb_event == 0:
+                continue
+            
+            ev_timestamps, _, ev_labels = reader.get_event_timestamps(
+                block_index=0, seg_index=0, event_channel_index=chan_index
+            )
+            ev_times = reader.rescale_event_timestamp(ev_timestamps, dtype='float64')  # seconds
+            # convert to samples before saving
+            ev_times_samples = (ev_times * sampling_rate).astype(int)
+            
+            all_times.extend(ev_times_samples)
+            all_labels.extend([str(label) for label in ev_labels])
+            all_channels.extend([chan_index] * len(ev_times))  # repeat channel index for each event
+        
+        if all_times:
+            # Convert to arrays
+            all_times = np.array(all_times)
+            all_labels = np.array(all_labels, dtype=object)
+            all_channels = np.array(all_channels)
+            
+            SaveFileName = NEO_Save_Path + "/NEO_Saved_EventData.mat"
+            print("Saving event data to " + SaveFileName)
+            result_string = "Saving event data to " + SaveFileName
+            
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+            
+            print("Event Channel: " + str(all_channels))
+            result_string = "Event Channel: " + str(all_channels)
+            
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+                
+            print("Event Times: " + str(all_times))
+            result_string = "Event Times: " + str(all_times)
+            
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+                
+            print("Event Label: " + str(all_labels))
+            result_string = "Event Label: " + str(all_labels)
+            
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+            
+            # Save to .mat
             scipy.io.savemat(SaveFileName, {
-                'sampling_rate': sampling_rate,
-                'units': units,
-                'channel_names': channel_names,
-                'channel_ids': channel_ids,
-                'n_channels': data.shape[1],
-                'n_samples': data.shape[0]        
+                'event_labels': all_labels,
+                'event_samples': all_times,
+                'event_channels': all_channels
             })
         else:
-            scipy.io.savemat(SaveFileName, {
-                'sampling_rate': sampling_rate,
-                'units': units,
-                'channel_names': channel_names,
-                'channel_ids': channel_ids,
-                'n_channels': data.shape[0],
-                'n_samples': data.shape[1]        
-            })
+            print("No event data found!")
+            result_string = "No event data found!"
+            with open(DataLoggerSaveFileName, "a") as f:
+                f.write(result_string+"\n")
+        
         
         print("Finished!")
         result_string = "Finished!"
@@ -307,7 +398,8 @@ def main(FolderName,JustLoad,RecordingSystemSelection):
         import traceback
         traceback.print_exc()  # Print detailed error information
     finally:
-        input("Press Enter to exit...")
+        if KeepConsoleOpen == 1:
+            input("Press Enter to exit...")
         
 if __name__ == "__main__":
 
@@ -327,7 +419,7 @@ if __name__ == "__main__":
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection)  # Already an admin here.
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen)  # Already an admin here.
     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -350,7 +442,7 @@ if __name__ == "__main__":
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection)  # Already an admin here.
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen)  # Already an admin here.
         
             
     

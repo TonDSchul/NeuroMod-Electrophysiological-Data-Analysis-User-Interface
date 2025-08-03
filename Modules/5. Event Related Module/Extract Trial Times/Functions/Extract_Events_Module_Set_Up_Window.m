@@ -133,16 +133,16 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
             % To set nr of channel field
             NumChannel = length(unique(EventInfo{Nodetoshow}.line));
             % Initialize an empty string
-            ChannelSelctionToShow = '';
+            ChannelSelectionToShow = '';
             ChannelEventLineNames = double(unique(EventInfo{Nodetoshow}.line));
             % Loop through numbers from 1 to 10
             for i = 1:length(ChannelEventLineNames)
                 % Append each number to the string
-                ChannelSelctionToShow = [ChannelSelctionToShow, num2str(ChannelEventLineNames(i))];
+                ChannelSelectionToShow = [ChannelSelectionToShow, num2str(ChannelEventLineNames(i))];
                 
                 % If it's not the last number, add a comma
                 if i < length(double(unique(EventInfo{Nodetoshow}.line)))
-                    ChannelSelctionToShow = [ChannelSelctionToShow, ','];
+                    ChannelSelectionToShow = [ChannelSelectionToShow, ','];
                 end
             end  
             
@@ -181,18 +181,18 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
             end
 
         else %% All recording systems other than OE
-            ChannelSelctionToShow = '';
+            ChannelSelectionToShow = '';
             for i = 1:NumChannel
                 % Append each number to the string
                 if i ~= 1
-                    ChannelSelctionToShow = [ChannelSelctionToShow,',',num2str(i)];
+                    ChannelSelectionToShow = [ChannelSelectionToShow,',',num2str(i)];
                 else
-                    ChannelSelctionToShow = [ChannelSelctionToShow, num2str(i)];
+                    ChannelSelectionToShow = [ChannelSelectionToShow, num2str(i)];
                 end
             end   
         end
         
-        app.InputChannelSelectionEditField.Value = ChannelSelctionToShow;
+        app.InputChannelSelectionEditField.Value = ChannelSelectionToShow;
         app.NrInputChinfolderEditField.Value = num2str(NumChannel);
         
     end 
@@ -207,8 +207,12 @@ if strcmp(TimeOfExecution,"Initial")
             app.TextArea_2.Value = "Warning: No event channel selected when extracting dataset. No events can be looded";
             app.TextArea.Value = strcat("No Event Channel can be extracted from: ",Path);
         else
-            app.TextArea_2.Value = "Warning: No event data found in folder the dataset was extracted from. Please select a different folder.";
-            app.TextArea.Value = strcat("No Event Channel found in Path: ",Path);
+            if strcmp(Data.Info.RecordingType,"NEO")
+                app.TextArea_2.Value = "Warning: No event data found in folder the dataset was extracted to by NEO. Please select a different folder.";
+            else
+                app.TextArea_2.Value = "Warning: No event data found in folder the dataset was extracted from. Please select a different folder.";
+                app.TextArea.Value = strcat("No Event Channel found in Path: ",Path);
+            end
         end
 
         app.NrInputChinfolderEditField.Value = "";
@@ -221,7 +225,7 @@ if strcmp(TimeOfExecution,"Initial")
     else
         % Fill Text Area showing path that was searched
         app.TextArea.Value = strcat("Finished looking for event channel from: ",Path);
-        if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
+        if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD") || strcmp(Data.Info.RecordingType,"NEO")
             % Fill Text Area showing channels found
             app.TextArea_2.Value = texttoshow;
         elseif strcmp(Data.Info.RecordingType,"Open Ephys")
@@ -322,12 +326,12 @@ if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,
     end
     % end
 
-    ChannelSelctionToShow = [];
+    ChannelSelectionToShow = [];
     for i = 1:NumChannel
         if i ~= 1
-            ChannelSelctionToShow = strcat(ChannelSelctionToShow,',',num2str(i));
+            ChannelSelectionToShow = strcat(ChannelSelectionToShow,',',num2str(i));
         else
-            ChannelSelctionToShow = num2str(i);
+            ChannelSelectionToShow = num2str(i);
         end
     end
 
@@ -347,20 +351,20 @@ elseif strcmp(Data.Info.RecordingType,"Open Ephys")
     if ~isempty(EventInfo{Nodetoshowfirst}) 
         NumChannel = length(double(unique(EventInfo{Nodetoshowfirst}.line)));
         % Initialize an empty string
-        ChannelSelctionToShow = '';
+        ChannelSelectionToShow = '';
         ChannelEventLineNames = double(unique(EventInfo{Nodetoshowfirst}.line));
         % Loop through numbers from 1 to 10
         for i = 1:length(ChannelEventLineNames)
             % Append each number to the string
-            ChannelSelctionToShow = [ChannelSelctionToShow, num2str(ChannelEventLineNames(i))];
+            ChannelSelectionToShow = [ChannelSelectionToShow, num2str(ChannelEventLineNames(i))];
             
             % If it's not the last number, add a comma
             if i < length(unique(EventInfo{Nodetoshowfirst}.line))
-                ChannelSelctionToShow = [ChannelSelctionToShow, ','];
+                ChannelSelectionToShow = [ChannelSelectionToShow, ','];
             end
         end  
     else
-        ChannelSelctionToShow = '';
+        ChannelSelectionToShow = '';
         NumChannel = 0;
     end
 
@@ -400,43 +404,40 @@ elseif strcmp(Data.Info.RecordingType,"Neuralynx")
 
     if FileEndingsExist==1
 
-        % check if .nce files found in recording folder
-        FilesIndex = {};
-        [stringarray] = Utility_Extract_Contents_of_Folder(Path);
-        FilesIndex = endsWith(stringarray, ".nev");
-        FileEndingsExist = sum(FilesIndex);
+        [event,Texttoshow] = Extract_Events_Module_Load_Neuralynx_Events(Data,Path);
         
-        Filename = strcat(Path,'\',stringarray{FilesIndex==1});
-        
-        [event] = Extract_Events_Module_Extract_Events_Neuralynx(Filename,Path);
+        if isempty(event)
+            app.TextArea_2.Value = Texttoshow;
+            return;
+        end
 
         [fieldData] = Extract_Events_Module_Display_Neuralynx_EventInfo(event);
 
         app.TextArea_2.Value = fieldData;
-
-        NumChannel = length(unique({event.type}));
-        eventypes = unique({event.type});
-
-        for i = 1:NumChannel
-            app.FileTypeDropDown.Items{i} = eventypes{i};
-        end
-
+        
+        EventChannel = double(cell2mat({event.value}));
+        uniqueChannel = unique(EventChannel);
+        NumChannel = length(uniqueChannel);
+        
+        % Get unique values
+        app.FileTypeDropDown.Items = {};
+        app.FileTypeDropDown.Items{1} = 'Neuralynx Trigger Channel';
+       
         % Initialize an empty string
-        ChannelSelctionToShow = '';
+        ChannelSelectionToShow = '';
 
         % Loop through numbers from 1 to 10
         for i = 1:NumChannel
             % Append each number to the string
-            ChannelSelctionToShow = [ChannelSelctionToShow, num2str(i)];
+            ChannelSelectionToShow = [ChannelSelectionToShow, num2str(uniqueChannel(i))];
             
             % If it's not the last number, add a comma
             if i < NumChannel
-                ChannelSelctionToShow = [ChannelSelctionToShow, ','];
+                ChannelSelectionToShow = [ChannelSelectionToShow, ','];
             end
         end  
         
-        EventChannelName = convertStringsToChars(eventypes{1});
-
+        EventChannelName = app.FileTypeDropDown.Items{1};
     end
 
 elseif strcmp(Data.Info.RecordingType,"Spike2") 
@@ -458,22 +459,48 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
     NumChannel = length(ChannelRange);
 
      % Initialize an empty string
-    ChannelSelctionToShow = '';
+    ChannelSelectionToShow = '';
 
     % Loop through numbers from 1 to 10
     for i = 1:NumChannel
         % Append each number to the string
-        ChannelSelctionToShow = [ChannelSelctionToShow, num2str(ChannelRange(i))];
+        ChannelSelectionToShow = [ChannelSelectionToShow, num2str(ChannelRange(i))];
         
         % If it's not the last number, add a comma
         if i < NumChannel
-            ChannelSelctionToShow = [ChannelSelctionToShow, ','];
+            ChannelSelectionToShow = [ChannelSelectionToShow, ','];
         end
     end  
+
+elseif strcmp(Data.Info.RecordingType,"NEO") 
+    EventChannelName = [];
+    NumChannel = [];
+    Placeholder = {};
+    app.FileTypeDropDown.Items = Placeholder;
+    app.FileTypeDropDown.Items{1} = strcat('NEO IO Trigger Channel');
+
+    EventChannelName = app.FileTypeDropDown.Items{1};
+
+    ChannelRange = unique(double(app.EventInfo.event_channels));
+    NumChannel = length(ChannelRange);
+
+     % Initialize an empty string
+    ChannelSelectionToShow = '';
+
+    % Loop through numbers from 1 to 10
+    for i = 1:NumChannel
+        % Append each number to the string
+        ChannelSelectionToShow = [ChannelSelectionToShow, num2str(ChannelRange(i))];
+        
+        % If it's not the last number, add a comma
+        if i < NumChannel
+            ChannelSelectionToShow = [ChannelSelectionToShow, ','];
+        end
+    end
         
 end
 
-app.InputChannelSelectionEditField.Value = ChannelSelctionToShow;
+app.InputChannelSelectionEditField.Value = ChannelSelectionToShow;
 app.FileTypeDropDown.Value = EventChannelName;
 app.NrInputChinfolderEditField.Value = num2str(NumChannel);
 

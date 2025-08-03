@@ -223,18 +223,44 @@ end
 if strcmp(Data.Info.RecordingType,"Neuralynx")
 
     EventData = zeros(1,length(Data.Time));
-    EventData(Channel.Samples{1}) = 1;
+    EventData(Channel.Samples) = 1;
 
     % Include a specific duration of the event to make it clearly visible
     % -- 2ms standard
     Numsamplesevent = Data.Info.NativeSamplingRate*0.002;
     % Just one sample would be visibly different to others. This can be
     % hard to see so I add 1ms to the right of the trigger 
-    for i = 1:length(Channel.Samples{1})
-        if Channel.Samples{1}(i)+Numsamplesevent<=length(EventData)
-            EventData(Channel.Samples{1}(i):Channel.Samples{1}(i)+Numsamplesevent) = 1;
-        elseif Channel.Samples{1}(i)+Numsamplesevent>length(EventData)
-            EventData(Channel.Samples{1}(i):end) = 1;
+    for i = 1:length(Channel.Samples)
+        if Channel.Samples(i)+Numsamplesevent<=length(EventData)
+            EventData(Channel.Samples(i):Channel.Samples(i)+Numsamplesevent) = 1;
+        elseif Channel.Samples(i)+Numsamplesevent>length(EventData)
+            EventData(Channel.Samples(i):end) = 1;
+        end
+    end
+
+    [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate);
+    
+    if str2double(app.DowsampledSampleRateHzEditField.Value) ~= DownsampleRate
+        app.DowsampledSampleRateHzEditField.Value = num2str(DownsampleRate);
+    end
+
+end
+
+if strcmp(Data.Info.RecordingType,"NEO")
+
+    EventData = zeros(1,length(Data.Time));
+    EventData(Channel.Samples) = 1;
+
+    % Include a specific duration of the event to make it clearly visible
+    % -- 2ms standard
+    Numsamplesevent = Data.Info.NativeSamplingRate*0.002;
+    % Just one sample would be visibly different to others. This can be
+    % hard to see so I add 1ms to the right of the trigger 
+    for i = 1:length(Channel.Samples)
+        if Channel.Samples(i)+Numsamplesevent<=length(EventData)
+            EventData(Channel.Samples(i):Channel.Samples(i)+Numsamplesevent) = 1;
+        elseif Channel.Samples(i)+Numsamplesevent>length(EventData)
+            EventData(Channel.Samples(i):end) = 1;
         end
     end
 

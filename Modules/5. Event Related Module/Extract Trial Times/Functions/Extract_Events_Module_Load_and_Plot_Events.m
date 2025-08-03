@@ -83,7 +83,7 @@ if strcmp(Data.Info.RecordingType,"IntanDat")
 elseif strcmp(Data.Info.RecordingType,"IntanRHD")
     InputChannelData = single(RHDAllChannelData(InputChannelSelection,:));
     clear("RHDAllChannelData");
-elseif strcmp(Data.Info.RecordingType,"Open Ephys") || strcmp(Data.Info.RecordingType,"Neuralynx")
+elseif strcmp(Data.Info.RecordingType,"Open Ephys") || strcmp(Data.Info.RecordingType,"Neuralynx") || strcmp(Data.Info.RecordingType,"NEO")
     InputChannelData = EventInfo;
 elseif strcmp(Data.Info.RecordingType,"Spike2")
     InputChannelData = EventInfo{1};
@@ -140,9 +140,13 @@ ylabel(Figure,"Signal [V]")
 if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD")
     title(Figure,strcat("Signal in V from Channel ",AllChannelNames{InputChannelSelection}));
 elseif strcmp(Data.Info.RecordingType,"Open Ephys")
-    title(Figure,strcat("Signal in V from Node ",AllChannelNames," Line ",SelectedEventChannelNames));
+    title(Figure,strcat("Simulated Signal in V with Trigger from Node ",AllChannelNames," Line ",SelectedEventChannelNames));
 elseif strcmp(Data.Info.RecordingType,"Spike2")
     title(Figure,strcat("Signal in V from Node ",AllChannelNames," Channel ",SelectedEventChannelNames));
+elseif strcmp(Data.Info.RecordingType,"Neuralynx")
+    title(Figure,strcat("Simulated Signal in V with Trigger for Channel ",SelectedEventChannelNames));
+elseif strcmp(Data.Info.RecordingType,"NEO")
+    title(Figure,strcat("Simulated Signal in V with Trigger for Channel ",SelectedEventChannelNames));
 end
 
 xlim(Figure,[Time(1) Time(end)]);

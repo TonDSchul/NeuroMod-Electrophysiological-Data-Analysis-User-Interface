@@ -105,14 +105,18 @@ elseif strcmp(ComponentToDelete,"EventRelatedData")
     end
 
 elseif strcmp(ComponentToDelete,"Events")
+    
+    if isfield(Data,'Events')
+        fieldsToDelete = {'Events'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+    end
 
-    fieldsToDelete = {'Events'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-
-    fieldsToDelete = {'EventChannelType', 'EventChannelNames'};
-    % Delete fields
-    Data.Info = rmfield(Data.Info, fieldsToDelete);
+    if isfield(Data.Info,'EventChannelType')
+        fieldsToDelete = {'EventChannelType', 'EventChannelNames'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
 
     if isfield(Data,'EventRelatedSpikes')
         fieldsToDelete = {'EventRelatedSpikes'};
@@ -145,7 +149,12 @@ elseif strcmp(ComponentToDelete,"Events")
         fieldsToDelete = {'EventRelatedDataInfo'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
-    
+
+    if isfield(Data.Info,'NeoEventStartTimeStamp')
+        fieldsToDelete = {'NeoEventStartTimeStamp'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
 elseif strcmp(ComponentToDelete,"Preprocessed")
 
     %% If just Raw Data saved: Delete preprocessing infos from Data.Info structure.
