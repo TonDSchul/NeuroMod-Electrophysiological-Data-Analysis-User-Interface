@@ -1,4 +1,4 @@
-function Extract_Events_Molue_Start_NEO_EventExtraction(Data,executablefolder,SelectedPath)
+function Extract_Events_Molue_Start_NEO_EventExtraction(Data,executablefolder,SelectedPath,NEOParameter)
 
 [NEOPython_Conda_Environment_Path] = Manage_Dataset_Load_NEO_Conda_Python_exe(executablefolder);
 
@@ -6,8 +6,10 @@ warning("Under certain circumstances it is necessary to press enter in the Matla
 
 NeoScriptPath = strcat(executablefolder,'\Modules\Neo\LoadWithNeo.py');
 
+Format = strcat(NEOParameter.Format,"EventExtraction");
+
 command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s"', ...
-        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, 1, 0, "EventExtraction");
+        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(NEOParameter.KeepOpen), 0, Format);
     
 % Execute the Python script
 [status, cmdout] = system(command);

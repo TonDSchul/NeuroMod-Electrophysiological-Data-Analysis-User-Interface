@@ -36,6 +36,12 @@ def create_save_folder(selected_folder):
 
 def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
     try:
+        JustExtractingEvents = 0
+        if "EventExtraction" in RecordingSystemSelection:
+            JustExtractingEvents = 1
+        else:
+            JustExtractingEvents = 0
+    
         # -----------------------------------------------------------------------
         ''' First Create a Save Folder to save results in for Matlab to load'''
         # -----------------------------------------------------------------------
@@ -60,7 +66,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         # -----------------------------------------------------------------------
         ''' Autodetect Recording System with NEO'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection == "NEO Format Autodetection" or RecordingSystemSelection == "EventExtraction":
+        if RecordingSystemSelection == "NEO Format Autodetection" or RecordingSystemSelection == "NEO Format AutodetectionEventExtraction":
             try:
                 reader = get_io(FolderName)
                 result_string = (f"Detected IO class: {reader.__class__.__name__}")
@@ -82,7 +88,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         # -----------------------------------------------------------------------
         ''' Neuralynx'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection == "Neuralynx":
+        if RecordingSystemSelection == "Neuralynx" or RecordingSystemSelection == "NeuralynxEventExtraction":
             try:
                 reader = neo.io.NeuralynxIO(dirname=FolderName)
                 result_string = (f"Use IO class: {RecordingSystemSelection}")
@@ -101,7 +107,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         # -----------------------------------------------------------------------
         ''' Plexon'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection == "Plexon":
+        if RecordingSystemSelection == "Plexon" or RecordingSystemSelection == "PlexonEventExtraction":
             try:
                 reader = neo.io.PlexonIO(filename=FolderName)
                 result_string = (f"Use IO class: {RecordingSystemSelection}")
@@ -121,7 +127,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         # -----------------------------------------------------------------------
         ''' Tucker Davis'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection == "TdT (Tucker-Davis Technologies)":
+        if RecordingSystemSelection == "TdT (Tucker-Davis Technologies)" or RecordingSystemSelection == "TdT (Tucker-Davis Technologies)EventExtraction":
             
             try:
                 reader = neo.io.TdtIO(dirname=FolderName)
@@ -142,7 +148,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         # -----------------------------------------------------------------------
         ''' New Open ephys binary format'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection == "New Open Ephys Format":
+        if RecordingSystemSelection == "New Open Ephys Format" or RecordingSystemSelection == "New Open Ephys FormatEventExtraction":
             try:
                 reader = neo.io.OpenEphysBinaryIO(dirname=FolderName)
                 result_string = (f"Use IO class: {RecordingSystemSelection}")
@@ -161,7 +167,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         # -----------------------------------------------------------------------
         ''' Legacy Open ephys format'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection == "Legacy Open Ephys Format":
+        if RecordingSystemSelection == "Legacy Open Ephys Format" or RecordingSystemSelection == "Legacy Open Ephys FormatEventExtraction":
             try:
                 reader = neo.io.OpenEphysIO(dirname=FolderName)
                 result_string = (f"Use IO class: {RecordingSystemSelection}")
@@ -245,7 +251,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         ''' Format channel Data to save as .dat gile'''
         # -----------------------------------------------------------------------
         Method = 1
-        if RecordingSystemSelection != "EventExtraction":
+        if JustExtractingEvents == 0:
             print("Prepraring Data to Save")
             result_string = "Prepraring Data to Save"
             with open(DataLoggerSaveFileName, "a") as f:
@@ -266,7 +272,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         # -----------------------------------------------------------------------
         ''' Save Channel Data'''
         # -----------------------------------------------------------------------
-        if RecordingSystemSelection != "EventExtraction":
+        if JustExtractingEvents == 0:
             SaveFileName = NEO_Save_Path + "/NEO_Saved_Channel_Data.dat"
             print("Saving Channel Data to " + SaveFileName + " (this might take a while)")
             result_string = "Saving Channel Data to " + SaveFileName
@@ -284,7 +290,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         channel_names = [asig.name for asig in analogsignals]
         channel_ids = [asig.annotations.get('channel_id', i) for i, asig in enumerate(analogsignals)]
         
-        if RecordingSystemSelection != "EventExtraction":
+        if JustExtractingEvents == 0:
             # Save metadata as .mat
             SaveFileName = NEO_Save_Path + "/NEO_Saved_MetaData.mat"
             print("Saving Metadata to " + SaveFileName)

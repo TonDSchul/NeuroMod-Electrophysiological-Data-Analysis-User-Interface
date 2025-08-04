@@ -36,8 +36,9 @@ if isscalar(UniqueEventChannel)
     return;
 end
 
+% delete first and last indice
 IndiciesToDelete = double(cell2mat({event.sample}))==1;
-IndiciesToDelete = double(cell2mat({event.sample}))==length(Data.Time);
+IndiciesToDelete = IndiciesToDelete + (double(cell2mat({event.sample}))==length(Data.Time));
 %IndiciesToDelete = EventChannel==UniqueEventChannel(1);
 EventChannel(IndiciesToDelete==1) = [];
 

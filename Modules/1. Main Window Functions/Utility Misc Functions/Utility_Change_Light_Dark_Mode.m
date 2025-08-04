@@ -1909,7 +1909,6 @@ if strcmp(Window,'AskForFilterSettingsInstFrequ')
     app.FilterOrderEditField.BackgroundColor   = ComponentsInWindowColor;
 end
 
-
 if strcmp(Window,"Ask_For_ERD_Parameter")    
     % texts to black
     set(findall(app.AskForEventRelatedDataExtractionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
@@ -1919,4 +1918,25 @@ if strcmp(Window,"Ask_For_ERD_Parameter")
     app.TextArea.BackgroundColor   = ComponentsInWindowColor;
     app.DataToExtractFromDropDown.BackgroundColor   = ComponentsInWindowColor;
     app.EventChannelSelectionDropDown.BackgroundColor   = ComponentsInWindowColor;
+end
+
+if strcmp(Window,"Combine_Events_Window")    
+    % texts to black
+    set(findall(app.CombineEventChannelUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.CombineEventChannelUIFigure.Color  = WindowBackgroundColor;
+
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.CombineEventscommaseparatedIntegersEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.NewCombinedEventNamescommaseparatedstringsEditField.BackgroundColor   = ComponentsInWindowColor;
+end
+
+if strcmp(Window,"Ask_For_NEO_Parameter")    
+    % texts to black
+    set(findall(app.NeoParameterUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.NeoParameterUIFigure.Color  = WindowBackgroundColor;
+
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.RecordingSystemDropDown.BackgroundColor   = ComponentsInWindowColor;
 end
