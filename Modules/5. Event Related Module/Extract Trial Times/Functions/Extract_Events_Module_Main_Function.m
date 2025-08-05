@@ -1,4 +1,4 @@
-function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = Extract_Events_Module_Main_Function(Data,EventInfo,Path,RecordingType,FileTypeDropDown,Threshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea2Object,RHDAllChannelData,executablefolder,startTimestamp)
+function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag,Eventstodelete] = Extract_Events_Module_Main_Function(Data,EventInfo,Path,RecordingType,FileTypeDropDown,Threshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea2Object,RHDAllChannelData,executablefolder,startTimestamp)
 
 %________________________________________________________________________________________
 %% Function to coordinate Intan Event Extraction
@@ -39,6 +39,7 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = 
 % 12. startTimestamp: Only for open ephys!! start time of recording in
 % seconds to substract from event times which are present in respect to
 % aquisition start, not recording start
+% 13. Eventstodelete: Indices of Data.Events that had to be deleted (i.e. due to all triggers being outside of time or smt like this)
 
 % Outputs:
 % 1. Data: Data structure with added field:
@@ -64,6 +65,7 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag] = 
 
 TextArea2Object.Value = "";
 EventChannelDropDown = [];
+Eventstodelete = [];
 
 %% First maintaining GUI main data structure by deleting previous event data
 if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
@@ -280,32 +282,8 @@ elseif strcmp(RecordingType,"Spike2")
     %% Check whether Json library is installed necessray to analyze this format
     FolderWithPathVariable = strcat(executablefolder,'\Modules\MISC\Variables (do not edit)\CEDS64Path.mat');
     
-    if exist(FolderWithPathVariable, 'file') == 2
-        fileExists = true;
-    else
-        fileExists = false;
-    end
-    
-    % If not installed let the user select the installation folder if he
-    % installs it
-    if fileExists == false
-        msgbox("'Spike2 MATLAB SON Interface' library not found. To analyze Spike2 .smrx files, you need to install this library available at 'https://ced.co.uk/upgrades/spike2matson'. Please install and select the 'CEDS64ML' folder thats installed. You only need to do this once.");
-        % Use the uigetdir function to open the file explorer dialog
-        selectedFolder = uigetdir();
-    
-        % Check if the user canceled the dialog
-        if selectedFolder == 0
-            disp('Folder selection was canceled.');
-            selectedFolder = '';
-        else
-            disp(['Selected folder: ', selectedFolder]);
-        end
-        savefilepath = strcat(executablefolder,'\Saved Data\Variables (so not edit)\CEDS64Path.mat');
-        save(savefilepath,'selectedFolder')
-    else % If json interface found load path to it
-        load(FolderWithPathVariable,'selectedFolder');
-    end
-    
+    [selectedFolder] = Manage_Dataset_Check_Spike2CED64_Path(executablefolder,FolderWithPathVariable);
+
     % Load library
     cedpath = selectedFolder;
     addpath(cedpath);
@@ -378,21 +356,26 @@ elseif strcmp(RecordingType,"NEO")
         EventInfo.event_channels(EventInfo.event_samples>length(Data.Time)) = [];
         EventInfo.event_samples(EventInfo.event_samples>length(Data.Time)) = [];
         
-        if isempty(EventInfo.event_samples)
+        TempUniqueChannel = unique(EventInfo.event_channels);
+        InputChannelSelection(~ismember(InputChannelSelection,TempUniqueChannel)) = [];
+        
+        %DeletedChannelIndices = find(~ismember(InputChannelSelection,TempUniqueChannel));
+
+        if isempty(EventInfo.event_samples) || isempty(InputChannelSelection)
             msgbox("Warning: All trigger indicies had to be deleted.");
-            Data.Events = [];
-            Error = 1;
+            [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
+            return;
         end
     end
     
-    EventChannelNames = cell(1,length(unique(EventInfo.event_channels)));
+    EventChannelNames = cell(1,length(InputChannelSelection));
     for i = 1:length(InputChannelSelection)
         EventChannelNames{i} = convertStringsToChars(strcat("Event Ch ",num2str(InputChannelSelection(i))));
     end
     
     if Error == 0
         UniqueChannel = unique(EventInfo.event_channels);
-        SelecteChannelIndice = UniqueChannel==InputChannelSelection;
+        SelecteChannelIndice = ismember(UniqueChannel,InputChannelSelection);
         
         UniqueChannel(SelecteChannelIndice==0) = [];
         Data.Events = cell(1,sum(SelecteChannelIndice));
@@ -411,6 +394,7 @@ elseif strcmp(RecordingType,"NEO")
         
         if ~isempty(DeleteIndice)
             Data.Events(DeleteIndice) = [];
+            EventChannelNames(DeleteIndice) = [];
         end
     end
 end
@@ -495,13 +479,12 @@ if isfield(Data,'Events')
 
                 elseif strcmp(RecordingType,"Spike2")
                     Data.Info.Spike2EventChannelToTake = convertStringsToChars(Data.Info.Spike2EventChannelToTake);
-                    commaindicie = find(Data.Info.Spike2EventChannelToTake==',');
-                    Spike2EventChannelToTake(1) = str2double(Data.Info.Spike2EventChannelToTake(1:commaindicie(1)-1));
-                    Spike2EventChannelToTake(2) = str2double(Data.Info.Spike2EventChannelToTake(commaindicie(1)+1:end));
+
+                    Spike2EventChannelToTake = str2double(strsplit(Data.Info.Spike2EventChannelToTake,','));
 
                     EventChannelDropDown = {};
                     for nevents = 1:length(Data.Events)
-                        Data.Info.EventChannelNames{nevents} = strcat("Data Channel ",num2str(Spike2EventChannelToTake(nevents)));
+                        Data.Info.EventChannelNames{nevents} = convertStringsToChars(strcat("Data Channel ",num2str(Spike2EventChannelToTake(nevents))));
                         EventChannelDropDown{nevents} = convertStringsToChars(Data.Info.EventChannelNames{nevents});
                     end
                     Data.Info.EventChannelType = strcat("Event Channel ",num2str(nevents));
@@ -524,19 +507,7 @@ if isfield(Data,'Events')
             
             if length(Eventstodelete)==length(Data.Events) % If all events empty
                 msgbox("No Trigger found!");
-                fieldsToDelete = {'Events'};
-                % Delete fields
-                Data = rmfield(Data, fieldsToDelete);
-                if isfield(Data.Info,'EventChannelNames')
-                    fieldsToDelete = {'EventChannelNames'};
-                    % Delete fields
-                    Data.Info = rmfield(Data.Info, fieldsToDelete);
-                end
-                if isfield(Data.Info,'EventChannelType')
-                    fieldsToDelete = {'EventChannelType'};
-                    % Delete fields
-                    Data.Info = rmfield(Data.Info, fieldsToDelete);
-                end
+                [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
                 TextArea2Object.Value = "No Trigger found!";
                 EventChannelDropDown = [];
                 pause(0.2);
@@ -546,26 +517,11 @@ if isfield(Data,'Events')
                 Data.Info.EventChannelNames(Eventstodelete) = [];
                 EventChannelDropDown = Data.Info.EventChannelNames;
             end
-            
         end
 
     else % If events empty
         msgbox("No Trigger found!");
-        if isfield(Data.Info,'EventChannelNames')
-            fieldsToDelete = {'Events'};
-            % Delete fields
-            Data = rmfield(Data, fieldsToDelete);
-        end
-        if isfield(Data.Info,'EventChannelNames')
-            fieldsToDelete = {'EventChannelNames'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
-        if isfield(Data.Info,'EventChannelType')
-            fieldsToDelete = {'EventChannelType'};
-            % Delete fields
-            Data.Info = rmfield(Data.Info, fieldsToDelete);
-        end
+        [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
         TextArea2Object.Value = "No Trigger found!";
         EventChannelDropDown = [];
         pause(0.2);
@@ -573,17 +529,8 @@ if isfield(Data,'Events')
     end
 else
     msgbox("No Trigger found!");
-    if isfield(Data.Info,'EventChannelNames')
-        fieldsToDelete = {'EventChannelNames'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-    if isfield(Data.Info,'EventChannelType')
-        fieldsToDelete = {'EventChannelType'};
-        % Delete fields
-        Data.Info = rmfield(Data.Info, fieldsToDelete);
-    end
-
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
+    Eventstodelete = InputChannelSelection;
     TextArea2Object.Value = "No Trigger found!";
     EventChannelDropDown = [];
     pause(0.2);

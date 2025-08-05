@@ -135,6 +135,12 @@ else
     HeaderInfo.FileType = "Not Defined";
 end
 
+if exist('acqu_start_samples','var')
+    HeaderInfo.Acquisition_start_samples = acqu_start_samples;
+else
+    HeaderInfo.Acquisition_start_samples = 1;
+end
+
 RecordingType = "NEO";
 Time = 0:1/sampling_rate:(double(n_samples)-1)*(1/sampling_rate);
 SampleRate = sampling_rate;

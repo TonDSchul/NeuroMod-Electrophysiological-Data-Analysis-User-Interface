@@ -235,7 +235,7 @@ if isfield(Data.Info,'EventRelatedPreprocessing')
         TrialIdentities = string(OriginalTrials);
         
         a = strings;
-        for i = 1:length(TrialNumbers)
+        for i = 1:length(TrialIdentities)
             a(i) = strcat(TrialIdentities(i),'(',TrialNumbers(i),')');
         end
         

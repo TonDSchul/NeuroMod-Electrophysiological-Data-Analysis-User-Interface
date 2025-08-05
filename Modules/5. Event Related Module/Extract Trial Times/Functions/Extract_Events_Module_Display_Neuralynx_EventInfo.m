@@ -35,7 +35,7 @@ for i = 1:length(fieldNames)
             for o = 1:length(TempfieldData)
                 if i ~= 1
                     TempfieldData{o} = convertStringsToChars(num2str(TempfieldData{o}));
-                    fieldData{o+1} = [fieldData{o+1},' ; ',TempfieldData{o}];
+                    fieldData{o+1} = [fieldData{o+1},' | ',TempfieldData{o}];
                 else
                     TempfieldData{o} = convertStringsToChars(num2str(TempfieldData{o}));
                     fieldData{o+1} = [fieldData{o+1},TempfieldData{o}];
@@ -44,7 +44,7 @@ for i = 1:length(fieldNames)
         else
             for o = 1:length(TempfieldData)
                 if i ~= 1
-                    fieldData{o+1} = [fieldData{o+1},' ; ',convertStringsToChars(TempfieldData{o})];
+                    fieldData{o+1} = [fieldData{o+1},' | ',convertStringsToChars(TempfieldData{o})];
                 else
                     fieldData{o+1} = [fieldData{o+1},convertStringsToChars(TempfieldData{o})];
                 end
@@ -53,7 +53,7 @@ for i = 1:length(fieldNames)
     else
         for o = 1:length(TempfieldData)
             if i ~= 1
-                fieldData{o+1} = [fieldData{o+1},' ; ','NaN'];
+                fieldData{o+1} = [fieldData{o+1},' | ','NaN'];
             else
                 fieldData{o+1} = [fieldData{o+1},'NaN'];
             end
@@ -63,7 +63,7 @@ end
 
 for i = 1: length(fieldNames)
     if i ~= 1
-        fieldData{1} = [fieldData{1},' ; ',fieldNames{i}];
+        fieldData{1} = [fieldData{1},' | ',fieldNames{i}];
     else
         fieldData{1} = [fieldData{1},fieldNames{i}];
     end

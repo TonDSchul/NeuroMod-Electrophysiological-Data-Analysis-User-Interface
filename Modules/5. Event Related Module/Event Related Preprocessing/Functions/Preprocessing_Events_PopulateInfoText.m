@@ -63,6 +63,10 @@ else
         TextArea.Value = [TextArea.Value;texttoshow];
     end
     
+    for i = 1:length(Data.Info.EventChannelNames)
+        TextArea.Value{end+1} = '';
+        TextArea.Value{end+1} = convertStringsToChars(strcat("Event Related Data for Event Channel",Data.Info.EventChannelNames{i}," has following dimensions: ","Number Channel: ",num2str(nchannel),", Number Trigger: ",num2str(length(Data.Events{i}))));
+    end
     TextArea.Value{end+1} = '';
-    TextArea.Value{end+1} = convertStringsToChars(strcat("Event Data has following dimensions: ","Number Channel: ",num2str(nchannel),", Number Trigger: ",num2str(ntrials)));
+    TextArea.Value{end+1} = '**Note** Number of trigger determined before data was extracted. Actual trigger/trial number per channel can vary if extacted trial data violates time limits.';
 end

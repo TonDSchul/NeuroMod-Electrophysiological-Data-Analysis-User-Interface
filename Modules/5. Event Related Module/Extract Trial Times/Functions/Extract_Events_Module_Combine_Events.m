@@ -1,6 +1,26 @@
-function [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventChannelSelection)
+function [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,CompleteEventChannelSelection,ActualUserEventChannelSelection,Eventstodelete)
 
-EventChannelSelection = str2double(strsplit(EventChannelSelection,','));
+% check if channel to combine are part of the actually selected channel
+ActualUserEventChannelSelection = str2double(strsplit(ActualUserEventChannelSelection,','));
+
+if sum(ismember(ActualUserEventChannelSelection,EventsToCombine.CombinedChannel)) == 0
+    msgbox("Error: Non of the selected event channel to combine are part of the input event channel selection field! Skipping combining events.")
+    return;
+end
+if find(ismember(EventsToCombine.CombinedChannel,ActualUserEventChannelSelection) == 0)
+    msgbox("Error: One of the selected event channel to combine is not part of the input event channel selection field! Skipping combining events.")
+    return;
+end
+
+if ~isempty(Eventstodelete)
+    if find(ismember(EventsToCombine.CombinedChannel,Eventstodelete) == 1)
+        Indices = ismember(EventsToCombine.CombinedChannel,Eventstodelete);
+        msgbox(strcat("Error: One or more of the selected channel to combine had to be deleted (for example bc. it was not selected as input event channe or due to all triggers being outside of time window). Cannot combine events! Please try again by deleteing the channel without triggers in the input event channel selection field! Event Indices affected: ",num2str(EventsToCombine.CombinedChannel(Indices))))
+        return;
+    end
+end
+
+CompleteEventChannelSelection = str2double(strsplit(CompleteEventChannelSelection,','));
 
 % number of how often channel are combined to a single one
 AllCombinedChannel = length(unique(EventsToCombine.CombinedIdentity));
@@ -12,7 +32,7 @@ for i = 0:AllCombinedChannel-1 %zero indexed
     % Indice of all channel part of the first(second...) combination selection
     AllCurrentChannel = EventsToCombine.CombinedIdentity == i;
     
-    RealEventIndices = find(ismember(EventChannelSelection,EventsToCombine.CombinedChannel(AllCurrentChannel))==1);
+    RealEventIndices = find(ismember(ActualUserEventChannelSelection,EventsToCombine.CombinedChannel(AllCurrentChannel))==1);
     % save for later
     CapturedRealEventIndices = [CapturedRealEventIndices,RealEventIndices];
 

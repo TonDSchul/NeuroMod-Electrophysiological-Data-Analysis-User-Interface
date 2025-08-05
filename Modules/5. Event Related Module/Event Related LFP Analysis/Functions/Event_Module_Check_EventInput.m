@@ -27,9 +27,9 @@ for i = 1:length(Data.Info.EventChannelNames)
 end
 
 if strcmp(EventDataType,'Raw Event Related Data')
-    AlleventNr = length(Data.Events{EventChannelNr});
+    AlleventNr = size(Data.EventRelatedData,2);
 else %% if prepro and channel deleted make it differetm
-    AlleventNr = length(Data.Events{EventChannelNr});
+    AlleventNr = size(Data.EventRelatedData,2);
     if isfield(Data.Info.EventRelatedPreprocessing,'TrialRejectionTrials')
 
         Namevector = split(string(Data.Info.EventRelatedPreprocessing.TrialRejectionEventChannelNames), ',');

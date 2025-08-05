@@ -3,22 +3,26 @@ function [Events,EventChannelNames] = Extract_Events_Module_Neuralynx_Manage_Eve
 EventChannelNames = {};
 Events = {};
 
+%% --------------- Get data from event cell ------------------
 EventSamples = double(cell2mat({event.sample}));
 EventValues = double(cell2mat({event.value}));
 
+%% --------------- Create event channel names ------------------
 EventChannelNames = cell(1,length(InputChannelSelection));
 for i = 1:length(InputChannelSelection)
     EventChannelNames{i} = convertStringsToChars(strcat("Event Ch ",num2str(InputChannelSelection(i))));
 end
 
+%% --------------- Get indice of input channel selected ------------------
 UniqueChannel = unique(EventValues);
-SelecteChannelIndice = UniqueChannel==InputChannelSelection;
+SelecteChannelIndice = ismember(UniqueChannel,InputChannelSelection);
 
+%% --------------- Delete inidces not in input channel range ------------------
 UniqueChannel(SelecteChannelIndice==0) = [];
 Events = cell(1,sum(SelecteChannelIndice));
 DeleteIndice = [];
 
-
+%% --------------- Loop over remaining event channel , save their indices in differenct cells------------------
 for neventchannel = 1:length(UniqueChannel)
     CurrentChannelIndice = EventValues == UniqueChannel(neventchannel);
     
@@ -29,6 +33,7 @@ for neventchannel = 1:length(UniqueChannel)
         DeleteIndice = [DeleteIndice,neventchannel];
     end
 end
+%% --------------- Wrap up ------------------
 
 if ~isempty(DeleteIndice)
     if length(DeleteIndice) == length(Events)

@@ -44,6 +44,11 @@ if isfile(EventDataLocation)
         texttoshow = strcat("One of the following variables could not be loaded: event_channels,event_labels,event_samples from ",EventDataLocation);
         return
     end
+
+    %% FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    % event_samples(event_channels==1) = event_samples(event_channels==1)+50000000;
+    % event_samples(event_channels==11) = event_samples(event_channels==11)+50000000;
+
     % throw out start and stop time
     DeleteIndice = zeros(size(event_channels));
     matchIdxstart = find(strcmp(event_labels, 'Starting Recording'));
@@ -62,7 +67,9 @@ if isfile(EventDataLocation)
             NeoEventStartTimeStamp = 1;
         end
     else
-        NeoEventStartTimeStamp = 1;
+        if isfield(Data.Info,'Acquisition_start_samples')
+            NeoEventStartTimeStamp = double(Data.Info.Acquisition_start_samples);
+        end
     end
     
     if sum(DeleteIndice)>0
@@ -71,17 +78,48 @@ if isfile(EventDataLocation)
         event_samples(DeleteIndice==1) = [];
     end
 
-    % see if there are events and how many 
-    EventInfo.NumEvents = length(event_labels);
-    EventInfo.event_channels = double(event_channels);
-    EventInfo.event_labels =  event_labels;
+    if isempty(event_samples)
+        EventInfo = [];
+        msgbox("After selecting start and stop time stamps, no trigger remain!")
+        return;
+    end
+
+    if sum(event_samples > length(Data.Time))
+        DeletedIndices = find(event_samples > length(Data.Time));
+        event_channels(DeletedIndices) = [];
+        event_labels(DeletedIndices) = [];
+        event_samples(DeletedIndices) = [];
+        msgbox(strcat(num2str(length(DeletedIndices))," trigger outside of time window found that are deleted!"));
+    end
+
+    if isempty(event_samples)
+        EventInfo = [];
+        msgbox("After deleting trigger outside of time window, no trigger remain!")
+        return;
+    end
+    
+    if contains(Data.Info.FileType,'OpenEphys') || contains(Data.Info.FileType,'Open Ephys')
+        % see if there are events and how many 
+        EventInfo.NumEvents = length(event_labels);
+        EventInfo.event_channels = str2double(event_labels);
+        %EventInfo.event_labels =  event_labels;
+        for q = 1:length(event_channels)
+            EventInfo.event_labels{q} =  num2str(double(event_channels(q)));
+        end
+        %EventInfo.event_labels =  mat2cell(double(event_channels));
+    else
+        % see if there are events and how many 
+        EventInfo.NumEvents = length(event_labels);
+        EventInfo.event_channels = double(event_channels);
+        EventInfo.event_labels =  event_labels;
+    end
     
     EventInfo.event_samples = (double(event_samples)-NeoEventStartTimeStamp)+1;
-
+    
     % create info text to show
     texttoshow = strings(EventInfo.NumEvents, 1);
     
-    texttoshow(1) = "Following event channel, event labels(not completly shown!) and even times found:";
+    texttoshow(1) = "Following event channel, event labels (not completly shown!) and even times found:";
     texttoshow(2) = strcat("(Number of event events found across all channel: ",num2str(EventInfo.NumEvents),") with start time stamp: ",num2str(NeoEventStartTimeStamp));
     texttoshow(3) = "";
 

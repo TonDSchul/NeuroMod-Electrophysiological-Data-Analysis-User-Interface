@@ -10,9 +10,44 @@ import pyuac
 import numpy as np
 import scipy.io
 import neo
+import json
+import re
 
 from neo.io import get_io
 
+def find_sync_messages(base_path):
+    for root, dirs, files in os.walk(base_path):
+        if 'sync_messages.txt' in files:
+            return os.path.join(root, 'sync_messages.txt')
+    return None  # Not found
+
+def GetAcquisitionStartSample(recording_path):
+    print("Searching for acqu start!")
+    try:
+        # Search for sync_messages.txt
+        sync_path = find_sync_messages(recording_path)
+
+        if sync_path and os.path.exists(sync_path):
+            with open(sync_path, 'r') as f:
+                for line in f:
+                    if "Start Time" in line:
+                        # Extract the numeric value at the end using regex
+                        match = re.search(r':\s*(\d+)', line)
+                        if match:
+                            start_sample = int(match.group(1))
+                            print(f"Acquisition start (in samples): {start_sample}")
+                            return start_sample
+            print("No acquisition start sample found in sync_messages.txt")
+            return None
+
+        else:
+            print("sync_messages.txt not found.")
+            return None
+
+    except Exception as e:
+        print(f"Error while reading sync_messages.txt: {e}")
+        return None
+        
 def create_save_folder(selected_folder):
     """
     Given a selected folder, create a sibling folder with ' Neo SaveFile' suffix.
@@ -62,6 +97,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         
         result_string = None
         reader = None
+        start_sample = None
         
         # -----------------------------------------------------------------------
         ''' Autodetect Recording System with NEO'''
@@ -82,6 +118,11 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
                 
                 with open(DataLoggerSaveFileName, "a") as f:
                     f.write(result_string+"\n")
+            
+            try:
+                start_sample = GetAcquisitionStartSample(FolderName)
+            except Exception:
+                start_sample = None
         # -----------------------------------------------------------------------
         ''' Load Data Without Autodetection based on User Input'''
         # -----------------------------------------------------------------------
@@ -164,6 +205,8 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
                 
                 with open(DataLoggerSaveFileName, "a") as f:
                     f.write(result_string+"\n")
+            
+            start_sample = GetAcquisitionStartSample(FolderName)
         # -----------------------------------------------------------------------
         ''' Legacy Open ephys format'''
         # -----------------------------------------------------------------------
@@ -183,6 +226,9 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
                 
                 with open(DataLoggerSaveFileName, "a") as f:
                     f.write(result_string+"\n")
+                    
+            
+            start_sample = GetAcquisitionStartSample(FolderName)
         
         # -----------------------------------------------------------------------
         ''' NeuroExplorer format'''
@@ -290,6 +336,9 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
         channel_names = [asig.name for asig in analogsignals]
         channel_ids = [asig.annotations.get('channel_id', i) for i, asig in enumerate(analogsignals)]
         
+        if start_sample is None:
+            start_sample = 1
+        
         if JustExtractingEvents == 0:
             # Save metadata as .mat
             SaveFileName = NEO_Save_Path + "/NEO_Saved_MetaData.mat"
@@ -305,7 +354,8 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
                     'channel_names': channel_names,
                     'channel_ids': channel_ids,
                     'n_channels': data.shape[1],
-                    'n_samples': data.shape[0]        
+                    'n_samples': data.shape[0],
+                    'acqu_start_samples': start_sample
                 })
             else:
                 scipy.io.savemat(SaveFileName, {
@@ -314,7 +364,8 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen):
                     'channel_names': channel_names,
                     'channel_ids': channel_ids,
                     'n_channels': data.shape[0],
-                    'n_samples': data.shape[1]        
+                    'n_samples': data.shape[1],
+                    'acqu_start_samples': start_sample       
                 })
         
         # -----------------------------------------------------------------------

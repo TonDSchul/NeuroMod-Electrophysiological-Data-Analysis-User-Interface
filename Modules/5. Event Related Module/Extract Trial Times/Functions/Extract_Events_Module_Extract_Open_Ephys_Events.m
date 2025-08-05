@@ -152,7 +152,7 @@ if strcmp(WhatToDo,"Get Information")
             for p = 1:1 % Always 1 so far
 
                 events = recording.ttlEvents(eventProcessors);
-                
+
                 if ~isempty(FirstTimeStampinSample) && ~isempty(events.sample_number)
                     if length(FirstTimeStampinSample)>=nrrecordings
                         events.sample_number = double(events.sample_number) - FirstTimeStampinSample(nrrecordings);
@@ -355,7 +355,7 @@ if strcmp(WhatToDo,"All")
         for p = 1:1 % always 1 so far
 
             events = recording.ttlEvents(eventProcessors);
-    
+
             if ~isempty(FirstTimeStampinSample) && ~isempty(events.sample_number)
                 events.sample_number = double(events.sample_number) - FirstTimeStampinSample(nrrecordings);
                 events.timestamp = events.timestamp - (FirstTimeStampinSample(nrrecordings)/Data.Info.NativeSamplingRate);
