@@ -300,6 +300,7 @@ if strcmp(Window,"Save_Data_Window")
     app.EventRelatedDataButton.BackgroundColor   = ComponentsInWindowColor;
     app.EventTimesButton.BackgroundColor   = ComponentsInWindowColor;
     app.PreprocessedEventRelatedDataButton.BackgroundColor   = ComponentsInWindowColor;
+    app.SaveTypeDropDown_2.BackgroundColor   = ComponentsInWindowColor;
 end
 
 if strcmp(Window,"Probe_View_Help_Window")    
@@ -1939,4 +1940,13 @@ if strcmp(Window,"Ask_For_NEO_Parameter")
 
     app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
     app.RecordingSystemDropDown.BackgroundColor   = ComponentsInWindowColor;
+end
+
+if strcmp(Window,"Delete_Time_Violating_Trigger")    
+    % texts to black
+    set(findall(app.DeleteTimeViolatingTriggerUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.DeleteTimeViolatingTriggerUIFigure.Color  = WindowBackgroundColor;
+
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
 end

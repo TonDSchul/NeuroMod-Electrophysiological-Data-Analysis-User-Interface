@@ -1,4 +1,4 @@
-function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag,Eventstodelete] = Extract_Events_Module_Main_Function(Data,EventInfo,Path,RecordingType,FileTypeDropDown,Threshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea2Object,RHDAllChannelData,executablefolder,startTimestamp)
+function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag,Eventstodelete,texttoshow] = Extract_Events_Module_Main_Function(Data,EventInfo,Path,RecordingType,FileTypeDropDown,Threshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea2Object,RHDAllChannelData,executablefolder,startTimestamp,TimeAroundEvent,AdditionalEventInfo,EventsToCombine)
 
 %________________________________________________________________________________________
 %% Function to coordinate Intan Event Extraction
@@ -40,6 +40,8 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag,Eve
 % seconds to substract from event times which are present in respect to
 % aquisition start, not recording start
 % 13. Eventstodelete: Indices of Data.Events that had to be deleted (i.e. due to all triggers being outside of time or smt like this)
+% 14. TimeAroundEvent: double, 1x2 vecor with time before and after trigger
+% (both positive)
 
 % Outputs:
 % 1. Data: Data structure with added field:
@@ -536,5 +538,20 @@ else
     pause(0.2);
     return;
 end
+
+%% ----------------------- Combine event channel if selected ----------------------------
+
+if ~isempty(EventsToCombine)
+    if strcmp(Data.Info.RecordingType,"Open Ephys")
+        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,AdditionalEventInfo.InputChannelNumber,InputChannelSelection,Eventstodelete);
+    else
+        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventInfo.InputChannelNumber,InputChannelSelection,Eventstodelete);
+    end
+end
+
+%% ----------------------- Last Step: Check if trials violate time limts----------------------------
+
+[Data.Events,texttoshow] = Extract_Events_Module_Check_Violating_Trigger(Data,Data.Events,TimeAroundEvent);
+
 
 

@@ -1,4 +1,4 @@
-function [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,EventChannel,TimearoundEvent,DataToExtractFrom,EventDataType)
+function [Data,TimearoundEvent,ExcludedTrials] = Event_Module_Extract_Event_Related_Data(Data,EventChannel,TimearoundEvent,DataToExtractFrom,EventDataType)
 
 %________________________________________________________________________________________
 %% Function to extract event related data as a nchannel x nevents x ntime matrix
@@ -25,12 +25,15 @@ function [Data,TimearoundEvent] = Event_Module_Extract_Event_Related_Data(Data,E
 % and adeed infos to Data.Info
 % 2. TimearoundEvent: 1 x 2 double containing time before and time after
 % event (both positive!)
+% 3. ExcludedTrials: double array with indices of Data.Events that could no
+%t be included in event related data due to time violations (i. when cutting time and trigger to close to start/stop of the recoding)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
 EventChannelNr = [];
+ExcludedTrials = [];
 
 %-------------------------------------------------------------------
 %% ---------------- Check Up and Event channel Indice ----------------
@@ -83,6 +86,7 @@ end
 %-------------------------------------------------------------------
 %% ---------------- Start Data Extraction ----------------
 %-------------------------------------------------------------------
+
 if strcmp(DataToExtractFrom,"Raw Data")
     % Initialize
     Data.EventRelatedData = NaN(size(Data.Raw,1),length(Data.Events{EventChannelNr}),ntimepoints);
@@ -92,6 +96,7 @@ if strcmp(DataToExtractFrom,"Raw Data")
             Data.EventRelatedData(1:size(Data.Raw,1),nevents,1:ntimepoints) = Data.Raw(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
         else
             warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+            ExcludedTrials = [ExcludedTrials,nevents];
         end
 
         % Update the progress bar
@@ -113,6 +118,7 @@ elseif strcmp(DataToExtractFrom,"Preprocessed Data")
             Data.EventRelatedData(1:size(Data.Preprocessed,1),nevents,1:ntimepoints) = Data.Preprocessed(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
         else
             warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+            ExcludedTrials = [ExcludedTrials,nevents];
         end
 
         % Update the progress bar

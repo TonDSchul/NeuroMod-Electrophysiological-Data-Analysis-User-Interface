@@ -1,12 +1,10 @@
 function [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,CompleteEventChannelSelection,ActualUserEventChannelSelection,Eventstodelete)
 
-% check if channel to combine are part of the actually selected channel
-ActualUserEventChannelSelection = str2double(strsplit(ActualUserEventChannelSelection,','));
-
 if sum(ismember(ActualUserEventChannelSelection,EventsToCombine.CombinedChannel)) == 0
     msgbox("Error: Non of the selected event channel to combine are part of the input event channel selection field! Skipping combining events.")
     return;
 end
+
 if find(ismember(EventsToCombine.CombinedChannel,ActualUserEventChannelSelection) == 0)
     msgbox("Error: One of the selected event channel to combine is not part of the input event channel selection field! Skipping combining events.")
     return;

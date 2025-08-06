@@ -7,7 +7,8 @@ function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,
 % 1. Data: Data structure containing high pass filtered preprocessed data as a Channel x Time matrix in Data.Preprocessed field.
 % High pass filter required!
 % 2. Detectionmethod: Thresholding Method. Options: "Quiroga Method" OR "Threshold: Mean - Std" OR "Threshold: Median - Std"; 
-% 3. Type: Method to compute mean and std with. Options: "All Channel" OR "Individual Ch."
+% 3. Type: Method to compute mean and std with. Options: "All Channel
+% Average" OR "Individual Ch." OR "All Channel Max Values"
 % 4. STDThreshold: Number of std's signal has to deviate from mean to count
 % as spike. Standard: 4; Can vary depending on type selected
 % 5. Filter: true or false, specify whether vertical artefacts should be
@@ -70,9 +71,32 @@ cN  = size(Data.Preprocessed,1);
 %% Check which method and parameters selceted
 if strcmp(Detectionmethod,"Threshold: Mean - Std")
     %% Correlated Noise: Mean of signal
-    if strcmp(Type,"All Channel")
+    if strcmp(Type,"All Channel Average")
         CN = mean(Data.Preprocessed,'all');
         CNSTD = std2(Data.Preprocessed);
+    end
+
+    if strcmp(Type,"All Channel Max Values")
+        CurrentMaxMean = [];
+        CurrentMaxSTD = [];
+
+        for nchannel = 1:size(Data.Preprocessed,1)
+            CN = mean(Data.Preprocessed(nchannel,:));
+            CNSTD = std(Data.Preprocessed(nchannel,:));
+            if nchannel == 1
+                CurrentMaxMean = CN;
+                CurrentMaxSTD = CNSTD;
+            else
+                if CurrentMaxMean<CN
+                    CurrentMaxMean = CN;
+                end
+                if CurrentMaxSTD<CNSTD
+                    CurrentMaxSTD = CNSTD;
+                end
+            end
+        end
+        CN = CurrentMaxMean;
+        CNSTD = CurrentMaxSTD;
     end
     
     for nchannel = 1:size(Data.Preprocessed,1) % Channel
@@ -83,7 +107,7 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
        waitbar(fraction, h, msg);
     
         % Mean and std based on input 
-        if strcmp(Type,"All Channel")
+        if strcmp(Type,"All Channel Average") || strcmp(Type,"All Channel Max Values")
             Threshold = CN+STDThreshold.*CNSTD;
             indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
         elseif strcmp(Type,"Individual Ch.")
@@ -191,9 +215,32 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
 elseif strcmp(Detectionmethod,"Threshold: Median - Std")
     %% Correlated Noise: Mean of signal
 
-    if strcmp(Type,"All Channel")
+    if strcmp(Type,"All Channel Average")
         CN = median(Data.Preprocessed,'all');
         CNSTD = std2(Data.Preprocessed);
+    end
+
+    if strcmp(Type,"All Channel Max Values")
+        CurrentMaxMean = [];
+        CurrentMaxSTD = [];
+
+        for nchannel = 1:size(Data.Preprocessed,1)
+            CN = median(Data.Preprocessed(nchannel,:));
+            CNSTD = std(Data.Preprocessed(nchannel,:));
+            if nchannel == 1
+                CurrentMaxMean = CN;
+                CurrentMaxSTD = CNSTD;
+            else
+                if CurrentMaxMean<CN
+                    CurrentMaxMean = CN;
+                end
+                if CurrentMaxSTD<CNSTD
+                    CurrentMaxSTD = CNSTD;
+                end
+            end
+        end
+        CN = CurrentMaxMean;
+        CNSTD = CurrentMaxSTD;
     end
 
     for nchannel = 1:size(Data.Preprocessed,1) % Channel
@@ -204,7 +251,7 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
        waitbar(fraction, h, msg);
     
         % Mean
-        if strcmp(Type,"All Channel")
+        if strcmp(Type,"All Channel Average") || strcmp(Type,"All Channel Max Values")
             Threshold = CN+STDThreshold.*CNSTD;
             indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
 
@@ -312,8 +359,23 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
 
 elseif strcmp(Detectionmethod,"Quiroga Method")
 
-    if strcmp(Type,"All Channel")
+    if strcmp(Type,"All Channel Average")
         medianAbsSignal = median(abs(Data.Preprocessed),'all');
+    end
+
+    if strcmp(Type,"All Channel Max Values")
+        CurrentMaxMedian = [];
+        for nchannel = 1:size(Data.Preprocessed,1)
+            CN = median(abs(Data.Preprocessed(nchannel,:)));
+            if nchannel == 1
+                CurrentMaxMedian = CN;
+            else
+                if CurrentMaxMedian<CN
+                    CurrentMaxMedian = CN;
+                end
+            end
+        end
+        medianAbsSignal = CurrentMaxMedian;
     end
 
     for nchannel = 1:size(Data.Preprocessed,1) % Channel
@@ -323,7 +385,7 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
        msg = sprintf('Extracting Spike Indicies... (%d%% done)', round(100*fraction));
        waitbar(fraction, h, msg);
 
-        if strcmp(Type,"All Channel")
+        if strcmp(Type,"All Channel Average") || strcmp(Type,"All Channel Max Values")
             % Compute the threshold using the Quian Quiroga method
             Threshold = (medianAbsSignal / 0.6745) * STDThreshold;
             indices = find(Data.Preprocessed(nchannel,:) < -Threshold);
