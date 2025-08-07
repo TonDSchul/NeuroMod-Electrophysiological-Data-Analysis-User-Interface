@@ -29,9 +29,9 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
     
   - [Overview of Other Toolboxes Used](#overview-of-other-toolboxes-used)
 
-  - [How to Install SpikeInterface for Spike Sorting in Neuromod](#how-to-install-spikeinterface-for-spike-sorting-in-neuromod)
+  - [How to Install SpikeInterface for Spike Sorting in NeuroMod](#how-to-install-spikeinterface-for-spike-sorting-in-neuromod)
 
-  - [How to Install NeuralEnsemble NEO to extend supported file formats in Neuromod](#how-to-install-neuralensemble-NEO)
+  - [How to Install NeuralEnsemble NEO to extend supported file formats in NeuroMod](#how-to-install-neuralensemble-NEO)
 
   - [About Performance](#about-performance)
 
@@ -45,11 +45,11 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
 <img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-NeuroMod supports data extraction from raw recording data with two different 'libraries' - first the NeuroMod and MATLAB intern data extraction and second data extraction using the NeuralEnsemble NEO Python package. Both support recordings obtained with the Open Ephys GUI and Neuralynx recordings. 
+NeuroMod supports data extraction from raw recording data with two different 'libraries' - first the NeuroMod intern (Matlab-based) data extraction and second data extraction using the NeuralEnsemble NEO Python package - all through the user interface without the need for coding! Both libraries support recordings obtained with the Open Ephys GUI but to different extends - NeurMod supports all OE formats (binary,nwb and OE format) from any recording system (OE acquisition board, Intan RHD acquisition board, Neuropixels basestation with NP1.0 or 2.0 probes), while NEO only supports binary format recordings - both including Neuropixels recordings with a Neuropixels basesattion run via the Open Ephys GUI. Additionally, both libraries support extraction of Neuralynx .ncs recordings.
 
-NeuroMod itself currently supports formats recorded with the Open Ephys GUI, Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 and Cheetah software. This includes binary, .nwb and Open Ephys data formats from the Open Ephys GUI recorded with Neuropixels, Open Ephys and Intan acquisition boards; .dat and .rhd files from the Intan RHX and RHD software; .smrx files for Spike2 and .ncs for Neuralynx Cheetah files.
+Beisdes this, NeuroMod itself currently supports formats recorded with the Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 software. This includes .dat and .rhd files from the Intan RHX and RHD software and .smrx files for Spike2 files.
 
-With the NEO Python package you can further extract data recorded with Plexon (.plx, .pl2), Neuralynx (ncs...), TDT (Tucker Davis Technologies), Open Ephys (binary files including Neuropixels recordings), Blackrock and NeuroExplorer (.nex) recording systems.
+Furthermore, due to the neatless implementation of the NEO python library, you can further extract data recorded with Plexon (.plx, .pl2), TDT (Tucker Davis Technologies), Blackrock and NeuroExplorer (.nex) recording systems.
 
 Besides the continuous data stream, event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analyzed, enabling not only the preprocessing, analysis, and visualization of continuous data but also event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, and event-related potentials for low-frequency signal components as well as event related spike analysis.
@@ -64,15 +64,15 @@ Lastly, the toolbox fully supports Kilosort, Mountainsort 5 and SpykingCircus 2 
 
 > ## **How to install the GUI** ##
 
-> **NOTE:** If you want to use the standalone app and install the supplied Matlab runtime version, it will ask you if you want to create a shortcut from the GUI to the Desktop. If you execute this shortcut, the GUI probably won't run !! This is because the execution folder of the application will be a temporary folder and not the downloaded GUI folder. Some required variables to start with will therefore not be found at the expected locations. Always start from the application file in the 'Neuromod_GUI' folder!
+> **NOTE:** If you want to use the standalone app and install the supplied Matlab runtime version, it will ask you if you want to create a shortcut from the GUI to the Desktop. If you execute this shortcut, the GUI probably won't run !! This is because the execution folder of the application will be a temporary folder and not the downloaded GUI folder. Some required variables to start with will therefore not be found at the expected locations. Always start from the application file in the 'NeuroMod_GUI' folder!
 
 - The GUI is available as a standalone version, for which you don't need a valid Matlab license and just need to install a Matlab runtime version:
-  1. Download the Neuromod_Standalone folder. Install the Matlab runtime version by executing the file in the 'Matlab_Runtime_Install' folder.
-  2. Once installed, you can start the GUI from the folder 'Neuromod_GUI' by double clicking the 'Neuromod_Toolbox_GUI' application (to be able to modify and save files you might have to execute the application as an administrator. This partly depends on were you save the GUI files).
+  1. Download the NeuroMod_Standalone folder. Install the Matlab runtime version by executing the file in the 'Matlab_Runtime_Install' folder.
+  2. Once installed, you can start the GUI from the folder 'NeuroMod_GUI' by double clicking the 'NeuroMod_Toolbox_GUI' application (to be able to modify and save files you might have to execute the application as an administrator. This partly depends on were you save the GUI files).
     
-- If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder structure, 'cd' into the directory within Matlab and launch the Neuromod_Toolbox_GUI.mlapp file. You have several options to launch the GUI:
-  1. Double-click the 'Neuromod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
-  2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the Neuromod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
+- If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder structure, 'cd' into the directory within Matlab and launch the NeuroMod_Toolbox_GUI.mlapp file. You have several options to launch the GUI:
+  1. Double-click the 'NeuroMod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
+  2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the NeuroMod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
   3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window after navigating (cd) to the folder containing the GUI:
 
 ```matlab
@@ -263,8 +263,8 @@ export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=F
 ```
 
 > ### **How to Install NeuralEnsemble NEO**
-
-> To install the NEO python package, you have to follow the same steps as described in the first paragraph about the installation of SpikeInterface. So install the necessary programs, create a Anaconda environment and activate it. The type in the following command to install NEO:
+>
+To install the NEO python package, you have to follow the same steps as described in the first paragraph about the installation of SpikeInterface. So install the necessary programs, create a Anaconda environment and activate it. The type in the following command to install NEO:
 
 ```python
 pip install neo[nixio,tiffio]
