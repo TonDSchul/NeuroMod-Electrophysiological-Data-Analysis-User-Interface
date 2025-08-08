@@ -56,7 +56,7 @@ The supported recording systems can be used with a wide range of probes designs,
 
 <img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
 
-Lastly, NeuroMod fully supports Kilosort, Mountainsort 5 and SpykingCircus 2 spike sorting. This includes saving the dataset and probe design for external use in one of the sorting packages with your own code/the respective GUI provided with it, as well as automatic spike sorting with SpikeInterface completly handled by NeuroMod. You just have to install the respective python packages (see below for instructions) and everything else is taken care of for you in the NeuroMod Matlab GUI, while still having full control over sorting parameters. In any case, spike sorting results from these sorters can be loaded back into NeuroMod for further analysis (see below for details). If these sorters cant be used, NeuroMod also offers spike detection using different thresholding methods as well as spike clustering using WaveClus 3 (which does not has to be installed). Since every analysis is shown and editable in a separate window, spike and LFP analysis results can be easily compared and correlated. 
+Lastly, NeuroMod fully supports Kilosort, Mountainsort 5 and SpyKING CIRCUS 2 spike sorting. This includes saving the dataset and probe design for external use in one of the sorting packages with your own code/the respective GUI provided with it, as well as automatic spike sorting with SpikeInterface completly handled by NeuroMod. You just have to install the respective python packages (see below for instructions) and everything else is taken care of for you in the NeuroMod Matlab GUI, while still having full control over sorting parameters. In any case, spike sorting results from these sorters can be loaded back into NeuroMod for further analysis (see below for details). If these sorters cant be used, NeuroMod also offers spike detection using different thresholding methods as well as spike clustering using WaveClus 3 (which does not has to be installed). Since every analysis is shown and editable in a separate window, spike and LFP analysis results can be easily compared and correlated. 
 
 **NOTE:** Loading sorting results is supported for Kilosort versions 3 and 4, while the automatic sorting via SpikeInterface is only available for Kilosort version 4.
 
@@ -141,7 +141,7 @@ When you extract .smrx for the first time, you are asked to select the folder in
 
 > ### **Overview of Other Toolboxes Used**
 
-Spike Sorting with Mountainsort 5 and Spykingcircus2 as well as raw recording data extraction of some formats are handled by python libraries, that are called and executed via costume python functions. More specifically, SpikeInterface for spike sorting and NeuralEnsemble NEO for data extraction, which have to be installed manually but can then be used via NeuroMod without any coding. See below for more information.
+Spike Sorting with Mountainsort 5 and SpyKING CIRCUS 2 as well as raw recording data extraction of some formats are handled by python libraries, that are called and executed via costume python functions. More specifically, SpikeInterface for spike sorting and NeuralEnsemble NEO for data extraction, which have to be installed manually but can then be used via NeuroMod without any coding. See below for more information.
 
 Spike sorting with Mountainsort 5, SpykingCircus 2 is implemented in a costume python script executed via NeuroMod that uses the SpikeInterface library. 
 
