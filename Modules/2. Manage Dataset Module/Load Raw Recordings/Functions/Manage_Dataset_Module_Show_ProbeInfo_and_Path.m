@@ -1,4 +1,4 @@
-function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder,PathToOpen,JustCheck,FolderToCheck,ExtractWithNeo,RecordingType)
+function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Dataset_Module_Show_ProbeInfo_and_Path(app,Load_Data_Window_Info,ProbeInfoOrFolder,PathToOpen,JustCheck,FolderToCheck,ExtractWithNeo,RecordingType,JustChangeLibrary)
 
 %________________________________________________________________________________________
 
@@ -114,8 +114,9 @@ if strcmp(ProbeInfoOrFolder,"ProbeInfo")
 end
 
 %% ------------------- Define Text After Probe View Window is closed -------------------
-if strcmp(ProbeInfoOrFolder,"ProbeInfo")
+if strcmp(ProbeInfoOrFolder,"ProbeInfo") 
     %tempChOrder = app.Load_Data_Window_Info.Channelorder;
+
     if ~isempty(Load_Data_Window_Info.Channelorder) && sum(isnan(Load_Data_Window_Info.Channelorder))==0
         
         ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",app.NrChannelEditField.Value);strcat("Channel Spacing: ",app.ChannelSpacingumEditField.Value);strcat("Nr Channel Rows: ",app.ChannelRowsDropDown.Value);"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(app.CheckBox.Value));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
@@ -162,16 +163,124 @@ if strcmp(ProbeInfoOrFolder,"ProbeInfo")
 end
 
 %% ----------------- Populate Text are after folder selection button was pressed -----------------
-if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"AutorunFolderSelection")
+if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"AutorunFolderSelection") || strcmp(ProbeInfoOrFolder,"JustChangeLibrary")
+    NoFormatFound = 0;
+
+    %% -------- First check if Matlab Library Format --------
+    [TempFormatsfound,FolderContentsText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(app.ProbeInfoandPath,PathToOpen,JustCheck,FolderToCheck);
     
-    if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
-        [Formatsfound,FolderContentsText,ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_CheckFolderContents(app.ProbeInfoandPath,PathToOpen,JustCheck,FolderToCheck);
-    else %% If neo is used
-        [ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder] = Manage_Dataset_Module_NEO_Populate_Text(app.ProbeInfoandPath,PathToOpen,JustCheck,FolderToCheck,RecordingType);
-        Formatsfound = [];
-        FolderContentsText = [];
+    if isempty(TempFormatsfound)
+        NoFormatFound = 1;
+    end
+    if length(TempFormatsfound)>1 && isempty(RecordingSystemDropDownItems)
+        FolderContentsText = "Folder possibly contains recordings of multiple recording systems. Please select a folder with only a single recording of a single recording system.";
+        Load_Data_Window_Info.selectedFolder = [];
+        ProbeInfoText = strcat("Multiple File Formats selected: ",TempFormatsfound,". Make sure to only have one of those in the selcted folder!");
+        return;
+    end
+    % initialize
+    Formatsfound = [];
+
+    %% Only for OE NEO! 
+    OENEODropdownSet = 0;
+    % open ephys when NEO selected: offer new and legacy version support
+    if JustChangeLibrary == 1 && strcmp(ExtractWithNeo,"NeuralEnsemble NEO Python Library")
+        if ~isempty(RecordingSystemDropDownItems)
+            if contains(TempFormatsfound,"Open Ephys")
+                RecordingSystemDropDownItems = {};
+                RecordingSystemDropDownItems{1} = 'NEO New Open Ephys Format';
+                RecordingSystemDropDownItems{2} = 'NEO Legacy Open Ephys Format';
+                OENEODropdownSet = 1;
+            end
+        end
     end
 
+    if ~isempty(RecordingSystemDropDownItems)
+        Formatsfound.Format = TempFormatsfound;
+        Formatsfound.Library = [];
+        if contains(TempFormatsfound,".ncs")
+            if JustChangeLibrary == 0 % on startup
+                ExtractWithNeo = "NeuralEnsemble NEO Python Library";
+                Formatsfound.Library = ["NeuralEnsemble NEO Python Library","NeuroMod Matlab"];
+            else
+                Formatsfound.Library = ["NeuralEnsemble NEO Python Library","NeuroMod Matlab"];
+            end
+        elseif contains(TempFormatsfound,"Open Ephys")
+            if JustChangeLibrary == 0 % on startup
+                ExtractWithNeo = "NeuroMod Matlab";
+                Formatsfound.Library = ["NeuroMod Matlab","NeuralEnsemble NEO Python Library"];
+            else
+                Formatsfound.Library = ["NeuroMod Matlab","NeuralEnsemble NEO Python Library"];
+            end
+        else
+            if JustChangeLibrary == 0 % on startup
+                ExtractWithNeo = "NeuroMod Matlab";
+                Formatsfound.Library = [Formatsfound.Library,"NeuroMod Matlab"];
+            else
+                Formatsfound.Library = [Formatsfound.Library,"NeuroMod Matlab"];
+            end
+        end
+    end
+    
+    % No Matlab internal supported format found -- search for NEO
+    % compatible formats
+    if ~isempty(TempFormatsfound)
+        FormatIndice = [];
+        for ii = 1:length(TempFormatsfound)
+            if contains(TempFormatsfound(ii),'.plx') ||  contains(TempFormatsfound(ii),'.sev') ||  contains(TempFormatsfound(ii),'.tev')
+                if contains(TempFormatsfound(ii),'.plx')
+                    Formatsfound.Format = 'Plexon';
+                elseif contains(TempFormatsfound(ii),'.sev') || contains(TempFormatsfound(ii),'.tev')
+                    Formatsfound.Format = 'TdT';
+                end
+                ExtractWithNeo = "NeuralEnsemble NEO Python Library";
+                Formatsfound.Library = "NeuralEnsemble NEO Python Library";
+                break;
+            end
+        end
+        if isempty(Formatsfound)
+            NoFormatFound = 1;
+        end
+    else
+        if isempty(RecordingSystemDropDownItems)
+            NoFormatFound = 1;
+        end
+    end
+   
+
+    %% get infos from selected neo folder
+    if ~isempty(ExtractWithNeo)
+        if strcmp(ExtractWithNeo ,"NeuralEnsemble NEO Python Library") && NoFormatFound == 0
+    
+            if SelectedFolder == 0 % if not on startup
+                SelectedFolder = FolderToCheck;
+            end
+            
+            [ProbeInfoText,TempRecordingSystemDropDownItems,tempFileTypeDropDownItems,stringArray,SelectedFolder,~] = Manage_Dataset_Module_NEO_Populate_Text(app.ProbeInfoandPath,PathToOpen,1,SelectedFolder,RecordingType);
+            
+            if OENEODropdownSet == 0
+                if ~isempty(TempRecordingSystemDropDownItems) && ~isempty(RecordingSystemDropDownItems)
+                    RecordingSystemDropDownItems{1} = convertStringsToChars(strcat("NEO ",RecordingSystemDropDownItems{1}));
+                end
+                if ~isempty(TempRecordingSystemDropDownItems) && isempty(RecordingSystemDropDownItems)
+                    RecordingSystemDropDownItems{1} = convertStringsToChars(strcat(TempRecordingSystemDropDownItems{1}," ",Formatsfound.Format));
+                end
+            end
+            FolderContentsText = [];
+            if isempty(FileTypeDropDownItems)
+                if length(tempFileTypeDropDownItems{1}) > 1 && strcmp(RecordingSystemDropDownItems{1},"NEO TdT")
+                    a = tempFileTypeDropDownItems{1} == ".sev";
+                    b = find(a == 1);
+                    FileTypeDropDownItems{1} = convertStringsToChars(tempFileTypeDropDownItems{1}(b(1)));
+                else
+                    FileTypeDropDownItems{1} = convertStringsToChars(tempFileTypeDropDownItems{1});
+                end
+            end
+            
+            %FileTypeDropDownItems{1} = convertStringsToChars(strcat(FileTypeDropDownItems{1}," ",Formatsfound));
+        end
+    end
+    %% No folder selected  / found
     if SelectedFolder == 0
         FolderContentsText = strcat("No folder selected!");
         Load_Data_Window_Info.selectedFolder = [];
@@ -194,69 +303,61 @@ if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"Auto
         end
         return;
     end
-
-    if isempty(Formatsfound) && strcmp(ExtractWithNeo ,"NeuroMod Matlab") 
-        FolderContentsText = strcat("Path ",SelectedFolder," contains no suitable recording formats!");
-        Load_Data_Window_Info.selectedFolder = [];
-        if isfield(Load_Data_Window_Info,'NrChannel')
-            if ~isempty(Load_Data_Window_Info.NrChannel)
-                if ~isempty(Load_Data_Window_Info.Channelorder) && sum(isnan(Load_Data_Window_Info.Channelorder))==0
-                    if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
-                        ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+    
+    if ~isempty(ExtractWithNeo)
+        if isempty(Formatsfound) && strcmp(ExtractWithNeo ,"NeuroMod Matlab") 
+            FolderContentsText = strcat("Path ",SelectedFolder," contains no suitable recording formats!");
+            Load_Data_Window_Info.selectedFolder = [];
+            if isfield(Load_Data_Window_Info,'NrChannel')
+                if ~isempty(Load_Data_Window_Info.NrChannel)
+                    if ~isempty(Load_Data_Window_Info.Channelorder) && sum(isnan(Load_Data_Window_Info.Channelorder))==0
+                        if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
+                            ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                        else
+                            ProbeInfoText = [NeoTextNoFolder;"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                        end
                     else
-                        ProbeInfoText = [NeoTextNoFolder;"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
-                    end
-                else
-                    if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
-                        ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
-                    else
-                        ProbeInfoText = [NeoTextNoFolder;"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                        if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
+                            ProbeInfoText = ["No folder selected";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: No";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                        else
+                            ProbeInfoText = [NeoTextNoFolder;"";"Probe Information:";"";strcat("Nr Channel: ",num2str(Load_Data_Window_Info.NrChannel));strcat("Channel Spacing: ",num2str(Load_Data_Window_Info.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(Load_Data_Window_Info.NumberChannelRows));"Costum Channel Order: Yes";strcat("Offset Every Second Row: ",num2str(Load_Data_Window_Info.OffSetRows));strcat("Nr Active Channel: ",num2str(length(Load_Data_Window_Info.ActiveChannel)))];
+                        end
                     end
                 end
-            end
-        else
-            if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
-                ProbeInfoText = ["No folder selected";"";"Probe Info:";"";"not defined"];
             else
-                ProbeInfoText = [NeoTextNoFolder;"";"Probe Info:";"";"not defined"];
+                if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
+                    ProbeInfoText = ["No folder selected";"";"Probe Info:";"";"not defined"];
+                else
+                    ProbeInfoText = [NeoTextNoFolder;"";"Probe Info:";"";"not defined"];
+                end
             end
+            return;
         end
-        return;
     end
     % Check if mutliple recording folder found
-    if strcmp(ExtractWithNeo ,"NeuroMod Matlab")
-        if isempty(FileTypeDropDownItems) || isempty(RecordingSystemDropDownItems)
-            FolderContentsText = "Folder contains recordings of multiple recording systems. Please select a folder with only a single recording of a single recording system.";
-            Load_Data_Window_Info.selectedFolder = [];
-            return;
-        else
-            app.FileTypeDropDown.Items = FileTypeDropDownItems;
-            app.RecordingSystemDropDown.Items = RecordingSystemDropDownItems;
-    
-            Load_Data_Window_Info.selectedFolder = SelectedFolder;
+    if isempty(FileTypeDropDownItems) || isempty(RecordingSystemDropDownItems)
+        FolderContentsText = "Please select a different folder!";
+        ProbeInfoText = "Folder possibly contains no recordings with a supported format. Please select a folder with only a single recording of a single recording system. Make sure to just have the native recording files in that folder, no additional ones!";
+        Load_Data_Window_Info.selectedFolder = [];
+        return;
+    else
+        app.FileTypeDropDown.Items = {};
+        app.RecordingSystemDropDown.Items = {};
+        for ii = 1:length(RecordingSystemDropDownItems)
+            app.RecordingSystemDropDown.Items{ii} = RecordingSystemDropDownItems{ii};
         end
-    else % with neo
-        if strcmp(RecordingType,"Plexon") || strcmp(RecordingType,"Blackrock") || strcmp(RecordingType,"NeuroExplorer")
-            if isfile(SelectedFolder)
-                Load_Data_Window_Info.selectedFolder = SelectedFolder;
-            else
-                Load_Data_Window_Info.selectedFolder = [];
-                return;
-            end
-        else
-            if isfolder(SelectedFolder)
-                Load_Data_Window_Info.selectedFolder = SelectedFolder;
-            else
-                Load_Data_Window_Info.selectedFolder = [];
-                return;
-            end
+        app.FileTypeDropDown.Items{1} = FileTypeDropDownItems{1};
+        for jj = 1:length(Formatsfound.Library)
+            app.RecordingSystemDropDown_2.Items{jj} = convertStringsToChars(Formatsfound.Library(jj));
         end
+
+        Load_Data_Window_Info.selectedFolder = SelectedFolder;
     end
 
-    if ~isempty(FolderContentsText)
-    else
+    %% Show recording files (equivalent to folder contents)
+    if isempty(FolderContentsText)
         if ~isempty(stringArray)
-            if strcmp(RecordingSystemDropDownItems{1},'Open Ephys')
+            if strcmp(RecordingSystemDropDownItems{1},'Open Ephys') || strcmp(RecordingSystemDropDownItems{1},'NEO New Open Ephys Format') || strcmp(RecordingSystemDropDownItems{1},'NEO Legacy Open Ephys Format') 
                 for i = 1:length(stringArray)
                     if strcmp(stringArray(i),"Record Node 101")
                         stringArray(i) = strcat(stringArray(i));
@@ -269,8 +370,13 @@ if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"Auto
                 stringArray = ["Selected folder contains the following recording files:";RecordingSystemDropDownItems{1};"";stringArray];
                 FolderContentsText = stringArray;
             else
-                stringArray = ["Selected folder contains the following recording files:";RecordingSystemDropDownItems{1};"";stringArray];
-                FolderContentsText = stringArray;
+                if size(stringArray,2) > 1
+                    stringArray = ["Selected folder contains the following recording files:";RecordingSystemDropDownItems{1};"";stringArray'];
+                    FolderContentsText = stringArray;
+                else
+                    stringArray = ["Selected folder contains the following recording files:";RecordingSystemDropDownItems{1};"";stringArray];
+                    FolderContentsText = stringArray;
+                end
             end         
         end
     end

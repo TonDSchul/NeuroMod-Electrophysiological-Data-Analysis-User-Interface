@@ -591,13 +591,16 @@ else %% Not activated
     %% Extract Data window
     if strcmp(Window,"ExtractDataWindow") || strcmp(Window,"All")
         if ~isempty(app.ExtractDataWindow) && isvalid(app.ExtractDataWindow)
-            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.ExtractDataWindow.RecordingSystemDropDown.Tooltip = "";
             app.ExtractDataWindow.FileTypeDropDown.Tooltip = "";
             app.ExtractDataWindow.AdditionalAmplificationFactorEditField.Tooltip = "";
             app.ExtractDataWindow.AddProbeInformationButton.Tooltip = "";
             app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.ExtractDataWindow.ExtractDataButton.Tooltip = "";
+
+            app.ExtractDataWindow.RecordingSystemDropDown_2.Tooltip = "";
+            app.ExtractDataWindow.KeepConsoleOpen_2.Tooltip = "";
+            app.ExtractDataWindow.KeepConsoleOpen.Tooltip = "";
         end
     end
 

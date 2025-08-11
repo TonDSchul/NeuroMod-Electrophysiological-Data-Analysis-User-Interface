@@ -151,7 +151,6 @@ if strcmp(Window,"Probe_View_Window")
    
 end
 
-
 if strcmp(Window,"ExtractDataWindow")    
 
     % texts to black
@@ -164,6 +163,7 @@ if strcmp(Window,"ExtractDataWindow")
     app.TextArea_3.BackgroundColor = ComponentsInWindowColor;
     app.TextArea_4.BackgroundColor = WindowBackgroundColor;
     app.RecordingSystemDropDown_2.BackgroundColor = ComponentsInWindowColor;
+    app.FormatToSaveandReadintoMatlabDropDown.BackgroundColor = ComponentsInWindowColor;
 
     app.ExtractionOptionsPanel.BackgroundColor = WindowBackgroundColor;
     app.ExtractionOptionsPanel.ForegroundColor = WindowBackgroundColor;
@@ -1680,9 +1680,9 @@ end
 
 if strcmp(Window,"InstFrequWindow")    
     % texts to black
-    set(findall(app.InstantaneousPhaseandFrequencyUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    set(findall(app.InstantaneousFrequencyUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.InstantaneousPhaseandFrequencyUIFigure.Color  = WindowBackgroundColor;
+    app.InstantaneousFrequencyUIFigure.Color  = WindowBackgroundColor;
     
     app.SettingsPanel.BackgroundColor   = WindowBackgroundColor;
     app.SettingsPanel.ForegroundColor   = WindowBackgroundColor;

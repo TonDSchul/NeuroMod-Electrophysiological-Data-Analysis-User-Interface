@@ -1,4 +1,4 @@
-function [Data,TimearoundEvent,ExcludedTrials] = Event_Module_Extract_Event_Related_Data(Data,EventChannel,TimearoundEvent,DataToExtractFrom,EventDataType)
+function [Data,TimearoundEvent,ExcludedTrials,TooLarge] = Event_Module_Extract_Event_Related_Data(Data,EventChannel,TimearoundEvent,DataToExtractFrom,EventDataType)
 
 %________________________________________________________________________________________
 %% Function to extract event related data as a nchannel x nevents x ntime matrix
@@ -27,6 +27,7 @@ function [Data,TimearoundEvent,ExcludedTrials] = Event_Module_Extract_Event_Rela
 % event (both positive!)
 % 3. ExcludedTrials: double array with indices of Data.Events that could no
 %t be included in event related data due to time violations (i. when cutting time and trigger to close to start/stop of the recoding)
+% 4 TooLarge: struc, TooLarge.Event; TooLarge.Event = event indice for event related data too large to process;
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -34,7 +35,7 @@ function [Data,TimearoundEvent,ExcludedTrials] = Event_Module_Extract_Event_Rela
 
 EventChannelNr = [];
 ExcludedTrials = [];
-
+TooLarge.Event = [];
 %-------------------------------------------------------------------
 %% ---------------- Check Up and Event channel Indice ----------------
 %-------------------------------------------------------------------
@@ -88,47 +89,72 @@ end
 %-------------------------------------------------------------------
 
 if strcmp(DataToExtractFrom,"Raw Data")
+    Error = 0;
     % Initialize
-    Data.EventRelatedData = NaN(size(Data.Raw,1),length(Data.Events{EventChannelNr}),ntimepoints);
-    % Loop over event indicies (trials)
-    for nevents = 1:length(Data.Events{EventChannelNr})
-        if Data.Events{EventChannelNr}(nevents)-NumSamplesBefore > 0 && Data.Events{EventChannelNr}(nevents)+NumSamplesAfter <= size(Data.Raw,2)
-            Data.EventRelatedData(1:size(Data.Raw,1),nevents,1:ntimepoints) = Data.Raw(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
-        else
-            warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
-            ExcludedTrials = [ExcludedTrials,nevents];
+    try
+        Data.EventRelatedData = NaN(size(Data.Raw,1),length(Data.Events{EventChannelNr}),ntimepoints);
+    catch
+        warning(strcat("Event channel ",Data.Info.EventChannelNames{EventChannelNr}, " with ",num2str(length(Data.Events{EventChannelNr}))," triggers is too big! Consider using a smaller timw window or divide the single event channel into multiple using the 'Load Costume Trigger Identities' button. Event channel is NOT used!"))
+        ExcludedTrials = [ExcludedTrials,1:length(Data.Events{EventChannelNr})];
+        Error = 1;
+        close(h);
+        TooLarge.Event = [TooLarge.Event,EventChannelNr];
+        
+        return;
+    end
+    if Error == 0
+        % Loop over event indicies (trials)
+        for nevents = 1:length(Data.Events{EventChannelNr})
+            if Data.Events{EventChannelNr}(nevents)-NumSamplesBefore > 0 && Data.Events{EventChannelNr}(nevents)+NumSamplesAfter <= size(Data.Raw,2)
+                Data.EventRelatedData(1:size(Data.Raw,1),nevents,1:ntimepoints) = Data.Raw(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
+            else
+                warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+                ExcludedTrials = [ExcludedTrials,nevents];
+            end
+    
+            % Update the progress bar
+            fraction = nevents/length(Data.Events{EventChannelNr});
+            if strcmp(EventDataType,"Preprocessed Event Related Data")
+                msg = sprintf('Extracting Preprocessed Event Related Data... (%d%% done)', round(100*fraction));
+            else
+                msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
+            end
+            waitbar(fraction, h, msg);
         end
-
-        % Update the progress bar
-        fraction = nevents/length(Data.Events{EventChannelNr});
-        if strcmp(EventDataType,"Preprocessed Event Related Data")
-            msg = sprintf('Extracting Preprocessed Event Related Data... (%d%% done)', round(100*fraction));
-        else
-            msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
-        end
-        waitbar(fraction, h, msg);
     end
 elseif strcmp(DataToExtractFrom,"Preprocessed Data")
     % Initialize
-    Data.EventRelatedData = NaN(size(Data.Preprocessed,1),length(Data.Events{EventChannelNr}),ntimepoints);
-    % Loop over event indicies (trials)
-    for nevents = 1:length(Data.Events{EventChannelNr})
-        % save data within sample number range
-        if Data.Events{EventChannelNr}(nevents)-NumSamplesBefore > 0 && Data.Events{EventChannelNr}(nevents)+NumSamplesAfter <= size(Data.Preprocessed,2)
-            Data.EventRelatedData(1:size(Data.Preprocessed,1),nevents,1:ntimepoints) = Data.Preprocessed(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
-        else
-            warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
-            ExcludedTrials = [ExcludedTrials,nevents];
+    Error = 0;
+    try
+        Data.EventRelatedData = NaN(size(Data.Preprocessed,1),length(Data.Events{EventChannelNr}),ntimepoints);
+    catch
+        warning(strcat("Event channel ",Data.Info.EventChannelNames{EventChannelNr}, " with ",num2str(length(Data.Events{EventChannelNr}))," triggers is too big! Consider using a smaller timw window or divide the single event channel into multiple using the 'Load Costume Trigger Identities' button. Event channel is NOT used!"))
+        ExcludedTrials = [ExcludedTrials,1:length(Data.Events{EventChannelNr})];
+        Error = 1;
+        close(h);
+        TooLarge.Event = [TooLarge.Event,EventChannelNr];
+        return;
+    end
+    if Error == 0
+        % Loop over event indicies (trials)
+        for nevents = 1:length(Data.Events{EventChannelNr})
+            % save data within sample number range
+            if Data.Events{EventChannelNr}(nevents)-NumSamplesBefore > 0 && Data.Events{EventChannelNr}(nevents)+NumSamplesAfter <= size(Data.Preprocessed,2)
+                Data.EventRelatedData(1:size(Data.Preprocessed,1),nevents,1:ntimepoints) = Data.Preprocessed(:,Data.Events{EventChannelNr}(nevents)-NumSamplesBefore:Data.Events{EventChannelNr}(nevents)+NumSamplesAfter);    
+            else
+                warning(strcat("Warning: Event",num2str(nevents)," cannot be included since the time before or after the event is violating time limits"))
+                ExcludedTrials = [ExcludedTrials,nevents];
+            end
+    
+            % Update the progress bar
+            fraction = nevents/length(Data.Events{EventChannelNr});
+            if strcmp(EventDataType,"Preprocessed Event Related Data")
+                msg = sprintf('Extracting Preprocessed Event Related Data... (%d%% done)', round(100*fraction));
+            else
+                msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
+            end
+            waitbar(fraction, h, msg);
         end
-
-        % Update the progress bar
-        fraction = nevents/length(Data.Events{EventChannelNr});
-        if strcmp(EventDataType,"Preprocessed Event Related Data")
-            msg = sprintf('Extracting Preprocessed Event Related Data... (%d%% done)', round(100*fraction));
-        else
-            msg = sprintf('Extracting Event Related Data... (%d%% done)', round(100*fraction));
-        end
-        waitbar(fraction, h, msg);
     end
 end
 

@@ -8,7 +8,7 @@ function [Text] = Spike_Module_ConverStrucToTextArea(Struc,Sorter)
 
 % Inputs:
 % 1. Struc: spike sorting settings structure
-% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpykingCircus 2"
+% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpyKING CIRCUS 2"
 % OR "Kilosort 4"
 
 % Outputs
@@ -32,7 +32,7 @@ if strcmp(Sorter,"Mountainsort 5")
             Text = sprintf('%s%s: %g\n', Text, field, value);
         end
     end
-elseif strcmp(Sorter,"SpykingCircus 2") 
+elseif strcmp(Sorter,"SpyKING CIRCUS 2") 
 
     level = 2;
     Text = "";

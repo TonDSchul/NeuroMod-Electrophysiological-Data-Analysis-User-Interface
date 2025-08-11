@@ -6,7 +6,7 @@ function Spike_Module_Load_Sorting_Results_After_Sorting(app,Sorter,Path)
 % Inputs:
 % 1 app: Spike Detection and Sorting window app object
 % 2. Sorter: string, name of the sorter for which results should be loaded,
-% either "Mountainsort 5" OR "SpykingCircus 2" or "Kilosort 4" OR "WaveClus 3"
+% either "Mountainsort 5" OR "SpyKING CIRCUS 2" or "Kilosort 4" OR "WaveClus 3"
 % 3. Path: string , Recording path with SpikeInterface or Kilosort folders
 
 % Author: Tony de Schultz
@@ -22,11 +22,11 @@ if ~strcmp(Sorter,"WaveClus 3")
         SorterFolders(4) = "";
         SorterFolders(5) = "";
         SorterFolders(6) = "";
-    elseif strcmp(Sorter,"SpykingCircus 2")
+    elseif strcmp(Sorter,"SpyKING CIRCUS 2")
         SorterFolders(1) = "";
         SorterFolders(2) = "";
         SorterFolders(3) = "";
-        SorterFolders(4) = strcat(Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\SpykingCircus 2");
+        SorterFolders(4) = strcat(Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\SpyKING CIRCUS 2");
         SorterFolders(5) = "";
         SorterFolders(6) = "";
     elseif strcmp(Sorter,"Kilosort 4")
@@ -61,7 +61,7 @@ if ~strcmp(Sorter,"WaveClus 3")
         KilosortScalingFactor = str2double(AmplitudeScalingFactorEditField);
     end
     
-    if strcmp(Sorter,"Mountainsort 5") || strcmp(Sorter,"SpykingCircus 2") || strcmp(Sorter,"Kilosort 4")
+    if strcmp(Sorter,"Mountainsort 5") || strcmp(Sorter,"SpyKING CIRCUS 2") || strcmp(Sorter,"Kilosort 4")
         [app.Mainapp.Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(app.Mainapp.Data,Path,CurrentSorter);
     end
     

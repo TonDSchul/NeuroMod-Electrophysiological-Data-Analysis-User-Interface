@@ -7,9 +7,9 @@ function [NewParameterStrcuture] = Spike_Module_ConvertTextToParameterStruc(Text
 
 % Inputs:
 % 1. Text: text containing all spike sorting parameter settings 
-% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpykingCircus 2"
+% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpyKING CIRCUS 2"
 % OR "Kilosort 4"
-% 3. SC2Parameter: only when sorter = "SpykingCircus 2"; standard spike sorting settings structure --> only values
+% 3. SC2Parameter: only when sorter = "SpyKING CIRCUS 2"; standard spike sorting settings structure --> only values
 % that changed are interchanged!
 
 % Outputs
@@ -47,7 +47,7 @@ if strcmp(Sorter,"Mountainsort 5")
         end
     end
 
-elseif strcmp(Sorter,"SpykingCircus 2") 
+elseif strcmp(Sorter,"SpyKING CIRCUS 2") 
 
     NewParameterStrcuture = SC2Parameter; % Initialize updated structure
 

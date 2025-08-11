@@ -164,7 +164,7 @@ def main(subfolders,file_path):
             CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4)
             CachedRecording.annotate(is_filtered=False)
             CachedRecording = CachedRecording.set_probe(Probe)
-        if Sorter in ['SpykingCircus 2']:
+        if Sorter in ['SpyKING CIRCUS 2']:
             CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4)
             CachedRecording.annotate(is_filtered=False)
             CachedRecording = CachedRecording.set_probe(Probe)
@@ -206,7 +206,7 @@ def main(subfolders,file_path):
             
             print("Creating new sorting...")
             
-            if Sorter in ['SpykingCircus 2']:
+            if Sorter in ['SpyKING CIRCUS 2']:
                 DumpedRecording = DumpedRecording.set_probe(Probe)
                 
                 sorting = SortWithSpikingCircus(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)

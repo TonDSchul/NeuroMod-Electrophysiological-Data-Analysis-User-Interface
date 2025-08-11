@@ -20,6 +20,7 @@ function [stringArray] = Utility_Extract_Contents_of_Folder(Path)
 
 %% Display Folder contents in information text box
 % Get contents of the folder
+
 contents = dir(Path);
 
 % Initialize a cell array to store file names

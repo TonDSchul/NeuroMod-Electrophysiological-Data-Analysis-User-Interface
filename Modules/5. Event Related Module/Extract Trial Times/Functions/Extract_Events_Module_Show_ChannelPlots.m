@@ -247,6 +247,11 @@ if strcmp(Data.Info.RecordingType,"Neuralynx")
 end
 
 if strcmp(Data.Info.RecordingType,"NEO")
+    
+    Channel.Samples(Channel.Samples<=0) = [];
+    Channel.Samples(Channel.Samples<=0) = [];
+    Channel.Samples(Channel.Samples<=0) = [];
+
 
     EventData = zeros(1,length(Data.Time));
     EventData(Channel.Samples) = 1;

@@ -109,7 +109,7 @@ end
 
 %% Loop through files types supported and determine whether they are part of the folder
 % Use regular expression to extract filenames ending with '.smrx'
-AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'";".plx'"];
+AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'";".plx'";".sev'"];
 
 % Loop through all contents of dfolder and compare file endings
 % with prefedined endings. Save endings found as strings in Formatsfound
@@ -196,22 +196,22 @@ if sum(contains(Formatsfound,".ncs")) >= 1 || sum(contains(Formatsfound,".nse"))
 end
 
 %% Plexon -- done via NEO now
-% Loop through all file formats explicitely supported
-% FileTypeSelection = {};
-% currentit = 1;
-% if sum(contains(Formatsfound,".plx")) >= 1 
-% 
-%     RecordingSystemDropDownItems = {};
-%     RecordingSystemDropDownItems{1} = 'Plexon';
-% 
-%     for i = 1:length(Formatsfound)
-%         if sum(contains(Formatsfound(i),".plx")) >= 1
-%             FileTypeSelection{currentit} = 'plexon_plx';
-%         end
-%         currentit = currentit+1;
-%     end
-%     FileTypeDropDownItems = FileTypeSelection;
-% end
+%Loop through all file formats explicitely supported
+FileTypeSelection = {};
+currentit = 1;
+if sum(contains(Formatsfound,".plx")) >= 1 
+
+    RecordingSystemDropDownItems = {};
+    RecordingSystemDropDownItems{1} = 'Plexon';
+
+    for i = 1:length(Formatsfound)
+        if sum(contains(Formatsfound(i),".plx")) >= 1
+            FileTypeSelection{currentit} = 'Plexon .plx';
+        end
+        currentit = currentit+1;
+    end
+    FileTypeDropDownItems = FileTypeSelection;
+end
 
 %% Spike2
 if sum(contains(Formatsfound,".smrx")) >= 1 

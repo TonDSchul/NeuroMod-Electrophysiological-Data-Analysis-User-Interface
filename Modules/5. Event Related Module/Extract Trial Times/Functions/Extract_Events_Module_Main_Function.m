@@ -68,6 +68,7 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag,Eve
 TextArea2Object.Value = "";
 EventChannelDropDown = [];
 Eventstodelete = [];
+texttoshow = [];
 
 %% First maintaining GUI main data structure by deleting previous event data
 if isfield(Data,'Events') && isfield(Data,'EventRelatedData')
@@ -551,7 +552,7 @@ end
 
 %% ----------------------- Last Step: Check if trials violate time limts----------------------------
 
-[Data.Events,texttoshow] = Extract_Events_Module_Check_Violating_Trigger(Data,Data.Events,TimeAroundEvent);
+[Data,Data.Events,texttoshow] = Extract_Events_Module_Check_Violating_Trigger(Data,Data.Events,TimeAroundEvent);
 
 
 

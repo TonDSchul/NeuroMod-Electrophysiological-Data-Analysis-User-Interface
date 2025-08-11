@@ -1,4 +1,4 @@
-function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dataset_Load_NEO_RawData_Save_Files(NeoSaveFolder,RecordingType)
+function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dataset_Load_NEO_RawData_Save_Files(NeoSaveFolder,RecordingType,FormatToSaveNEOIn)
 
 %________________________________________________________________________________________
 
@@ -17,6 +17,8 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 % extracting data
 % 2. RecordingType: char, data format selected when extracting data with
 % neo
+% 3. FormatToSaveNEOIn: char, gives info how NEO saved data and how to load
+% it, either "Costume files (.dat,.mat)" OR "NEO Format to .mat Conversion"
 
 % Output: 
 % 1. Data: nchannel x ntimespoints single matrix with extracted raw data
@@ -38,7 +40,13 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 %% ------------------------------ Get file locations of automatic save locations ------------------------------
 
 if strcmp(RecordingType,"Plexon") || strcmp(RecordingType,"Blackrock") || strcmp(RecordingType,"NeuroExplorer")
-    ModifiedSaveFile = strcat(NeoSaveFolder," Neo SaveFile");
+    if iscell(NeoSaveFolder)
+        dashindex = find(NeoSaveFolder{1}=='\');
+        Path = NeoSaveFolder{1}(1:dashindex(end)-1);
+        ModifiedSaveFile = strcat(Path," Neo SaveFile");
+    else
+        ModifiedSaveFile = strcat(NeoSaveFolder," Neo SaveFile");
+    end
 else
     dashindice = find(NeoSaveFolder == '\');
     Foldername = NeoSaveFolder(dashindice(end)+1:end);
@@ -46,7 +54,7 @@ else
 end
 
 if ~isfolder(ModifiedSaveFile)
-    warning(strcat("NEO Output folder could not be found! After succesfull data extraction with NEO, data is saved in folder: ",ModifiedSaveFile))
+    warning(convertStringsToChars(strcat("NEO Output folder could not be found! After succesfull data extraction with NEO, data is saved in folder: ",ModifiedSaveFile)))
     Data = [];
     SampleRate = [];
     HeaderInfo = [];
@@ -59,6 +67,7 @@ end
 MetadataLocation = strcat(ModifiedSaveFile,'\NEO_Saved_MetaData.mat');
 LoggerLocation = strcat(ModifiedSaveFile,'\Logger.txt');
 DatLocation = strcat(ModifiedSaveFile,'\NEO_Saved_Channel_Data.dat');
+MatlabNeoConversionLocation = strcat(ModifiedSaveFile,'\NEOMatlabConversion.mat');
 
 %% ------------------------------ Load Logger Data ------------------------------
 
@@ -135,58 +144,101 @@ else
     HeaderInfo.FileType = "Not Defined";
 end
 
-if exist('acqu_start_samples','var')
-    HeaderInfo.Acquisition_start_samples = acqu_start_samples;
-else
-    HeaderInfo.Acquisition_start_samples = 1;
-end
-
 RecordingType = "NEO";
 Time = 0:1/sampling_rate:(double(n_samples)-1)*(1/sampling_rate);
 SampleRate = sampling_rate;
 
 %% ------------------------------ Load Channel Data ------------------------------
-h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
-msg = sprintf('Preparing Data to Save... (%d%% done)', 25);
-waitbar(25, h, msg);
+if strcmp(FormatToSaveNEOIn,"Costume files (.dat,.mat)")
+    if exist('acqu_start_samples','var')
+        HeaderInfo.Acquisition_start_samples = acqu_start_samples;
+    else
+        HeaderInfo.Acquisition_start_samples = 1;
+    end
 
-nchan = double(n_channels);
-ntime = double(n_samples);
+    %% ------------------------------ Costume GUI files ------------------------------
+    h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
+    msg = sprintf('Preparing Data to load... (%d%% done)', 25);
+    waitbar(25, h, msg);
+    
+    nchan = double(n_channels);
+    ntime = double(n_samples);
+    
+    FileIdentifier = fopen(DatLocation,'r');
+    
+    if FileIdentifier == -1
+        warning("NEO_Saved_Channel_Data.dat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEO_Saved_Channel_Data.dat'!")
+        Data = [];
+        SampleRate = [];
+        HeaderInfo = [];
+        RecordingType = [];
+        Time = [];
+        return;
+    end
+    
+    msg = sprintf('Loading Data... (%d%% done)', 50);
+    waitbar(50, h, msg);
+        
+    dN = ntime;
+    
+    if isempty(DetectedMethod)
+        DetectedMethod = 1;
+    else
+        DetectedMethod = str2double(DetectedMethod);
+    end
+    
+    if DetectedMethod == 1
+        try
+            mmf = memmapfile(DatLocation, ...
+                'Format', {'single', [ntime, nchan], 'x'});
+            
+            Data = mmf.Data.x(1:dN,1:nchan);
+        catch
+            mmf = memmapfile(DatLocation, ...
+                'Format', {'single', [ntime, nchan], 'x'});
+    
+            Data = mmf.Data(1).x(1:dN, 1:nchan);
+        end
+        
+    else
+        mmf = memmapfile(DatLocation, ...
+            'Format', {'single', [nchan, ntime], 'x'});
+        
+        Data = mmf.Data.x(1:nchan,1:dN);    
+    end
 
-FileIdentifier = fopen(DatLocation,'r');
+    fclose(FileIdentifier);
+    
+else %% ------------------------------ If NEO saved in its Matlab conversion format ------------------------------
+    h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
+    msg = sprintf('Preparing Data to load... (%d%% done)', 25);
+    waitbar(25, h, msg);
 
-if FileIdentifier == -1
-    warning("NEO_Saved_Channel_Data.dat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEO_Saved_Channel_Data.dat'!")
-    Data = [];
-    SampleRate = [];
-    HeaderInfo = [];
-    RecordingType = [];
-    Time = [];
-    return;
+    % start time in samples
+    load(MatlabNeoConversionLocation)
+    
+    h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
+    msg = sprintf('Preparing Data to load... (%d%% done)', 25);
+    waitbar(50, h, msg);
+
+    if strcmp(block.segments{1}.analogsignals{1}.t_start_units,'s')
+        HeaderInfo.Acquisition_start_samples = block.segments{1}.analogsignals{1}.t_start * SampleRate;
+    else
+        HeaderInfo.Acquisition_start_samples = block.segments{1}.analogsignals{1}.t_start;
+    end
+
+    Data = block.segments{1}.analogsignals{1}.signal;
+
+    h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
+    msg = sprintf('Preparing Data to load... (%d%% done)', 25);
+    waitbar(100, h, msg);
+
 end
 
-msg = sprintf('Loading Data... (%d%% done)', 50);
-waitbar(50, h, msg);
-    
-dN = ntime;
 
-if isempty(DetectedMethod)
-    DetectedMethod = 1;
-else
-    DetectedMethod = str2double(DetectedMethod);
-end
-
-if DetectedMethod == 1
-    mmf = memmapfile(DatLocation, ...
-        'Format', {'single', [ntime, nchan], 'x'});
-    
-    Data = mmf.Data.x(1:dN,1:nchan);
+% assure channel by time
+if size(Data,1)>size(Data,2)
     Data = Data';
-else
-    mmf = memmapfile(DatLocation, ...
-        'Format', {'single', [nchan, ntime], 'x'});
-    
-    Data = mmf.Data.x(1:nchan,1:dN);
 end
 
 %% Convert in mV depending on unit 
@@ -212,7 +264,6 @@ end
 msg = sprintf('Loading Data... (%d%% done)', 100);
 waitbar(100, h, msg);
 
-fclose(FileIdentifier);
 close(h);
 
 

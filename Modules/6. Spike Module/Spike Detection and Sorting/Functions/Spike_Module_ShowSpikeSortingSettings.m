@@ -6,7 +6,7 @@ function [ParameterStructure,Text] = Spike_Module_ShowSpikeSortingSettings(Sorte
 
 % Inputs:
 % 1. Sorter: string, name of the sorter to output settings for, either
-% "Mountainsort 5" OR "SpykingCircus 2" OR "Kilosort 4"
+% "Mountainsort 5" OR "SpyKING CIRCUS 2" OR "Kilosort 4"
 % 2. ParameterStructure: stucture holding sufields for different sorters
 % 3. ParameterPresent: string, only "ParameterNOTPresent" when parameter
 % were not set yet and should be created. Some other string to only convert
@@ -56,7 +56,7 @@ if strcmp(Sorter,"Mountainsort 5")
     
     [Text] = Spike_Module_ConverStrucToTextArea(ParameterStructure.MS5,Sorter);
 
-elseif strcmp(Sorter,"SpykingCircus 2") 
+elseif strcmp(Sorter,"SpyKING CIRCUS 2") 
 
     if strcmp(ParameterPresent,"ParameterNOTPresent")
     ParameterStructure.SC2 = struct('general', struct('ms_before', 2, ...

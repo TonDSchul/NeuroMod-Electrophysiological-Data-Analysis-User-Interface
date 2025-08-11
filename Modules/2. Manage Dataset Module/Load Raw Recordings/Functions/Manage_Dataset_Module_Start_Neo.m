@@ -1,4 +1,4 @@
-function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection)
+function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection,FormatToSaveandReadintoMatlab)
 
 Success = 0;
 
@@ -13,9 +13,13 @@ end
 
 NeoScriptPath = strcat(executableFolder,'\Modules\Neo\LoadWithNeo.py');
 
-command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s"', ...
-        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection);
-    
+if iscell(SelectedPath)
+    SelectedPath = strjoin(SelectedPath, ',');
+end
+
+command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s" "%s"', ...
+        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection, FormatToSaveandReadintoMatlab);
+
 % Execute the Python script
 [status, cmdout] = system(command);
 
