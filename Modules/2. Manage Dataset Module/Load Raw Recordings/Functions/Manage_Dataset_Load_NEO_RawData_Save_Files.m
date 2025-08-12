@@ -124,36 +124,37 @@ if SuccesfulLastLogger == 0
 end
 
 %% ------------------------------ Load Metadata ------------------------------
-try
-    load(MetadataLocation)
-catch
-    warning("NEO_Saved_MetaData.mat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEO_Saved_MetaData.mat'!")
-    Data = [];
-    SampleRate = [];
-    HeaderInfo = [];
-    RecordingType = [];
-    Time = [];
-    texttoshow = ["NEO_Saved_MetaData.mat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEO_Saved_MetaData.mat'!";"";texttoshow];
-    return;
-end
-% load channel data
-HeaderInfo.NeoSaveFolder = NeoSaveFolder;
-if ~isempty(DetectedFormat)
-    HeaderInfo.FileType = DetectedFormat;
-else
-    HeaderInfo.FileType = "Not Defined";
-end
+if strcmp(FormatToSaveNEOIn,"Costume files (.dat,.mat)")
+    try
+        load(MetadataLocation)
+    catch
+        warning("NEO_Saved_MetaData.mat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEO_Saved_MetaData.mat'!")
+        Data = [];
+        SampleRate = [];
+        HeaderInfo = [];
+        RecordingType = [];
+        Time = [];
+        texttoshow = ["NEO_Saved_MetaData.mat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEO_Saved_MetaData.mat'!";"";texttoshow];
+        return;
+    end
 
-RecordingType = "NEO";
-Time = 0:1/sampling_rate:(double(n_samples)-1)*(1/sampling_rate);
-SampleRate = sampling_rate;
+    HeaderInfo.NeoSaveFolder = NeoSaveFolder;
+    if ~isempty(DetectedFormat)
+        HeaderInfo.FileType = DetectedFormat;
+    else
+        HeaderInfo.FileType = "Not Defined";
+    end
+    
+    RecordingType = "NEO";
+    Time = 0:1/sampling_rate:(double(n_samples)-1)*(1/sampling_rate);
+    SampleRate = sampling_rate;
 
 %% ------------------------------ Load Channel Data ------------------------------
-if strcmp(FormatToSaveNEOIn,"Costume files (.dat,.mat)")
+
     if exist('acqu_start_samples','var')
-        HeaderInfo.Acquisition_start_samples = acqu_start_samples;
+        HeaderInfo.startTimestamp = acqu_start_samples;
     else
-        HeaderInfo.Acquisition_start_samples = 1;
+        HeaderInfo.startTimestamp = 1;
     end
 
     %% ------------------------------ Costume GUI files ------------------------------
@@ -210,31 +211,58 @@ if strcmp(FormatToSaveNEOIn,"Costume files (.dat,.mat)")
     fclose(FileIdentifier);
     
 else %% ------------------------------ If NEO saved in its Matlab conversion format ------------------------------
+
+%% ------------------------------ Load Neo converted .mat Data ------------------------------
+    try
+        load(MatlabNeoConversionLocation)
+    catch
+        warning("NEOMatlabConversion.mat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEOMatlabConversion.mat'!")
+        Data = [];
+        SampleRate = [];
+        HeaderInfo = [];
+        RecordingType = [];
+        Time = [];
+        texttoshow = ["NEOMatlabConversion.mat file could not be openend. Make sure it is in the standard directory 'RecordingName + Neo SaveFile/NEOMatlabConversion.mat'!";"";texttoshow];
+        return;
+    end
+
+    HeaderInfo.NeoSaveFolder = NeoSaveFolder;
+    if ~isempty(DetectedFormat)
+        HeaderInfo.FileType = DetectedFormat;
+    else
+        HeaderInfo.FileType = "Not Defined";
+    end
+    
+    RecordingType = "NEO";
+    
+    SampleRate = block.segments{1}.analogsignals{1}.sampling_rate;
+    [nchan,ntime] = size(block.segments{1}.analogsignals{1}.signal);
+
+    n_samples = max([nchan,ntime]);
+    ncahnnel = min([nchan,ntime]);
+
+    Time = 0:1/SampleRate:(double(n_samples)-1)*(1/SampleRate);
+    
+%% ------------------------------ Load Channel Data ------------------------------
     h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
     msg = sprintf('Preparing Data to load... (%d%% done)', 25);
     waitbar(25, h, msg);
 
-    % start time in samples
-    load(MatlabNeoConversionLocation)
-    
-    h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
-    msg = sprintf('Preparing Data to load... (%d%% done)', 25);
+    msg = sprintf('Preparing Data to load... (%d%% done)', 50);
     waitbar(50, h, msg);
-
+    
     if strcmp(block.segments{1}.analogsignals{1}.t_start_units,'s')
-        HeaderInfo.Acquisition_start_samples = block.segments{1}.analogsignals{1}.t_start * SampleRate;
+        HeaderInfo.startTimestamp = block.segments{1}.analogsignals{1}.t_start * SampleRate;
     else
-        HeaderInfo.Acquisition_start_samples = block.segments{1}.analogsignals{1}.t_start;
+        HeaderInfo.startTimestamp = block.segments{1}.analogsignals{1}.t_start;
     end
 
     Data = block.segments{1}.analogsignals{1}.signal;
 
-    h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
-    msg = sprintf('Preparing Data to load... (%d%% done)', 25);
-    waitbar(100, h, msg);
+    msg = sprintf('Preparing Data to load... (%d%% done)', 75);
+    waitbar(75, h, msg);
 
 end
-
 
 % assure channel by time
 if size(Data,1)>size(Data,2)

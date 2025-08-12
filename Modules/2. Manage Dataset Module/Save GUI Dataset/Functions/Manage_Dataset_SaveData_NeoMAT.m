@@ -1,8 +1,25 @@
-function Manage_Dataset_SaveData_NeoMAT(Data,SampleRate,DataToSave,SaveEvents,SaveSpikes,Time)
+function [PathToSave,Error] = Manage_Dataset_SaveData_NeoMAT(Data,SampleRate,DataToSave,SaveEvents,SaveSpikes,Time)
+
+Error = 0;
+PathToSave = [];
+
+[file, path] = uiputfile('*.mat', 'Save as');
+
+if ~ischar(file) || ~ischar(path)
+    disp("No folder selected.")
+    return;
+else
+    PathToSave = fullfile(path,file);
+end
+
+h = waitbar(0, 'Saving Data as .mat for NEO...', 'Name','Saving Data as .mat for NEO...');
 
 block = struct();
 block.segments = { };
 block.name = 'my block with matlab';
+
+msg = sprintf('Saving Data as .mat for NEO... (%d%% done)', round(0));     
+waitbar(0, h, msg);
 
 for segmentnr = 1:1
     %% Save Metadata and channel data 
@@ -26,8 +43,11 @@ for segmentnr = 1:1
         anasig.sampling_rate = SampleRate;
         anasig.sampling_rate_units = 'Hz';
         seg.analogsignals{a} = anasig;
-
     end
+
+    msg = sprintf('Saving Data as .mat for NEO... (%d%% done)', round(25));     
+    waitbar(25, h, msg);
+
     %% Save spikes 
     if SaveSpikes == 1
         if ~isempty(Data.Spikes.SpikeCluster)
@@ -53,13 +73,30 @@ for segmentnr = 1:1
         end
     end
     
+    msg = sprintf('Saving Data as .mat for NEO... (%d%% done)', round(50));     
+    waitbar(50, h, msg);
     %% Save Events 
     if SaveEvents == 1
-        event = struct();
-        event.times = [0, 10, 30];
-        event.times_units = 'ms';
-        event.labels = ['trig0'; 'trig1'; 'trig2'];
-        seg.events{1} = event;
+        seg.events = {};  % Make sure events is initialized as a cell array
+
+        % Example structure: EventData.ChNames = {'TriggerA','TriggerB',...}
+        %                    EventData.Samples = { [10,100,500], [200,700], ... }
+        for evCh = 1:length(Data.Events)
+            event = struct();
+            
+            % Convert from samples to ms
+            event.times = (Data.Events{evCh} / SampleRate) * 1000; 
+            event.times_units = 'ms';
+    
+            % Use channel name as label (one label per time)
+            % Make sure labels is an Nx1 cell array of strings
+            labels = repmat(Data.Info.EventChannelNames{evCh}, numel(event.times), 1);
+            event.labels = labels;
+    
+            seg.events{evCh} = event;
+        end
+
+
         epoch = struct();
         epoch.times = [10, 20];
         epoch.times_units = 'ms';
@@ -68,9 +105,17 @@ for segmentnr = 1:1
         epoch.labels = ['a0'; 'a1'];
         seg.epochs{1} = epoch;
     end
+    
+    msg = sprintf('Saving Data as .mat for NEO... (%d%% done)', round(75));     
+    waitbar(75, h, msg);
 
     block.segments{segmentnr} = seg;
     
 end
 
-save 'myblock.mat' block -V7
+save(PathToSave,'block','-V7')
+
+msg = sprintf('Saving Data as .mat for NEO... (%d%% done)', round(100));     
+waitbar(100, h, msg);
+
+close(h)

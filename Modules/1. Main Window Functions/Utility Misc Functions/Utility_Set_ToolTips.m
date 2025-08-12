@@ -33,7 +33,7 @@ if Activated
     
         app.DropDown.Tooltip = "Select data type plotted. When data was preprocessed, the option 'Preprocessed Data' will appear";
         app.DropDown_2.Tooltip = "Select addons to plot like spikes and events. These get available to select when the respective data part was extracted.";
-    
+        
         app.EventChannelDropDown.Tooltip = "Select the event channel gor which trigger times are plotted in the main window. Is populated ones events are extracted.";
 
         app.TextArea.Tooltip = "See all additional information about your recording. This includes info about extracted data, preprocessing, spike and event detection and so on for later referencing.";
@@ -49,6 +49,8 @@ if Activated
             app.ExtractDataWindow.AddProbeInformationButton.Tooltip = "Click to specify probe information necessary to start data extraction. Alternatively load saved probe information using the menu above.";
             app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder containing ONE recording of the supported formats. To analyse multiple recordings one after another consider using the Autorun function of this GUI (see menu in main window).";
             app.ExtractDataWindow.ExtractDataButton.Tooltip = "Only if folder and probe information was specified.";
+            
+            app.ExtractDataWindow.FormatToSaveandReadintoMatlabDropDown.Tooltip = "When using the NEO library to extract recording data, the extracted data within python is saved and loaded into Matlab. The format it is saved in is a costume .dat and .mat file format or the .mat format NEO officially supplies a function for to save in. In practice this makes no difference except you want to want to manually access additional information NEO saves in its official function and .mat format, that are not necessary for NeuroMod (and therefore not part of the costume .mat format).";
 
             app.ExtractDataWindow.RecordingSystemDropDown_2.Tooltip = "Select which code based you want to use to extract your recording data. The Neuroensemble NEO library is a python package  which supports other file formats than NeuroMod does natively and can be used with a few clicks and installations. See the README file for more information. Use NEO for Neuralynx, Plexon, Blackrock and NeuroExplorer recordings. Open Ephys recordings are supported by NeuroMod and NEO, so you can choose. For all other supported recording formats use Neuromod.";
             app.ExtractDataWindow.KeepConsoleOpen_2.Tooltip = "When you already extracted a recording with NEO, NeuroMod saves the channel and metadata in a new folder. Those can be directly loaded without having to access NEO, greatly increasing loading speed when loading multiple times.";
@@ -78,7 +80,7 @@ if Activated
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
             app.LoadDataWindow.SelectDifferentFolderButton.Tooltip = "Click here to search in another folder than the autosearched folder (see information) for saved GUI data.";
             app.LoadDataWindow.DropDown_2.Tooltip = "List of all GUI file recognized in the folder selected or autosearched.";
-            
+            app.LoadDataWindow.DropDown_3.Tooltip = "Select the format to load.";
         end
     end
 
@@ -598,6 +600,8 @@ else %% Not activated
             app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.ExtractDataWindow.ExtractDataButton.Tooltip = "";
 
+            app.ExtractDataWindow.FormatToSaveandReadintoMatlabDropDown.Tooltip = "";
+
             app.ExtractDataWindow.RecordingSystemDropDown_2.Tooltip = "";
             app.ExtractDataWindow.KeepConsoleOpen_2.Tooltip = "";
             app.ExtractDataWindow.KeepConsoleOpen.Tooltip = "";
@@ -626,6 +630,7 @@ else %% Not activated
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
             app.LoadDataWindow.SelectDifferentFolderButton.Tooltip = "";
             app.LoadDataWindow.DropDown_2.Tooltip = "";
+            app.LoadDataWindow.DropDown_3.Tooltip = "";
         end
     end
 

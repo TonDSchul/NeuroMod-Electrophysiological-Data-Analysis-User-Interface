@@ -271,6 +271,7 @@ if strcmp(Window,"Load_Data_Window")
 
     app.DropDown.BackgroundColor   = ComponentsInWindowColor;
     app.DropDown_2.BackgroundColor   = ComponentsInWindowColor;
+    app.DropDown_3.BackgroundColor   = ComponentsInWindowColor;
 
     app.LoadingOptionsPanel.BackgroundColor   = WindowBackgroundColor;
     app.LoadingOptionsPanel.ForegroundColor   = WindowBackgroundColor;

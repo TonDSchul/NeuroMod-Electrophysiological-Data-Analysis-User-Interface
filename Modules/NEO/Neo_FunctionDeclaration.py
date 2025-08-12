@@ -142,7 +142,7 @@ def Exract_Raw_Channel_Data(reader):
     
     Amp_Signal_Object = analogsignals[0]
 
-    return Amp_Signal_Object,analogsignals
+    return Amp_Signal_Object,analogsignals,block
 
 def find_sync_messages(base_path):
     for root, dirs, files in os.walk(base_path):
@@ -150,34 +150,25 @@ def find_sync_messages(base_path):
             return os.path.join(root, 'sync_messages.txt')
     return None  # Not found
 
-def GetAcquisitionStartSample(recording_path):
-    print("Searching for acqu start!")
+def GetAcquisitionStartSample(block):
+    print("Searching for acquisition start!")
+
+    start_sample = None
     try:
-        # Search for sync_messages.txt
-        sync_path = find_sync_messages(recording_path)
+        sig = block.segments[0].analogsignals[0]
 
-        if sync_path and os.path.exists(sync_path):
-            with open(sync_path, 'r') as f:
-                for line in f:
-                    if "Start Time" in line:
-                        # Extract the numeric value at the end using regex
-                        match = re.search(r':\s*(\d+)', line)
-                        if match:
-                            start_sample = int(match.group(1))
-                            print(f"Acquisition start (in samples): {start_sample}")
-                            return start_sample
-            print("No acquisition start sample found in sync_messages.txt")
-            return None
+        SampleRate = sig.sampling_rate  # Quantity with units
+        t_start_s = sig.t_start.rescale('s').magnitude  # float in seconds
 
-        else:
-            print("sync_messages.txt not found.")
-            return None
+        start_sample = int(t_start_s * SampleRate.magnitude)
+
+        print(f"Acquisition start (in samples): {start_sample}")
+        return start_sample
 
     except Exception as e:
-        print(f"Error while reading sync_messages.txt: {e}")
-        return None
-
-
+        print(f"Error while reading acquisition start sample: {e}")
+        return start_sample
+        
 def Get_Reader(FolderName,DataLoggerSaveFileName,RecordingSystemSelection):
     
     LoggerMessage = None

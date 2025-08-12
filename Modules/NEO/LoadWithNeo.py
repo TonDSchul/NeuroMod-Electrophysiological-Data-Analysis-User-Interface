@@ -80,14 +80,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
         ''' Get Recording Reader and start sample number '''
         # -----------------------------------------------------------------------
         reader = Get_Reader(SelectedDataFolder,DataLoggerSaveFileName,RecordingSystemSelection)
-        
-        #### ----------- If applicable: Find start sample of recording start in respect to acquisition start ----------- ####
-        if first == True:
-            try:
-                start_sample = GetAcquisitionStartSample(SelectedDataFolder)
-            except Exception:
-                start_sample = None
-        
+
         # -----------------------------------------------------------------------
         ''' Access Data in Loaded Recording'''
         # -----------------------------------------------------------------------
@@ -95,8 +88,14 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
             print("Starting Data Extraction with NEO from " + FolderName)
             write_DataLogger("Starting Data Extraction with NEO from " + FolderName,DataLoggerSaveFileName)
         
-        RawDataChunk,analogsignals = Exract_Raw_Channel_Data(reader)
+        RawDataChunk,analogsignals,block = Exract_Raw_Channel_Data(reader)
         
+        #### ----------- If applicable: Find start sample of recording start in respect to acquisition start ----------- ####
+        if first == True:
+            try:
+                start_sample = GetAcquisitionStartSample(block)
+            except Exception:
+                start_sample = None
         # -----------------------------------------------------------------------
         ''' Format channel Data and concatonate of necessary'''
         # -----------------------------------------------------------------------
@@ -127,24 +126,24 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
     #  -----------------------------------------------------------------------
     
     # -----------------------------------------------------------------------
-    ''' Save Event Data If present'''
-    # -----------------------------------------------------------------------
-    #if JustExtractingEvents == 1:
-    sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
-    Get_Save_Event_Data(DataLoggerSaveFileName,reader,sampling_rate,EventSaveFileName)
-    
-    # -----------------------------------------------------------------------
-    ''' Save MetaData'''
-    # -----------------------------------------------------------------------
-    NrChannel = RawDataChunk.shape[0]
-    NrSamples = RawDataChunk.shape[1]
-    Save_MetaData(analogsignals,start_sample,JustExtractingEvents,MetaDataSaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples)
-    
-    # -----------------------------------------------------------------------
-    ''' Save Channel Data and Save MetaData in costume format'''
+    ''' Save Save Event, Meta Data and Channel Data in costume format'''
     # -----------------------------------------------------------------------
     if JustExtractingEvents == 0 and FormatToSaveForMatlab == "Costume files (.dat,.mat)":
-               
+        
+        # -----------------------------------------------------------------------
+        ''' Save Event Data If present'''
+        # -----------------------------------------------------------------------
+        #if JustExtractingEvents == 1:
+        sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
+        Get_Save_Event_Data(DataLoggerSaveFileName,reader,sampling_rate,EventSaveFileName)
+        
+        # -----------------------------------------------------------------------
+        ''' Save MetaData'''
+        # -----------------------------------------------------------------------
+        NrChannel = RawDataChunk.shape[0]
+        NrSamples = RawDataChunk.shape[1]
+        Save_MetaData(analogsignals,start_sample,JustExtractingEvents,MetaDataSaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples)
+        
         print("Saving Channel Data to " + ChannelDataSaveFileName + " (this might take a while)")
         write_DataLogger("Saving Channel Data to " + ChannelDataSaveFileName,DataLoggerSaveFileName)
         
@@ -157,6 +156,11 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
         w = neo.io.NeoMatlabIO(filename=NeoMatConversionPath)
         blocks = reader.read()
         w.write(blocks[0])
+        
+        if start_sample is None:
+            write_DataLogger("Acqusition Start Sample:" + str(1),DataLoggerSaveFileName)
+        else:
+            write_DataLogger("Acqusition Start Sample:" + str(start_sample),DataLoggerSaveFileName)
 
     print("Finished!")
     write_DataLogger("Finished!",DataLoggerSaveFileName)

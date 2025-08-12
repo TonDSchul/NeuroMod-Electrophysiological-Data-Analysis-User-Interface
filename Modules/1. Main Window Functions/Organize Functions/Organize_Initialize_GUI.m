@@ -253,6 +253,12 @@ elseif strcmp(Type,"VariableDefinition")
     if ~isfield(app.Data.Info,'Channelorder')
         app.Data.Info.Channelorder = [];
     end
+    
+    if isfield(HeaderInfo,'startTimestamp')
+        app.Data.Info.startTimestamp = HeaderInfo.startTimestamp;
+    else
+        app.Data.Info.startTimestamp = 0;
+    end
 
     app.Data.Info.num_data_points = size(app.Data.Raw,2);
     app.Data.Info.NrChannel = size(app.Data.Raw,1);

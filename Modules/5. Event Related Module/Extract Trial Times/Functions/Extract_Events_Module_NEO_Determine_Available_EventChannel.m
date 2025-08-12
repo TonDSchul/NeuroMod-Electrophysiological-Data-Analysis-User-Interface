@@ -22,8 +22,10 @@ if ~isfolder(ModifiedSaveFile)
 end
 
 EventDataLocation = strcat(ModifiedSaveFile,'\NEO_Saved_EventData.mat');
+MatlabNeoConversionLocation = strcat(ModifiedSaveFile,'\NEOMatlabConversion.mat');
 
-% if events there
+%% --------------- First Load saved event data .mat file if events saved as costume file ------------------
+CostumeEventFilePresent = 0;
 if isfile(EventDataLocation)
     %load
     load(EventDataLocation)
@@ -45,10 +47,54 @@ if isfile(EventDataLocation)
         return
     end
 
-    %% FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    % event_samples(event_channels==1) = event_samples(event_channels==1)+50000000;
-    % event_samples(event_channels==11) = event_samples(event_channels==11)+50000000;
+    CostumeEventFilePresent = 1;
+    disp("Loaded event data from costume Neo exported .mat format.")
+end
 
+if CostumeEventFilePresent == 0 && isfile(MatlabNeoConversionLocation)
+    %load
+    load(MatlabNeoConversionLocation)
+
+    SampleRate = block.segments{1}.analogsignals{1}.sampling_rate;
+
+    CostumeEventFilePresent = 1;
+    
+    event_channels = [];
+    event_labels = [];
+    event_samples = [];
+    event_labels{1} = [];
+    
+    Laufvariable = 1;
+    for i = 1:length(block.segments{1}.events)
+        
+        if isempty(block.segments{1}.events{Laufvariable}.times)
+            Laufvariable = Laufvariable+1;
+            continue
+        end
+        if strcmp(block.segments{1}.events{Laufvariable}.times_units,'ms')
+            event_samples = [event_samples,round((block.segments{1}.events{Laufvariable}.times/1000) * SampleRate)];
+        else
+            event_samples = [event_samples,round(block.segments{1}.events{Laufvariable}.times * SampleRate)];
+        end
+
+        event_channels = [event_channels,zeros(size(block.segments{1}.events{Laufvariable}.times))+Laufvariable];
+        
+        for j = 1:length(block.segments{1}.events{Laufvariable}.times)
+            if isempty(event_labels{1})
+                event_labels{1} = [convertStringsToChars(num2str(Laufvariable))];
+            else
+                event_labels{end+1} = [convertStringsToChars(num2str(Laufvariable))];
+            end
+        end
+
+        Laufvariable = Laufvariable+1;
+    end
+
+    disp("Loaded event data exported with official NEO IO .mat format.")
+
+end
+
+if CostumeEventFilePresent == 1
     % throw out start and stop time
     DeleteIndice = zeros(size(event_channels));
     matchIdxstart = find(strcmp(event_labels, 'Starting Recording'));
@@ -60,7 +106,7 @@ if isfile(EventDataLocation)
     if ~isempty(matchIdxstop)
         DeleteIndice(matchIdxstart)=1;
     end
-
+    
     if ~isempty(matchIdxstart)
         NeoEventStartTimeStamp = double(event_samples(matchIdxstart));
         if NeoEventStartTimeStamp == 0
@@ -69,6 +115,10 @@ if isfile(EventDataLocation)
     else
         if isfield(Data.Info,'Acquisition_start_samples')
             NeoEventStartTimeStamp = double(Data.Info.Acquisition_start_samples);
+        else
+            if isfield(Data.Info,'startTimestamp')
+                NeoEventStartTimeStamp = double(Data.Info.startTimestamp);
+            end
         end
     end
     
@@ -77,13 +127,13 @@ if isfile(EventDataLocation)
         event_labels(DeleteIndice==1) = [];
         event_samples(DeleteIndice==1) = [];
     end
-
+    
     if isempty(event_samples)
         EventInfo = [];
         msgbox("After selecting start and stop time stamps, no trigger remain!")
         return;
     end
-
+    
     if sum(event_samples > length(Data.Time))
         DeletedIndices = find(event_samples > length(Data.Time));
         event_channels(DeletedIndices) = [];
@@ -91,7 +141,7 @@ if isfile(EventDataLocation)
         event_samples(DeletedIndices) = [];
         msgbox(strcat(num2str(length(DeletedIndices))," trigger outside of time window found that are deleted!"));
     end
-
+    
     if isempty(event_samples)
         EventInfo = [];
         msgbox("After deleting trigger outside of time window, no trigger remain!")
@@ -122,7 +172,7 @@ if isfile(EventDataLocation)
     texttoshow(1) = "Following event channel, event labels (not completly shown!) and even times found:";
     texttoshow(2) = strcat("(Number of event events found across all channel: ",num2str(EventInfo.NumEvents),") with start time stamp: ",num2str(NeoEventStartTimeStamp));
     texttoshow(3) = "";
-
+    
     for i = 1:EventInfo.NumEvents
         ch = EventInfo.event_channels(i);
         if length(EventInfo.event_labels{i}) >= 14
@@ -130,13 +180,16 @@ if isfile(EventDataLocation)
         else
             label = string(EventInfo.event_labels{i});
         end
-
+    
         time = EventInfo.event_samples(i);
         texttoshow(i+3) = sprintf('Chan.: %d | Label: %s | Sample Nr.: %d', ch, label, time);
     end
 
-else
-    warning(strcat("Could not find .mat file with saved event data at: ",EventDataLocation));
-    texttoshow = strcat("Could not find .mat file with saved event data at: ",EventDataLocation);
+else % no save file found
+
+    warning(strcat("Could not find .mat file with saved event data at: ",MatlabNeoConversionLocation)," or ",EventDataLocation);
+    texttoshow = strcat("Could not find .mat file with saved event data at: ",MatlabNeoConversionLocation," or ",EventDataLocation);
     return
+    
 end
+

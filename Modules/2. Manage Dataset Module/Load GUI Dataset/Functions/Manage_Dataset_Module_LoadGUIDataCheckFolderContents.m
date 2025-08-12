@@ -97,8 +97,8 @@ matfilecount = 0;
 for i = 1:length(stringArray)
     if ~strcmp(stringArray(i),"") && contains(stringArray(i),'.')
         currentstring = convertStringsToChars(stringArray(i));
-        if length(currentstring) >=8
-            if strcmp(currentstring(end-3:end),".mat") && ~strcmp(currentstring(end-7:end-4),"Info")
+        if length(currentstring) >=4
+            if strcmp(currentstring(end-3:end),".mat") && ~contains(currentstring,"Info")
                 %% Check if selected mat file contains correct variable
                 variableName = 'Raw';  % Variable you want to load
                 
@@ -107,8 +107,22 @@ for i = 1:length(stringArray)
                 
                 % Check if the desired variable exists
                 if ~ismember(variableName, variablesInFile)
-                    %msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
-                    continue;  % Exit if the variable does not exist
+
+                    %% Check if selected mat file contains correct variable
+                    variableName = 'block';  % Variable you want to load
+                    
+                    % Get the list of variables in the file
+                    variablesInFile = who('-file', strcat(SelectedFolder,'\',currentstring));
+                    
+                    if ~ismember(variableName, variablesInFile)
+                        %msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
+                        continue;  % Exit if the variable does not exist
+                    else
+                        matfilecount = matfilecount + 1;
+                        DataMatfileindex = [DataMatfileindex,i];
+                    end
+        
+
                 else
                     matfilecount = matfilecount + 1;
                     DataMatfileindex = [DataMatfileindex,i];
@@ -168,7 +182,11 @@ end
 
 if ~isempty(DataMatfileindex)
     DropDownMenuChar{Index} = '.mat';
-    if Index == 1
+    if Index > 1
+        for i = 1:length(DataMatfileindex)
+            DropDownMenu_2Char{end+1} = convertStringsToChars(stringArray(DataMatfileindex(i)));
+        end
+    else
         for i = 1:length(DataMatfileindex)
             DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataMatfileindex(i)));
         end

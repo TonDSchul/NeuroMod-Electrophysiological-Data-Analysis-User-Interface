@@ -1,16 +1,27 @@
-function Manage_Dataset_SaveData_NWB(Data,Method,DataType)
+function [SavePath,Error] = Manage_Dataset_SaveData_NWB(Data,Method,DataType)
 
-%% ----------------- Get Save Location
-
+Error = 0;
+SavePath = [];
 
 if strcmp(Method,"HDF5")
     
 
 %% ----------------------- NWB Format -----------------------
 else
+    %% ----------------- Get Save Location
     [file, path] = uiputfile('*.nwb', 'Save as');
     
-    SavePath = fullfile(path,file);
+    if ~ischar(file) || ~ischar(path)
+        disp("No folder selected.")
+        return;
+    else
+        SavePath = fullfile(path,file);
+    end
+    
+    h = waitbar(0, 'Saving Data as .nwb for NEO...', 'Name','Saving Data as .nwb for NEO...');
+
+    msg = sprintf('Saving Data as .nwb for NEO... (%d%% done)', round(0));     
+    waitbar(0, h, msg);
 
     generateCore()
 
@@ -30,6 +41,9 @@ else
     end
 
     sampling_rate = Data.Info.NativeSamplingRate; % Hz
+    
+    msg = sprintf('Saving Data as .nwb for NEO... (%d%% done)', round(25));     
+    waitbar(25, h, msg);
 
     % Create ElectricalSeries object
     ephys_ts = types.core.ElectricalSeries( ...
@@ -48,6 +62,8 @@ else
         'device', types.untyped.SoftLink('/general/devices/device1'));
     nwb.general_extracellular_ephys.set('eg1', eg);
     
+    msg = sprintf('Saving Data as .nwb for NEO... (%d%% done)', round(50));     
+    waitbar(50, h, msg);
 
     %% ---------------------------- PROBE INFO GENERATION ----------------------------
     tempactivechannel = strjoin(string(Data.Info.ProbeInfo.ActiveChannel), ',');
@@ -127,14 +143,42 @@ else
         'MethodName'; 'Dummy description about how data was generated' ...
     };
 
-    %% 
-    % event_times = Data.Events./sampling_rate; % replace with your event times
-    % event_labels = {'start', 'stimulus', 'stop'}; % optional, replace with your event labels
-    % 
+    msg = sprintf('Saving Data as .nwb for NEO... (%d%% done)', round(75));     
+    waitbar(75, h, msg);
 
+    %% ------------------- Save Event Data with Labels -----------------------
+    % Loop over each event channel
+    for evCh = 1:length(Data.Events)
+        event_times_sec = Data.Events{evCh} ./ sampling_rate;
+    
+        event_labels = Data.Info.EventChannelNames{evCh};
 
+        num_events = length(event_times_sec);
+    
+        ti = types.core.TimeIntervals( ...
+            'colnames', {'start_time', 'stop_time', 'label'}, ...
+            'description', sprintf('Events channel %d with labels', evCh));
+    
+        % Add required 'id' field: unique integer IDs for each event
+        ti.id = types.hdmf_common.ElementIdentifiers('data', int64(0:num_events-1)', 'description', 'unique event IDs');
+    
+        % Start and stop times (same for instantaneous events)
+        ti.start_time = types.hdmf_common.VectorData('data', event_times_sec, 'description', 'start time of event');
+        ti.stop_time = types.hdmf_common.VectorData('data', event_times_sec, 'description', 'stop time of event');
+    
+        % Add label column as VectorData inside vectordata group
+        ti.vectordata.set('label', types.hdmf_common.VectorData('data', event_labels, 'description', 'event label'));
+    
+        % Add to intervals group
+        nwb.intervals.set(sprintf('Events_Chan%d', evCh), ti);
+    end
 
     % Export to NWB file
     nwbExport(nwb, SavePath, 'overwrite');
+
+    msg = sprintf('Saving Data as .nwb for NEO... (%d%% done)', round(100));     
+    waitbar(100, h, msg);
+
+    close(h)
 
 end

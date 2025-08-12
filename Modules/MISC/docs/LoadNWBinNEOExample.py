@@ -1,49 +1,55 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug  6 22:04:29 2025
-
-@author: tonyd
-"""
-
 from pynwb import NWBHDF5IO
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Path to your NWB file
 nwb_path = "C:/Users/tonyd/Desktop/Test.nwb"
 
-# Open the file in read mode
 with NWBHDF5IO(nwb_path, 'r') as io:
     nwbfile = io.read()
 
-    # Access the first ElectricalSeries in acquisition
+    # --- Extract ElectricalSeries data ---
     es = list(nwbfile.acquisition.values())[0]
+    data = es.data[:]  # shape: [time, channels] or [time] if 1D
+    sampling_rate = es.rate
 
-    # Extract raw data (as numpy array)
-    data = es.data[:]
-    sampling_rate = es.rate  # Hz
+    # Check if data is 2D or 1D
+    if data.ndim == 2:
+        channel_idx = 0  # channel to plot
+        signal = data[:, channel_idx]
+    else:
+        signal = data
 
-    # Get 1 second of data
-    num_samples = int(sampling_rate)
-    one_sec_data = data[:num_samples, :]  # shape: [time, channels]
+    duration_sec = len(signal) / sampling_rate
+    time = np.arange(len(signal)) / sampling_rate
 
-    # Transpose to shape: [channels, time]
-    one_sec_data = one_sec_data.T
+    # --- Extract event times and labels ---
+    # Assuming events stored under intervals group with name 'Events_Chan1'
+    if 'Events_Chan1' in nwbfile.intervals:
+        events_table = nwbfile.intervals['Events_Chan1']
+        event_start_times = np.array(events_table.start_time.data)  # event start times
+        if 'label' in events_table.vectordata:
+            event_labels = np.array(events_table.vectordata['label'].data)
+        else:
+            event_labels = np.array(['Event'] * len(event_start_times))
+    else:
+        event_start_times = np.array([])
+        event_labels = np.array([])
 
-    # Prepare time axis
-    time = np.arange(num_samples) / sampling_rate
+# --- Plotting ---
+plt.figure(figsize=(15, 5))
+plt.plot(time, signal, label='Channel 0 Signal')
 
-    # Plot
-    plt.figure(figsize=(12, 8))
-    offset = 0  # Vertical offset between traces
+# Plot events as vertical lines
+for t, label in zip(event_start_times, event_labels):
+    plt.axvline(t, color='r', linestyle='--', alpha=0.7)
+    plt.text(t, plt.ylim()[1]*0.9, label, rotation=90, verticalalignment='top', fontsize=8, color='r')
 
-    for i, trace in enumerate(one_sec_data):
-        plt.plot(time, trace + i * offset, label=f'Ch {i}')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.title('Full Signal (Channel 0) with Events')
+plt.legend()
+plt.tight_layout()
+plt.show()
 
-    plt.xlabel("Time (s)")
-    plt.ylabel("Amplitude + offset")
-    plt.title("1 Second of Signal from NWB (PyNWB)")
-    plt.tight_layout()
-    plt.show()
 
 
