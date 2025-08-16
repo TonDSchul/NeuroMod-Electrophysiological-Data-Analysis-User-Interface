@@ -242,7 +242,7 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Time = Time;
     clear Data;
 
-    if strcmp(RecordingType,"IntanDat") || strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"Spike2") || strcmp(RecordingType,"Open Ephys") || strcmp(RecordingType,"NEO")
+    if strcmp(RecordingType,"IntanDat") || strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"Spike2") || strcmp(RecordingType,"Open Ephys") || strcmp(RecordingType,"NEO") || strcmp(RecordingType,"TDT Tank Data")
         app.Data.Info = HeaderInfo;
     else
         fieldsToDelete = {'Header'};

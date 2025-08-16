@@ -150,6 +150,66 @@ elseif strcmp(RecordingSystem,"Neuralynx")
 
     RecordingType = "Neuralynx";
 
+elseif strcmp(RecordingSystem,"TDT Tank Data")
+    
+    TextArea.Value = "Extracting Data for TDT Recording System. Please wait until this window closes and a data plot appears in the main window. If you dont have MATLAB importer mex files, this can take a while.";
+    
+    pause(0.2);
+    
+    data = TDTbin2mat(SelectedFolder);
+    
+    HeaderInfo = data.info;
+
+    if isfield(data.streams,'Wide')
+        Data = single(data.streams.Wide.data);
+        SampleRate = data.streams.Wide.fs;
+        HeaderInfo.Fs = SampleRate;
+    else
+        if isfield(data.streams,'Spik') && isfield(data.streams,'Wave')
+            % ask what component to extract
+            DatatoExtract = [];
+
+            DTDDataTypeWindow = TDT_LFP_or_AP();
+
+            uiwait(DTDDataTypeWindow.TDTDataSelectionUIFigure)
+
+            if isvalid(DTDDataTypeWindow)
+                if DTDDataTypeWindow.SelectedRecordings == 1
+                     Data = single(data.streams.Wave.data);
+                     SampleRate = data.streams.Wave.fs;
+                elseif DTDDataTypeWindow.SelectedRecordings == 2
+                     Data = single(data.streams.Spik.data);
+                     SampleRate = data.streams.Spik.fs;
+                end
+            else
+                Data = [];
+                SampleRate = [];
+                RecordingType = [];
+                Time = [];
+                return;
+            end
+            
+            try
+                delete(DTDDataTypeWindow)
+            end
+
+        else
+            Data = [];
+            SampleRate = [];
+            RecordingType = [];
+            Time = [];
+            return;
+        end
+        
+        HeaderInfo.Fs = SampleRate;
+    end
+
+    if size(Data,1)>size(Data,2)
+        Data = Data';
+    end
+
+    RecordingType = "TDT Tank Data";
+    
 %% Use Fieldtrip functions to extract Plexon data formats. First load Header and then data
 elseif strcmp(RecordingSystem,"Plexon")
     % TextArea.Value = "Extracting Data for Plexon Recording System. Please wait until this window closes and a data plot appears in the main window. If you dont have MATLAB importer mex files, this can take a while.";

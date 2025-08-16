@@ -225,4 +225,30 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
         FileEndingsExist = 0;
         EventInfo = [];
     end
+
+elseif strcmp(Data.Info.RecordingType,"TDT Tank Data") 
+    
+    data = TDTbin2mat(Path);
+    
+    eventData = data.streams.StimeventData;
+
+    figure
+    plot(eventData(1000000:10000000))
+
+    % if isfield(Data.Info,'Spike2EventChannelToTake')
+    %     if ~isempty(Data.Info.Spike2EventChannelToTake)
+    %         EventInfo.EventChannel = Data.Info.Spike2EventChannelToTake;
+    %         FileEndingsExist = 1;
+    %         texttoshow = strcat("Finished looking for event channel from: ",Path);
+    %     else
+    %         texttoshow = "Warning: No event channel selected when loading the dataset. No events can be extracted";
+    %         FileEndingsExist = 0;
+    %         EventInfo = [];
+    %     end
+    % else
+    %     texttoshow = "Warning: No event channel selected when loading the dataset. No events can be extracted";
+    %     FileEndingsExist = 0;
+    %     EventInfo = [];
+    % end
+
 end           

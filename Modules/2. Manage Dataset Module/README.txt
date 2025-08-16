@@ -29,7 +29,7 @@ Remarks about the folder structure when saving or loading data:
 1. For saving and loading data, the standard folder structure is 'Path_to_GUI/Recording Data/Saved GUI Data'. GUI data saved there is autodected on startup of the load data window and can be immediately loaded. 
 NOTE: When saving GUI data in 'Your_Recording_Path/Matlab/Name_Of_Recording_Folder.dat' will enable you to load the saved data in the autorun functionality without any additional effort later on!
 
-2. The Loading Data Window will auto-search the folder 'Path_to_GUI/Saved GUI Dataa' for saved files. Saving GUI data there ensures you can quickly load it without having to select a folder. 
+2. The Loading Data Window will auto-search the folder 'Path_to_GUI/Saved GUI Data' for saved files. Saving GUI data there ensures you can quickly load it without having to select a folder. 
 
 Where to save depends on what you want to do efficiently.
 
@@ -45,7 +45,7 @@ All necessary functions for data extraction, loading or saving are designed in a
 The following workflows stems from the GUI. What is used outside the GUI is specified. The autorun functionality involves all aspects (i.e. functions) of this GUI possible and feasible to do outside of the GUI. Refer to those functions to get more details.
 
 __________________________
-GUI workflow for loading data:
+GUI workflow for loading saved GUI data:
 
 -- not used outside of GUI, just to initiate all GUI main window aspects:
 [app.Mainapp] = Organize_Initialize_GUI (app.Mainapp,"Initial"); 

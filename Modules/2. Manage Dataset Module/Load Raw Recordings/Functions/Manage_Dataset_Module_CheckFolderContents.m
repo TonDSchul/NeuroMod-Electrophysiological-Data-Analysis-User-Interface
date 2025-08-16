@@ -54,6 +54,9 @@ function [Formatsfound,TextAreaText,ProbeInfoText,RecordingSystemDropDownItems,F
 
 %________________________________________________________________________________________
 
+MatlabTextNoFolder = ["No folder or file selected to pass to Matlab:";"";"Please select a folder containing your recording data. Supported are formats recorded with the Open Ephys GUI, Intan RHX data acquisition software (and legacy RHD software), Spike2 as well as Neuralynx Cheetah and Tucker Davis (TDT) recordings. This includes binary, .nwb and Open Ephys data formats from the Open Ephys GUI recorded with Neuropixels, Open Ephys and Intan acquisition boards; .dat and .rhd files from the Intan RHX and RHD software; .smrx files from Spike2, .ncs (and accompanying) Neuralynx files from Chetaah and .sev (and accompanying) files for TDT recordings. Folder contents, file types and recording system will be shown automatically if folder contains one of the supported file types.";"Please make sure that the standard folder structure created by the recording software is NOT changed and the recording folder only contains files and folder created by the recording software OR this GUI!";"";"After selecting a folder, specify probe information. Required fields are channel number and channelspacing to specify the probe geometry. Active channel specify the amount and identity of probe channels you recorded from. The number of channels in your recording has to be the same as the number of elements in your active channel selection!";"After setting the probe information you can start the data extraction.";"";"Note: For Open Ephys data the expected folder structure is Date/Record Node/experiment/recordings/.... Multiple recordings within the same sessions can be concatonated or loaded individually. Please make sure only one recording session is present in the selected file, independent of the file format and recording system!"];
+MatlabTextWithFolder = ["Folder contents, file types and recording system will be shown automatically if folder contains one of the supported file types.";"Please make sure that the standard folder structure created by the recording software is NOT changed and the recording folder only contains files and folder created by the recording software OR this GUI!";"";"After selecting a folder, specify probe information. Required fields are channel number and channelspacing to specify the probe geometry. Active channel specify the amount and identity of probe channels you recorded from. The number of channels in your recording has to be the same as the number of elements in your active channel selection!";"After setting the probe information you can start the data extraction.";"";"Note: For Open Ephys data the expected folder structure is Date/Record Node/experiment/recordings/.... Multiple recordings within the same sessions can be concatonated or loaded individually. Please make sure only one recording session is present in the selected file, independent of the file format and recording system!"];
+
 TextAreaText = [];
 ProbeInfoText = [];
 RecordingSystemDropDownItems = [];
@@ -94,10 +97,10 @@ if SelectedFolder == 0
             % Remove the trailing comma and whitespace
             texttoshow(end-1:end) = [];
             
-            ProbeInfoText = ["No folder selected!";"";"Probe Information:";"";strcat("Nr Channel: ",num2str(ProbeInfo.NrChannel));strcat("Channel Spacing: ",num2str(ProbeInfo.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(ProbeInfo.NumberChannelRows));"Costum Channel Order: Yes";strcat("Active Channel: ",num2str(ProbeInfo.ActiveChannel))];
+            ProbeInfoText = [MatlabTextNoFolder;"";"Probe Information:";"";strcat("Nr Channel: ",num2str(ProbeInfo.NrChannel));strcat("Channel Spacing: ",num2str(ProbeInfo.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(ProbeInfo.NumberChannelRows));"Costum Channel Order: Yes";strcat("Active Channel: ",num2str(ProbeInfo.ActiveChannel))];
         
         else
-            ProbeInfoText = ["No folder selected!";"""Probe Information:";"";strcat("Nr Channel: ",num2str(ProbeInfo.NrChannel));strcat("Channel Spacing: ",num2str(ProbeInfo.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(ProbeInfo.NumberChannelRows));"Costum Channel Order: No";strcat("Active Channel: ",num2str(ProbeInfo.ActiveChannel))];
+            ProbeInfoText = [MatlabTextNoFolder;"""Probe Information:";"";strcat("Nr Channel: ",num2str(ProbeInfo.NrChannel));strcat("Channel Spacing: ",num2str(ProbeInfo.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(ProbeInfo.NumberChannelRows));"Costum Channel Order: No";strcat("Active Channel: ",num2str(ProbeInfo.ActiveChannel))];
             
         end
     end
@@ -213,6 +216,15 @@ if sum(contains(Formatsfound,".plx")) >= 1
     FileTypeDropDownItems = FileTypeSelection;
 end
 
+%% TDT
+if sum(contains(Formatsfound,".sev")) >= 1 
+    RecordingSystemDropDownItems = {};
+    RecordingSystemDropDownItems{1} = 'TDT Tank Data';
+    EmptyPlaceholder = {};
+    FileTypeDropDownItems = EmptyPlaceholder;
+    FileTypeDropDownItems{1} = 'TDT .sev';
+end
+
 %% Spike2
 if sum(contains(Formatsfound,".smrx")) >= 1 
     RecordingSystemDropDownItems = {};
@@ -236,10 +248,10 @@ end
 
 %% Wrap up
 if ~isfield(ProbeInfo,'NrChannel')
-    ProbeInfoText = ["Data Folder:";SelectedFolder;"";"Probe Info:";"";"not defined"];
+    ProbeInfoText = ["Path to recording folder that is passed to Matlab:";SelectedFolder;"";MatlabTextWithFolder;"";"Probe Info:";"";"not defined"];
 else
     if isempty(ProbeInfo.NrChannel)
-        ProbeInfoText = ["Data Folder:";SelectedFolder;"";"Probe Info:";"";"not defined"];
+        ProbeInfoText = ["Path to recording folder that is passed to Matlab:";SelectedFolder;"";MatlabTextWithFolder;"";"Probe Info:";"";"not defined"];
         return;
     end
 
@@ -253,7 +265,7 @@ else
         if isempty(SelectedFolder)
 
         else
-            ProbeInfoText = ["Data Folder:";"";SelectedFolder;"";ProbeInfoText];
+            ProbeInfoText = ["Path to recording folder that is passed to Matlab:";"";SelectedFolder;"";MatlabTextWithFolder;"";ProbeInfoText];
         end
     else
         ProbeInfoText = ["Probe Information:";"";strcat("Nr Channel: ",num2str(ProbeInfo.NrChannel));strcat("Channel Spacing: ",num2str(ProbeInfo.ChannelSpacing));strcat("Nr Channel Rows: ",num2str(ProbeInfo.NumberChannelRows));"Costum Channel Order: No";strcat("Active Channel: ",num2str(ProbeInfo.ActiveChannel))];
@@ -261,7 +273,7 @@ else
         if isempty(SelectedFolder)
 
         else
-            ProbeInfoText = ["Data Folder:";"";SelectedFolder;"";ProbeInfoText];
+            ProbeInfoText = ["Path to recording folder that is passed to Matlab:";"";SelectedFolder;"";MatlabTextWithFolder;"";ProbeInfoText];
         end
         
     end
