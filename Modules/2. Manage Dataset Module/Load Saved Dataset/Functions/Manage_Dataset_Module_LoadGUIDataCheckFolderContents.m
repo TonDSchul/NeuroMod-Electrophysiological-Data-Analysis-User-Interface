@@ -36,6 +36,7 @@ function [SelectedFolder,DataMatfileindex,DataDATfileindex,Infofileindex,InfoFil
 DataMatfileindex = [];
 DataDATfileindex = [];
 DataBINfileindex = [];
+DataNWBfileindex = [];
 Infofileindex = [];
 InfoFiletoLoad = [];
 DropDownMenuChar = {};
@@ -71,7 +72,7 @@ end
 
 %% Loop through files types supported and determine whether they are part of the folder
 % Use regular expression to extract filenames ending with '.smrx'
-AllFormats = [".dat'";".mat'";".bin'"];
+AllFormats = [".dat'";".mat'";".bin'";".nwb'"];
 
 Formatsfound = [];
 
@@ -139,6 +140,10 @@ for i = 1:length(stringArray)
             DataBINfileindex = [DataBINfileindex,i];
         end
 
+        if strcmp(currentstring(end-3:end),".nwb")
+            DataNWBfileindex = [DataNWBfileindex,i];
+        end
+
         % No data mat file
         if length(currentstring) >=8
             if strcmp(currentstring(end-3:end),".mat") && strcmp(currentstring(end-7:end-4),"Info")
@@ -192,6 +197,18 @@ if find(Formatsfound == ".bin'")
             DropDownMenu_2Char{end+1} = convertStringsToChars(stringArray(DataBINfileindex(i)));
         else
             DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataBINfileindex(i)));
+        end
+    end
+    Index = Index+1;
+end
+
+if find(Formatsfound == ".nwb'")
+    DropDownMenuChar{Index} = '.nwb';
+    for i = 1:length(DataNWBfileindex)
+        if Index > 1
+            DropDownMenu_2Char{end+1} = convertStringsToChars(stringArray(DataNWBfileindex(i)));
+        else
+            DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataNWBfileindex(i)));
         end
     end
     Index = Index+1;

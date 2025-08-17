@@ -1,4 +1,4 @@
-function folderPath = Manage_Dataset_SaveData_SpikeInterfaceNumpy(Data,DatasetType)
+function folderPath = Manage_Dataset_SaveData_SpikeInterfaceNumpy(Data,DatasetType,SaveEvents)
 
 %% ------------------------- Select folder and file to save -------------------------
 
@@ -98,6 +98,23 @@ if isfield(Data.Info.ProbeInfo,'CompleteAreaNames')
     metadata.CompleteAreaNames = Data.Info.ProbeInfo.CompleteAreaNames;
     metadata.ShortAreaNames = Data.Info.ProbeInfo.ShortAreaNames;
     metadata.AreaDistanceFromTip = Data.Info.ProbeInfo.AreaDistanceFromTip;
+end
+
+if SaveEvents
+    if isfield(Data,'Events')
+        % Create a cell array instead of struct array
+        EventStructCell = cell(1,numel(Data.Events));
+        for nevents = 1:numel(Data.Events)
+            EventStructCell{nevents} = struct(...
+                'event_channel_name', Data.Info.EventChannelNames{nevents}, ...
+                'times', Data.Events{nevents} ...
+            );
+        end
+        metadata.EventStruct = EventStructCell;  % save as cell array
+        disp("Event data was added to the Meta_Data.json file!")
+    else
+        disp("No event data was found to add to .json file!")
+    end
 end
 
 % actually save metadata

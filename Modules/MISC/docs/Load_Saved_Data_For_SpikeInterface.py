@@ -11,6 +11,7 @@ import spikeinterface.full as si
 import probeinterface as pi
 from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
+import spikeinterface.sorters as ss
 
 '''
 ######################### Load Channel Data and Meta Data #########################
@@ -26,6 +27,17 @@ recording = si.read_binary(
     dtype=metadata["dtype"]
 )
 
+'''
+######################### Load Event Data If  Present #########################
+'''
+# --- Attach event data ---
+if "EventStruct" in metadata:
+    for ev in metadata["EventStruct"]:
+        event_times = ev["times"]           # list of samples
+        channel_name = ev["event_channel_name"]
+
+    print("Loaded events for", len(metadata["EventStruct"]), "event channels.")
+    
 '''
 ######################### Load Probe Data #########################
 '''
@@ -46,8 +58,30 @@ plt.show()
 '''
 y = recording.get_traces(channel_ids=[0]).flatten()  # shape (num_samples,)
 
-plt.plot(y)
+# Plot signal
+plt.figure(figsize=(12, 4))
+plt.plot(y, label="Signal", color="blue")
+
+if "EventStruct" in metadata:
+    # Extract EventStruct
+    ev = metadata["EventStruct"]
+    
+    # Handle single event channel vs multiple channels
+    if isinstance(ev, dict):      # single channel
+        event_times = ev["times"]
+        event_name = ev["event_channel_name"]
+    elif isinstance(ev, list):    # multiple channels
+        event_times = ev[0]["times"]
+        event_name = ev[0]["event_channel_name"]
+    else:
+        raise ValueError("Unexpected EventStruct format!")
+
+    # Plot events as vertical lines
+    plt.vlines(event_times, ymin=min(y), ymax=max(y), color="red", alpha=0.6, label=f"Events: {event_name}")
+
 plt.xlabel("Sample index")
 plt.ylabel("Amplitude")
-plt.show()                 
+plt.title("Signal with Events (if present)")
+plt.legend()
+plt.show()
 

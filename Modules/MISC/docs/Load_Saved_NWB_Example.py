@@ -2,7 +2,7 @@ from pynwb import NWBHDF5IO
 import matplotlib.pyplot as plt
 import numpy as np
 
-nwb_path = "C:/Users/tonyd/Desktop/Test.nwb"
+nwb_path = "C:/Users/tonyd/Desktop/NWBTEST.nwb"
 
 with NWBHDF5IO(nwb_path, 'r') as io:
     nwbfile = io.read()

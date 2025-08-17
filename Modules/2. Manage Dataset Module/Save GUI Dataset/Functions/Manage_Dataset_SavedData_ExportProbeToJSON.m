@@ -9,8 +9,12 @@ Radius = 10;
 tempactivechannel = strjoin(string(Data.Info.ProbeInfo.ActiveChannel), ',');
 activechannel{1} = convertStringsToChars(tempactivechannel);
 [xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort("",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
-      
-contact_positions = [xcoords, ycoords];
+
+if size(xcoords,1)<size(xcoords,2)
+    contact_positions = [xcoords', ycoords'];
+else
+    contact_positions = [xcoords, ycoords];
+end
 
 device_channel_indices = 0:NrChannels-1;
 contact_ids = 0:NrChannels-1;

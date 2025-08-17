@@ -9,7 +9,7 @@ import neo
 import matplotlib.pyplot as plt
 import quantities as pq
 
-r = neo.io.NeoMatlabIO(filename='C:/Users/tonyd/Desktop/NEO.mat')
+r = neo.io.NeoMatlabIO(filename='C:/Users/tonyd/Desktop/NEOMAT.mat')
 bl = r.read_block()
 
 anasig = bl.segments[0].analogsignals[0]

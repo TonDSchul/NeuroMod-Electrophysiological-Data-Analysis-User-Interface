@@ -11,7 +11,7 @@ jsonText = fileread(MetaDataPath);
 MetaDataStruct = jsondecode(jsonText);
 
 ModifiedPath = MetaDataStruct.Path;
-ModifiedPath(find(ModifiedPath == '\')) = '/';
+ModifiedPath(find(ModifiedPath == '/')) = '\';
 
 % MetaData
 Data.Info.NativeSamplingRate = MetaDataStruct.SampleRate;
@@ -45,6 +45,25 @@ if isfield(MetaDataStruct,'CompleteAreaNames')
 end
 
 Data.Time = 0:1/Data.Info.NativeSamplingRate:(double(Data.Info.num_data_points)-1)*(1/Data.Info.NativeSamplingRate);
+
+%% Load Event Data
+% Initialize Events cell array
+Data.Events = {};
+
+% Check if EventStruct exists
+if isfield(MetaDataStruct, 'EventStruct') && ~isempty(MetaDataStruct.EventStruct)
+    nEvents = numel(MetaDataStruct.EventStruct);
+    
+    % Loop over each event channel
+    for ne = 1:nEvents
+        Data.Events{ne} = MetaDataStruct.EventStruct(ne).times';   % times for each channel
+    end
+    
+    % Optional: store event channel names
+    if isfield(MetaDataStruct.EventStruct, 'event_channel_name')
+        Data.Info.EventChannelNames = {MetaDataStruct.EventStruct.event_channel_name};
+    end
+end
 
 %% Load Data
 % initialize
