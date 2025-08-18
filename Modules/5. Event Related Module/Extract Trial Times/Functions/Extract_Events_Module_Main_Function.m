@@ -279,7 +279,15 @@ elseif strcmp(RecordingType,"Neuralynx")
     end
     
     [Data.Events,EventChannelNames] = Extract_Events_Module_Neuralynx_Manage_Events_Main(event,Data,InputChannelSelection);
+
+elseif strcmp(RecordingType,"TDT Tank Data")
+
+    [Data.Events,EventChannelNames,Error] = Extract_Events_Module_Extract_TDT_Events(EventInfo,FileTypeDropDown,InputChannelSelection);
     
+    if Error == 1
+        msgbox("No TDT events could be extracted from file!");
+        return;
+    end
 elseif strcmp(RecordingType,"Spike2")
     
     %% Check whether Json library is installed necessray to analyze this format
@@ -474,6 +482,11 @@ if isfield(Data,'Events')
                     EventChannelDropDown = {};
                     Data.Info.EventChannelNames = EventChannelNames;
                     Data.Info.EventChannelType = ".nev";
+                elseif strcmp(RecordingType,"TDT Tank Data")
+                    EventChannelDropDown = {};
+                    Data.Info.EventChannelNames = EventChannelNames;
+                    Data.Info.EventChannelType = FileTypeDropDown;
+
                 elseif strcmp(RecordingType,"NEO")
 
                     Data.Info.EventChannelType = "NEO";

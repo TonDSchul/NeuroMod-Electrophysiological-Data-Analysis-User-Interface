@@ -112,7 +112,7 @@ end
 
 %% Loop through files types supported and determine whether they are part of the folder
 % Use regular expression to extract filenames ending with '.smrx'
-AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'";".plx'";".sev'"];
+AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'";".plx'";".sev'";".nex'"];
 
 % Loop through all contents of dfolder and compare file endings
 % with prefedined endings. Save endings found as strings in Formatsfound
@@ -223,6 +223,15 @@ if sum(contains(Formatsfound,".sev")) >= 1
     EmptyPlaceholder = {};
     FileTypeDropDownItems = EmptyPlaceholder;
     FileTypeDropDownItems{1} = 'TDT .sev';
+end
+
+%% NeuroExplorer
+if sum(contains(Formatsfound,".nex")) >= 1 
+    RecordingSystemDropDownItems = {};
+    RecordingSystemDropDownItems{1} = 'NeuroExplorer';
+    EmptyPlaceholder = {};
+    FileTypeDropDownItems = EmptyPlaceholder;
+    FileTypeDropDownItems{1} = 'NeuroExplorer .nex';
 end
 
 %% Spike2

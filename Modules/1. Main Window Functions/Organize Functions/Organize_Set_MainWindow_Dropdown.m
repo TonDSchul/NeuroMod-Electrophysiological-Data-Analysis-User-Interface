@@ -74,7 +74,7 @@ if isfield(Data,'Events')
     app.EventChannelDropDown.Enable = "on";
     app.CurrentEventChannel = 1;
     for i = 1:length(Data.Info.EventChannelNames)
-        app.EventChannelDropDown.Items{i} = Data.Info.EventChannelNames{i};
+        app.EventChannelDropDown.Items{i} = convertStringsToChars(Data.Info.EventChannelNames{i});
     end
 else
     app.EventChannelDropDown.Enable = "off";

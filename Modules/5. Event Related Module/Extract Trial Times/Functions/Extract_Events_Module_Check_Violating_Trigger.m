@@ -29,7 +29,7 @@ for nevents = 1:length(Events)
                         if strcmp(Delete_Time_Violating_TriggerWindow.SelectedOption,"Delete")
                             Events{nevents}(ExcludedTrials) = [];                     
                             disp("Successfully deleted trials that violate time limits (or result in data too large for Matlab to handle).")
-                            texttoshow = [texttoshow;strcat("Successfully deleted ",num2str(length(ExcludedTrials))," trials that violate time limits (or result in data too large for Matlab to handle) for even channel ",CurrentEventName,".")];
+                            texttoshow = [texttoshow;strcat("Successfully deleted ",num2str(length(ExcludedTrials))," trials that violate time limits (or result in data too large for Matlab to handle) for event channel ",CurrentEventName,".")];
                             WhatToDo = "Delete";
                         else
                             disp("Keeping all trials.")

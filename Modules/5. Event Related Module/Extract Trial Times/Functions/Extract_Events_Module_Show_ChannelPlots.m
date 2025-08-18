@@ -227,7 +227,7 @@ if strcmp(Data.Info.RecordingType,"Neuralynx")
 
     % Include a specific duration of the event to make it clearly visible
     % -- 2ms standard
-    Numsamplesevent = Data.Info.NativeSamplingRate*0.002;
+    Numsamplesevent = round(Data.Info.NativeSamplingRate*0.002);
     % Just one sample would be visibly different to others. This can be
     % hard to see so I add 1ms to the right of the trigger 
     for i = 1:length(Channel.Samples)
@@ -235,6 +235,42 @@ if strcmp(Data.Info.RecordingType,"Neuralynx")
             EventData(Channel.Samples(i):Channel.Samples(i)+Numsamplesevent) = 1;
         elseif Channel.Samples(i)+Numsamplesevent>length(EventData)
             EventData(Channel.Samples(i):end) = 1;
+        end
+    end
+
+    [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate);
+    
+    if str2double(app.DowsampledSampleRateHzEditField.Value) ~= DownsampleRate
+        app.DowsampledSampleRateHzEditField.Value = num2str(DownsampleRate);
+    end
+
+end
+
+if strcmp(Data.Info.RecordingType,"TDT Tank Data")
+    
+    EventData = zeros(1,length(Data.Time));
+    
+    % just input channel selected
+    ChannelIndentityIndice = Channel.(Type).ChannelIdentities == RHDAllChannelData;
+
+    IndiciesToOne = Channel.(Type).Timestamps(ChannelIndentityIndice);
+    
+    IndiciesToOne(IndiciesToOne==0)=[];
+    
+    EventData(IndiciesToOne) = 1;
+    
+    % Include a specific duration of the event to make it clearly visible
+    % -- 2ms standard
+    Numsamplesevent = round(Data.Info.NativeSamplingRate*0.002);
+    % Just one sample would be visibly different to others. This can be
+    % hard to see so I add 1ms to the right of the trigger 
+    for i = 1:sum(ChannelIndentityIndice)
+        if Channel.(Type).Timestamps(i) ~= 0
+            if Channel.(Type).Timestamps(i)+Numsamplesevent<=length(EventData)
+                EventData(Channel.(Type).Timestamps(i):Channel.(Type).Timestamps(i)+Numsamplesevent) = 1;
+            elseif Channel.(Type).Timestamps(i)+Numsamplesevent>length(EventData)
+                EventData(Channel.(Type).Timestamps(i):end) = 1;
+            end
         end
     end
 
@@ -258,7 +294,7 @@ if strcmp(Data.Info.RecordingType,"NEO")
 
     % Include a specific duration of the event to make it clearly visible
     % -- 2ms standard
-    Numsamplesevent = Data.Info.NativeSamplingRate*0.002;
+    Numsamplesevent = round(Data.Info.NativeSamplingRate*0.002);
     % Just one sample would be visibly different to others. This can be
     % hard to see so I add 1ms to the right of the trigger 
     for i = 1:length(Channel.Samples)

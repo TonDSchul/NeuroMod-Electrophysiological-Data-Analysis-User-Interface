@@ -60,9 +60,70 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
         end
         app.TextArea_2.Value = texttoshow;
     
+        %% TDT Tank Data
+    elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
+        
+        EventDataTye = [];
+
+        if strcmp(app.FileTypeDropDown.Value,'TDT Trigger scalars:Evnt') 
+            EventDataTye = 'sE';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger scalars:Tria') 
+            EventDataTye = 'sT';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Evnt') 
+            EventDataTye = 'eE';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Tria') 
+            EventDataTye = 'eT';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Brst') 
+            EventDataTye = 'eB';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Stro') 
+            EventDataTye = 'eS';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Tick') 
+            EventDataTye = 'eT';
+        end
+        
+        % Create header
+        lines = ["Channel | Sample"];
+        
+        % Loop through events and build rows
+        for i = 1:numel(EventInfo.(EventDataTye).ChannelIdentities)
+            line = sprintf('%d | %d', EventInfo.(EventDataTye).ChannelIdentities(i), EventInfo.(EventDataTye).Timestamps(i));
+            lines(end+1) = string(line);
+        end
+
+        app.TextArea_2.Value = lines;
+        
+        NumChannel = length(EventInfo.(EventDataTye).EventChannel);
+        
+        % Get unique values
+        % app.FileTypeDropDown.Items = {};
+        % for i = 1:length(EventInfo.Type)
+        %     app.FileTypeDropDown.Items{i} = convertStringsToChars(strcat("TDT Trigger ",EventInfo.Type{i}));
+        % end
+
+        % Initialize an empty string
+        ChannelSelectionToShow = '';
+
+        % Loop through numbers from 1 to 10
+        for i = 1:NumChannel
+            % Append each number to the string
+            ChannelSelectionToShow = [ChannelSelectionToShow, num2str(EventInfo.(EventDataTye).EventChannel(i))];
+            
+            % If it's not the last number, add a comma
+            if i < NumChannel
+                ChannelSelectionToShow = [ChannelSelectionToShow, ','];
+            end
+        end  
+        
+        EventChannelName = app.FileTypeDropDown.Items{1};
+
+        ExistChangedEventChannelType = 1;
+        
+        app.InputChannelSelectionEditField.Value = ChannelSelectionToShow;
+        % app.FileTypeDropDown.Value = EventChannelName;
+
     %% Spike 2 recording
     elseif strcmp(Data.Info.RecordingType,"Spike2")
-
+        
         app.TextArea_2.Value = texttoshow;
         NumChannel = 1;
         ExistChangedEventChannelType = 1;
@@ -430,6 +491,62 @@ elseif strcmp(Data.Info.RecordingType,"Neuralynx")
         for i = 1:NumChannel
             % Append each number to the string
             ChannelSelectionToShow = [ChannelSelectionToShow, num2str(uniqueChannel(i))];
+            
+            % If it's not the last number, add a comma
+            if i < NumChannel
+                ChannelSelectionToShow = [ChannelSelectionToShow, ','];
+            end
+        end  
+        
+        EventChannelName = app.FileTypeDropDown.Items{1};
+    end
+
+elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
+
+    if FileEndingsExist==1
+        
+        % Check 
+       
+        if isempty(EventInfo)
+            app.TextArea_2.Value = 'No time stamps could be extracted!';
+            return;
+        end
+        
+        EventDataTye = [];
+        if isfield(EventInfo,'sE')
+            EventDataTye = 'sE';
+        elseif isfield(EventInfo,'sT')
+            EventDataTye = 'sT';
+        elseif isfield(EventInfo,'eE')
+            EventDataTye = 'eE';
+        end
+        
+        % Create header
+        lines = ["Channel | Sample"];
+        
+        % Loop through events and build rows
+        for i = 1:numel(EventInfo.(EventDataTye).ChannelIdentities)
+            line = sprintf('%d | %d', EventInfo.(EventDataTye).ChannelIdentities(i), EventInfo.(EventDataTye).Timestamps(i));
+            lines(end+1) = string(line);
+        end
+
+        app.TextArea_2.Value = lines;
+        
+        NumChannel = length(EventInfo.(EventDataTye).EventChannel);
+        
+        % Get unique values
+        app.FileTypeDropDown.Items = {};
+        for i = 1:length(EventInfo.Type)
+            app.FileTypeDropDown.Items{i} = convertStringsToChars(strcat("TDT Trigger ",EventInfo.Type{i}));
+        end
+
+        % Initialize an empty string
+        ChannelSelectionToShow = '';
+
+        % Loop through numbers from 1 to 10
+        for i = 1:NumChannel
+            % Append each number to the string
+            ChannelSelectionToShow = [ChannelSelectionToShow, num2str(EventInfo.(EventDataTye).EventChannel(i))];
             
             % If it's not the last number, add a comma
             if i < NumChannel

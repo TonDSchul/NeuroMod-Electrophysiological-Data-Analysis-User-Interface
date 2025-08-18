@@ -23,7 +23,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
     else:
         JustExtractingEvents = 0
     
-
+    print(RecordingSystemSelection)
     if RecordingSystemSelection == "NEO Plexon" or RecordingSystemSelection == "PlexonEventExtraction":
         file_list = [
             os.path.join(FolderName, f)
@@ -31,10 +31,18 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
             if f.lower().endswith(".plx")
         ]
         print(file_list)
+    elif RecordingSystemSelection == "NEO NeuroExplorer" or RecordingSystemSelection == "NeuroExplorerEventExtraction":
+        file_list = [
+            os.path.join(FolderName, f)
+            for f in os.listdir(FolderName)
+            if f.lower().endswith(".nex")
+        ]
+        print(file_list)
     else:
         file_list = FolderName
         file_list = [file_list]  # wrap single string into a list
-                
+    
+    
     # -----------------------------------------------------------------------
     ''' First Create a Save Folder to save results in for Matlab to load'''
     # -----------------------------------------------------------------------

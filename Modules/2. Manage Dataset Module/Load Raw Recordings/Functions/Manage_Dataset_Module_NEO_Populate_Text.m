@@ -65,6 +65,10 @@ if sum(cell2mat(strfind(TempFormatsfound,'.plx'))) > 0
     Formatsfound = [Formatsfound,'Plexon'];
 end
 
+if sum(cell2mat(strfind(TempFormatsfound,'.nex'))) > 0
+    Formatsfound = [Formatsfound,'NeuroExplorer'];
+end
+
 %% ----------------- Wrap UP -----------------
 if ~isfield(ProbeInfo,'NrChannel')
     ProbeInfoText = ["Path or file to recording that is passed to NEO:";"";SelectedFolder;"";NeoTextWithFolder;"";"Probe Info:";"";"not defined"];

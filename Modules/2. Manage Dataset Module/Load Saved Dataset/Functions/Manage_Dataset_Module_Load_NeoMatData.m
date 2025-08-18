@@ -62,7 +62,7 @@ if isfield(block.segments{1},'events')
         else
             Data.Events{Laufvariable} = round((Data.Events{Laufvariable})*SampleRate);
         end
-    
+        
         Laufvariable = Laufvariable+1;
     end
 end

@@ -228,27 +228,180 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
 
 elseif strcmp(Data.Info.RecordingType,"TDT Tank Data") 
     
-    data = TDTbin2mat(Path);
+    if ~strcmp(FileType,'NoDataExtraction')
+        data = TDTbin2mat(Path);
+    end
+  
+    %% File Paths
+    [FilePaths] = Utility_Extract_Contents_of_Folder(Path);
+    FilesIndex = endsWith(FilePaths, ".sev");
+        
+    texttoshow = [];
+    if ~strcmp(FileType,'NoDataExtraction')
+        % Define the possible event categories
+        categories = {'epocs','snips','scalars','streams'};
+        
+        allEvents = strings(0); % initialize empty string array
+        
+        for c = 1:numel(categories)
+            catName = categories{c};
+            if isfield(data, catName)
+                if ~isempty(data.(catName))
+                    eventNames = fieldnames(data.(catName));
+                    if strcmp(catName,'streams')
+                        for i = 1:length(eventNames)
+                            if strcmp(eventNames{i},'Stim')
+                                % prepend the category name for clarity
+                                allEvents = [allEvents; strcat(catName, ":", string(eventNames{i}))];
+                              
+                            end
+                        end
+                    else
+                        if ~isempty(eventNames)
+                            % prepend the category name for clarity
+                            allEvents = [allEvents; strcat(catName, ":", string(eventNames))];
+                        end
+                    end
+                end
+            end
+        end
+        
+        FileEndingsExist = 1;
+        if isempty(allEvents)
+            texttoshow = "Warning: No event channel data component found!";
+            FileEndingsExist = 0;
+            EventInfo = [];
+        end
+        
+        if find(allEvents=='scalars:Evnt')
+            uniquechannel = double(unique(data.scalars.Evnt.chan));
+            EventInfo.sE.EventChannel = uniquechannel;
+            EventInfo.Type{1} = 'scalars:Evnt';
+            EventInfo.sE.ChannelIdentities = [];
+            EventInfo.sE.Timestamps = [];
+            for i = 1:length(uniquechannel)
+                IndiceCurrentChannel = data.scalars.Evnt.chan==uniquechannel(i);
+                EventInfo.sE.Timestamps = [EventInfo.sE.Timestamps,round(data.scalars.Evnt.ts(IndiceCurrentChannel).*Data.Info.NativeSamplingRate)];
+                EventInfo.sE.ChannelIdentities  = [EventInfo.sE.ChannelIdentities,data.scalars.Evnt.chan(IndiceCurrentChannel)];
+
+            end
+            texttoshow = "Event data of type scalars:Evnt found!";
+        end
     
-    eventData = data.streams.StimeventData;
+        if find(allEvents=='scalars:Tria')
+            uniquechannel = double(unique(data.scalars.Tria.chan));
+            EventInfo.sT.EventChannel = uniquechannel;
+            EventInfo.sT.ChannelIdentities = [];
+            EventInfo.sT.Timestamps = [];
+            for i = 1:length(uniquechannel)
+                IndiceCurrentChannel = data.scalars.Tria.chan==uniquechannel(i);
+                EventInfo.sT.Timestamps = [EventInfo.sT.Timestamps,round(data.scalars.Tria.ts(IndiceCurrentChannel).*Data.Info.NativeSamplingRate)];
+                EventInfo.sT.ChannelIdentities  = [EventInfo.sT.ChannelIdentities,data.scalars.Tria.chan(IndiceCurrentChannel)];
+            end
+            if ~isfield(EventInfo,'Type')
+                EventInfo.Type{1} = 'scalars:Tria';
+            else
+                EventInfo.Type{end+1} = 'scalars:Tria';
+            end
+            texttoshow = "Event data of type scalars:Evnt found!";
+        end
+    
+        % if find(allEvents=='streams:Stim')
+        %     uniquechannel = size(unique(data.streams.Stim.data),1);
+        %     EventInfo.EventChannel = uniquechannel;
+        %     EventInfo.Type{1} = 'streams:Stim';
+        %     EventInfo.ChannelIdentities = [];
+        %     EventInfo.Timestamps = [];
+        %     for i = 1:length(uniquechannel)
+        %         EventInfo.Timestamps = [EventInfo.Timestamps,data.streams.Stim.data(i,:)];
+        %         EventInfo.ChannelIdentities  = [EventInfo.ChannelIdentities,data.streams.Stim.chan(IndiceCurrentChannel)];
+        %     end
+        %     texttoshow = "Event data of type scalars:Evnt found!";
+        % end
+    
+        if find(allEvents=='epocs:Evnt')
+            EventInfo.eE.EventChannel = 1:length(data.epocs.Evnt);
+            EventInfo.eE.ChannelIdentities = [];
+            EventInfo.eE.Timestamps = [];
+            for i = 1:length(data.epocs.Evnt)
+                EventInfo.eE.Timestamps = [EventInfo.eE.Timestamps,round(double(unique(data.epocs.Evnt(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eE.ChannelIdentities  = [EventInfo.eE.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Evnt(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+            end
+            if ~isfield(EventInfo,'Type')
+                EventInfo.Type{1} = 'epocs:Evnt';
+            else
+                EventInfo.Type{end+1} = 'epocs:Evnt';
+            end
+    
+            texttoshow = "Event data of type epocs:Evnt found!";
+        end
 
-    figure
-    plot(eventData(1000000:10000000))
+        if find(allEvents=='epocs:Tria')
+            EventInfo.eT.EventChannel = 1:length(data.epocs.Tria);
+            EventInfo.eT.ChannelIdentities = [];
+            EventInfo.eT.Timestamps = [];
+            for i = 1:length(data.epocs.Tria)
+                EventInfo.eT.Timestamps = [EventInfo.eT.Timestamps,round(double(unique(data.epocs.Tria(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eT.ChannelIdentities  = [EventInfo.eT.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Tria(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+            end
+            if ~isfield(EventInfo,'Type')
+                EventInfo.Type{1} = 'epocs:Tria';
+            else
+                EventInfo.Type{end+1} = 'epocs:Tria';
+            end
+    
+            texttoshow = "Event data of type epocs:Tria found!";
+        end
 
-    % if isfield(Data.Info,'Spike2EventChannelToTake')
-    %     if ~isempty(Data.Info.Spike2EventChannelToTake)
-    %         EventInfo.EventChannel = Data.Info.Spike2EventChannelToTake;
-    %         FileEndingsExist = 1;
-    %         texttoshow = strcat("Finished looking for event channel from: ",Path);
-    %     else
-    %         texttoshow = "Warning: No event channel selected when loading the dataset. No events can be extracted";
-    %         FileEndingsExist = 0;
-    %         EventInfo = [];
-    %     end
-    % else
-    %     texttoshow = "Warning: No event channel selected when loading the dataset. No events can be extracted";
-    %     FileEndingsExist = 0;
-    %     EventInfo = [];
-    % end
+        if find(allEvents=='epocs:Brst')
+            EventInfo.eB.EventChannel = 1:length(data.epocs.Brst);
+            EventInfo.eB.ChannelIdentities = [];
+            EventInfo.eB.Timestamps = [];
+            for i = 1:length(data.epocs.Brst)
+                EventInfo.eB.Timestamps = [EventInfo.eB.Timestamps,round(double(unique(data.epocs.Brst(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eB.ChannelIdentities  = [EventInfo.eB.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Brst(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+            end
+            if ~isfield(EventInfo,'Type')
+                EventInfo.Type{1} = 'epocs:Brst';
+            else
+                EventInfo.Type{end+1} = 'epocs:Brst';
+            end
+    
+            texttoshow = "Event data of type epocs:Brst found!";
+        end
 
+        if find(allEvents=='epocs:Stro')
+            EventInfo.eS.EventChannel = 1:length(data.epocs.Stro);
+            EventInfo.eS.ChannelIdentities = [];
+            EventInfo.eS.Timestamps = [];
+            for i = 1:length(data.epocs.Stro)
+                EventInfo.eS.Timestamps = [EventInfo.eS.Timestamps,round(double(unique(data.epocs.Stro(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eS.ChannelIdentities  = [EventInfo.eS.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Stro(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+            end
+            if ~isfield(EventInfo,'Type')
+                EventInfo.Type{1} = 'epocs:Stro';
+            else
+                EventInfo.Type{end+1} = 'epocs:Stro';
+            end
+    
+            texttoshow = "Event data of type epocs:Stro found!";
+        end
+
+        if find(allEvents=='epocs:Tick')
+            EventInfo.eT.EventChannel = 1:length(data.epocs.Tick);
+            EventInfo.eT.ChannelIdentities = [];
+            EventInfo.eT.Timestamps = [];
+            for i = 1:length(data.epocs.Tick)
+                EventInfo.eT.Timestamps = [EventInfo.eT.Timestamps,round(double(unique(data.epocs.Tick(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eT.ChannelIdentities  = [EventInfo.eT.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Tick(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+            end
+            if ~isfield(EventInfo,'Type')
+                EventInfo.Type{1} = 'epocs:Tick';
+            else
+                EventInfo.Type{end+1} = 'epocs:Tick';
+            end
+    
+            texttoshow = "Event data of type epocs:Tick found!";
+        end
+    end
 end           

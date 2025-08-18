@@ -218,6 +218,13 @@ if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"Auto
             else
                 Formatsfound.Library = ["NeuroMod Matlab","NeuralEnsemble NEO Python Library"];
             end
+        elseif contains(TempFormatsfound,"NeuroExplorer")
+            if JustChangeLibrary == 0 % on startup
+                ExtractWithNeo = "NeuralEnsemble NEO Python Library";
+                Formatsfound.Library = "NeuralEnsemble NEO Python Library";
+            else
+                Formatsfound.Library = "NeuralEnsemble NEO Python Library";
+            end
         else
             if JustChangeLibrary == 0 % on startup
                 ExtractWithNeo = "NeuroMod Matlab";
@@ -233,11 +240,13 @@ if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"Auto
     if ~isempty(TempFormatsfound)
         FormatIndice = [];
         for ii = 1:length(TempFormatsfound)
-            if contains(TempFormatsfound(ii),'.plx') ||  contains(TempFormatsfound(ii),'.sev') ||  contains(TempFormatsfound(ii),'.tev')
+            if contains(TempFormatsfound(ii),'.plx') ||  contains(TempFormatsfound(ii),'.sev') || contains(TempFormatsfound(ii),'.tev') || contains(TempFormatsfound(ii),'.nex')
                 if contains(TempFormatsfound(ii),'.plx')
                     Formatsfound.Format = 'Plexon';
                 elseif contains(TempFormatsfound(ii),'.sev') || contains(TempFormatsfound(ii),'.tev')
                     Formatsfound.Format = 'TdT';
+                elseif contains(TempFormatsfound(ii),'.nex')
+                    Formatsfound.Format = 'NeurExplorer';
                 end
 
                 if strcmp(Formatsfound.Format,'TdT')
