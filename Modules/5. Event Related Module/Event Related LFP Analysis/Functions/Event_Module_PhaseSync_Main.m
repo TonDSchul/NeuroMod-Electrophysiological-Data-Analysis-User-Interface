@@ -46,7 +46,6 @@ function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToComput
 % wither 'Raw Data' or 'Preprocessed Data'
 % 23. LowPassSettings: struc with fields: LowPassSettings.Cutoff, LowPassSettings.FilterOrder
 % 24. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
-% 25. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
 
 % Outputs:
 % 1. texttoshow: text to show filter infoes in of filter steps that where

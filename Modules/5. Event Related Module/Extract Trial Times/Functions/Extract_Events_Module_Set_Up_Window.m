@@ -72,7 +72,7 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
         elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Evnt') 
             EventDataTye = 'eE';
         elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Tria') 
-            EventDataTye = 'eT';
+            EventDataTye = 'eTr';
         elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Brst') 
             EventDataTye = 'eB';
         elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Stro') 
@@ -85,21 +85,29 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
         lines = ["Channel | Sample"];
         
         % Loop through events and build rows
-        for i = 1:numel(EventInfo.(EventDataTye).ChannelIdentities)
-            line = sprintf('%d | %d', EventInfo.(EventDataTye).ChannelIdentities(i), EventInfo.(EventDataTye).Timestamps(i));
-            lines(end+1) = string(line);
+        if strcmp(EventDataTye,"eE") || strcmp(EventDataTye,"eTr") || strcmp(EventDataTye,"eS") || strcmp(EventDataTye,"eB") || strcmp(EventDataTye,"eT")
+            if strcmp(app.EventTypeDropDown.Value,'Trigger Onset')
+                for i = 1:numel(EventInfo.(EventDataTye).OnsetChannelIdentities)
+                    line = sprintf('%d | %d', EventInfo.(EventDataTye).OnsetChannelIdentities(i), EventInfo.(EventDataTye).OnsetTimestamps(i));
+                    lines(end+1) = string(line);
+                end
+            else
+                for i = 1:numel(EventInfo.(EventDataTye).OffsetChannelIdentities)
+                    line = sprintf('%d | %d', EventInfo.(EventDataTye).OffsetChannelIdentities(i), EventInfo.(EventDataTye).OffsetTimestamps(i));
+                    lines(end+1) = string(line);
+                end
+            end
+        else
+            for i = 1:numel(EventInfo.(EventDataTye).ChannelIdentities)
+                line = sprintf('%d | %d', EventInfo.(EventDataTye).ChannelIdentities(i), EventInfo.(EventDataTye).Timestamps(i));
+                lines(end+1) = string(line);
+            end
         end
 
         app.TextArea_2.Value = lines;
         
         NumChannel = length(EventInfo.(EventDataTye).EventChannel);
         
-        % Get unique values
-        % app.FileTypeDropDown.Items = {};
-        % for i = 1:length(EventInfo.Type)
-        %     app.FileTypeDropDown.Items{i} = convertStringsToChars(strcat("TDT Trigger ",EventInfo.Type{i}));
-        % end
-
         % Initialize an empty string
         ChannelSelectionToShow = '';
 
@@ -511,35 +519,75 @@ elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
             app.TextArea_2.Value = 'No time stamps could be extracted!';
             return;
         end
-        
-        EventDataTye = [];
-        if isfield(EventInfo,'sE')
-            EventDataTye = 'sE';
-        elseif isfield(EventInfo,'sT')
-            EventDataTye = 'sT';
-        elseif isfield(EventInfo,'eE')
-            EventDataTye = 'eE';
-        end
-        
-        % Create header
-        lines = ["Channel | Sample"];
-        
-        % Loop through events and build rows
-        for i = 1:numel(EventInfo.(EventDataTye).ChannelIdentities)
-            line = sprintf('%d | %d', EventInfo.(EventDataTye).ChannelIdentities(i), EventInfo.(EventDataTye).Timestamps(i));
-            lines(end+1) = string(line);
-        end
 
-        app.TextArea_2.Value = lines;
-        
-        NumChannel = length(EventInfo.(EventDataTye).EventChannel);
-        
         % Get unique values
         app.FileTypeDropDown.Items = {};
         for i = 1:length(EventInfo.Type)
             app.FileTypeDropDown.Items{i} = convertStringsToChars(strcat("TDT Trigger ",EventInfo.Type{i}));
         end
 
+        %% TDT
+        if isfield(app.EventInfo,'Type')
+            if ~contains(app.EventInfo.Type,'streams')
+                app.AnalogThresholdVEditField.Enable = "off";
+            end
+            app.EventTypeDropDown.Enable = "on";
+
+            if strcmp(app.FileTypeDropDown.Value,"TDT Trigger epocs:Evnt") || strcmp(app.FileTypeDropDown.Value,"TDT Trigger epocs:Brst") || strcmp(app.FileTypeDropDown.Value,"TDT Trigger epocs:Tria") || strcmp(app.FileTypeDropDown.Value,"TDT Trigger epocs:Stro") || strcmp(app.FileTypeDropDown.Value,"TDT Trigger epocs:Tick")
+                app.EventTypeDropDown.Enable = "on";
+                app.EventTypeDropDown.Items = {};
+                app.EventTypeDropDown.Items{1} = 'Trigger Onset';
+                app.EventTypeDropDown.Items{2} = 'Trigger Offset';
+            else
+                app.EventTypeDropDown.Enable = "off";
+            end 
+        end
+        
+        EventDataTye = [];
+        if strcmp(app.FileTypeDropDown.Value,'TDT Trigger scalars:Evnt') 
+            EventDataTye = 'sE';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger scalars:Tria') 
+            EventDataTye = 'sT';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Evnt') 
+            EventDataTye = 'eE';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Tria') 
+            EventDataTye = 'eTr';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Brst') 
+            EventDataTye = 'eB';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Stro') 
+            EventDataTye = 'eS';
+        elseif strcmp(app.FileTypeDropDown.Value,'TDT Trigger epocs:Tick') 
+            EventDataTye = 'eT';
+        end
+        
+        % Create header
+        lines = ["Channel | Sample"];
+        
+        if strcmp(EventDataTye,"eE") || strcmp(EventDataTye,"eTr") || strcmp(EventDataTye,"eS") || strcmp(EventDataTye,"eB") || strcmp(EventDataTye,"eT")
+            % Loop through events and build rows
+            if strcmp(app.EventTypeDropDown.Value,'Trigger Onset')
+                for i = 1:numel(EventInfo.(EventDataTye).OnsetChannelIdentities)
+                    line = sprintf('%d | %d', EventInfo.(EventDataTye).OnsetChannelIdentities(i), EventInfo.(EventDataTye).OnsetTimestamps(i));
+                    lines(end+1) = string(line);  
+                end
+
+            elseif strcmp(app.EventTypeDropDown.Value,'Trigger Offset')
+                for i = 1:numel(EventInfo.(EventDataTye).OffsetChannelIdentities)
+                    line = sprintf('%d | %d', EventInfo.(EventDataTye).OffsetChannelIdentities(i), EventInfo.(EventDataTye).OffsetTimestamps(i));
+                    lines(end+1) = string(line);
+                end
+            end
+        else
+            for i = 1:numel(EventInfo.(EventDataTye).ChannelIdentities)
+                line = sprintf('%d | %d', EventInfo.(EventDataTye).ChannelIdentities(i), EventInfo.(EventDataTye).Timestamps(i));
+                lines(end+1) = string(line);
+            end
+        end
+
+        app.TextArea_2.Value = lines;
+        
+        NumChannel = length(EventInfo.(EventDataTye).EventChannel);
+        
         % Initialize an empty string
         ChannelSelectionToShow = '';
 

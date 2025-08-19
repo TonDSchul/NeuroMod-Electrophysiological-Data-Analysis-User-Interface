@@ -1951,3 +1951,12 @@ if strcmp(Window,"Delete_Time_Violating_Trigger")
 
     app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
 end
+
+if strcmp(Window,"TDTSelectLFPorAP")    
+    % texts to black
+    set(findall(app.TDTDataSelectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.TDTDataSelectionUIFigure.Color  = WindowBackgroundColor;
+
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+end

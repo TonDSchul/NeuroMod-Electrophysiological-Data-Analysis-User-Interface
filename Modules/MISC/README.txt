@@ -3,7 +3,7 @@ NeuroMod Toolbox; MISC README
 Author: Tony de Schultz
 ______________________________________________
 
-This folder contains permanently saved files usually not modified or if, then automatically in the 'Variables (do not edit)' folder.
+The 'Variables (do not edit)' folder contains permanently saved files usually not modified or if, then automatically in the 'Variables (do not edit)' folder.
 
 Variables are:
 1. 'CEDS64Path.mat' file, holding the path to the MATLAB Son Library for analysis of Spike2 data. 
@@ -16,6 +16,7 @@ This variable is autosaved and updated automatically if necessary.
 7. Example_Events.csv: example file containing 50 trigger times in samples to load into the 'Import Trigger Times'
 8. Example_Events.txt: example file containing 50 trigger times in samples to load into the 'Import Trigger Times'
 9. ExampleTriggerIdentities.txt: example file containing trigger identities for trigger. This can be loaded in the 'Extract Trigger Times' to divide a single event channel with 50 triggers into two different event channel called T1 and T2 (see text file contents) with 25 trigger each
+
 ---------------------- Take these example files as reference for the expected format! ------------------
 
 
@@ -27,6 +28,8 @@ Also, there are files in the 'Default Autorun Configs (do not edit!)' folder con
 4. Autorun_Config_TEMPLATE_OPEN_EPHYS_Analysis
 5. Autorun_Config_TEMPLATE_Spike2_Analysis
 
+The 'docs' folder contains example python script to load the formats NeuroMod offers to save into the python toolboxes NEO, pynwb and SpikeInterface
+
 Those are the standard/default config files you can reset the currently selected config file to in the autorun window 
 
-This folder also contains the Logo and the pictures for the readme file and Licenses of other toolboxes used.
+The 'Images' folder contains the Logo and the pictures for the readme file while the 'LICENCES' folder contains  Licenses of all other toolboxes used.

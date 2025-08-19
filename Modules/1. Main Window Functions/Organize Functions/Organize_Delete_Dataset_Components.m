@@ -104,6 +104,11 @@ elseif strcmp(ComponentToDelete,"EventRelatedData")
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
+    if isfield(Data.Info,'EventRelatedTime')
+        fieldsToDelete = {'EventRelatedTime'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
 elseif strcmp(ComponentToDelete,"Events")
     
     if isfield(Data,'Events')
@@ -147,6 +152,11 @@ elseif strcmp(ComponentToDelete,"Events")
 
     if isfield(Data.Info,'EventRelatedDataInfo')
         fieldsToDelete = {'EventRelatedDataInfo'};
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
+    if isfield(Data.Info,'EventRelatedTime')
+        fieldsToDelete = {'EventRelatedTime'};
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 

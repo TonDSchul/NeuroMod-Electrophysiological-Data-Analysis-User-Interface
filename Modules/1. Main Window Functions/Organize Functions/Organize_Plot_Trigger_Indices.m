@@ -44,6 +44,10 @@ function Organize_Plot_Trigger_Indices(Data,Figure,EventToPlot,Time,ActiveChanne
 
 ArtefactRelatedData = squeeze(Data.EventRelatedData(SelectedChannel,EventToPlot,:));
 
+if isscalar(SelectedChannel)
+    ArtefactRelatedData = ArtefactRelatedData';
+end
+
 [Data,~] = Organize_Delete_Dataset_Components(Data,"EventRelatedData");
 
 %% Select Data based on user input
@@ -52,6 +56,11 @@ if strcmp(EventstoPlotDropDown,"Mean over all Trigger")
     ArtefactRelatedData = squeeze(mean(ArtefactRelatedData,2));
 end
 
+if isscalar(SelectedChannel)
+    if size(ArtefactRelatedData,1)>size(ArtefactRelatedData,2)
+        ArtefactRelatedData = ArtefactRelatedData';
+    end
+end
 %% Add ChannelSapcing for proper plot
 for i = 1:size(ArtefactRelatedData,1)     
     ArtefactRelatedData(i, :) = ArtefactRelatedData(i, :) - (i - 1) * SpacingSlider;

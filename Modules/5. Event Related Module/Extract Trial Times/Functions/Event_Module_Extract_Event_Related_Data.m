@@ -64,16 +64,19 @@ end
 if strcmp(DataToExtractFrom,"Raw Data")
     NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.NativeSamplingRate);
     NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.NativeSamplingRate);
+    Data.Info.EventRelatedTime = (-NumSamplesBefore:NumSamplesAfter) / Data.Info.NativeSamplingRate;
     % Handling Downsampled data
 elseif strcmp(DataToExtractFrom,"Preprocessed Data") && isfield(Data.Info,'DownsampledSampleRate')
     NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.DownsampledSampleRate);
     NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.DownsampledSampleRate);
+    Data.Info.EventRelatedTime = (-NumSamplesBefore:NumSamplesAfter) / Data.Info.DownsampledSampleRate;
     TempOriginalEvents = Data.Events;
     Data.Events{EventChannelNr} = round(Data.Events{EventChannelNr}./Data.Info.DownsampleFactor);
     
 elseif strcmp(DataToExtractFrom,"Preprocessed Data") && ~isfield(Data.Info,'DownsampledSampleRate')
     NumSamplesBefore = round(TimearoundEvent(1)*Data.Info.NativeSamplingRate);
     NumSamplesAfter = round(TimearoundEvent(2)*Data.Info.NativeSamplingRate);
+    Data.Info.EventRelatedTime = (-NumSamplesBefore:NumSamplesAfter) / Data.Info.NativeSamplingRate;
 end
 
 ntimepoints = NumSamplesBefore+NumSamplesAfter+1;

@@ -206,6 +206,7 @@ elseif strcmp(RecordingSystem,"TDT Tank Data")
 
     if size(Data,1)>size(Data,2)
         Data = Data';
+        Data = Data*1000; % cionvert in mV
     end
 
     RecordingType = "TDT Tank Data";

@@ -1,27 +1,27 @@
-function [Events,EventChannelNames,Error] = Extract_Events_Module_Extract_TDT_Events(EventInfo,FileTypeDropDown,InputChannelSelection)
+function [Events,EventChannelNames,Error] = Extract_Events_Module_Extract_TDT_Events(EventInfo,FileTypeDropDown,InputChannelSelection,State)
 
 Error = [];
-EventDataTye = [];
+TriggerTye = [];
 EventChannelNames = [];
 Events = [];
 
 if strcmp(FileTypeDropDown,'TDT Trigger scalars:Evnt') 
-    EventDataTye = 'sE';
+    TriggerTye = 'sE';
 elseif strcmp(FileTypeDropDown,'TDT Trigger scalars:Tria') 
-    EventDataTye = 'sT';
+    TriggerTye = 'sT';
 elseif strcmp(FileTypeDropDown,'TDT Trigger epocs:Evnt') 
-    EventDataTye = 'eE';
+    TriggerTye = 'eE';
 elseif strcmp(FileTypeDropDown,'TDT Trigger epocs:Tria') 
-    EventDataTye = 'eT';
+    TriggerTye = 'eTr';
 elseif strcmp(FileTypeDropDown,'TDT Trigger epocs:Brst') 
-    EventDataTye = 'eB';
+    TriggerTye = 'eB';
 elseif strcmp(FileTypeDropDown,'TDT Trigger epocs:Stro') 
-    EventDataTye = 'eS';
+    TriggerTye = 'eS';
 elseif strcmp(FileTypeDropDown,'TDT Trigger epocs:Tick') 
-    EventDataTye = 'eT';
+    TriggerTye = 'eT';
 end
 
-if isempty(EventDataTye)
+if isempty(TriggerTye)
     disp("Could not determine trigger type")
     Error = 1;
     return;
@@ -29,10 +29,27 @@ end
 
 Laufvariable=1;
 for i = 1:length(InputChannelSelection)
-    CurrentEventChannelIndice = EventInfo.(EventDataTye).ChannelIdentities == InputChannelSelection(i);
+    if strcmp(TriggerTye,"eE") || strcmp(TriggerTye,"eTr") || strcmp(TriggerTye,"eS") || strcmp(TriggerTye,"eB") || strcmp(TriggerTye,"eT")
+            if strcmp(State,"Trigger Onset")
+                CurrentEventChannelIndice = EventInfo.(TriggerTye).OnsetChannelIdentities == InputChannelSelection(i);
+            else
+                CurrentEventChannelIndice = EventInfo.(TriggerTye).OffsetChannelIdentities == InputChannelSelection(i);
+            end
+    else
+        CurrentEventChannelIndice = EventInfo.(TriggerTye).ChannelIdentities == InputChannelSelection(i);
+    end
+    
     
     if sum(CurrentEventChannelIndice)>0
-        Events{Laufvariable} = EventInfo.(EventDataTye).Timestamps(CurrentEventChannelIndice);
+        if strcmp(TriggerTye,"eE") || strcmp(TriggerTye,"eTr") || strcmp(TriggerTye,"eS") || strcmp(TriggerTye,"eB") || strcmp(TriggerTye,"eT")
+            if strcmp(State,"Trigger Onset")
+                Events{Laufvariable} = EventInfo.(TriggerTye).OnsetTimestamps(CurrentEventChannelIndice);
+            else
+                Events{Laufvariable} = EventInfo.(TriggerTye).OffsetTimestamps(CurrentEventChannelIndice);
+            end
+        else
+            Events{Laufvariable} = EventInfo.(TriggerTye).Timestamps(CurrentEventChannelIndice);
+        end
         if size(Events{Laufvariable},1)>size(Events{Laufvariable},2)
             Events{Laufvariable} = Events{Laufvariable}';
         end

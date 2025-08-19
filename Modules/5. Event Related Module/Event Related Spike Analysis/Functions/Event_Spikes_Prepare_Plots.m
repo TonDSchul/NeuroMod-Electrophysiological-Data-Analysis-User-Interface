@@ -106,7 +106,7 @@ PlotInfo.EventRange = eval(EventRangeEditField);
 
 [PlotInfo.ChannelsToPlot] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainPlot');
 
-PlotInfo.Time = -PlotInfo.TimearoundEvent(1):1/Data.Info.NativeSamplingRate:PlotInfo.TimearoundEvent(2);
+PlotInfo.Time = Data.Info.EventRelatedTime;
 
 PlotInfo.SpikeRateNumBins = str2double(SpikeRateNumBinsEditField);
 

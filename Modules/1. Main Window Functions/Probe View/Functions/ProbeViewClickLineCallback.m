@@ -500,7 +500,7 @@ if ProbeViewWindow == 0
                             EventToPlot = 1:length(app.Mainapp.Data.Events{1});
                         end
             
-                        Organize_Plot_Trigger_Indices(app.Mainapp.Data,app.Mainapp.EventIndiceRejectionWindow.UIAxes,EventToPlot,app.Mainapp.EventIndiceRejectionWindow.EventTime,app.Mainapp.ActiveChannel,app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.Slider.Value,app.Mainapp.EventIndiceRejectionWindow.EventChannelforStimulationDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.TimearoundEvent,app.Mainapp.EventIndiceRejectionWindow.DataToExtractFromDropDown.Value,"Raw Event Related Data",app.Mainapp.EventIndiceRejectionWindow.ColorMap)
+                        Organize_Plot_Trigger_Indices(app.Mainapp.Data,app.Mainapp.EventIndiceRejectionWindow.UIAxes,EventToPlot,app.Mainapp.Data.Info.EventRelatedTime,app.Mainapp.ActiveChannel,app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.Slider.Value,app.Mainapp.EventIndiceRejectionWindow.EventChannelforStimulationDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.TimearoundEvent,app.Mainapp.EventIndiceRejectionWindow.DataToExtractFromDropDown.Value,"Raw Event Related Data",app.Mainapp.EventIndiceRejectionWindow.ColorMap)
                     end
                 end
             end

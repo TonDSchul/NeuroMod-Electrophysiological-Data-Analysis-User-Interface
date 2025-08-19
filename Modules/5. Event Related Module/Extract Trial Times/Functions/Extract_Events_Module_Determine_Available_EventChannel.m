@@ -283,8 +283,15 @@ elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
                 IndiceCurrentChannel = data.scalars.Evnt.chan==uniquechannel(i);
                 EventInfo.sE.Timestamps = [EventInfo.sE.Timestamps,round(data.scalars.Evnt.ts(IndiceCurrentChannel).*Data.Info.NativeSamplingRate)];
                 EventInfo.sE.ChannelIdentities  = [EventInfo.sE.ChannelIdentities,data.scalars.Evnt.chan(IndiceCurrentChannel)];
-
             end
+            % Correct Infite time points
+            InfIndice = EventInfo.sE.Timestamps==Inf;
+            EventInfo.sE.Timestamps(InfIndice) = [];
+            EventInfo.sE.ChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+
             texttoshow = "Event data of type scalars:Evnt found!";
         end
     
@@ -303,51 +310,87 @@ elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
             else
                 EventInfo.Type{end+1} = 'scalars:Tria';
             end
+
+            % Correct Infite time points
+            InfIndice = EventInfo.sT.Timestamps==Inf;
+            EventInfo.sT.Timestamps(InfIndice) = [];
+            EventInfo.sT.ChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+
             texttoshow = "Event data of type scalars:Evnt found!";
         end
-    
-        % if find(allEvents=='streams:Stim')
-        %     uniquechannel = size(unique(data.streams.Stim.data),1);
-        %     EventInfo.EventChannel = uniquechannel;
-        %     EventInfo.Type{1} = 'streams:Stim';
-        %     EventInfo.ChannelIdentities = [];
-        %     EventInfo.Timestamps = [];
-        %     for i = 1:length(uniquechannel)
-        %         EventInfo.Timestamps = [EventInfo.Timestamps,data.streams.Stim.data(i,:)];
-        %         EventInfo.ChannelIdentities  = [EventInfo.ChannelIdentities,data.streams.Stim.chan(IndiceCurrentChannel)];
-        %     end
-        %     texttoshow = "Event data of type scalars:Evnt found!";
-        % end
-    
+        
         if find(allEvents=='epocs:Evnt')
             EventInfo.eE.EventChannel = 1:length(data.epocs.Evnt);
-            EventInfo.eE.ChannelIdentities = [];
-            EventInfo.eE.Timestamps = [];
+            EventInfo.eE.OnsetChannelIdentities = [];
+            EventInfo.eE.OffsetChannelIdentities = [];
+            EventInfo.eE.OnsetTimestamps = [];
+            EventInfo.eE.OffsetTimestamps = [];
             for i = 1:length(data.epocs.Evnt)
-                EventInfo.eE.Timestamps = [EventInfo.eE.Timestamps,round(double(unique(data.epocs.Evnt(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
-                EventInfo.eE.ChannelIdentities  = [EventInfo.eE.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Evnt(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+                EventInfo.eE.OnsetTimestamps = [EventInfo.eE.OnsetTimestamps,round(double(unique(data.epocs.Evnt(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eE.OffsetTimestamps = [EventInfo.eE.OffsetTimestamps,round(double(unique(data.epocs.Evnt(i).offset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eE.OnsetChannelIdentities  = [EventInfo.eE.OnsetChannelIdentities,zeros(size(round(double(unique(data.epocs.Evnt(i).onset)).*Data.Info.NativeSamplingRate)))+i];
             end
+
+            EventInfo.eE.OffsetChannelIdentities = EventInfo.eE.OnsetChannelIdentities;
+
             if ~isfield(EventInfo,'Type')
                 EventInfo.Type{1} = 'epocs:Evnt';
             else
                 EventInfo.Type{end+1} = 'epocs:Evnt';
             end
-    
+            
+            % Correct Infite time points Onset
+            InfIndice = EventInfo.eE.OnsetTimestamps==Inf;
+            EventInfo.eE.OnsetTimestamps(InfIndice) = [];
+            EventInfo.eE.OnsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+            % Correct Infite time points Offset
+            InfIndice = EventInfo.eE.OffsetTimestamps==Inf;
+            EventInfo.eE.OffsetTimestamps(InfIndice) = [];
+            EventInfo.eE.OffsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+
             texttoshow = "Event data of type epocs:Evnt found!";
         end
 
         if find(allEvents=='epocs:Tria')
-            EventInfo.eT.EventChannel = 1:length(data.epocs.Tria);
-            EventInfo.eT.ChannelIdentities = [];
-            EventInfo.eT.Timestamps = [];
+            EventInfo.eTr.EventChannel = 1:length(data.epocs.Tria);
+            EventInfo.eTr.OnsetChannelIdentities = [];
+            EventInfo.eTr.OffsetChannelIdentities = [];
+            EventInfo.eTr.OnsetTimestamps = [];
+            EventInfo.eTr.OffsetTimestamps = [];
             for i = 1:length(data.epocs.Tria)
-                EventInfo.eT.Timestamps = [EventInfo.eT.Timestamps,round(double(unique(data.epocs.Tria(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
-                EventInfo.eT.ChannelIdentities  = [EventInfo.eT.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Tria(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+                EventInfo.eTr.OnsetTimestamps = [EventInfo.eTr.OnsetTimestamps,round(double(unique(data.epocs.Tria(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eTr.OffsetTimestamps = [EventInfo.eTr.OffsetTimestamps,round(double(unique(data.epocs.Tria(i).offset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eTr.OnsetChannelIdentities  = [EventInfo.eTr.OnsetChannelIdentities,zeros(size(round(double(unique(data.epocs.Tria(i).onset)).*Data.Info.NativeSamplingRate)))+i];
             end
+            EventInfo.eTr.OffsetChannelIdentities = EventInfo.eTr.OnsetChannelIdentities;
             if ~isfield(EventInfo,'Type')
                 EventInfo.Type{1} = 'epocs:Tria';
             else
                 EventInfo.Type{end+1} = 'epocs:Tria';
+            end
+
+            % Correct Infite time points Onset
+            InfIndice = EventInfo.eTr.OnsetTimestamps==Inf;
+            EventInfo.eTr.OnsetTimestamps(InfIndice) = [];
+            EventInfo.eTr.OnsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+            % Correct Infite time points Offset
+            InfIndice = EventInfo.eTr.OffsetTimestamps==Inf;
+            EventInfo.eTr.OffsetTimestamps(InfIndice) = [];
+            EventInfo.eTr.OffsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
             end
     
             texttoshow = "Event data of type epocs:Tria found!";
@@ -355,16 +398,35 @@ elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
 
         if find(allEvents=='epocs:Brst')
             EventInfo.eB.EventChannel = 1:length(data.epocs.Brst);
-            EventInfo.eB.ChannelIdentities = [];
-            EventInfo.eB.Timestamps = [];
+            EventInfo.eB.OnsetChannelIdentities = [];
+            EventInfo.eB.OffsetChannelIdentities = [];
+            EventInfo.eB.OnsetTimestamps = [];
+            EventInfo.eB.OffsetTimestamps = [];
             for i = 1:length(data.epocs.Brst)
-                EventInfo.eB.Timestamps = [EventInfo.eB.Timestamps,round(double(unique(data.epocs.Brst(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
-                EventInfo.eB.ChannelIdentities  = [EventInfo.eB.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Brst(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+                EventInfo.eB.OnsetTimestamps = [EventInfo.eB.OnsetTimestamps,round(double(unique(data.epocs.Brst(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eB.OffsetTimestamps = [EventInfo.eB.OffsetTimestamps,round(double(unique(data.epocs.Brst(i).offset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eB.OnsetChannelIdentities  = [EventInfo.eB.OnsetChannelIdentities,zeros(size(round(double(unique(data.epocs.Brst(i).onset)).*Data.Info.NativeSamplingRate)))+i];
             end
+            EventInfo.eB.OffsetChannelIdentities = EventInfo.eB.OnsetChannelIdentities;
             if ~isfield(EventInfo,'Type')
                 EventInfo.Type{1} = 'epocs:Brst';
             else
                 EventInfo.Type{end+1} = 'epocs:Brst';
+            end
+
+            % Correct Infite time points Onset
+            InfIndice = EventInfo.eB.OnsetTimestamps==Inf;
+            EventInfo.eB.OnsetTimestamps(InfIndice) = [];
+            EventInfo.eB.OnsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+            % Correct Infite time points Offset
+            InfIndice = EventInfo.eB.OffsetTimestamps==Inf;
+            EventInfo.eB.OffsetTimestamps(InfIndice) = [];
+            EventInfo.eB.OffsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
             end
     
             texttoshow = "Event data of type epocs:Brst found!";
@@ -372,33 +434,71 @@ elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
 
         if find(allEvents=='epocs:Stro')
             EventInfo.eS.EventChannel = 1:length(data.epocs.Stro);
-            EventInfo.eS.ChannelIdentities = [];
-            EventInfo.eS.Timestamps = [];
+            EventInfo.eS.OnsetChannelIdentities = [];
+            EventInfo.eS.OffsetChannelIdentities = [];
+            EventInfo.eS.OnsetTimestamps = [];
+            EventInfo.eS.OffsetTimestamps = [];
             for i = 1:length(data.epocs.Stro)
-                EventInfo.eS.Timestamps = [EventInfo.eS.Timestamps,round(double(unique(data.epocs.Stro(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
-                EventInfo.eS.ChannelIdentities  = [EventInfo.eS.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Stro(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+                EventInfo.eS.OnsetTimestamps = [EventInfo.eS.OnsetTimestamps,round(double(unique(data.epocs.Stro(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eS.OffsetTimestamps = [EventInfo.eS.OffsetTimestamps,round(double(unique(data.epocs.Stro(i).offset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eS.OnsetChannelIdentities  = [EventInfo.eS.OnsetChannelIdentities,zeros(size(round(double(unique(data.epocs.Stro(i).onset)).*Data.Info.NativeSamplingRate)))+i];
             end
+            EventInfo.eS.OffsetChannelIdentities = EventInfo.eS.OnsetChannelIdentities;
             if ~isfield(EventInfo,'Type')
                 EventInfo.Type{1} = 'epocs:Stro';
             else
                 EventInfo.Type{end+1} = 'epocs:Stro';
             end
+
+            % Correct Infite time points Onset
+            InfIndice = EventInfo.eS.OnsetTimestamps==Inf;
+            EventInfo.eS.OnsetTimestamps(InfIndice) = [];
+            EventInfo.eS.OnsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+            % Correct Infite time points Offset
+            InfIndice = EventInfo.eS.OffsetTimestamps==Inf;
+            EventInfo.eS.OffsetTimestamps(InfIndice) = [];
+            EventInfo.eS.OffsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
     
             texttoshow = "Event data of type epocs:Stro found!";
         end
-
+        
         if find(allEvents=='epocs:Tick')
             EventInfo.eT.EventChannel = 1:length(data.epocs.Tick);
-            EventInfo.eT.ChannelIdentities = [];
-            EventInfo.eT.Timestamps = [];
+            EventInfo.eT.OnsetChannelIdentities = [];
+            EventInfo.eT.OffsetChannelIdentities = [];
+            EventInfo.eT.OnsetTimestamps = [];
+            EventInfo.eT.OffsetTimestamps = [];
             for i = 1:length(data.epocs.Tick)
-                EventInfo.eT.Timestamps = [EventInfo.eT.Timestamps,round(double(unique(data.epocs.Tick(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
-                EventInfo.eT.ChannelIdentities  = [EventInfo.eT.ChannelIdentities,zeros(size(round(double(unique(data.epocs.Tick(i).onset)).*Data.Info.NativeSamplingRate)))+i];
+                EventInfo.eT.OnsetTimestamps = [EventInfo.eT.OnsetTimestamps,round(double(unique(data.epocs.Tick(i).onset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eT.OffsetTimestamps = [EventInfo.eT.OffsetTimestamps,round(double(unique(data.epocs.Tick(i).offset)).*Data.Info.NativeSamplingRate)];% in samples
+                EventInfo.eT.OnsetChannelIdentities  = [EventInfo.eT.OnsetChannelIdentities,zeros(size(round(double(unique(data.epocs.Tick(i).onset)).*Data.Info.NativeSamplingRate)))+i];
             end
+            EventInfo.eT.OffsetChannelIdentities = EventInfo.eT.OnsetChannelIdentities;
             if ~isfield(EventInfo,'Type')
                 EventInfo.Type{1} = 'epocs:Tick';
             else
                 EventInfo.Type{end+1} = 'epocs:Tick';
+            end
+
+            % Correct Infite time points Onset
+            InfIndice = EventInfo.eT.OnsetTimestamps==Inf;
+            EventInfo.eT.OnsetTimestamps(InfIndice) = [];
+            EventInfo.eT.OnsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
+            end
+            % Correct Infite time points Offset
+            InfIndice = EventInfo.eT.OffsetTimestamps==Inf;
+            EventInfo.eT.OffsetTimestamps(InfIndice) = [];
+            EventInfo.eT.OffsetChannelIdentities(InfIndice) = [];
+            if sum(InfIndice)>0
+                disp("Inf sample found and deleted!")
             end
     
             texttoshow = "Event data of type epocs:Tick found!";

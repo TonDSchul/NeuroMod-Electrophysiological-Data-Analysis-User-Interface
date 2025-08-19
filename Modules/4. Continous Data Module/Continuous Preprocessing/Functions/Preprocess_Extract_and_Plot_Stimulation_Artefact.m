@@ -55,9 +55,9 @@ ArtefactTimeRange = ArtefactTimeRange*1000; % convert in ms -- just to plot here
 SamplesToPlot(1) = round(abs(TimeToPlotDouble(1))*Data.Info.NativeSamplingRate);
 SamplesToPlot(2) = round(abs(TimeToPlotDouble(2))*Data.Info.NativeSamplingRate);
 
-PlotTimeVector = (TimeToPlotDouble(1):1/Data.Info.NativeSamplingRate:TimeToPlotDouble(2))*1000; % in ms
+PlotTimeVector = ((-SamplesToPlot(1):SamplesToPlot(2)) / Data.Info.NativeSamplingRate)*1000;% in ms
 
-numtimepoints = round((abs(TimeToPlotDouble(1))+abs(TimeToPlotDouble(2)))*Data.Info.NativeSamplingRate)+1;
+numtimepoints = length(PlotTimeVector);
 
 %% Determine selected events
 % not necesary i startup but later: get event number user selected

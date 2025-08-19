@@ -282,7 +282,7 @@ elseif strcmp(RecordingType,"Neuralynx")
 
 elseif strcmp(RecordingType,"TDT Tank Data")
 
-    [Data.Events,EventChannelNames,Error] = Extract_Events_Module_Extract_TDT_Events(EventInfo,FileTypeDropDown,InputChannelSelection);
+    [Data.Events,EventChannelNames,Error] = Extract_Events_Module_Extract_TDT_Events(EventInfo,FileTypeDropDown,InputChannelSelection,AdditionalEventInfo.State);
     
     if Error == 1
         msgbox("No TDT events could be extracted from file!");

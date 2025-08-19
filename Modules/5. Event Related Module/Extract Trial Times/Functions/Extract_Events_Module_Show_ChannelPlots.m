@@ -251,10 +251,27 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
     EventData = zeros(1,length(Data.Time));
     
     % just input channel selected
-    ChannelIndentityIndice = Channel.(Type).ChannelIdentities == RHDAllChannelData;
-
-    IndiciesToOne = Channel.(Type).Timestamps(ChannelIndentityIndice);
+    if strcmp(Type,"eE") || strcmp(Type,"eTr") || strcmp(Type,"eS") || strcmp(Type,"eB") || strcmp(Type,"eT")
+        if strcmp(StateOption,'Trigger Onset')
+            ChannelIndentityIndice = Channel.(Type).OnsetChannelIdentities == RHDAllChannelData;
+        else
+            ChannelIndentityIndice = Channel.(Type).OffsetChannelIdentities == RHDAllChannelData;
+        end
+    else
+        ChannelIndentityIndice = Channel.(Type).ChannelIdentities == RHDAllChannelData;
+    end
     
+
+    if strcmp(Type,"eE") || strcmp(Type,"eTr") || strcmp(Type,"eS") || strcmp(Type,"eB") || strcmp(Type,"eT")
+        if strcmp(StateOption,'Trigger Onset')
+            IndiciesToOne = Channel.(Type).OnsetTimestamps(ChannelIndentityIndice);
+        else
+            IndiciesToOne = Channel.(Type).OffsetTimestamps(ChannelIndentityIndice);
+        end
+    else
+        IndiciesToOne = Channel.(Type).Timestamps(ChannelIndentityIndice);
+    end
+
     IndiciesToOne(IndiciesToOne==0)=[];
     
     EventData(IndiciesToOne) = 1;
@@ -265,11 +282,34 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
     % Just one sample would be visibly different to others. This can be
     % hard to see so I add 1ms to the right of the trigger 
     for i = 1:sum(ChannelIndentityIndice)
-        if Channel.(Type).Timestamps(i) ~= 0
-            if Channel.(Type).Timestamps(i)+Numsamplesevent<=length(EventData)
-                EventData(Channel.(Type).Timestamps(i):Channel.(Type).Timestamps(i)+Numsamplesevent) = 1;
-            elseif Channel.(Type).Timestamps(i)+Numsamplesevent>length(EventData)
-                EventData(Channel.(Type).Timestamps(i):end) = 1;
+        if strcmp(Type,"eE") || strcmp(Type,"eTr") || strcmp(Type,"eS") || strcmp(Type,"eB") || strcmp(Type,"eT")
+            if strcmp(StateOption,'Trigger Onset') % Onset
+                disp('Trigger Onset')
+                if Channel.(Type).OnsetTimestamps(i) ~= 0
+                    if Channel.(Type).OnsetTimestamps(i)+Numsamplesevent<=length(EventData)
+                        EventData(Channel.(Type).OnsetTimestamps(i):Channel.(Type).OnsetTimestamps(i)+Numsamplesevent) = 1;
+                    elseif Channel.(Type).OnsetTimestamps(i)+Numsamplesevent>length(EventData)
+                        EventData(Channel.(Type).OnsetTimestamps(i):end) = 1;
+                    end
+                end
+            else % Offset
+                disp('Trigger Offset')
+                if Channel.(Type).OffsetTimestamps(i) ~= 0
+                    if Channel.(Type).OffsetTimestamps(i)+Numsamplesevent<=length(EventData)
+                        EventData(Channel.(Type).OffsetTimestamps(i):Channel.(Type).OffsetTimestamps(i)+Numsamplesevent) = 1;
+                    elseif Channel.(Type).OffsetTimestamps(i)+Numsamplesevent>length(EventData)
+                        EventData(Channel.(Type).OffsetTimestamps(i):end) = 1;
+                    end
+                end
+            end
+
+        else
+            if Channel.(Type).Timestamps(i) ~= 0
+                if Channel.(Type).Timestamps(i)+Numsamplesevent<=length(EventData)
+                    EventData(Channel.(Type).Timestamps(i):Channel.(Type).Timestamps(i)+Numsamplesevent) = 1;
+                elseif Channel.(Type).Timestamps(i)+Numsamplesevent>length(EventData)
+                    EventData(Channel.(Type).Timestamps(i):end) = 1;
+                end
             end
         end
     end
