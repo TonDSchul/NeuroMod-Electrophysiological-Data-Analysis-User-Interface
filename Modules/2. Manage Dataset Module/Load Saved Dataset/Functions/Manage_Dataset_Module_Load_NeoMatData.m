@@ -1,5 +1,25 @@
 function [Data,Textbox] = Manage_Dataset_Module_Load_NeoMatData(FullDataPath,FullPathInfo)
 
+%________________________________________________________________________________________
+
+%% This function loads data saved in NeuroMod in a NEO compatible .mat file (can be loaded with NEO.io)
+
+% Input:
+% 1. FullDataPath: char, path to the .mat file with NEO data
+% 2. FullPathInfo: char, path to the .mat file containing the Data.Info
+% structure to load back into Neuromod with all necessary info
+
+% Output: 
+% 1. Data: main app data structure holding all relevant data components
+% 2. Textbox: char, result to show in the app text area. 
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 Textbox = [];
 Data = [];
 

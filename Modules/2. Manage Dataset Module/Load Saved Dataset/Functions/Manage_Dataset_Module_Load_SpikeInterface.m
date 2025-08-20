@@ -1,5 +1,23 @@
 function [Data] = Manage_Dataset_Module_Load_SpikeInterface(DataPath)
 
+%________________________________________________________________________________________
+
+%% This function loads NeuroMod data back that was earlier saved in a spikeinterface compatible format 
+
+% Input:
+% 1. DataPath: char, path to the folder containing the saved spikeinterface
+% data
+
+% Output: 
+% 1. Data: app.Data structure holding all relevant data components
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 dashindex = find(DataPath=='\');
 
 GeneralPath = strcat(DataPath(1:dashindex(end)-1));

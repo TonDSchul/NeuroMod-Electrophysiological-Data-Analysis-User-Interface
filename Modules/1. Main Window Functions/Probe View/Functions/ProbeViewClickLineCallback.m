@@ -491,7 +491,7 @@ if ProbeViewWindow == 0
             
             if strcmp(Window,'All Windows Opened') || strcmp(Window,'Delete Event Trigger Window')
                 if isprop(app.Mainapp,'EventIndiceRejectionWindow')
-                    if ~isempty(app.Mainapp.EventIndiceRejectionWindow)
+                    if ~isempty(app.Mainapp.EventIndiceRejectionWindow) && isvalid(app.Mainapp.EventIndiceRejectionWindow)
                         Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
                         %% Extract and plot stim artefacts
                         if ~strcmp(app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value,"Mean over all Trigger")

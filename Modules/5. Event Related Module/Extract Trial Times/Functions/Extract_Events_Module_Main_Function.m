@@ -360,25 +360,26 @@ elseif strcmp(RecordingType,"Spike2")
 
 elseif strcmp(RecordingType,"NEO")
     Error = 0;
-    if sum(EventInfo.event_samples>length(Data.Time))>0
-        msgbox("Warning: Trigger outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
-        
-        EventInfo.event_labels(EventInfo.event_samples>length(Data.Time)) = [];
-        EventInfo.event_channels(EventInfo.event_samples>length(Data.Time)) = [];
-        EventInfo.event_samples(EventInfo.event_samples>length(Data.Time)) = [];
-        
-        TempUniqueChannel = unique(EventInfo.event_channels);
-        InputChannelSelection(~ismember(InputChannelSelection,TempUniqueChannel)) = [];
-        
-        %DeletedChannelIndices = find(~ismember(InputChannelSelection,TempUniqueChannel));
-
-        if isempty(EventInfo.event_samples) || isempty(InputChannelSelection)
-            msgbox("Warning: All trigger indicies had to be deleted.");
-            [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
-            return;
+    if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
+        if sum(EventInfo.event_samples>length(Data.Time))>0
+            msgbox("Warning: Trigger outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
+            
+            EventInfo.event_labels(EventInfo.event_samples>length(Data.Time)) = [];
+            EventInfo.event_channels(EventInfo.event_samples>length(Data.Time)) = [];
+            EventInfo.event_samples(EventInfo.event_samples>length(Data.Time)) = [];
+            
+            TempUniqueChannel = unique(EventInfo.event_channels);
+            InputChannelSelection(~ismember(InputChannelSelection,TempUniqueChannel)) = [];
+            
+            %DeletedChannelIndices = find(~ismember(InputChannelSelection,TempUniqueChannel));
+    
+            if isempty(EventInfo.event_samples) || isempty(InputChannelSelection)
+                msgbox("Warning: All trigger indices had to be deleted.");
+                [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
+                return;
+            end
         end
     end
-    
     EventChannelNames = cell(1,length(InputChannelSelection));
     for i = 1:length(InputChannelSelection)
         EventChannelNames{i} = convertStringsToChars(strcat("Event Ch ",num2str(InputChannelSelection(i))));
@@ -424,8 +425,9 @@ if isfield(Data,'Events')
             end
 
             if ~isempty(Data.Events{i})
-                if ~strcmp(RecordingType,"Open Ephys")% Done above
+                if ~strcmp(RecordingType,"Open Ephys") % Done above
                     % account for time being cut (cut start and cut end)
+                    index = 0;
                     if isfield(Data.Info,'CutStart')
                         index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
         
@@ -433,20 +435,22 @@ if isfield(Data,'Events')
 
                         if sum(EventsToDelete)>0
                             Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
-                            Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
                             disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," triggers are deleted!"));
                         end
                     end
             
                     if isfield(Data.Info,'CutEnd')
-                        EventsToDelete = Data.Events{i} >= length(Data.Time);
+                        EventsToDelete = Data.Events{i} >= index+length(Data.Time)-1;
                         if sum(EventsToDelete)>0
                             Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
                             disp(strcat("Stop time of dataset was cut. First ",num2str(sum(EventsToDelete))," triggers are deleted!"));
                         end
                     end
+                    if isfield(Data.Info,'CutStart')
+                        Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
+                    end
                 end
-
+                
                 Data.Info.EventChannelNames = {};
                 Data.Info.EventChannelType = [];
                 

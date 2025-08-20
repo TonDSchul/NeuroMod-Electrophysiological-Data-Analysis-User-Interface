@@ -1,5 +1,31 @@
 function [SavePath,Error] = Manage_Dataset_SaveData_NWB(Data,SaveEvents,DataType,SampleRate,Originalfoldername)
 
+%________________________________________________________________________________________
+
+%% This function saves NeuroMod data as a .nwb file using the MatNWB toolbox
+
+% Input:
+% 1. Data: main window data structure with all relevant data components
+% 2. SaveEvents: double 1 or 0 whether to save event data if present
+% 3. DataType: char, either "Raw Data" or "Preprocessed Data" to indicate
+% what component to save
+% 4. SampleRate: double, sample rate in Hz. not from Data.Info. bc it
+% depends on potential downsampling and is handled on a higher level
+% 5. Originalfoldername: char, name of the folder data was extracted from
+% in the extract raw recordings window
+
+% Output: 
+% 1. SavePath: char, path the user selected to save in
+% 2. Error.double 1 or 0 
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 Error = 0;
 SavePath = [];
 

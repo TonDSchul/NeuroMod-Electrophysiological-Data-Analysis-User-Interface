@@ -1,4 +1,4 @@
-function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,DataTypeDropDown,StartIndex,StopIndex)
+function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,DataTypeDropDown,StartIndex,StopIndex,Window)
 
 %________________________________________________________________________________________
 
@@ -16,6 +16,7 @@ function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_P
 % data snippet ends -----> only used if first 'if statement block' below
 % is not triggered. It checks if data is downsampled in different
 % situations and makes adjsutments accordingly
+% 5. Window: char, main window analysis window for which function is called
 
 % Output:
 % 1. StartIndex: double, Determined data index (from Data.Raw or Data.Preprocessed) at which the
@@ -32,6 +33,13 @@ function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_P
 % Department systemsphysiology of learning, LIN Magdeburg.
 
 %________________________________________________________________________________________
+
+% get current active Channel
+if ~strcmp(Window,"PhaseSync")
+    [DataChannelSelected] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
+else
+    DataChannelSelected = 1:size(app.Data.Raw,1);
+end
 
 % convert time points from donwsaampled state to raw data state 
 if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Preprocessed Data') && strcmp(DataTypeDropDown,'Raw Data') 
@@ -59,17 +67,25 @@ elseif isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'R
 end
 
 if strcmp(DataTypeDropDown,'Raw Data')   
-    DatatoPlot = app.Data.Raw(:,StartIndex:StopIndex);
+    DatatoPlot = app.Data.Raw(DataChannelSelected,StartIndex:StopIndex);
     Time = app.Data.Time(StartIndex:StopIndex);
     Samplefrequency = app.Data.Info.NativeSamplingRate;
 elseif strcmp(DataTypeDropDown,'Preprocessed Data')
     if isfield(app.Data.Info,'DownsampleFactor')
-        DatatoPlot = app.Data.Preprocessed(:,StartIndex:StopIndex);
+        DatatoPlot = app.Data.Preprocessed(DataChannelSelected,StartIndex:StopIndex);
         Time = app.Data.TimeDownsampled(StartIndex:StopIndex);
         Samplefrequency = app.Data.Info.DownsampledSampleRate;
     else
-        DatatoPlot = app.Data.Preprocessed(:,StartIndex:StopIndex);
+        DatatoPlot = app.Data.Preprocessed(DataChannelSelected,StartIndex:StopIndex);
         Time = app.Data.Time(StartIndex:StopIndex);
         Samplefrequency = app.Data.Info.NativeSamplingRate;
+    end
+end
+
+% esnure dimensionality
+if isscalar(DataChannelSelected)
+    DatatoPlot = squeeze(DatatoPlot);
+    if size(DatatoPlot,1)>size(DatatoPlot,2)
+        DatatoPlot = DatatoPlot';
     end
 end

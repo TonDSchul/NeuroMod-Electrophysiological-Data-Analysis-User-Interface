@@ -1,5 +1,36 @@
 function [ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,stringArray,SelectedFolder,Formatsfound] = Manage_Dataset_Module_NEO_Populate_Text(ProbeInfo,PathToOpen,JustCheck,SelectedFolder,RecordingType)
 
+%________________________________________________________________________________________
+
+%% This function shows infoes about NEO library recording extraction in the text are of the load raw recording window
+
+% Input:
+% 1. ProbeInfo: struture holding probe info (if present) to add to text
+% area content
+% 2. PathToOpen: path to automatically open the file selection explorer in 
+% 3. JustCheck: don let user seelct a folder, just check contents of
+% already selected folder
+% 4. SelectedFolder: char, path to an already selected recording fodler 
+% 5. RecordingType: char, from Data.Info (not used anymore but will maybe get important)
+
+% Output: 
+% 1. ProbeInfoText: Text to show in the window text area
+% RecordingSystemDropDownItems: cell array each containing a char with the
+% options for the user for the auotdetected recording system dropdown
+% FileTypeDropDownItems: cell array each containing a char with the
+% options for the user for the file format dropdown menu
+% stringArray: n x 1 string array holding the folder contents (files)
+% SelectedFolder: char, folder to recording selected
+% Formatsfound: string array with all formats found (from this selection: .ncs, .nlx, .nex)
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 stringArray = [];
 RecordingSystemDropDownItems = cell(1,1);
 FileTypeDropDownItems = cell(1,1);

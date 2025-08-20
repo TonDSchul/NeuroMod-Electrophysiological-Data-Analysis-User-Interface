@@ -1,5 +1,35 @@
 function [Data,Events,texttoshow] = Extract_Events_Module_Check_Violating_Trigger(Data,Events,TimeAroundEvent)
 
+%________________________________________________________________________________________
+
+%% Function to check whether event sample time points acquired violate time limits when extracting trial data (event related data)
+% i.e trigger at 0.2 seconds before recording ends with a trila time of 0.5
+% seconds after the trigger
+
+% user is asked whether to delete those indices. This makes everything
+% cleaner for sure, but everything still works without it!
+
+% executed as last function in the extracting event data from a recording
+% pipeline of the extract trigger times windwo
+
+% Input:
+% 1. Data: Main window data strucure with all relevant dataset compontntes
+% Events: cell array, each cell containing a a x 1 event sample vector
+% TimeAroundEvent: 1 x 2 vector with time before (1) and after (2) each
+% event trigger in seconds - both positive!
+
+% Output
+% 1. Data: Main window data strucure with all relevant dataset compontntes
+% 2. Events: cell array, each cell containing a a x 1 event sample vector -
+% cleaned or uncleaned depending on user selction
+% 3. texttoshow: char, text to show when trigger where deleted in extract
+% trial times window.
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 WhatToDo = [];
 texttoshow = [];
 Delete_Time_Violating_TriggerWindow = [];

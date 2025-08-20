@@ -9,16 +9,26 @@ import neo
 import matplotlib.pyplot as plt
 import quantities as pq
 
+'''
+######################### Load Channel Data and Meta Data #########################
+'''
 r = neo.io.NeoMatlabIO(filename='C:/Users/tonyd/Desktop/NEOMAT.mat')
 bl = r.read_block()
-
+'''
+######################### Get Raw Data from extracted object (block segment 0) #########################
+'''
 anasig = bl.segments[0].analogsignals[0]
 time_axis = anasig.times.rescale(pq.s)
 
+'''
+######################### Get event Data #########################
+'''
 # Get first event channel
 event_channel = bl.segments[0].events[0]  # events[0] = first event channel
 event_times = event_channel.times.rescale(pq.s)  # Convert to seconds
-
+'''
+######################### Plot all channel and one event channel #########################
+'''
 # Plot all channels
 plt.figure(figsize=(12, 6))
 for ch in range(anasig.shape[1]):

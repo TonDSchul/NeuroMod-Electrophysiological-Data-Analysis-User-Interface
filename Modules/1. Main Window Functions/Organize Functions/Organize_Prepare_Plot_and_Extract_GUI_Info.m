@@ -293,7 +293,7 @@ if isprop(app.CSDApp,'ExistflagCSD')
         hamwidth = str2double(app.CSDApp.HammWindowEditField.Value);
         ChannelSpacing = app.Data.Info.ChannelSpacing;
 
-        [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,StartIndex,StopIndex);
+        [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,StartIndex,StopIndex,"CSD");
         
         [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(TempDatatoPlot,TempTime,hamwidth,ChannelSpacing,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData,app.PlotAppearance,app.Data,EventData,TempSamplefrequency,app.CurrentEventChannel,EventPlot,app.CSDApp.DataTypeDropDown.Value);
         
@@ -326,7 +326,7 @@ if isprop(app.SpectralEstApp,'ExistflagSDE')
     if app.SpectralEstApp.Startup == 1 || PowerEstiamtePlot
         %% Extract Channel Number and set colormap
             
-        [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.SpectralEstApp.DataTypeDropDown.Value,StartIndex,StopIndex);
+        [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.SpectralEstApp.DataTypeDropDown.Value,StartIndex,StopIndex,"PowerSpect");
         
         [app.SpectralEstApp.PDLim,app.CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(TempDatatoPlot,TempSamplefrequency,app.SpectralEstApp.UIAxes,TempTime,app.SpectralEstApp.PDLim,app.SpectralEstApp.LockYLimCheckBox.Value,app.CurrentPlotData,app.PlotAppearance);
         
@@ -359,7 +359,7 @@ end
 if isprop(app.LiveECHTWindow,'ExistflagECHT')
     if app.LiveECHTWindow.Startup == 1 || ECHTPlot
 
-        [TempStartIndex,TempStopIndex,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,StartIndex,StopIndex);
+        [TempStartIndex,TempStopIndex,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,StartIndex,StopIndex,"PhaseSync");
         
         [app.LiveECHTWindow.GlobalYlim,texttoshow,app.CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(TempDatatoPlot,TempTime,TempSamplefrequency,app.LiveECHTWindow.PolarPlot,app.LiveECHTWindow.UIAxes_3,app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,app.Data,app.LiveECHTWindow.ChannelToCompare,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,app.ActiveChannel,app.LiveECHTWindow.DataTypeDropDown.Value,app.PlotAppearance,app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value,TempStartIndex,TempStopIndex,app.LiveECHTWindow.WhatToDo,app.LiveECHTWindow.Ccolormap,app.LiveECHTWindow.CalculationMethodDropDown.Value,app.LiveECHTWindow.ForceFilterOFFCheckBox.Value,app.LiveECHTWindow.ECHTFilterorderEditField.Value,app.CurrentPlotData,EventData,app.CurrentEventChannel,EventPlot,app.LiveECHTWindow.ShowAnayzedData,app.LiveECHTWindow.LowPassSettings,app.LiveECHTWindow.FilterType);      
         app.LiveECHTWindow.TextArea.Value = texttoshow;

@@ -82,15 +82,19 @@ for i = 1:numel(fields)
         end
         
     elseif isstring( fieldValue ) || ischar( fieldValue )
-        if strcmp(fieldName,"EventChannelNames")
-            concatenatedString = join(fieldValue, ',');
-            infoString = sprintf('%s%s: %s\n', infoString, fieldName, concatenatedString);
-        else
-            infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+        if ~isempty(fieldValue)
+            if strcmp(fieldName,"EventChannelNames")
+                concatenatedString = join(fieldValue, ',');
+                infoString = sprintf('%s%s: %s\n', infoString, fieldName, concatenatedString);
+            else
+                infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
+            end
         end
     else
-        if isnumeric(fieldValue)
-            infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+        if ~isempty(fieldValue)
+            if isnumeric(fieldValue)
+                infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+            end
         end
     end
 end

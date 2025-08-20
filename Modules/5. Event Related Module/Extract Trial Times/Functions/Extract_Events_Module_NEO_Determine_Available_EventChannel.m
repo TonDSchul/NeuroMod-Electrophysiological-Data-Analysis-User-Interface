@@ -134,18 +134,20 @@ if CostumeEventFilePresent == 1
         return;
     end
     
-    if sum(event_samples > length(Data.Time))
-        DeletedIndices = find(event_samples > length(Data.Time));
-        event_channels(DeletedIndices) = [];
-        event_labels(DeletedIndices) = [];
-        event_samples(DeletedIndices) = [];
-        msgbox(strcat(num2str(length(DeletedIndices))," trigger outside of time window found that are deleted!"));
-    end
-    
-    if isempty(event_samples)
-        EventInfo = [];
-        msgbox("After deleting trigger outside of time window, no trigger remain!")
-        return;
+    if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
+        if sum(event_samples > length(Data.Time))
+            DeletedIndices = find(event_samples > length(Data.Time));
+            event_channels(DeletedIndices) = [];
+            event_labels(DeletedIndices) = [];
+            event_samples(DeletedIndices) = [];
+            msgbox(strcat(num2str(length(DeletedIndices))," trigger outside of time window found that are deleted!"));
+        end
+        
+        if isempty(event_samples)
+            EventInfo = [];
+            msgbox("After deleting trigger outside of time window, no trigger remain!")
+            return;
+        end
     end
     
     if contains(Data.Info.FileType,'OpenEphys') || contains(Data.Info.FileType,'Open Ephys')

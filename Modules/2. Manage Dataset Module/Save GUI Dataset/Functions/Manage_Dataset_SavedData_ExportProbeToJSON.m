@@ -1,5 +1,22 @@
 function Probe = Manage_Dataset_SavedData_ExportProbeToJSON(Data)
 
+%________________________________________________________________________________________
+
+%% This function exports NeuroMod probe information into a json file to load into spikeinterface (saving is not happening here but in the save spineinterface function)
+
+% Input:
+% 1. Data: Main app window data structure holding all relevant dataset
+% components
+
+% Output: 
+% 1. Probe: cell containing porbe structure to save
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 Probe = [];
 
 %% ------------------------- Set Basic Parameter -------------------------

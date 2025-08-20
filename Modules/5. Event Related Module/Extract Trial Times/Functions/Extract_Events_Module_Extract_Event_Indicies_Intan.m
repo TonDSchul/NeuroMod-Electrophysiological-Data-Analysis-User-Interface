@@ -99,9 +99,3 @@ for numevents = 1:length(Data.Events)
         msgbox(strcat("Warning: Event Channel ",num2str(numevents)," has extracted more than 1000 events. Change the threshold to avoid or delete the channel from the channel selection.")); 
     end
 end
-
-% figure;
-% hold on
-% plot(Data.Time,InputChannelData{1})
-% a = zeros(size(Data.Events{1}))+1;
-% plot(Data.Events{1}/25000,a,'*','Color','r')

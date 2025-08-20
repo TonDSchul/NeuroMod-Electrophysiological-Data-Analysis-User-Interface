@@ -12,17 +12,13 @@ function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFol
 % without the need to start NEO
 % 4. KeepPythonOpen: logical/double 1 or 0 whether to keep the python
 % console open after script finished until user pressed enter
-% 5. RecordingSystemSelection: char, recording type from
-% Data.Info.RecordingSystem
-% 6. FormatToSaveandReadintoMatlab: char from the extract raw recording
-% window which format to use (see python script which ones)
-
-% note: when extracting events, add the char EventAnalysis is added to the
-% end of the char FormatToSaveandReadintoMatlab to show the NEO script to
-% just extract events
+% 5. RecordingSystemSelection: char, recording type 
+% 6. FormatToSaveandReadintoMatlab
 
 % Output: 
-% 1. Success: double, 1 or 0 whether script succesfully finished
+% 1. Load_Data_Window_Info: same as input struvture
+% 2. ProbeInfoText: Text to show in window
+% 3. FolderContentsText: Folder contents found
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

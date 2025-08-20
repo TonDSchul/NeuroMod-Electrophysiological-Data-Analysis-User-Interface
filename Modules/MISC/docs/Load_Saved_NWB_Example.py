@@ -4,10 +4,15 @@ import numpy as np
 
 nwb_path = "C:/Users/tonyd/Desktop/NWBTEST.nwb"
 
-with NWBHDF5IO(nwb_path, 'r') as io:
-    nwbfile = io.read()
 
-    # --- Extract ElectricalSeries data ---
+with NWBHDF5IO(nwb_path, 'r') as io:
+    '''
+    ######################### Extract Data from nwb #########################
+    '''
+    nwbfile = io.read()
+    '''
+    ######################### # --- Extract ElectricalSeries data --- #########################
+    '''
     es = list(nwbfile.acquisition.values())[0]
     data = es.data[:]  # shape: [time, channels] or [time] if 1D
     sampling_rate = es.rate
@@ -21,8 +26,9 @@ with NWBHDF5IO(nwb_path, 'r') as io:
 
     duration_sec = len(signal) / sampling_rate
     time = np.arange(len(signal)) / sampling_rate
-
-    # --- Extract event times and labels ---
+    '''
+    ######################### # --- Extract event times and labels --- #########################
+    '''
     # Assuming events stored under intervals group with name 'Events_Chan1'
     if 'Events_Chan1' in nwbfile.intervals:
         events_table = nwbfile.intervals['Events_Chan1']
@@ -35,7 +41,9 @@ with NWBHDF5IO(nwb_path, 'r') as io:
         event_start_times = np.array([])
         event_labels = np.array([])
 
-# --- Plotting ---
+'''
+######################### Plot first data channel and event data channel (if present) #########################
+'''
 plt.figure(figsize=(15, 5))
 plt.plot(time, signal, label='Channel 0 Signal')
 

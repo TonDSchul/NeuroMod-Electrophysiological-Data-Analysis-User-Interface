@@ -1,5 +1,23 @@
 function [Data,Textbox] = Manage_Dataset_Module_Load_NWBFile(FullDataPath)
 
+%________________________________________________________________________________________
+
+%% This function loads data saved in NeuroMod in the .nwb format using the MatNWB Toolbox
+
+% Input:
+% 1. FullDataPath: char, path to the .nwb file
+
+% Output: 
+% 1. Data: main app data structure holding all relevant data components
+% 2. Textbox: char, result to show in the app text area. 
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 h = waitbar(0, 'Loading .nwb file...', 'Name','Loading .nwb file...');
 msg = sprintf('Loading .nwb file... (%d%% done)', 25);
 waitbar(25, h, msg);

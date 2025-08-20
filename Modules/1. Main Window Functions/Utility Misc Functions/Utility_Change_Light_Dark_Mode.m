@@ -1860,9 +1860,9 @@ end
 
 if strcmp(Window,'DeleteTriggerIndices')
     % texts to black
-    set(findall(app.TrialRejectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    set(findall(app.DeleteTriggerWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
 
-    app.TrialRejectionUIFigure.Color  = WindowBackgroundColor;
+    app.DeleteTriggerWindowUIFigure.Color  = WindowBackgroundColor;
     
     app.LeftPanel.BackgroundColor   = WindowBackgroundColor;
     app.LeftPanel.ForegroundColor   = WindowBackgroundColor;

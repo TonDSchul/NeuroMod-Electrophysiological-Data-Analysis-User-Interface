@@ -223,7 +223,8 @@ elseif strcmp(Type,"Extracting")
     Utility_Show_Info_Loaded_Data(app);
     
     if length(app.Data.Info.ProbeInfo.ActiveChannel)~=size(app.Data.Raw,1)
-        error('More amplifier data channels found than channel set as active channel! Please define probe layout again with as many channel as in the raw dataset!')        
+        msgbox(strcat(num2str(size(app.Data.Raw,1))," amplifier data channels found but ",num2str(length(app.Data.Info.ProbeInfo.ActiveChannel))," probe channel defined! Please define probe layout again with as many channel as in the raw dataset!"))
+        error(strcat(num2str(size(app.Data.Raw,1))," amplifier data channels found but ",num2str(length(app.Data.Info.ProbeInfo.ActiveChannel))," probe channel defined! Please define probe layout again with as many channel as in the raw dataset!"));       
     end
     
     app.UIAxes.Box = "off";

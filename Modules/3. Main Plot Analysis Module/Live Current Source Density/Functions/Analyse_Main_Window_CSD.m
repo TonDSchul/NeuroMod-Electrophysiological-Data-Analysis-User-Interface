@@ -56,6 +56,13 @@ function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(DatatoPlot,Time
 
 %________________________________________________________________________________________
 
+if size(DatatoPlot,1)<3
+    currentClim = [];
+    CurrentPlotData = [];
+    msgbox("At least 3 channel required for CSD! Returning.")
+    return;
+end
+
 % Distinguish between downsampled data and normal data
 nChan = size(DatatoPlot,1);
 ds = (0:nChan)*ChannelSpacing; %depth in micrometers given 50 µm spacing

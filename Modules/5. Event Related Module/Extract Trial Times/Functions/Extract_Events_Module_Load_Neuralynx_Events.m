@@ -59,18 +59,20 @@ event(IndiciesToDelete == 1) = [];
 IndiciesToDelete = [];
 
 %% Check if sample bigger than time
-EventSamples = double(cell2mat({event.sample}));
-
-if sum(EventSamples>length(Data.Time))>0
-    IndiciesToDelete = EventSamples>length(Data.Time);
-    if sum(IndiciesToDelete) == length(EventSamples)
-        msgbox("Error: All trigger times outside of time window! Make sure recording time was not cut and that sample rate of raw signal is not downsampled!");
-        Texttoshow("Error: All trigger times outside of time window! Make sure recording time was not cut and that sample rate of raw signal is not downsampled!");
-        event = [];
-        return;
-    else
-        warning(strcat(num2str(sum(IndiciesToDelete))," trigger indices that violate time limits where deleted."))
-        msgbox(strcat(num2str(sum(IndiciesToDelete))," trigger indices that violate time limits where deleted."))
+if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
+    EventSamples = double(cell2mat({event.sample}));
+    
+    if sum(EventSamples>length(Data.Time))>0
+        IndiciesToDelete = EventSamples>length(Data.Time);
+        if sum(IndiciesToDelete) == length(EventSamples)
+            msgbox("Error: All trigger times outside of time window! Make sure recording time was not cut and that sample rate of raw signal is not downsampled!");
+            Texttoshow("Error: All trigger times outside of time window! Make sure recording time was not cut and that sample rate of raw signal is not downsampled!");
+            event = [];
+            return;
+        else
+            warning(strcat(num2str(sum(IndiciesToDelete))," trigger indices that violate time limits where deleted."))
+            msgbox(strcat(num2str(sum(IndiciesToDelete))," trigger indices that violate time limits where deleted."))
+        end
+        event(IndiciesToDelete == 1) = [];
     end
-    event(IndiciesToDelete == 1) = [];
 end
