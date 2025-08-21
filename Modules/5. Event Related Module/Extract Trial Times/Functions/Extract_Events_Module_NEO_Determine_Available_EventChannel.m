@@ -136,11 +136,14 @@ if CostumeEventFilePresent == 1
     
     if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
         if sum(event_samples > length(Data.Time))
-            DeletedIndices = find(event_samples > length(Data.Time));
-            event_channels(DeletedIndices) = [];
-            event_labels(DeletedIndices) = [];
-            event_samples(DeletedIndices) = [];
-            msgbox(strcat(num2str(length(DeletedIndices))," trigger outside of time window found that are deleted!"));
+            currentsamples = (double(event_samples)-NeoEventStartTimeStamp)+1;
+            DeletedIndices = find(currentsamples > length(Data.Time));
+            if ~isempty(DeletedIndices)
+                event_channels(DeletedIndices) = [];
+                event_labels(DeletedIndices) = [];
+                event_samples(DeletedIndices) = [];
+                msgbox(strcat(num2str(length(DeletedIndices))," trigger outside of time window found that are deleted!"));
+            end
         end
         
         if isempty(event_samples)

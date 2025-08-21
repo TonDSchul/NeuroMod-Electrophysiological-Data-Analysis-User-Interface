@@ -115,31 +115,41 @@ end
 %% Save Raw data in chunks (increases performane)
 % Initiate Progressbar
 h = waitbar(0, 'Saving data...', 'Name','Saving data...');
-cN = 100;  % number of steps/chunks
-% Divide the data into chunks (last chunk is smaller than the rest)
+
+%Set chunk size
 dN = size(SaveDataRaw,2);
-dataIdx = [1 : round(dN/cN) : dN, dN+1];  % cN+1 chunk location indexes
-% Save the data in chunks
-if strcmp(Format,'int16') || strcmp(Format,'int32')
-    fidRaw = fopen(folderPath, 'W'); 
+if dN >2000
+    stepSize = dN/500;   % <-- whatever you want
 else
+    stepSize = dN/100;   % <-- whatever you want
+end
+dataIdx = [1:stepSize:dN, dN+1];   % always end at dN+1
+
+nChunks = numel(dataIdx) - 1;  % number of chunks
+
+% Save the data in chunks 
+if strcmp(Format,'int16') || strcmp(Format,'int32') 
+    fidRaw = fopen(folderPath, 'W'); 
+else 
     fidRaw = fopen(folderPath, 'wb'); 
 end
 
-for chunkIdx = 0 : cN-1
-   % Update the progress bar
-   fraction = chunkIdx/cN;
-   msg = sprintf('Saving data... (%d%% done)', round(100*fraction));
-   waitbar(fraction, h, msg);
-   % Save the next data chunk
-   chunkData = SaveDataRaw(:,dataIdx(chunkIdx+1) : dataIdx(chunkIdx+2)-1);
-   if strcmp(Format,'int32')
-        fwrite(fidRaw,chunkData, '*int32');
-   elseif strcmp(Format,'int16')
-        fwrite(fidRaw,chunkData, '*int16');
-   else
-        fwrite(fidRaw,chunkData, '*double');
-   end
+for chunkIdx = 1:nChunks
+    % progress bar
+    fraction = chunkIdx/nChunks;
+    msg = sprintf('Saving data... (%d%% done)', round(100*fraction));
+    waitbar(fraction, h, msg);
+
+    % chunk
+    chunkData = SaveDataRaw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1);
+
+    if strcmp(Format,'int32')
+        fwrite(fidRaw,chunkData,'*int32');
+    elseif strcmp(Format,'int16')
+        fwrite(fidRaw,chunkData,'*int16');
+    else
+        fwrite(fidRaw,chunkData,'*double');
+    end
 end
 
 if strcmp(Format,'int16') || strcmp(Format,'int32')

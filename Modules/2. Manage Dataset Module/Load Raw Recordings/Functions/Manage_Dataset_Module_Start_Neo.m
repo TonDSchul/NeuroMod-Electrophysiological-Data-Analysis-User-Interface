@@ -1,4 +1,4 @@
-function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection,FormatToSaveandReadintoMatlab)
+function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)
 
 %________________________________________________________________________________________
 
@@ -16,6 +16,9 @@ function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFol
 % Data.Info.RecordingSystem
 % 6. FormatToSaveandReadintoMatlab: char from the extract raw recording
 % window which format to use (see python script which ones)
+% 7. IsNP1: double 1 or 0 whether open ephys recording is a NP 1.0 recording
+% 8. DataPartToextract: double, if IsNP1 == 1, user selected whether to
+% extract LFP or AP data: 1 = LFO data, 2 = AP Data
 
 % note: when extracting events, add the char EventAnalysis is added to the
 % end of the char FormatToSaveandReadintoMatlab to show the NEO script to
@@ -46,8 +49,8 @@ if iscell(SelectedPath)
     SelectedPath = strjoin(SelectedPath, ',');
 end
 
-command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s" "%s"', ...
-        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection, FormatToSaveandReadintoMatlab);
+command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s" "%s" "%d" "%d"', ...
+        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection, FormatToSaveandReadintoMatlab, IsNP1, Np1DataPartToextract);
 
 % Execute the Python script
 [status, cmdout] = system(command);

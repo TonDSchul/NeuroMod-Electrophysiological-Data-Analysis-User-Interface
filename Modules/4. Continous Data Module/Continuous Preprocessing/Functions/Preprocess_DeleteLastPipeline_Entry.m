@@ -133,6 +133,6 @@ if ~isempty(app.PreprocessingSteps)
     app.TextArea.Value = Texttoshow;
 
 else
-    Texttoshow = "No Pipeline Components selected. Add one and start pipeline";
+    Texttoshow = "No Pipeline Components selected. Add one or more and start the pipeline.";
     app.TextArea.Value = Texttoshow;
 end

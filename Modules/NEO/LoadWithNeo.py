@@ -12,7 +12,7 @@ import neo
 
 from Neo_FunctionDeclaration import create_save_folder,Get_Save_Event_Data,Exract_Raw_Channel_Data,Save_MetaData,GetAcquisitionStartSample,Get_Reader,write_DataLogger
 
-def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab):
+def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,IsNP1,Np1DataPartToextract):
     # -----------------------------------------------------------------------
     ''' Check what to do'''
     # -----------------------------------------------------------------------
@@ -96,7 +96,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
             print("Starting Data Extraction with NEO from " + FolderName)
             write_DataLogger("Starting Data Extraction with NEO from " + FolderName,DataLoggerSaveFileName)
         
-        RawDataChunk,analogsignals,block = Exract_Raw_Channel_Data(reader)
+        RawDataChunk,analogsignals,block = Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract)
         
         #### ----------- If applicable: Find start sample of recording start in respect to acquisition start ----------- ####
         if first == True:
@@ -150,7 +150,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
         # -----------------------------------------------------------------------
         NrChannel = RawDataChunk.shape[0]
         NrSamples = RawDataChunk.shape[1]
-        Save_MetaData(analogsignals,start_sample,JustExtractingEvents,MetaDataSaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples)
+        Save_MetaData(analogsignals,start_sample,JustExtractingEvents,MetaDataSaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples,IsNP1,Np1DataPartToextract)
         
         print("Saving Channel Data to " + ChannelDataSaveFileName + " (this might take a while)")
         write_DataLogger("Saving Channel Data to " + ChannelDataSaveFileName,DataLoggerSaveFileName)
@@ -185,14 +185,18 @@ if __name__ == "__main__":
             JustLoad = sys.argv[3]
             RecordingSystemSelection = sys.argv[4]
             FormatToSaveandReadintoMatlab = sys.argv[5]
+            IsNP1 = sys.argv[6]
+            Np1DataPartToextract = sys.argv[7]
             
             JustLoad = int(JustLoad)
+            IsNP1 = int(IsNP1)
+            Np1DataPartToextract = int(Np1DataPartToextract)
             
             if not pyuac.isUserAdmin():
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab)  # Already an admin here.
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)  # Already an admin here.
     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -209,14 +213,18 @@ if __name__ == "__main__":
         JustLoad = sys.argv[3]
         RecordingSystemSelection = sys.argv[4]
         FormatToSaveandReadintoMatlab = sys.argv[5]
+        IsNP1 = sys.argv[6]
+        Np1DataPartToextract = sys.argv[7]
         
         JustLoad = int(JustLoad)
+        IsNP1 = int(IsNP1)
+        Np1DataPartToextract = int(Np1DataPartToextract)
         
         if not pyuac.isUserAdmin():
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab)  # Already an admin here.
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)  # Already an admin here.
         
             
     

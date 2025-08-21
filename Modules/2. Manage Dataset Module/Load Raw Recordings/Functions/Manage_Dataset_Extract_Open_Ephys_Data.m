@@ -155,7 +155,7 @@ for RecordingIndex = 1:NumRecordingIndex
             if NP2Recording == 0 % NP 1
                 NPRecordings = Neuropixels1_LFP_or_AP(Neuropixrecording);
         
-                uiwait(NPRecordings.SelectRecordingWindowUIFigure);
+                uiwait(NPRecordings.NPDataTypeUIFigure);
                 
                 if isvalid(NPRecordings)
                     streamIndex = NPRecordings.SelectedRecordings; % == 1 if LFP data selected, == 2 if AP data selected

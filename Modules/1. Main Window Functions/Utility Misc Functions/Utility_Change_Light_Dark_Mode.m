@@ -53,7 +53,7 @@ end
 if strcmp(Window,'MainWindow')
     % texts to black
     set(findall(app.NeuromodToolboxMainWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
-    
+
     % backgrounds to grey
     app.NeuromodToolboxMainWindowUIFigure.Color       = WindowBackgroundColor;
     app.ManageDatasetPanel.BackgroundColor            = WindowBackgroundColor;
@@ -155,6 +155,7 @@ if strcmp(Window,"ExtractDataWindow")
 
     % texts to black
     set(findall(app.ExtractDataWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.ExtractDataWindowUIFigure.Color  = WindowBackgroundColor;
 
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;
@@ -176,7 +177,7 @@ end
 if strcmp(Window,"ProbeLayout_Window")    
     % texts to black
     set(findall(app.ProbeLayoutWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
-
+    
     app.ProbeLayoutWindowUIFigure.Color  = WindowBackgroundColor;
 
     app.ChannelOrderField.BackgroundColor   = ComponentsInWindowColor;
@@ -218,7 +219,9 @@ end
 if strcmp(Window,"NP1_LFP_AP")    
 
     % texts to black
-    set(findall(app.SelectRecordingWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    set(findall(app.NPDataTypeUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.NPDataTypeUIFigure.Color  = WindowBackgroundColor;
+
 
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;
@@ -232,6 +235,7 @@ end
 if strcmp(Window,"OE_Multiple_Recordings_Window")    
     % texts to black
     set(findall(app.SelectRecordingWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.SelectRecordingWindowUIFigure.Color  = WindowBackgroundColor;
 
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;
@@ -247,6 +251,7 @@ end
 if strcmp(Window,"Spike2_Select_Event_Channel_Window")    
     % texts to black
     set(findall(app.Spike2SelectEventChannelUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.Spike2SelectEventChannelUIFigure.Color  = WindowBackgroundColor;
 
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;
@@ -263,6 +268,7 @@ end
 if strcmp(Window,"Load_Data_Window")    
     % texts to black
     set(findall(app.LoadDataWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.LoadDataWindowUIFigure.Color  = WindowBackgroundColor;
 
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;
@@ -282,6 +288,7 @@ end
 if strcmp(Window,"Save_Data_Window")    
     % texts to black
     set(findall(app.SaveDataWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.SaveDataWindowUIFigure.Color  = WindowBackgroundColor;
 
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;

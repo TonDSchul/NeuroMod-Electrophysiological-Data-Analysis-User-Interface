@@ -67,16 +67,28 @@ def Get_Save_Event_Data(DataLoggerSaveFileName,reader,sampling_rate,EventSaveFil
         print("No event data found!")
         write_DataLogger("No event data found!",DataLoggerSaveFileName)
     
-def Save_MetaData(analogsignals,start_sample,JustExtractingEvents,SaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples):
+def Save_MetaData(analogsignals,start_sample,JustExtractingEvents,SaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples,IsNP1,Np1DataPartToextract):
     # -----------------------------------------------------------------------
     ''' Save MetaData'''
     # -----------------------------------------------------------------------
     # Extract metadata
-    sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
+    if IsNP1 == 1:
+        for i, sig in enumerate(analogsignals):
+            if "AP" in sig.name and Np1DataPartToextract == 2:
+                sampling_rate = analogsignals[i].sampling_rate.rescale('Hz').magnitude
+            elif "LFP" in sig.name and Np1DataPartToextract == 1:
+                sampling_rate = analogsignals[i].sampling_rate.rescale('Hz').magnitude
+            else:
+               sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
+    else:
+        sampling_rate = analogsignals[0].sampling_rate.rescale('Hz').magnitude
+        
+        
+    
     units = [str(asig.units.dimensionality) for asig in analogsignals]
     channel_names = [asig.name for asig in analogsignals]
     channel_ids = [asig.annotations.get('channel_id', i) for i, asig in enumerate(analogsignals)]
-    
+    print(channel_ids)
     if start_sample is None:
         start_sample = 1
     
@@ -133,15 +145,28 @@ def create_save_folder(selected_folder):
 
     return new_folder_path
 
-def Exract_Raw_Channel_Data(reader):
+def Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract):
     blocks = reader.read(lazy=False)
     block = blocks[0]
     segment = block.segments[0]
     
     analogsignals = segment.analogsignals
     
-    Amp_Signal_Object = analogsignals[0]
-
+    # handle potential NP1 recordings with LFP and AP component
+    if IsNP1 == 1:
+        for i, sig in enumerate(analogsignals):
+            if "AP" in sig.name and Np1DataPartToextract == 2:
+                Amp_Signal_Object = analogsignals[i]
+                print("Extracting NP 1.0 AP signal component.")
+            elif "LFP" in sig.name and Np1DataPartToextract == 1:
+                Amp_Signal_Object = analogsignals[i]
+                print("Extracting NP 1.0 LFP signal component.")
+            else:
+                Amp_Signal_Object = analogsignals[0]
+    else:
+        Amp_Signal_Object = analogsignals[0]
+        
+        
     return Amp_Signal_Object,analogsignals,block
 
 def find_sync_messages(base_path):

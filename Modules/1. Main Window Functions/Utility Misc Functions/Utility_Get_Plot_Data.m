@@ -57,13 +57,15 @@ if isfolder(SaveFolder)
 else
     msgbox("Please select a folder to save the results in.")
     % Prompt user to select a folder
-    Fullsavefile = uigetdir;
+    filetype = strcat('*',Format);
+    [filename, filepath] = uiputfile(filetype, 'Save as');
     
     % Check if the user canceled the dialog
-    if Fullsavefile == 0
+    if isequal(filename,0) || isequal(filepath,0)
         disp('User canceled folder selection.');
         return;
     else
+        Fullsavefile = fullfile(filepath,filename);
         disp(['Selected folder: ', Fullsavefile]);
     end
 end
