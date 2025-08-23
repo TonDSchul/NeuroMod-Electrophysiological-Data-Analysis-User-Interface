@@ -154,15 +154,6 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
         
     costume_SC2_params = update_standards(default_SC2_params, SortingParameter)
 
-    folder_path = Sorting_output_folder
-
-    try:
-        shutil.rmtree(folder_path)
-    except FileNotFoundError:
-        print("The folder does not exist.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    
     if Apply_Preprocessing == 1:
         costume_SC2_params['apply_preprocessing'] = False
         print("No Prepro in SC2")

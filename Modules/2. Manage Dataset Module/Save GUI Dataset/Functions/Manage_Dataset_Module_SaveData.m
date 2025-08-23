@@ -295,15 +295,7 @@ if ~isempty(Data)
             end
             dashindex = find(SelectedFolder=='\');
             filepath = convertStringsToChars(strcat(SelectedFolder,'\'));
-            if Autorun == "SingleFolder"
-                filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-1)+1:dashindex(end)-1),".dat"));
-            elseif Autorun == "MultipleFolder"
-                if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,"IntanRHD") || strcmp(Data.Info.RecordingType,"Neuralynx") || strcmp(Data.Info.RecordingType,"Spike2")
-                    filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
-                elseif strcmp(Data.Info.RecordingType,"Open Ephys")
-                    filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
-                end
-            end
+            filename = convertStringsToChars(strcat(SelectedFolder(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
         end
 
         if Whattosave(1) == 1 && Whattosave(2) == 0

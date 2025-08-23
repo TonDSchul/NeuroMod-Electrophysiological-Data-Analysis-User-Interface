@@ -347,7 +347,6 @@ elseif strcmp(Type,"VariableDefinition")
         app.UIAxes.YDir = 'normal';
     end
 
-
 elseif strcmp(Type,"Preprocessing")
 
     % Save Downsampled SamplingRate when Downsampling was applied

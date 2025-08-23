@@ -32,9 +32,10 @@ with NWBHDF5IO(nwb_path, 'r') as io:
     # Assuming events stored under intervals group with name 'Events_Chan1'
     if 'Events_Chan1' in nwbfile.intervals:
         events_table = nwbfile.intervals['Events_Chan1']
-        event_start_times = np.array(events_table.start_time.data)  # event start times
-        if 'label' in events_table.vectordata:
-            event_labels = np.array(events_table.vectordata['label'].data)
+        event_start_times = np.array(events_table.start_time.data[:])
+    
+        if 'label' in events_table.colnames:
+            event_labels = np.array(events_table['label'].data[:])
         else:
             event_labels = np.array(['Event'] * len(event_start_times))
     else:

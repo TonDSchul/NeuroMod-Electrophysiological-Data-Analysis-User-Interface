@@ -48,6 +48,14 @@ end
 
 Data.Time = 0:1/Data.Info.NativeSamplingRate:(double(Data.Info.num_data_points)-1)*(1/Data.Info.NativeSamplingRate);
 
+if isfield(Data,'Spikes')
+    fieldsToDelete = {'Spikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+end
+Data.Info.SpikeType = 'Non';
+Data.Info.Sorter = 'Non';
+
 msg = sprintf('Loading .nwb file... (%d%% done)', 75);
 waitbar(75, h, msg);
 
@@ -87,6 +95,14 @@ if isprop(ephys_ts,'data_unit')
         % Convert back in mV 
         Data.Raw = Data.Raw * 1000;
         disp("Converting data from volt to mV.")
+    end
+end
+
+if isfield(Data,'Events')
+    if isempty(Data.Events)
+        fieldsToDelete = {'Events'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
     end
 end
 

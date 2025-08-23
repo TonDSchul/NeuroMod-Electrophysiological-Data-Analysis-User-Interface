@@ -119,9 +119,9 @@ h = waitbar(0, 'Saving data...', 'Name','Saving data...');
 %Set chunk size
 dN = size(SaveDataRaw,2);
 if dN >2000
-    stepSize = dN/500;   % <-- whatever you want
+    stepSize = round(dN/500);   % <-- whatever you want
 else
-    stepSize = dN/100;   % <-- whatever you want
+    stepSize = round(dN/100);   % <-- whatever you want
 end
 dataIdx = [1:stepSize:dN, dN+1];   % always end at dN+1
 

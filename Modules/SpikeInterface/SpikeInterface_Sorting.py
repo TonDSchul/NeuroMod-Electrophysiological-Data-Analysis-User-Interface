@@ -190,7 +190,7 @@ def main(subfolders,file_path):
         """ ################################################################ Start/Load Sorting ###################################################################### """
         
         """
-        Checks if a folder exists. If not, creates the folder.
+        Checks if a folder exists. If not, create the folder.
         
         Parameters:
         folder_path (str): Path to the folder to check/create.
@@ -218,7 +218,7 @@ def main(subfolders,file_path):
                 except Exception as e:
                     print(f"An error occurred: {e}")
                 
-                #sorting.save(folder=Save_Sorting_Folder,overwrite=True)
+                #sorting = sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 
             if Sorter in ['Mountainsort 5']:
                 DumpedRecording = DumpedRecording.set_probe(Probe)
@@ -241,7 +241,7 @@ def main(subfolders,file_path):
                     print("The folder does not exist.")
                 except Exception as e:
                     print(f"An error occurred: {e}")
-                #sorting = sorting.save()
+                
                 
                 sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 

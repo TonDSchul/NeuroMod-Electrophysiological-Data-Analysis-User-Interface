@@ -233,37 +233,29 @@ if strcmp(Type,"Static")
 
         %% add event labels as text
         % Offset to the right of the line (adjust as needed)
-        % yPos = YMaxLimitsMultipeERP-0.36;  % place at top
-        % 
-        % % First remove old event labels if needed
-        % EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
-        % if length(EventIndexNr)<length(EventLabel)
-        %     delete(EventLabel(length(EventIndexNr)+1:end));
-        %     EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
-        % end
-        % 
-        % % Add a text label for each event
-        % for i = 1:length(EventIndexNr)
-        % 
-        %     pos = [eventTimes, yPos];  % new position
-        % 
-        %     if i <= length(EventLabel) && isgraphics(EventLabel(i))
-        %         % Update existing text
-        %         set(EventLabel(i), 'Position', [pos(i) 0], ...
-        %             'String', strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
-        %             'FontSize', 18, ...
-        %             'Tag', 'EventLabel');
+        xOffset = 50;  % 0.5% of total time range
+        yPos = YMaxLimitsMultipeERP;  % place at top
+        
+        % First remove old event labels if needed
+        EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
+        if length(EventIndexNr)<length(EventLabel)
+            delete(EventLabel(length(EventIndexNr)+1:end));
+            EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
+        end
+        
+        % Add a text label for each event
+        % for i = 1:EventIndexNr
+        %     if i <= length(EventLabel)
+        %         set(EventLabel(i),'XData', eventTimes(i) + xOffset,'YData', yPos,'Tag', 'EventLabel')
         %     else
-        %         % Create new text object
-        %         EventLabel(i) = text(UIAxis, pos(1), pos(2), ...
-        %             strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
-        %             'Rotation', 90, ...                   % vertical text
-        %             'HorizontalAlignment', 'left', ...    % anchor left of text
-        %             'VerticalAlignment', 'top', ...       % align top with yPos
-        %             'Color', 'r', ...
-        %             'FontSize', 18, ...
-        %             'Tag', 'EventLabel');
-        %     end
+        text(UIAxis, eventTimes(i), yPos, ...
+            strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
+            'Rotation', 90, ...                   % vertical text
+            'HorizontalAlignment', 'left', ...    % anchor left of text
+            'VerticalAlignment', 'top', ...       % align top with yPos
+            'Color', 'r', ...
+            'Tag', 'EventLabel');
+            % end
         % end
     end 
 

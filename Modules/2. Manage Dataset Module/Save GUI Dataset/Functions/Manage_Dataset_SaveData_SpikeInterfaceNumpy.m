@@ -1,16 +1,27 @@
-function folderPath = Manage_Dataset_SaveData_SpikeInterfaceNumpy(Data,DatasetType,SaveEvents)
+function folderPath = Manage_Dataset_SaveData_SpikeInterfaceNumpy(Data,DatasetType,SaveEvents,Autorun,FolderToSave)
 
 %% ------------------------- Select folder and file to save -------------------------
 
-[filename, filepath] = uiputfile('*.bin', 'Save File');
-
-% Check if the user canceled the operation
-if isequal(filename,0) || isequal(filepath,0)
-    disp('User canceled the operation.');
-    return;
+if Autorun == "No" || Autorun == "SingleFolder"
+    [filename, filepath] = uiputfile('*.bin', 'Save File');
+    
+    % Check if the user canceled the operation
+    if isequal(filename,0) || isequal(filepath,0)
+        disp('User canceled the operation.');
+        return;
+    end
+    
+    folderPath = fullfile(filepath, filename);
+else
+    if isstring(FolderToSave)
+        FolderToSave = convertStringsToChars(FolderToSave);
+    end
+    dashindex = find(FolderToSave=='\');
+    filepath = convertStringsToChars(strcat(FolderToSave,'\'));
+    filename = convertStringsToChars(strcat("SpikeInterface_",FolderToSave(dashindex(end-2)+1:dashindex(end-1)-1),".bin"));
+    
+    folderPath = fullfile(filepath,filename);
 end
-
-folderPath = fullfile(filepath, filename);
 
 %% ------------------------- Prepare Data and save folder -------------------------
 if strcmp(DatasetType,'Raw Data')

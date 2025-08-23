@@ -1,4 +1,4 @@
-function [SavePath,Error] = Manage_Dataset_SaveData_NWB(Data,SaveEvents,DataType,SampleRate,Originalfoldername)
+function [SavePath,Error] = Manage_Dataset_SaveData_NWB(Data,SaveEvents,DataType,SampleRate,Originalfoldername,Autorun,FolderToSave)
 
 %________________________________________________________________________________________
 
@@ -30,12 +30,23 @@ Error = 0;
 SavePath = [];
 
 %% ----------------- Get Save Location -----------------
-[file, path] = uiputfile('*.nwb', 'Save as');
-
-if ~ischar(file) || ~ischar(path)
-    disp("No folder selected.")
-    return;
+if Autorun == "No" || Autorun == "SingleFolder"
+    [file, path] = uiputfile('*.nwb', 'Save as');
+    
+    if ~ischar(file) || ~ischar(path)
+        disp("No folder selected.")
+        return;
+    else
+        SavePath = fullfile(path,file);
+    end
 else
+    if isstring(FolderToSave)
+        FolderToSave = convertStringsToChars(FolderToSave);
+    end
+    dashindex = find(FolderToSave=='\');
+    path = convertStringsToChars(FolderToSave);
+    file = convertStringsToChars(strcat("NWB_",FolderToSave(dashindex(end-2)+1:dashindex(end-1)-1),".nwb"));
+    
     SavePath = fullfile(path,file);
 end
 
@@ -206,7 +217,6 @@ if SaveEvents
         nwb.intervals.set(sprintf('Events_Chan%d', evCh), ti);
     end
 end
-
 
 %% ---------------------------- Actuall Export to NWB file ----------------------------
 nwbExport(nwb, SavePath, 'overwrite');

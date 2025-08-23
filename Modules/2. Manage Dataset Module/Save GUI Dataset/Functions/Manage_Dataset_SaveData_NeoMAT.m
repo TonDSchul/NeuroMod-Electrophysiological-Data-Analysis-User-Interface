@@ -1,15 +1,27 @@
-function [PathToSave,Error] = Manage_Dataset_SaveData_NeoMAT(Data,SampleRate,DataToSave,SaveEvents,SaveSpikes,Time)
+function [PathToSave,Error] = Manage_Dataset_SaveData_NeoMAT(Data,SampleRate,DataToSave,SaveEvents,SaveSpikes,Time,Autorun,FolderToSave)
 
 Error = 0;
 PathToSave = [];
 
-[file, path] = uiputfile('*.mat', 'Save as');
-
-if ~ischar(file) || ~ischar(path)
-    disp("No folder selected.")
-    return;
+%% Determine Folder structure for GUI and Autorun
+if Autorun == "No" || Autorun == "SingleFolder"
+    [file, path] = uiputfile('*.mat', 'Save as');
+    
+    if ~ischar(file) || ~ischar(path)
+        disp("No folder selected.")
+        return;
+    else
+        PathToSave = fullfile(path,file);
+    end
 else
-    PathToSave = fullfile(path,file);
+    if isstring(FolderToSave)
+        FolderToSave = convertStringsToChars(FolderToSave);
+    end
+    dashindex = find(FolderToSave=='\');
+    filepath = convertStringsToChars(strcat(FolderToSave,'\'));
+    filename = convertStringsToChars(strcat("NEO_",FolderToSave(dashindex(end-2)+1:dashindex(end-1)-1),".mat"));
+    
+    PathToSave = fullfile(filepath,filename);
 end
 
 h = waitbar(0, 'Saving Data as .mat for NEO...', 'Name','Saving Data as .mat for NEO...');
@@ -113,7 +125,7 @@ for segmentnr = 1:1
     
 end
 
-save(PathToSave,'block','-V7')
+save(PathToSave,'block',"-v7.3")
 
 msg = sprintf('Saving Data as .mat for NEO... (%d%% done)', round(100));     
 waitbar(100, h, msg);

@@ -83,6 +83,14 @@ if isfield(MetaDataStruct, 'EventStruct') && ~isempty(MetaDataStruct.EventStruct
     end
 end
 
+if isfield(Data,'Spikes')
+    fieldsToDelete = {'Spikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+end
+Data.Info.SpikeType = 'Non';
+Data.Info.Sorter = 'Non';
+
 %% Load Data
 % initialize
 
@@ -93,3 +101,14 @@ mmf = memmapfile(DataPath, ...
 
 Data.Raw = mmf.Data(1).x;
 
+if isa(Data.Raw,"double")
+    Data.Raw = single(Data.Raw);
+end
+
+if isfield(Data,'Events')
+    if isempty(Data.Events)
+        fieldsToDelete = {'Events'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+    end
+end

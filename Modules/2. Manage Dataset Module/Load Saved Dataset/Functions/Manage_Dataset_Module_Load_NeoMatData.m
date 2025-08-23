@@ -106,6 +106,23 @@ end
 
 Data.Time = 0:1/SampleRate:(double(Data.Info.num_data_points)-1)*(1/SampleRate);
 
+if isfield(Data,'Events')
+    if isempty(Data.Events)
+        fieldsToDelete = {'Events'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+    end
+end
+
+if isfield(Data,'Spikes')
+    fieldsToDelete = {'Spikes'};
+    % Delete fields
+    Data = rmfield(Data, fieldsToDelete);
+end
+
+Data.Info.SpikeType = 'Non';
+Data.Info.Sorter = 'Non';
+
 msg = sprintf('Loading Neo .mat files... (%d%% done)', 100);
 waitbar(100, h, msg);
 

@@ -40,6 +40,20 @@ end
 
 Proceed = 1;
 
+if strcmp(AutorunConfig.ColorMode,'DarkMode_Dark_Light')
+    AutorunConfig.WindowBackgroundColor = [0.8,0.8,0.8];
+    AutorunConfig.ComponentsInWindowColor = [0.85,0.85,0.85];
+elseif strcmp(AutorunConfig.ColorMode,'DarkMode_Light_Dark')
+    AutorunConfig.ComponentsInWindowColor = [0.8,0.8,0.8];
+    AutorunConfig.WindowBackgroundColor = [0.85,0.85,0.85];
+elseif strcmp(AutorunConfig.ColorMode,'LightMode_Dark_Light')
+    AutorunConfig.ComponentsInWindowColor = [0.95,0.95,0.95];
+    AutorunConfig.WindowBackgroundColor = [1,1,1];
+elseif strcmp(AutorunConfig.ColorMode,'LightMode_Light_Dark')
+    AutorunConfig.ComponentsInWindowColor = [1,1,1];
+    AutorunConfig.WindowBackgroundColor = [0.95,0.95,0.95];
+end
+
 %______________________________________________________________________________________________________
 %% Loop over number of recordings and functions to be executed
 %______________________________________________________________________________________________________
@@ -77,7 +91,11 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
             %______________________________________________________________________________________________________
             %% Handle Multiple Prepros
             if strcmp(FunctionOrder(nCurrentModuleIteration),'Preprocess_Continous_Data')
-                Data.CurrentPreproNr = Data.CurrentPreproNr+1;
+                if isfield(Data,'CurrentPreproNr')
+                    Data.CurrentPreproNr = Data.CurrentPreproNr+1;
+                else
+                    Data.CurrentPreproNr = 1;
+                end
             end
     
             if strcmp(FunctionOrder(nCurrentModuleIteration),'Preprocess_Continous_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Static_Power_Spectrum') || strcmp(FunctionOrder(nCurrentModuleIteration),'Continous_Spike_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Continous_Unit_Analysis') 

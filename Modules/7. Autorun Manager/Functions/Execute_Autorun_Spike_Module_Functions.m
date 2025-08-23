@@ -45,9 +45,9 @@ if strcmp(FunctionOrder,'Internal_Spike_Detection')
             end
         end
     end
-
+    
     if Execute == 1
-        [Data,~] = Spike_Module_Spike_Detection(Data,AutorunConfig.InternalSpikeDetection.Detectionmethod,AutorunConfig.InternalSpikeDetection.Type,str2double(AutorunConfig.InternalSpikeDetection.STDThreshold),AutorunConfig.InternalSpikeDetection.Filterspikes,str2double(AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset),str2double(AutorunConfig.InternalSpikeDetection.FilterArtefactDepth),AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform,str2double(AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices));
+        [Data,~] = Spike_Module_Spike_Detection(Data,AutorunConfig.InternalSpikeDetection.Detectionmethod,AutorunConfig.InternalSpikeDetection.Type,str2double(AutorunConfig.InternalSpikeDetection.STDThreshold),AutorunConfig.InternalSpikeDetection.Filterspikes,str2double(AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset),str2double(AutorunConfig.InternalSpikeDetection.FilterArtefactDepth),AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform,str2double(AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices),executableFolder);
     end
 end
 
@@ -123,7 +123,7 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
             % Convert Sorter Parameter into dictionary
             SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5);
 
-        elseif strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"SpykingCircus 2")
+        elseif strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"SpyKING CIRCUS 2")
             AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = Spike_Module_cleanStructureQuotes(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
             AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = Spike_Module_convertTrueFalseStrings(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
             
@@ -149,30 +149,6 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
             
             % Convert Sorter Parameter into dictionary
             SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
-
-        elseif strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"Kilosort 4")
-            % Loop over all fields
-            fields = fieldnames(AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4);
-            for i = 1:numel(fields)
-                field = fields{i}; % Get the field name
-                value = AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4.(field); % Get the field value
-                
-                if ischar(value) % Only process strings
-                    % Remove leading and trailing single/double quotes
-                    value = strip(value, '"');
-                    value = strip(value, '''');
-                    
-                    % Check if the value is 'None'
-                    if strcmpi(value, 'None')
-                        AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4.(field) = []; % Convert to empty
-                    else
-                        AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4.(field) = value; % Assign the cleaned value back
-                    end
-                end
-            end
-    
-            % Convert Sorter Parameter into dictionary
-            SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.KS4);
         end
         
         % Save JSON to a temporary file
@@ -240,27 +216,24 @@ end
 %______________________________________________________________________________________________________
 if strcmp(FunctionOrder,'Load_from_SpikeSorting')
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort external GUI")
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 4 external GUI")
         SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
         SelectedFolder = strcat(SelectedFolder,"kilosort4");
-    elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort3")
+    elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 3 external GUI")
         SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
         SelectedFolder = strcat(SelectedFolder,"kilosort3");
-    elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort SpikeInterface")
-        SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
-        SelectedFolder = strcat(SelectedFolder,"Kilosort 4");
     elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5")
         SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
         SelectedFolder = strcat(SelectedFolder,"Mountainsort 5");
-    elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpykingCircus 2")
+    elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpyKING CIRCUS 2")
         SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\");
-        SelectedFolder = strcat(SelectedFolder,"SpykingCircus 2");
+        SelectedFolder = strcat(SelectedFolder,"SpyKING CIRCUS 2");
     elseif strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")
         SelectedFolder = strcat(Data.Info.Data_Path,"\Wave_Clus\");
     end
     
     if ~exist(SelectedFolder,'dir')
-        msgbox("Automatic detection of saved kilosort data failed, please select a folder manually");
+        msgbox("Automatic detection of saved sorting data failed, please select a folder manually");
         AutorunSpikeDetection = "SingleFolder";
         SelectedFolder = [];
     else
@@ -268,14 +241,14 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
     end
 
     if isfield(Data.Info,'CutStart')
-        msgbox("Warning: Start time of current dataset was cut. Please ensure, that Kilosort results are based on the same dataset");
+        msgbox("Warning: Start time of current dataset was cut. Please ensure, that sorting results are based on the same dataset");
     end
     
     if isfield(Data.Info,'CutEnd') 
-        msgbox("Warning: End time of current dataset was cut. Please ensure, that Kilosort results are based on the same dataset");
+        msgbox("Warning: End time of current dataset was cut. Please ensure, that sorting results are based on the same dataset");
     end
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort external GUI")
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 4 external GUI")
         %% Autoseach scalingfactor
         if ~isempty(AutorunConfig.LoadfromSpikeSorting.ScalingFactor)
             ScalingFactor = str2double(AutorunConfig.LoadfromSpikeSorting.ScalingFactor);
@@ -330,13 +303,13 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
         ScalingFactor = [];
     end
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpykingCircus 2") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort SpikeInterface")
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpyKING CIRCUS 2")
         [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,AutorunConfig.LoadfromSpikeSorting.Sorter);
     end
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort external GUI")
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 4 external GUI") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 3 external GUI")
         % Function to load all relevant npy and .mat files Kilosort outputs
-        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor);
+        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,AutorunConfig.LoadfromSpikeSorting.Sorter);
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")
@@ -356,6 +329,17 @@ if strcmp(FunctionOrder,'Save_for_SpikeSorting')
     end
 
     if Execute == 1
+        
+        if strcmp(AutorunConfig.SaveforSpikeSorting.Sorter,'External Kilosort GUI') && strcmp(AutorunConfig.SaveforSpikeSorting.SaveFormat,'double')
+            disp("Selected to save External Kilosort GUI but format as double, which is not supported. Auto-changed to int16.");
+            AutorunConfig.SaveforSpikeSorting.SaveFormat = 'int16';
+        end
+
+        if strcmp(AutorunConfig.SaveforSpikeSorting.Sorter,'SpikeInterface') && strcmp(AutorunConfig.SaveforSpikeSorting.SaveFormat,'int16') || strcmp(AutorunConfig.SaveforSpikeSorting.Sorter,'SpikeInterface') && strcmp(AutorunConfig.SaveforSpikeSorting.SaveFormat,'int32')
+            disp("Selected to save SpikeInterface but format as int, which is not supported. Auto-changed to int16.");
+            AutorunConfig.SaveforSpikeSorting.SaveFormat = 'double';
+        end
+
 
         if strcmp(AutorunConfig.SaveforSpikeSorting.Dataset,"Preprocessed Data")
             if ~isfield(Data,'Preprocessed')
@@ -364,14 +348,7 @@ if strcmp(FunctionOrder,'Save_for_SpikeSorting')
             end
         end
         
-        if strcmp(AutorunConfig.SaveforSpikeSorting.Sorter,"Kilosort")
-            AutorunConfig.SaveforSpikeSorting.FileFormat = '.dat'; % '.dat' for Kilosort OR '.bin' for SpikeInterface
-        else
-            AutorunConfig.SaveforSpikeSorting.SaveFormat = 'double';
-            AutorunConfig.SaveforSpikeSorting.FileFormat = '.bin'; % '.dat' for Kilosort OR '.bin' for SpikeInterface
-        end
-
-        if strcmp(AutorunConfig.SaveforSpikeSorting.FileFormat,'.dat')
+        if strcmp(AutorunConfig.SaveforSpikeSorting.Sorter,'External Kilosort GUI')
             if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
                 SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
                 Filename = strcat(AutorunConfig.FolderContents{nRecordings},".dat");
@@ -380,7 +357,7 @@ if strcmp(FunctionOrder,'Save_for_SpikeSorting')
                 Filename = strcat(Data.Info.Data_Path(dashindex(end)+1:end),".dat");
                 SelectedFolder = strcat(Data.Info.Data_Path,"\Kilosort\");
             end
-        elseif strcmp(AutorunConfig.SaveforSpikeSorting.FileFormat,'.bin')
+        elseif strcmp(AutorunConfig.SaveforSpikeSorting.Sorter,'SpikeInterface')
             if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
                 SelectedFolder = strcat(Data.Info.Data_Path,"\SpikeInterface\");
                 Filename = strcat(AutorunConfig.FolderContents{nRecordings},".bin");
@@ -410,7 +387,7 @@ if strcmp(FunctionOrder,'Save_for_SpikeSorting')
         end
 
         FullPath = strcat(SelectedFolder,Filename);
-
+        
         % Function to Save Raw Data as int32 in a .dat file
         [Data] = Spike_Module_Save_for_Kilosort(Data,AutorunDetection,FullPath,AutorunConfig.SaveforSpikeSorting.SaveFormat,AutorunConfig.SaveforSpikeSorting.Sorter,AutorunConfig.SaveforSpikeSorting.Dataset);
     end

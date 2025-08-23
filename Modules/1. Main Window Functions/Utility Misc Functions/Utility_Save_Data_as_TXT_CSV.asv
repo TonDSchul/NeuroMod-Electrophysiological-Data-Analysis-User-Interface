@@ -44,7 +44,7 @@ if contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main
 end
 
 %% Write Info File
-writecell({""},Fullsavefile);
+writecell({" "},Fullsavefile, 'WriteMode', 'append');
 
 writecell({"***** Recording Infos *****"},Fullsavefile, 'WriteMode', 'append');
 
@@ -90,18 +90,18 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
     writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
     
     if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes") % XData = Non - spike Data
-        writecell(num2cell(PlottedData.XData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.XData), Fullsavefile, 'WriteMode', 'append');
     elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
         if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit")
-            writecell(num2cell(PlottedData.MainRateUnitXData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainRateUnitXData), Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Spike Rate") && ~ contains(Analysis,"Unit") && contains(Analysis,"Channel")
-            writecell(num2cell(PlottedData.MainRateChannelXData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainRateChannelXData), Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Spike Rate") && ~ contains(Analysis,"Unit") && ~contains(Analysis,"Channel")
-            writecell(num2cell(PlottedData.MainRateTimeXData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainRateTimeXData), Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
-            writecell(num2cell(PlottedData.MainUnitXData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainUnitXData), Fullsavefile, 'WriteMode', 'append');
         elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
-            writecell(num2cell(PlottedData.MainXData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainXData), Fullsavefile, 'WriteMode', 'append');
         end
     end
     
@@ -132,18 +132,18 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
     writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
     
     if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes") % XData = Non - spike Data
-        writecell(num2cell(PlottedData.YData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.YData, Fullsavefile), 'WriteMode', 'append');
     elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
         if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit")
-            writecell(num2cell(PlottedData.MainRateUnitYData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainRateUnitYData), Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Spike Rate") && ~ contains(Analysis,"Unit") && contains(Analysis,"Channel")
-            writecell(num2cell(PlottedData.MainRateChannelYData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainRateChannelYData), Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Spike Rate") && ~ contains(Analysis,"Unit") && ~contains(Analysis,"Channel")
-            writecell(num2cell(PlottedData.MainRateTimeYData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainRateTimeYData), Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
-            writecell(num2cell(PlottedData.MainUnitYData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainUnitYData), Fullsavefile, 'WriteMode', 'append');
         elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
-            writecell(num2cell(PlottedData.MainYData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.MainYData), Fullsavefile, 'WriteMode', 'append');
         end
     end
     
@@ -153,7 +153,7 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
         if ~isempty(PlottedData.CData)
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.CData)', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.CData), Fullsavefile, 'WriteMode', 'append');
         end
     elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
         if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") %% No Cdata for spike rate
@@ -168,13 +168,13 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
             if ~isempty(PlottedData.MainUnitCData)
                 writecell({" "},Fullsavefile, 'WriteMode', 'append');
                 writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-                writecell(num2cell(PlottedData.MainUnitCData)', Fullsavefile, 'WriteMode', 'append');
+                writecell(num2cell(PlottedData.MainUnitCData), Fullsavefile, 'WriteMode', 'append');
             end
         elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
             if ~isempty(PlottedData.MainCData)
                 writecell({" "},Fullsavefile, 'WriteMode', 'append');
                 writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-                writecell(num2cell(PlottedData.MainCData)', Fullsavefile, 'WriteMode', 'append');
+                writecell(num2cell(PlottedData.MainCData), Fullsavefile, 'WriteMode', 'append');
             end
         end
     end
@@ -196,59 +196,59 @@ if contains(Analysis,"Instantaneous")
         % Write XData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseAngleTimesXData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseAngleTimesXData), Fullsavefile, 'WriteMode', 'append');
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseAngleTimesSyncYData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseAngleTimesSyncYData), Fullsavefile, 'WriteMode', 'append');
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseAngleTimesSyncXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseAngleTimesSyncXTicks), Fullsavefile, 'WriteMode', 'append');
 
     elseif contains(Analysis,"Phase Amplitude Envelope")
         writecell({"***** Phase Amplitude Envelope Over Complex Hilbert Transform Result *****"},Fullsavefile, 'WriteMode', 'append');
         % Write XData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseAmplitudeEnvelopeXData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseAmplitudeEnvelopeXData), Fullsavefile, 'WriteMode', 'append');
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseAmplitudeEnvelopeYData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseAmplitudeEnvelopeYData), Fullsavefile, 'WriteMode', 'append');
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseAmplitudeEnvelopeXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseAmplitudeEnvelopeXTicks), Fullsavefile, 'WriteMode', 'append');
     elseif contains(Analysis,"All To All Connectivity")
         writecell({"***** All To All Connectivity Phase Synchronization (Length of Average Phase Difference Vector) *****"},Fullsavefile, 'WriteMode', 'append');
         % Write XData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.AllToAllSyncXData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.AllToAllSyncXData, Fullsavefile, 'WriteMode', 'append');
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.AllToAllSyncYData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.AllToAllSyncYData, Fullsavefile, 'WriteMode', 'append');
         % Write CData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.AllToAllSyncCData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.AllToAllSyncCData, Fullsavefile, 'WriteMode', 'append');
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.AllToAllSyncXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.AllToAllSyncXTicks, Fullsavefile, 'WriteMode', 'append');
 
     elseif contains(Analysis,"Polar Phase Angle Differences")
         writecell({"***** Polar Phase Angle Differences (Theta and Radii for Each Data Time Point)*****"},Fullsavefile, 'WriteMode', 'append');
         % Write XData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseDiffsXData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseDiffsXData, Fullsavefile, 'WriteMode', 'append');
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseDiffsYData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.PhaseDiffsYData, Fullsavefile, 'WriteMode', 'append');
     end
 end
 
@@ -276,17 +276,17 @@ if contains(Analysis,"Plot")
             % Write XData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisWaveformsXData{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisWaveformsXData{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
     
             % Write XTicks
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisWaveformsXTicks{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisWaveformsXTicks{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
     
             % Write YData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisWaveformsYData{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisWaveformsYData{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
 
         elseif contains(Analysis,"ISI Analyis")
             
@@ -295,17 +295,17 @@ if contains(Analysis,"Plot")
             % Write XData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisISIXData{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisISIXData{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
     
             % Write XTicks
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisISIXTicks{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisISIXTicks{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
     
             % Write YData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisISIYData{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisISIYData{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
 
             % No CData for ISI
 
@@ -316,17 +316,17 @@ if contains(Analysis,"Plot")
             % Write XData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisAutoXData{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisAutoXData{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
     
             % Write XTicks
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisAutoXTicks{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisAutoXTicks{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
     
             % Write YData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisAutoYData{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(num2cell(PlottedData.UnitAnalyisAutoYData{SelectedPlot,nrunit}, Fullsavefile, 'WriteMode', 'append');
 
             % No CData for Autocorrelogram
 
@@ -355,17 +355,17 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         % Write XData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverEventsXData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.ERPoverEventsXData, Fullsavefile, 'WriteMode', 'append');
 
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverEventsXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.ERPoverEventsXTicks, Fullsavefile, 'WriteMode', 'append');
 
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverEventsYData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.ERPoverEventsYData, Fullsavefile, 'WriteMode', 'append');
 
         % No CData for ERP
 
@@ -375,17 +375,17 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         % Write XData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverChannelXData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.ERPoverChannelXData, Fullsavefile, 'WriteMode', 'append');
 
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverChannelXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.ERPoverChannelXTicks, Fullsavefile, 'WriteMode', 'append');
 
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverChannelYData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.ERPoverChannelYData, Fullsavefile, 'WriteMode', 'append');
 
         % No CData for ERP
 
@@ -395,22 +395,22 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         % Write XData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.CSDXData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.CSDXData, Fullsavefile, 'WriteMode', 'append');
 
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.CSDXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.CSDXTicks, Fullsavefile, 'WriteMode', 'append');
 
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.CSDYData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.CSDYData, Fullsavefile, 'WriteMode', 'append');
 
         % Write CData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.CSDCData)', Fullsavefile, 'WriteMode', 'append');
+        writecell(num2cell(PlottedData.CSDCData, Fullsavefile, 'WriteMode', 'append');
 
     end
 
@@ -432,21 +432,21 @@ if contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
     % Write XData
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
     writecell({"***** X_Data *****"},Fullsavefile, 'WriteMode', 'append');
-    writecell(num2cell(PlottedData.TFPowerXData)', Fullsavefile, 'WriteMode', 'append');
+    writecell(num2cell(PlottedData.TFPowerXData, Fullsavefile, 'WriteMode', 'append');
 
     % Write XTicks
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
     writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-    writecell(num2cell(PlottedData.TFPowerXTicks)', Fullsavefile, 'WriteMode', 'append');
+    writecell(num2cell(PlottedData.TFPowerXTicks, Fullsavefile, 'WriteMode', 'append');
 
     % Write YData
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
     writecell({"***** Y_Data *****"},Fullsavefile, 'WriteMode', 'append');
-    writecell(num2cell(PlottedData.TFPowerYData)', Fullsavefile, 'WriteMode', 'append');
+    writecell(num2cell(PlottedData.TFPowerYData, Fullsavefile, 'WriteMode', 'append');
 
     % Write CData
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
     writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-    writecell(num2cell(PlottedData.TFPowerCData)', Fullsavefile, 'WriteMode', 'append');
+    writecell(num2cell(PlottedData.TFPowerCData, Fullsavefile, 'WriteMode', 'append');
 
 end

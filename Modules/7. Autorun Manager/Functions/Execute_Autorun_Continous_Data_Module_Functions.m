@@ -42,13 +42,35 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
         if ~strcmp(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr},"StimArtefactRejection")
             ArtefactRejectionInfo = [];
         else
+            if ~isfield(Data,'Events')
+                disp("Now event channel extracted for stimulation artefact rejection!")
+                return;
+            end
+
             ArtefactRejectionInfo.SelectedEventChannelName = AutorunConfig.PreprocessCont.ArtefactRejetction.StimArtefactChannel;
+            
+            if ~isempty(AutorunConfig.PreprocessCont.ArtefactRejetction.TriggerToSelect)
+                ArtefactRejectionInfo.SelectedTriggertChannel = double(strsplit(AutorunConfig.PreprocessCont.ArtefactRejetction.TriggerToSelect,','));
+            else
+                EventIndice = [];
+                for neventname = 1:length(Data.Info.EventChannelNames)
+                    if strcmp(Data.Info.EventChannelNames{neventname},AutorunConfig.PreprocessCont.ArtefactRejetction.StimArtefactChannel)
+                        EventIndice = neventname;
+                    end
+                end
+                if ~isempty(EventIndice)
+                    ArtefactRejectionInfo.SelectedTriggertChannel = 1:size(Data.Events{EventIndice});
+                else
+                    disp("Specified event channel name for stimulation artefact rejection is not found as part of the dataset!")
+                    return;
+                end
+            end
 
             AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact = convertStringsToChars(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact);
             commaindicie = find(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact==',');
             ArtefactRejectionInfo.TimeAroundEvents(1) = str2double(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact(1:commaindicie(1)-1));
             ArtefactRejectionInfo.TimeAroundEvents(2) = str2double(AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact(commaindicie(1)+1:end));
-            % Conver to samples
+            % Convert to samples
             ArtefactRejectionInfo.TimeAroundEvents = round(ArtefactRejectionInfo.TimeAroundEvents.*Data.Info.NativeSamplingRate);
             
             if isempty(AutorunConfig.PreprocessCont.ArtefactRejetction.ChannelSelection)
@@ -56,6 +78,9 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
             else
                 TempChannelSelection = str2double(strsplit(AutorunConfig.PreprocessCont.ArtefactRejetction.ChannelSelection,','));
                 ArtefactRejectionInfo.ChannelSelection = TempChannelSelection(1):TempChannelSelection(2);
+
+
+                AutorunConfig.PreprocessCont.ArtefactRejetction.TriggerToSelect
             end
         end
         
@@ -91,6 +116,7 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
     [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
     
     [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+
 end
 
 %______________________________________________________________________________________________________
@@ -111,8 +137,10 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
             StaticPowerSpectrumfig = figure();
             StaticPowerSpectrumFigure = axes;
 
-            Analyse_Main_Window_Static_Power_Spectrum(Data,StaticPowerSpectrumFigure,AutorunConfig.StaticPowerSpectrum.DataType,AutorunConfig.StaticPowerSpectrum.DataSource,str2double(AutorunConfig.StaticPowerSpectrum.Channel),num2str(AutorunConfig.StaticPowerSpectrum.Channel),AutorunConfig.StaticPowerSpectrum.FrequencyRange,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
-        
+            Analyse_Main_Window_Static_Power_Spectrum(Data,StaticPowerSpectrumFigure,AutorunConfig.StaticPowerSpectrum.DataType,AutorunConfig.StaticPowerSpectrum.DataSource,str2double(AutorunConfig.StaticPowerSpectrum.Channel),num2str(AutorunConfig.StaticPowerSpectrum.Channel),AutorunConfig.StaticPowerSpectrum.FrequencyRange,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.StaticPowerSpectrum.WindowSize,AutorunConfig.StaticPowerSpectrum.UseCostumeWindowSize);
+            
+            StaticPowerSpectrumfig.Color = AutorunConfig.ComponentsInWindowColor;
+
         elseif strcmp(AutorunConfig.StaticPowerSpectrum.PlotType(i),"Band Power over Depth")
             StaticPowerSpectrumfig = figure();
             UIAxes = subplot(1,2,1);
@@ -125,11 +153,17 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
             PowerSpecResults = [];
 
             DepthChannel = AutorunConfig.StaticPowerSpectrum.DepthChannel;
-
-            [~,~,AutorunConfig.CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,AutorunConfig.StaticPowerSpectrum.DataSource,PowerSpecResults,BandPower,AutorunConfig.StaticPowerSpectrum.FrequencyRange,UIAxes,UIAxes_2,TextArea,"All",AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,DepthChannel);
-
+            
+            [~,~,AutorunConfig.CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,AutorunConfig.StaticPowerSpectrum.DataSource,PowerSpecResults,BandPower,AutorunConfig.StaticPowerSpectrum.FrequencyRange,UIAxes,UIAxes_2,TextArea,"All",AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,DepthChannel,AutorunConfig.PlotAppearance);
+            
+            StaticPowerSpectrumfig.Color = AutorunConfig.ComponentsInWindowColor;
+            [UIAxes] = Execute_Autorun_Set_Plot_Colors(UIAxes,AutorunConfig);
+            [UIAxes_2] = Execute_Autorun_Set_Plot_Colors(UIAxes_2,AutorunConfig);
         end
-    
+        
+        
+        
+
         %% Plot Results if turned on
         if strcmp(AutorunConfig.SaveFigures,"on")
             Execute_Autorun_Save_Figure(StaticPowerSpectrumfig, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Static Power Spectrum", DataPath, AutorunConfig.StaticPowerSpectrum.PlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "StaticPowerSpectrum")
@@ -152,7 +186,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
 
         DepthChannel = AutorunConfig.ContSpikeAnalysis.ChannelSelection;
 
-        if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Kilosort") || isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"SpikeInterface")
+        if isfield(Data,'Spikes')
             AverageWaveforms = [];
             % Handle Events: when empty take first event when
             % extracted.
@@ -179,14 +213,18 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
             TextArea = [];
 
             % Simulate GUI inputs by converting variables into edit field structure 
-            
+            if strcmp(AutorunConfig.ContSpikeAnalysis.UnitsToPlot,"All") && ~strcmp(Data.Info.SpikeType,'Internal')
+                numunits = length(unique(Data.Spikes.SpikeCluster));
+                AutorunConfig.ContSpikeAnalysis.UnitsToPlot = string(1:numunits);
+            end
+
             ChannelSelection.Value = AutorunConfig.ContSpikeAnalysis.ChannelSelection;
             WaveformsToPlot.Value = AutorunConfig.ContSpikeAnalysis.WaveformsToPlot;
             UnitsToPlot.Value = AutorunConfig.ContSpikeAnalysis.UnitsToPlot;
             NumBinsSpikeRate.Value = AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate;
             TimeWindowSpiketriggredLFP.Value = AutorunConfig.ContSpikeAnalysis.TimeWindowSpiketriggredLFP;
             
-            if isempty(UnitsToPlot.Value)
+            if isempty(UnitsToPlot.Value) || strcmp(Data.Info.SpikeType,'Internal')
                 TotalIterations = 1;
             else
                 TotalIterations = 2;
@@ -202,44 +240,49 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                     ClusterToPlot = AutorunConfig.ContSpikeAnalysis.UnitsToPlot;
                 end
 
-                for i = 1:length(AutorunConfig.ContSpikeAnalysis.KilosortPlotType)
+                for i = 1:length(AutorunConfig.ContSpikeAnalysis.AnalysisType)
                     
-                    KilosortPlotType.Value = AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i);
+                    ConvertedAnalysisType.Value = AutorunConfig.ContSpikeAnalysis.AnalysisType(i);
 
                     for nunits = 1:UnitIterations
                         if strcmp(Data.Info.SpikeType,"SpikeInterface")
-                            if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Waveform Templates")
+                            if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Waveform Templates")
                                 disp("Waveform Templates no available yet for Spikeinterface data. Skipping");
                                 continue;
-                            elseif strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Template from Max Amplitude Channel")
+                            elseif strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Template from Max Amplitude Channel")
                                 disp("Template from Max Amplitude Channel no available yet for Spikeinterface data. Skipping");
                                 continue;
                             end
                         end
-
-                        if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
-                            if str2double(ClusterToPlot(nunits))<=numCluster
-                                CurrentClusterToPlot.Value = num2str(ClusterToPlot(nunits));
-                            else
-                                disp(strcat("Unit ",ClusterToPlot(nunits)," not part of spike dataset. Skipping"));
-                                continue;
-                            end
+                        
+                        if strcmp(Data.Info.SpikeType,'Internal')
+                            CurrentClusterToPlot.Value = "Non";
+                            ClusterToPlot = "Non";
                         else
-                            CurrentClusterToPlot.Value  = ClusterToPlot;                          
-                        end
-    
-                        if ischar(CurrentClusterToPlot.Value)
-                            CurrentClusterToPlot.Value = convertCharsToStrings(CurrentClusterToPlot.Value);
+                            if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
+                                if str2double(ClusterToPlot(nunits))<=numCluster
+                                    CurrentClusterToPlot.Value = num2str(ClusterToPlot(nunits));
+                                else
+                                    disp(strcat("Unit ",ClusterToPlot(nunits)," not part of spike dataset. Skipping"));
+                                    continue;
+                                end
+                            else
+                                CurrentClusterToPlot.Value  = ClusterToPlot;                          
+                            end
+        
+                            if ischar(CurrentClusterToPlot.Value)
+                                CurrentClusterToPlot.Value = convertCharsToStrings(CurrentClusterToPlot.Value);
+                            end
                         end
 
-                        %% Plot Kilosort Spike Times in big plot as dots
+                        %% Plot Spike Times in big plot as dots
                         SpikeAnalysisFigure = figure();
                         UIAxes = subplot(2,2,1);
                         UIAxes_2 = subplot(2,2,3);
                         UIAxes_3 = subplot(2,2,2);
                         UIAxes.NextPlot = "add";
-
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Average Waveforms Across Channel") && isempty(AverageWaveforms)
+                        
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Average Waveforms Across Channel") && isempty(AverageWaveforms)
                             %% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
                             % Detect high pass filter
                             HigPassFiltered = 1;
@@ -325,21 +368,17 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         end
     
                         %% Prepare Plots
-    
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Average Waveforms Across Channel")
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelectionforPlottingEditField,WaveformSelectionforPlottingEditField,UnitstoPlotEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Kilosort",KilosortPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,AverageWaveforms,DepthChannel);
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Average Waveforms Across Channel")
+                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],Data.Info.SpikeType,ConvertedAnalysisType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,AverageWaveforms,DepthChannel);
                         else
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelectionforPlottingEditField,WaveformSelectionforPlottingEditField,UnitstoPlotEditField,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Kilosort",KilosortPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,Data.Spikes.Waveforms,DepthChannel);
+                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],Data.Info.SpikeType,ConvertedAnalysisType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,Data.Spikes.Waveforms,DepthChannel);
                         end
     
-                        %% Plot
-                        [TempData,AutorunConfig.CurrentPlotData] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),TextArea,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                        FakeTextAre.Value = '';
                         
-                        if ~strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
-                            [~,AutorunConfig.CurrentPlotData] = Continous_Kilosort_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,'SpikeRateBinSizeChange',TextArea,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);    
-                        end
-
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Triggered Average")
+                        [TempData,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
+                    
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered Average")
                             if ~isempty(TempData)
                                 Data = TempData;
                             end
@@ -347,271 +386,45 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             %Data = TempData;
                         end
     
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes,1,"Left Axis Only",Data.Time,20,"Time [s]",[],[],8);
                         end
-        
+                        
                         [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
                         [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
-        
+                        
+                        SpikeAnalysisFigure.Color = AutorunConfig.ComponentsInWindowColor;
+                        [UIAxes] = Execute_Autorun_Set_Plot_Colors(UIAxes,AutorunConfig);
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")
+                            UIAxes.Color = [1 1 1];
+                        end
+                        [UIAxes_2] = Execute_Autorun_Set_Plot_Colors(UIAxes_2,AutorunConfig);
+                        [UIAxes_3] = Execute_Autorun_Set_Plot_Colors(UIAxes_3,AutorunConfig);
+                        
+                        if strcmp(Data.Info.Sorter,'Non')
+                            SpikeName = "Internal Spike Detection";
+                        else
+                            SpikeName = AutorunConfig.LoadfromSpikeSorting.Sorter;
+                        end
+
                         if TotalIterations > 1 && TotalIts == 2
                             %% Plot Results if turned on
                             if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(" Cont. Spikes Unit ",num2str(nunits)," "), DataPath, AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinousIteration")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(" Cont. ",SpikeName," Spikes Unit ",num2str(nunits)," "), DataPath, AutorunConfig.ContSpikeAnalysis.AnalysisType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinousIteration")
                             end
                         elseif TotalIterations > 1 && TotalIts == 1
                             if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), DataPath, " Cont. Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.AnalysisType(i), DataPath, strcat(" Cont. ",SpikeName," Spikes "), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
                             end
                         else
                             if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i), DataPath, " Cont. Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
+                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.AnalysisType(i), DataPath, strcat(" Cont. ",SpikeName," Spikes "), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
                             end
                         end
                     end % nunits
                 end % Kilosort Plottype
             end % Totaliterations ("normal" and unit specific plots)
-        %% Internal Spike Analysis
-        elseif isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
-            
-            AverageWaveforms = [];
-
-            % Handle Events: when empty take first event when
-            % extracted.
-            if isfield(Data.Info,'EventChannelNames') && ~strcmp(AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,"Non")
-                if isempty(AutorunConfig.ContSpikeAnalysis.EventChannelToPlot)
-                    AutorunConfig.ContSpikeAnalysis.EventChannelToPlot = Data.Info.EventChannelNames{1};
-                end
-            elseif ~isfield(Data.Info,'EventChannelNames')
-                AutorunConfig.ContSpikeAnalysis.EventChannelToPlot = "Non";
-            end
-
-            % Channel Data: Dont have to convert, char input of channel
-            % is expected
-            if isempty(AutorunConfig.ContSpikeAnalysis.ChannelSelection)
-                AutorunConfig.ContSpikeAnalysis.ChannelSelection = strcat('1,',num2str(size(Data.Raw,1)));
-            end
-            
-            if isfield(Data.Info,'Sorter')
-                if strcmp(Data.Info.Sorter,'WaveClus')
-                    if ~isempty(Data.Spikes.Waveforms)
-                        % Exatract number of spike clusters Kilosort found
-                        numCluster = numel(unique(Data.Spikes.SpikeCluster));
-                        % Define unique color for each cluster
-                        rgbMatrix = lines(numCluster);
-                    end
-                else
-                    if strcmp(AutorunConfig.ContSpikeAnalysis.Clustertoshow,"All") % When no cluster present
-                        AutorunConfig.ContSpikeAnalysis.Clustertoshow = "Non";
-                    end
-                    numCluster = 1;
-                    % Define unique color for each cluster
-                    rgbMatrix = lines(1);
-                end
-            else
-                if strcmp(AutorunConfig.ContSpikeAnalysis.Clustertoshow,"All") % When no cluster present
-                    AutorunConfig.ContSpikeAnalysis.Clustertoshow = "Non";
-                end
-                numCluster = 1;
-                % Define unique color for each cluster
-                rgbMatrix = lines(1);
-            end
-
-            TextArea = [];
-
-            % Simulate GUI inputs by converting variables into edit field structure  
-            ChannelSelection.Value = AutorunConfig.ContSpikeAnalysis.ChannelSelection;
-            WaveformsToPlot.Value = AutorunConfig.ContSpikeAnalysis.WaveformsToPlot;
-            UnitsToPlot.Value = AutorunConfig.ContSpikeAnalysis.UnitsToPlot;
-            NumBinsSpikeRate.Value = AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate;
-            TimeWindowSpiketriggredLFP.Value = AutorunConfig.ContSpikeAnalysis.TimeWindowSpiketriggredLFP;
-
-            if isempty(UnitsToPlot.Value)
-                TotalIterations = 1;
-            else
-                if isfield(Data.Info,'Sorter')
-                    if ~strcmp(Data.Info.Sorter,'WaveClus')
-                        TotalIterations = 1;
-                        disp("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
-                    else
-                        TotalIterations = 2;
-                    end
-                else
-                    TotalIterations = 1;
-                    disp("Unit plots selected, but no spike sorting found. Unit plots are not executed.")
-                end
-            end
-
-            for TotalIts = 1:TotalIterations % 2 if unit plots
-
-                if TotalIts == 1 % if no unit plot
-                    UnitIterations = 1;
-                    ClusterToPlot = AutorunConfig.ContSpikeAnalysis.Clustertoshow;
-                else % if unit plot
-                    UnitIterations = length(AutorunConfig.ContSpikeAnalysis.UnitsToPlot);
-                    ClusterToPlot = AutorunConfig.ContSpikeAnalysis.UnitsToPlot;
-                end
-
-                for i = 1:length(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType)
-    
-                    InternalPlotType.Value = AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i);
-    
-                    for nunits = 1:UnitIterations
-                        if ~strcmp(ClusterToPlot(1),"All") && ~strcmp(ClusterToPlot(1),"Non")
-                            if str2double(ClusterToPlot(nunits))<=numCluster
-                                CurrentClusterToPlot.Value = num2str(ClusterToPlot(nunits));
-                            else
-                                disp(strcat("Unit ",ClusterToPlot(nunits)," not part of spike dataset. Skipping"));
-                                continue;
-                            end
-                        else
-                            CurrentClusterToPlot.Value  = ClusterToPlot;
-                        end
-    
-                        if ischar(CurrentClusterToPlot.Value)
-                            CurrentClusterToPlot.Value = convertCharsToStrings(CurrentClusterToPlot.Value);
-                        end
-
-                        %% Plot Kilosort Spike Times in big plot as dots
-                        SpikeAnalysisFigure = figure();
-                        UIAxes = subplot(2,2,1);
-                        UIAxes_2 = subplot(2,2,3);
-                        UIAxes_3 = subplot(2,2,2);
-                        
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),"Average Waveforms Across Channel") && isempty(AverageWaveforms)
-                            % Detect high pass filter
-                            HigPassFiltered = 1;
-                            
-                            if isfield(Data,'Preprocessed') 
-                                if isfield(Data.Info,'FilterMethod') 
-                                    if ~strcmp(Data.Info.FilterMethod,'High-Pass')
-                                        msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
-                                        HigPassFiltered = 0;
-                                    end
-                                else
-                                    msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
-                                    HigPassFiltered = 0;
-                                end
-                            else
-                                msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
-                                HigPassFiltered = 0;
-                            end
-                            
-                            %%% if it has to be high pass filtered --> save as TempData, extract
-                            %%% waveforms and delete temp variable
-                            if HigPassFiltered == 0
-
-                                HighPassFilterSettings = [];
-                                Spike_Extraction_HighPassWindow = Spike_Extraction_AskforHighPass(HighPassFilterSettings);
-                                
-                                uiwait(Spike_Extraction_HighPassWindow.PreproSTAWindowUIFigure);
-                                
-                                if isvalid(Spike_Extraction_HighPassWindow)
-                                    Cutoff = Spike_Extraction_HighPassWindow.HighPassFilterSettings.Cutoff;
-                                    FilterOrder = Spike_Extraction_HighPassWindow.HighPassFilterSettings.FilterOrder;
-                                    SaveFilter = Spike_Extraction_HighPassWindow.HighPassFilterSettings.SaveFilter;
-                                    delete(Spike_Extraction_HighPassWindow);
-                                else
-                                    disp("High pass filter settings window closed before manual config was saved. Using standad high pass filter settings (300Hz cutoff, filterorder 6)")
-                                    Cutoff = "300";
-                                    FilterOrder = "6";
-                                    SaveFilter = "No";
-                                end
-
-                                PreproInfo = [];
-                                PreprocessingSteps = [];
-                            
-                                Methods = ["Filter"];
-                                [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR",Cutoff,"Zero-phase forward and reverse",FilterOrder,[],Data.Info.NativeSamplingRate);
-                                    
-                                if isfield(PreproInfo,'ChannelDeletion')
-                                    ChannelDeletion = PreproInfo.ChannelDeletion;
-                                else
-                                    ChannelDeletion = [];
-                                end
-                                
-                                TextArea = [];
-                                
-                                if strcmp(SaveFilter,"No")
-                                    [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-                                    [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
-                                    %% Now extract Waveforms
-                                    % For Kilosort we dont have channel information to extract from raw or
-                                    % preprocessed data --> Therefor we take channel closest to position
-                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,TempData.Spikes.SpikePositions(:,2),"AverageWaveforms");
-                                    clear TempData;
-                                else
-                                    [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-                                    [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
-                                    %% Now extract Waveforms
-                                    % For Kilosort we dont have channel information to extract from raw or
-                                    % preprocessed data --> Therefor we take channel closest to position
-                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikePositions(:,2),"AverageWaveforms");
-                                end
-                                
-                            else % If high pass was already applied
-                                % For Kilosort we dont have channel information to extract from raw or
-                                % preprocessed data --> Therefor we take channel closest to position
-            
-                                [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikePositions(:,2),"AverageWaveforms");
-                            end
-                        end
-
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),"Average Waveforms Across Channel")
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Internal",InternalPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,AverageWaveforms,DepthChannel);
-                        else
-                            [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelSelection,WaveformsToPlot,UnitsToPlot,NumBinsSpikeRate,TimeWindowSpiketriggredLFP] = Continous_Spikes_Prepare_Plots(Data,ChannelSelection,WaveformsToPlot,CurrentClusterToPlot,[],"Internal",InternalPlotType,NumBinsSpikeRate,TimeWindowSpiketriggredLFP,1,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,Data.Spikes.Waveforms,DepthChannel);
-                        end
-    
-                        %% Plot
-                        if isfield(Data.Info,'Sorter')
-                            if ~strcmp(Data.Info.Sorter,'WaveClus')
-                                PlotInfo.Units = NaN;
-                            end
-                        else
-                            PlotInfo.Units = NaN;
-                        end
-    
-                        [TempData,AutorunConfig.CurrentPlotData] = Continous_Internal_Spikes_Manage_Analysis_Plots(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),Data,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Waveforms,PlotInfo,TextArea,ChannelPosition,UIAxes,UIAxes_2,UIAxes_3,rgbMatrix,AutorunConfig.twoORthree_D_Plotting,CurrentClusterToPlot.Value,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
-        
-                        if ~strcmp(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),"SpikeMap")
-                            [~,AutorunConfig.CurrentPlotData] = Continous_Internal_Spikes_Manage_Analysis_Plots('SpikeRateBinSizeChange',Data,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Waveforms,PlotInfo,TextArea,ChannelPosition,UIAxes,UIAxes_2,UIAxes_3,rgbMatrix,AutorunConfig.twoORthree_D_Plotting,CurrentClusterToPlot.Value,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
-                        end
-    
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Triggered Average")
-                            if ~isempty(TempData)
-                                Data = TempData;
-                            end
-                        else
-                            %Data = TempData;
-                        end
-        
-                        if strcmp(AutorunConfig.ContSpikeAnalysis.KilosortPlotType(i),"Spike Map")
-                            [~] = Execute_Autorun_Set_Up_Figure(UIAxes,1,"Left Axis Only",Data.Time,20,"Time [s]",[],[],8);
-                        end
-        
-                        [~] = Execute_Autorun_Set_Up_Figure(UIAxes_2,0,"Both Axis",[],[],[],[],[],8);
-                        [~] = Execute_Autorun_Set_Up_Figure(UIAxes_3,0,"Left Axis Only",[],[],[],[],[],8);
-        
-                        if TotalIterations > 1 && TotalIts == 2
-                            %% Plot Results if turned on
-                            if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(" Cont. Internal Spikes Unit ",num2str(nunits)," "), DataPath, AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "InternalContinousIteration")
-                            end
-                        elseif TotalIterations > 1 && TotalIts == 1
-                            if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i) , DataPath, "Cont. Internal Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContInternalSpikes")
-                            end
-                        else
-                            if strcmp(AutorunConfig.SaveFigures,"on")
-                                Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.InternalSpikePlotType(i) , DataPath, "Cont. Internal Spikes ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContInternalSpikes")
-                            end
-                        end
-                        
-                    end% over units internal spike analysis
-                end % loop over analysis types
-            end % loop either 1 or 2, 2 if individual unit plots selected
-        end % if Internal Spikes present
+        end % if is spikes
     end % if Execute == 1
 end % if FunctionOrder == "Cont. Spike Analysis"
 
@@ -664,13 +477,27 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
         %% Plot Autocorrelogramme
 
         Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),[],str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
+        
+        if strcmp(Data.Info.Sorter,'Non')
+            SpikeName = "Internal Spike Detection";
+        else
+            SpikeName = AutorunConfig.LoadfromSpikeSorting.Sorter;
+        end
+
+        UnitAnalysisFigure.Color = AutorunConfig.ComponentsInWindowColor;
+        [UIAxes_1] = Execute_Autorun_Set_Plot_Colors(UIAxes_1,AutorunConfig);
+        [UIAxes_2] = Execute_Autorun_Set_Plot_Colors(UIAxes_2,AutorunConfig);
+        [UIAxes_3] = Execute_Autorun_Set_Plot_Colors(UIAxes_3,AutorunConfig);
+        [UIAxes_4] = Execute_Autorun_Set_Plot_Colors(UIAxes_4,AutorunConfig);
+        [UIAxes_5] = Execute_Autorun_Set_Plot_Colors(UIAxes_5,AutorunConfig);
+        [UIAxes_6] = Execute_Autorun_Set_Plot_Colors(UIAxes_6,AutorunConfig);
 
         %% Plot Results if turned on
         if strcmp(AutorunConfig.SaveFigures,"on")
             if strcmp(Data.Info.SpikeType,"Internal")
-                Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Internal Spikes Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
+                Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(SpikeName," Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
             else
-                Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat("Spikes Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
+                Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(SpikeName," Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
             end
         end
     end

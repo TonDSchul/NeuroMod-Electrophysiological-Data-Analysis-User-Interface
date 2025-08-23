@@ -50,6 +50,10 @@ current_time(current_time==' ') = '_';
 SaveFolder = strcat(executableFolder,"\Analysis Results\");
 dashindex = find(Data.Info.Data_Path=='\');
 
+% if strcmp(Format,'.csv')
+%     Format = '.xlsx';
+% end
+
 Savefile = strcat(Data.Info.Data_Path(dashindex(end)+1:end),"_",AnalysisType,"_",current_time,"_",Format);
 
 if isfolder(SaveFolder)
@@ -74,7 +78,7 @@ end
 
 if strcmp(Format,'.mat')
     Error = Utility_Save_Data_as_MAT(Fullsavefile,PlottedData,AnalysisType);
-elseif strcmp(Format,'.txt') || strcmp(Format,'.csv')
+elseif strcmp(Format,'.txt') || strcmp(Format,'.xlsx') || strcmp(Format,'.csv')
     Error = Utility_Save_Data_as_TXT_CSV(Fullsavefile,PlottedData,AnalysisType);
 end
 
