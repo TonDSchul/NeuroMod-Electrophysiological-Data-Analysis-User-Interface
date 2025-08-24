@@ -63,7 +63,7 @@ if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
     [AutorunConfig.FolderContents] = Execute_Autorun_Check_Selected_Folder(selected_folder);
 
     if isempty(AutorunConfig.FolderContents)
-        error("Selected folder does not contain non-empty subfolders. Exiting")
+        error("Selected folder does not contain non-empty subfolders. Please select a folder with subfolders, each containing ONE recording! Exiting")
     end
 
     NumIterations = numel(AutorunConfig.FolderContents);

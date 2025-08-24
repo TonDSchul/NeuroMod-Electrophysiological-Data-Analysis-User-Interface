@@ -229,7 +229,7 @@ elseif strcmp(RecordingType,"Open Ephys")
     NoddeID = [];
     StateSelection = Threshold;
  
-    if ~isempty(startTimestamp)
+    if isfield(Data.Info,'startTimestamp')
         startTimestamp = round(Data.Info.startTimestamp*Data.Info.NativeSamplingRate);
     else
         msgbox("Warning: No acquisition start time stamp found. Cannot correct trigger times if recording and aquistion start are different.")

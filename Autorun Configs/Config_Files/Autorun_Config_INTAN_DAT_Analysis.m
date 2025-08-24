@@ -18,7 +18,6 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 %--- Event Module ---
 %______________________
 % 'Extract_Events'
-% 'Extract_Event_Related_Data'
 % 'Event_Spike_Analysis'
 % 'PreproEventDataModule'
 % 'Event_Analysis_ERP'
@@ -35,7 +34,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_from_SpikeSorting","Continous_Spike_Analysis"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_TimeFrequencyPower"];
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
@@ -193,13 +192,18 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
 AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'DIN Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; 
-AutorunConfig.ExtractEventDataModule.EventType = 'Event Onset'; % char, Either 'Event Onset' or 'Event Offset' to determine whether rising or falling edge should be detected
-AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+AutorunConfig.ExtractEventDataModule.EventType = 'Rising Edge'; % char, Either 'Rising Edge' or 'Falling Edge' to determine whether rising or falling edge should be detected
+AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1,2,3'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.02'; % Threshold of event signal at which events are extracted as char
 AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
-AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.1'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
-AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.7'; %Time in seconds extracted after events as char
-AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Preprocessed"; %"Raw" OR "Preprocessed" as char
+AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
+AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
+AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Raw"; %"Raw" OR "Preprocessed" as char
+
+AutorunConfig.ExtractEventRelatedDataModule.CombineEventChannel = []; % which event channel should be combined? Has to be part of AutorunConfig.ExtractEventDataModule.EventChannelSelection, Format: char, comma separated numbers or empty for no combination
+AutorunConfig.ExtractEventRelatedDataModule.NewEventChannelName = 'Combined Event Channel 1'; % char, name of the newly created/combined event channel. So far in Autorun it is only possible to combine to a single event channel, not multiple ones so enter only one channel name. In the GUI you can combine to multiple event channel.
+
+AutorunConfig.ExtractEventRelatedDataModule.LoadCosutmeTriggerIdentity = '0'; % char, 1 or 0 whether to to load costume trigger identity. If set to 1, widnow will open to ask you for the location of the file containing costume identites.
 %% 4.2 Prepro event related data
 %______________________________________________________________________________________________________
 % Trial/Event Deletion
@@ -211,7 +215,11 @@ AutorunConfig.PreproEventDataModule.ChannelToReject = '1,5'; % char with two cha
 
 %% 4.3 Analyse event related signal
 %______________________________________________________________________________________________________
-AutorunConfig.AnalyseEventDataModule.DataSource = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
+AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
+AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'DIN-04'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest!
+AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
+AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
 % ERP Settings
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
 AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '7'; % How much is CSD data smoothed in time and space domain? Format: Char
@@ -221,7 +229,6 @@ AutorunConfig.AnalyseEventDataModule.tempcolorMap = "parula";
 % Event Static Spectrum Settings
 AutorunConfig.AnalyseEventDataModule.SpectrumPlotType = ["Band Power Individual Channel","Band Power over Depth"]; % string, either "Band Power Individual Channel" and/or "Band Power over Depth"
 AutorunConfig.AnalyseEventDataModule.SpectrumDataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
-AutorunConfig.AnalyseEventDataModule.SpectrumDataSource = "Raw Event Related Data"; % "Raw Event Related Data" or "Preprocessed Event Related Data"
 AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange = '0,1000'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
 AutorunConfig.AnalyseEventDataModule.SpectrumChannel = '7'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 % Time Freqency Power Settings
