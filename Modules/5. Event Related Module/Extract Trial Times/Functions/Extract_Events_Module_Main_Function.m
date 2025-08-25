@@ -149,6 +149,8 @@ if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
     % itself
     if strcmp(RecordingType,"IntanRHD") && ExtractedRHDEventsFlag == 1 %% ExtractedRHDEventsFlag == 1 means that Intan_RHD2000_Data_Extraction gets called with "Info" input argument
         [RhdFilePaths] = LoadIntanRHDFiles(Path);
+        RhdFilePaths = convertStringsToChars(RhdFilePaths);
+        
         LastDashIndex = find(RhdFilePaths == '\');
         RHDPath = RhdFilePaths(1:LastDashIndex(end));
         RHDFiles = RhdFilePaths(LastDashIndex(end)+1:end);

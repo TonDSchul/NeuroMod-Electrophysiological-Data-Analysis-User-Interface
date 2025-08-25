@@ -56,7 +56,7 @@ for i = 1:length(ItemsTextArea)
     LaufVariable = LaufVariable +1;
 end
 
-Path = strcat(ExecutableFolder,'\Modules\1. Main_Window_Functions\Manage_Modules_Functions\All_Module_Items.m');
+Path = strcat(ExecutableFolder,'\Modules\1. Main Window Functions\Manage Modules\Functions\All_Module_Items.m');
 % Read the function file
 fileContent = fileread(Path);
 fileLines = strsplit(fileContent, '\n');
@@ -68,7 +68,7 @@ searchString = '%% end of definition (do not edit this!)';
 idx = find(contains(fileLines, searchString), 1);
 
 if isempty(idx)
-    msgbox(strcat("Error: Search string ",searchString ," not found in All_Module_Items.m (GUI_Path\Modules\1. Main_Window_Functions\Manage_Modules_Functions). This function needs to be unmodified!"));
+    msgbox(strcat("Error: Search string ",searchString ," not found in All_Module_Items.m (GUI_Path\Modules\1. Main_Window_Functions\Manage_Modules_Functions\Functions). This function needs to be unmodified!"));
     return;
 end
 

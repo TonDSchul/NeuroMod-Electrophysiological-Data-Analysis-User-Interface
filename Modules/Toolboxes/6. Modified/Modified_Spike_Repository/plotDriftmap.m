@@ -19,10 +19,11 @@ if ~isempty(Spikeline_handles)
 end
 
 if ~strcmpi(opt, 'show')
-  nColorBins = 100;
-  ampRange = quantile(spikeAmps, [0.1 0.9]);
+  nColorBins = 300;
+  ampRange = quantile(spikeAmps, [0.01 0.9]);
   colorBins = linspace(ampRange(1), ampRange(2), nColorBins);
-  
+  %colorBins = linspace(min(spikeAmps), max(spikeAmps), nColorBins);
+
   % Create colormap 
   %-- standard:
   % colors = gray(nColorBins); 
@@ -43,16 +44,18 @@ if ~strcmpi(opt, 'show')
           colors(:, i) = linspace(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(i), 0, nColorBins); 
       end
   end
+  
+  SpikesPlotted = zeros(size(spikeTimes));
 
   for b = 1:nColorBins-1
     theseSpikes = spikeAmps>=colorBins(b) & spikeAmps<=colorBins(b+1);
-
-    line(Figure,spikeTimes(theseSpikes), spikeYpos(theseSpikes),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(b,:),'MarkerEdgeColor',colors(b,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');
-
+    
+    line(Figure,spikeTimes(theseSpikes), spikeYpos(theseSpikes),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(b,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');
+    
+    SpikesPlotted = SpikesPlotted + theseSpikes;
     %hold on;
   end  
-  xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel)
-  ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel)
+  
 end
 if isempty(opt)
   return

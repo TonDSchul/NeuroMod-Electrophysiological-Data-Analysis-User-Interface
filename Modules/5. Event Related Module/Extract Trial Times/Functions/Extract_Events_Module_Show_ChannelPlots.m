@@ -49,6 +49,7 @@ if strcmp(Data.Info.RecordingType,"IntanDat") || strcmp(Data.Info.RecordingType,
             end
 
             [RHDFilePaths] = LoadIntanRHDFiles(Folder);
+            RHDFilePaths = convertStringsToChars(RHDFilePaths);
 
             LastDashIndex = find(RHDFilePaths == '\');
             RHDPath = RHDFilePaths(1:LastDashIndex(end));

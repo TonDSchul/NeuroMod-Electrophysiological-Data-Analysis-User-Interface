@@ -118,7 +118,7 @@ elseif strcmp(Data.Info.RecordingType,"IntanRHD")
     %and saved directly to avoid having to load it again
     
     [RHDFilePaths] = LoadIntanRHDFiles(Path);
-    
+    RHDFilePaths = convertStringsToChars(RHDFilePaths);
     %% rhd file has to be read in order to know how many events and channel it contains. Output is used to populate the fields in this GUI window
     if ~isempty(RHDFilePaths)
         LastDashIndex = find(RHDFilePaths == '\');
