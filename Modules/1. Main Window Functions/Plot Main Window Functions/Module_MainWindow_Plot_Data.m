@@ -49,7 +49,9 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
     end
     YMaxLimitsMultipeERP = max(Data,[],"all");
     YMinLimitsMultipeERP = min(Data,[],"all");
-    ylim(UIAxis, [YMinLimitsMultipeERP,YMaxLimitsMultipeERP]);
+    if size(Data,1)>1
+        ylim(UIAxis, [YMinLimitsMultipeERP,YMaxLimitsMultipeERP]);
+    end
 else
     Depth = 0:ChannelSpacing:(size(Data,1)-1)*ChannelSpacing;
     YMinLimitsMultipeERP = Depth(1);
@@ -726,5 +728,10 @@ if strcmp(Type,"Movie")
         timeremaining = frameTime-plottime;
         pause(timeremaining);
     end
+    
+end
 
+
+if size(Data,1) == 1
+    ylim(UIAxis,[-PlotLineSpacing PlotLineSpacing])
 end

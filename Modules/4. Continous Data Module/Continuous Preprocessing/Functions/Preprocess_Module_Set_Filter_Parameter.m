@@ -27,7 +27,6 @@ function [type,dir,filterorder,wintype,df,Cutoff,DownsampleFactor] = Preprocess_
 % DownsampleFactor: Just taken from Info structure. Only non-emtpy when
 % downsampling is the current preprocessing step
 
-
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 

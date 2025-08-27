@@ -1,7 +1,7 @@
 function Error = Utility_Save_Data_as_TXT_CSV(Fullsavefile,PlottedData,Analysis)
 
 %________________________________________________________________________________________
-%% Function to export plotted/analysed data as .csv or .txt files
+%% Function to export plotted/Analyzed data as .csv or .txt files
 % This function gets called in the Utility_Get_Plot_Data function
 
 % Input Arguments:
@@ -73,16 +73,18 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
             writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainRateTimeType)," *****"),Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
             writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainUnitType)," *****"),Fullsavefile, 'WriteMode', 'append');
-        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
             writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainType)," *****"),Fullsavefile, 'WriteMode', 'append');
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && contains(Analysis,"Live")
+            writematrix(strcat("***** ",convertStringsToChars(PlottedData.LiveSpikeType)," *****"),Fullsavefile, 'WriteMode', 'append');
         end
     end
     
-    writematrix(strcat("***** Time Duration of Analysed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Time Duration of Analyzed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Start Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Start Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Stop Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Stop Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
     %% Write XData
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
@@ -100,8 +102,10 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
             writecell(num2cell(PlottedData.MainRateTimeXData)', Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
             writecell(num2cell(PlottedData.MainUnitXData)', Fullsavefile, 'WriteMode', 'append');
-        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
             writecell(num2cell(PlottedData.MainXData)', Fullsavefile, 'WriteMode', 'append');
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && contains(Analysis,"Live")
+            writecell(num2cell(PlottedData.LiveSpikeXData)', Fullsavefile, 'WriteMode', 'append');
         end
     end
     
@@ -121,8 +125,10 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
             writecell(PlottedData.MainRateTimeXTicks, Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
             writecell(PlottedData.MainUnitXTicks, Fullsavefile, 'WriteMode', 'append');
-        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
             writecell(PlottedData.MainXTicks, Fullsavefile, 'WriteMode', 'append');
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && contains(Analysis,"Live")
+            writecell(PlottedData.LiveSpikeXTicks, Fullsavefile, 'WriteMode', 'append');
         end
     end
     
@@ -142,8 +148,10 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
             writecell(num2cell(PlottedData.MainRateTimeYData)', Fullsavefile, 'WriteMode', 'append');
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
             writecell(num2cell(PlottedData.MainUnitYData)', Fullsavefile, 'WriteMode', 'append');
-        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
             writecell(num2cell(PlottedData.MainYData)', Fullsavefile, 'WriteMode', 'append');
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && contains(Analysis,"Live")
+            writecell(num2cell(PlottedData.LiveSpikeYData)', Fullsavefile, 'WriteMode', 'append');
         end
     end
     
@@ -170,7 +178,7 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
                 writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
                 writecell(num2cell(PlottedData.MainUnitCData)', Fullsavefile, 'WriteMode', 'append');
             end
-        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
             if ~isempty(PlottedData.MainCData)
                 writecell({" "},Fullsavefile, 'WriteMode', 'append');
                 writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
@@ -183,11 +191,11 @@ end %If spike analyis (Continous and events);
 
 %% Inst. Frequency/Phase analysis
 if contains(Analysis,"Instantaneous")
-    writematrix(strcat("***** Time Duration of Analysed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Time Duration of Analyzed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Start Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Start Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Stop Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Stop Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
 
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
     
@@ -204,7 +212,7 @@ if contains(Analysis,"Instantaneous")
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.PhaseAngleTimesSyncXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.PhaseAngleTimesSyncXTicks', Fullsavefile, 'WriteMode', 'append');
 
     elseif contains(Analysis,"Phase Amplitude Envelope")
         writecell({"***** Phase Amplitude Envelope Over Complex Hilbert Transform Result *****"},Fullsavefile, 'WriteMode', 'append');
@@ -237,7 +245,7 @@ if contains(Analysis,"Instantaneous")
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.AllToAllSyncXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.AllToAllSyncXTicks', Fullsavefile, 'WriteMode', 'append');
 
     elseif contains(Analysis,"Polar Phase Angle Differences")
         writecell({"***** Polar Phase Angle Differences (Theta and Radii for Each Data Time Point)*****"},Fullsavefile, 'WriteMode', 'append');
@@ -255,11 +263,11 @@ end
 %% unit analysis window
 if contains(Analysis,"Plot")
 
-    writematrix(strcat("***** Time Duration of Analysed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Time Duration of Analyzed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Start Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Start Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Stop Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Stop Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
 
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
 
@@ -281,7 +289,7 @@ if contains(Analysis,"Plot")
             % Write XTicks
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisWaveformsXTicks{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(PlottedData.UnitAnalyisWaveformsXTicks{SelectedPlot,nrunit}', Fullsavefile, 'WriteMode', 'append');
     
             % Write YData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
@@ -300,7 +308,7 @@ if contains(Analysis,"Plot")
             % Write XTicks
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisISIXTicks{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(PlottedData.UnitAnalyisISIXTicks{SelectedPlot,nrunit}', Fullsavefile, 'WriteMode', 'append');
     
             % Write YData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
@@ -321,7 +329,7 @@ if contains(Analysis,"Plot")
             % Write XTicks
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
             writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-            writecell(num2cell(PlottedData.UnitAnalyisAutoXTicks{SelectedPlot,nrunit})', Fullsavefile, 'WriteMode', 'append');
+            writecell(PlottedData.UnitAnalyisAutoXTicks{SelectedPlot,nrunit}', Fullsavefile, 'WriteMode', 'append');
     
             % Write YData
             writecell({" "},Fullsavefile, 'WriteMode', 'append');
@@ -341,11 +349,11 @@ end
 
 if contains(Analysis,"Event Related") || contains(Analysis,"Current")
     
-    writematrix(strcat("***** Time Duration of Analysed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Time Duration of Analyzed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Start Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Start Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Stop Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Stop Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
 
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
 
@@ -360,7 +368,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverEventsXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.ERPoverEventsXTicks', Fullsavefile, 'WriteMode', 'append');
 
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
@@ -380,7 +388,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.ERPoverChannelXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.ERPoverChannelXTicks', Fullsavefile, 'WriteMode', 'append');
 
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
@@ -400,7 +408,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         % Write XTicks
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
         writecell({"***** X_Ticks *****"},Fullsavefile, 'WriteMode', 'append');
-        writecell(num2cell(PlottedData.CSDXTicks)', Fullsavefile, 'WriteMode', 'append');
+        writecell(PlottedData.CSDXTicks', Fullsavefile, 'WriteMode', 'append');
 
         % Write YData
         writecell({" "},Fullsavefile, 'WriteMode', 'append');
@@ -419,11 +427,11 @@ end
 %% Time Freuwncy Power
 
 if contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
-    writematrix(strcat("***** Time Duration of Analysed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Time Duration of Analyzed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Start Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Start Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
     
-    writematrix(strcat("***** Stop Time of Analysed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
+    writematrix(strcat("***** Stop Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
 
     writecell({" "},Fullsavefile, 'WriteMode', 'append');
 

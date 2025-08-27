@@ -63,6 +63,7 @@ Module{4}.Function = 'RUN_Spike_Module';
 Module{4}.Items{1} = 'Spike Detection and Sorting';
 Module{4}.Items{2} = 'Save for Spike Sorting';
 Module{4}.Items{3} = 'Load Spike Sorting Results';
+Module{4}.Items{4} = 'Open Sorting in Phy';
 %% Example Module -- this could be yours!
 Module{5}.Title = 'Example Module - this could be yours!';
 Module{5}.Function = 'RUN_Example';

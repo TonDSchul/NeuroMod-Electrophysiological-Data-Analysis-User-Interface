@@ -11,13 +11,16 @@ import spikeinterface.widgets as sw
 import matplotlib.pyplot as plt
 from tempfile import TemporaryDirectory
 from spikeinterface import load_extractor
+from spikeinterface import load
 import spikeinterface.preprocessing as spre
+import spikeinterface.sorters as ss
 
 from mountainsort5.util import create_cached_recording
 
 from spikeinterface.exporters import export_to_phy
 import shutil
 import json
+import inspect
 
 from SpikeInterface_FunctionDeclaration import Load_Binary_In_SpikeInterface
 from SpikeInterface_FunctionDeclaration import Create_Probe
@@ -95,6 +98,8 @@ def main(subfolders,file_path):
     
     print(f"Received arguments: {file_path}, {MultipleRecordings}, {Sorter}, {Apply_Preprocessing}, {LoadSpikeSorting}, {OpenSpikeInterface_GUI}, {Plot_Results}, {JustOpenSpikeInterfaceGUI} , {SampleRate}")
     
+    print("SpikeInterface Version installed: " + si.__version__)
+    
     print("Installed Sorter:")
     
     ISO = si.installed_sorters()
@@ -110,14 +115,14 @@ def main(subfolders,file_path):
         NumIter = len(subfolders)
         print("Looping through " + str(NumIter) + " Folder(s)")
         LoopIterations = list(range(FolderToStartAt, NumIter + 1))
-    
+        
     for nIteration in LoopIterations:
         IterMessage = "Analysing Folder " + str(nIteration)
         
         if MultipleRecordings == 1:
             print("Loooing over multiple folder.")
             Filename = subfolders[nIteration - 1]
-            CompletePath = file_path+"/"+Filename+"/SpikeInterface"
+            CompletePath = os.path.join(file_path,Filename,"SpikeInterface")
         else:
             if Sorter in ['Kilosort 4']:
                 CompletePath = subfolders[:subfolders.rfind("\\")] + "\\Kilosort"
@@ -134,23 +139,24 @@ def main(subfolders,file_path):
             print(BinFiles)
         else:            
             BinFiles = get_bin_files(CompletePath)
-            
-        PathToLoad = CompletePath+"/"+BinFiles[0]
+                    
+        PathToLoad = os.path.join(CompletePath,BinFiles[0])
         
-        PathToSaveCached = CompletePath+"/Chached Recording"
-        
-        PathForPhy = CompletePath + "/SpikeInterface_Sorting_Phy_Results/"+Sorter
+        # Create Folder to temporarily save recording in
+        PathToSaveCached = os.path.join(CompletePath, "Chached Recording")
+        os.makedirs(PathToSaveCached, exist_ok=True)
+        # Create Folder to save results that are loaded into Matlab
+        PathForPhy = os.path.join(CompletePath, "SpikeInterface_Sorting_Phy_Results", Sorter)
+        os.makedirs(PathForPhy, exist_ok=True)
         ### Path to save sorting results in to load later
-        Save_Sorting_Folder = CompletePath + "/SpikeInterface_Saved_Sorting/"+Sorter
-                
+        Save_Sorting_Folder = os.path.join(CompletePath, "SpikeInterface_Saved_Sorting", Sorter)
         if LoadSpikeSorting == 0:
-            print("Attempting to delete already existing folder:")
-            print(PathForPhy)
-            print(Save_Sorting_Folder)
-            DeleteFolderContents(PathForPhy)
-            DeleteFolderContents(Save_Sorting_Folder)
-            
-        DeleteFolderContents(PathToSaveCached)
+            if os.path.exists(Save_Sorting_Folder):
+                try:
+                    shutil.rmtree(Save_Sorting_Folder)
+                    print(f"Deleted existing folder: {Save_Sorting_Folder}")
+                except Exception as e:
+                    print(f"Could not delete {Save_Sorting_Folder}: {e}")
         
         """ ################################################################ Start Processing ###################################################################### """
             
@@ -161,15 +167,15 @@ def main(subfolders,file_path):
         Recording = Recording.set_probe(Probe)
         
         if Sorter in ['Kilosort 4']:
-            CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4, overwrite=True)
             CachedRecording.annotate(is_filtered=False)
             CachedRecording = CachedRecording.set_probe(Probe)
         if Sorter in ['SpyKING CIRCUS 2']:
-            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
             CachedRecording.annotate(is_filtered=False)
             CachedRecording = CachedRecording.set_probe(Probe)
         if Sorter in ['Mountainsort 5']:
-            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4)
+            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
             CachedRecording.annotate(is_filtered=False)
             CachedRecording = CachedRecording.set_probe(Probe)
             
@@ -185,23 +191,10 @@ def main(subfolders,file_path):
             DumpedRecording = DumpedRecording.set_probe(Probe)
         
         if PlotTraces == 1:
-            combined_plot(Recording,DumpedRecording,ypitch)
+            combined_plot(CachedRecording,DumpedRecording,ypitch)
         
         """ ################################################################ Start/Load Sorting ###################################################################### """
-        
-        """
-        Checks if a folder exists. If not, create the folder.
-        
-        Parameters:
-        folder_path (str): Path to the folder to check/create.
-        """
-        if not os.path.exists(Save_Sorting_Folder):
-            print(f"Folder '{Save_Sorting_Folder}' does not exist. Creating it...")
-            #os.makedirs(Save_Sorting_Folder)
-            print(f"Folder '{Save_Sorting_Folder}' created successfully.")
-        else:
-            print(f"Folder '{Save_Sorting_Folder}' already exists.")
-        
+                
         if LoadSpikeSorting == 0:    
             
             print("Creating new sorting...")
@@ -211,42 +204,17 @@ def main(subfolders,file_path):
                 
                 sorting = SortWithSpikingCircus(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
                 
-                try:
-                    shutil.rmtree(Save_Sorting_Folder)
-                except FileNotFoundError:
-                    print("The folder does not exist.")
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                
-                #sorting = sorting.save(folder=Save_Sorting_Folder,overwrite=True)
+                sorting = sorting.save(folder=Save_Sorting_Folder,overwrite=True)
                 
             if Sorter in ['Mountainsort 5']:
                 DumpedRecording = DumpedRecording.set_probe(Probe)
+                
                 sorting = SortWithMountainSort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
-                try:
-                    shutil.rmtree(Save_Sorting_Folder)
-                except FileNotFoundError:
-                    print("The folder does not exist.")
-                except Exception as e:
-                    print(f"An error occurred: {e}")
                 
                 sorting = sorting.save(folder=Save_Sorting_Folder,overwrite=True)
-                
-            if Sorter in ['Kilosort 4']:
                                 
-                sorting = SortWithKilosort(DumpedRecording,Save_Sorting_Folder,Apply_Preprocessing,SortingParameter)
-                try:
-                    shutil.rmtree(Save_Sorting_Folder)
-                except FileNotFoundError:
-                    print("The folder does not exist.")
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                
-                
-                sorting.save(folder=Save_Sorting_Folder,overwrite=True)
-                
         else:
-            sorting = load_extractor(Save_Sorting_Folder)
+            sorting = load(Save_Sorting_Folder)
         
         """ ################################################################ Create Analyzer ###################################################################### """
         
@@ -289,7 +257,6 @@ def main(subfolders,file_path):
         """ ################################################################ Save SpikePositions as .mat###################################################################### """
         if LoadSpikeSorting == 0:
             SaveSpikePosition_mat(PathForPhy,Analyzer)
-        
         
         """ ################################################################ Spikeinterface GUI ###################################################################### """
         if OpenSpikeInterface_GUI == 1:   
@@ -338,8 +305,7 @@ if __name__ == "__main__":
                 else:
                     subfolders = file_path
                 
-                
-                main(subfolders,file_path)  # Already an admin here.
+                main(subfolders,file_path)  
                 
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -381,5 +347,5 @@ if __name__ == "__main__":
                 subfolders = file_path
             
             
-            main(subfolders,file_path)  # Already an admin here.
+            main(subfolders,file_path) 
             

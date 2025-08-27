@@ -25,11 +25,16 @@ function [Data,Error] = Organize_Delete_Dataset_Components(Data,ComponentToDelet
 
 Error = 0;
 
+Data.Info.SorterPath
+
 if strcmp(ComponentToDelete,"Spikes")
     
-    fieldsToDelete = {'Spikes'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
+    if isfield(Data,'Spikes')
+        fieldsToDelete = {'Spikes'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+    end
+
     Data.Info.SpikeType = 'Non';
     if isfield(Data,'EventRelatedSpikes')
         fieldsToDelete = {'EventRelatedSpikes'};
@@ -59,6 +64,12 @@ if strcmp(ComponentToDelete,"Spikes")
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
+    if isfield(Data.Info,'SorterPath')
+        fieldsToDelete = {'SorterPath'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
     if isfield(Data.Info,'SpikeDetectionNrStd')
         fieldsToDelete = {'SpikeDetectionNrStd'};
         % Delete fields
@@ -76,11 +87,12 @@ elseif strcmp(ComponentToDelete,"EventRelatedSpikes")
     end
     
 elseif strcmp(ComponentToDelete,"EventRelatedData")
-    
-    fieldsToDelete = {'EventRelatedData'};
-    % Delete fields
-    Data = rmfield(Data, fieldsToDelete);
-      
+    if isfield(Data,'EventRelatedData')
+        fieldsToDelete = {'EventRelatedData'};
+        % Delete fields
+        Data = rmfield(Data, fieldsToDelete);
+    end
+
     if isfield(Data,'EventRelatedSpikes')
         fieldsToDelete = {'EventRelatedSpikes'};
         % Delete fields

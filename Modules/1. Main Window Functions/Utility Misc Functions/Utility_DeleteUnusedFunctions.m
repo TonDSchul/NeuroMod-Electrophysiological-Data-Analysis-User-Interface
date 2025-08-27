@@ -14,7 +14,7 @@ function Utility_DeleteUnusedFunctions()
 %________________________________________________________________________________________
 
 % Define the folder containing the 1000 functions
-folderPath = 'C:\Users\tonyd\Desktop\1. FieldTrip'; % Change this to your actual folder path
+folderPath = 'PathToFolder'; % Change this to your actual folder path
 
 % Get a list of all .m files in the folder and subfolders
 fileList = dir(fullfile(folderPath, '**', '*.m'));

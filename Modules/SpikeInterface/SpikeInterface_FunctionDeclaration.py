@@ -16,6 +16,7 @@ from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
 #from kilosort import io
 import time
+import inspect
 import os
 import shutil
 from scipy.io import savemat
@@ -152,19 +153,37 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
 
     default_SC2_params = ss.Spykingcircus2Sorter.default_params()
         
-    costume_SC2_params = update_standards(default_SC2_params, SortingParameter)
+    costum_SC2_params = update_standards(default_SC2_params, SortingParameter)
+    
+    # If it exists inside 'merging', remove it
+    if 'merging' in costum_SC2_params and 'auto_merge' in costum_SC2_params['merging']:
+        del costum_SC2_params['merging']['auto_merge']
 
+    if 'merging' in costum_SC2_params and 'correlograms_kwargs' in costum_SC2_params['merging']:
+        del costum_SC2_params['merging']['correlograms_kwargs']
+    
     if Apply_Preprocessing == 1:
-        costume_SC2_params['apply_preprocessing'] = False
+        costum_SC2_params['apply_preprocessing'] = False
         print("No Prepro in SC2")
     else:
-        costume_SC2_params['apply_preprocessing'] = True
+        costum_SC2_params['apply_preprocessing'] = True
         print("Prepro in SC2")
     
-    print("Costume_SC2_params:")
-    print(costume_SC2_params)
-        
-    sorting_SC  = ss.run_sorter(sorter_name='spykingcircus2', **costume_SC2_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    print("Costum_SC2_params:")
+    print(costum_SC2_params)
+    
+    argname = get_run_sorter_folder_arg()
+
+    kwargs = {
+        "sorter_name": "spykingcircus2",
+        "recording": recording,
+        argname: Sorting_output_folder,   # dynamically insert correct key
+        "remove_existing_folder": True,
+        **costum_SC2_params
+    }
+    
+    sorting_SC = ss.run_sorter(**kwargs)
+    
     return sorting_SC 
 
 """ ################################################################ MountainSort 5 ####### """
@@ -178,7 +197,7 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     
     default_MS5_params =  si.get_default_sorter_params('mountainsort5')
   
-    Costume_MS5_params = update_standards(default_MS5_params, SortingParameter)
+    Costum_MS5_params = update_standards(default_MS5_params, SortingParameter)
     
     """ 100 um  
     default_MS5_params['scheme2_training_duration_sec'] = 30
@@ -201,16 +220,30 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     """
     
     if Apply_Preprocessing == 1:
-        Costume_MS5_params['filter'] = False
+        Costum_MS5_params['filter'] = False
         print("No Prepro in MS5")
     else:
-        Costume_MS5_params['filter'] = True
+        Costum_MS5_params['filter'] = True
         print("Prepro in MS5")
         
-    print("Costume_MS5_params:")
-    print(Costume_MS5_params)
+    print("Costum_MS5_params:")
+    print(Costum_MS5_params)
     
-    sorting_MS5  = ss.run_sorter(sorter_name='mountainsort5', **Costume_MS5_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    print(Costum_MS5_params.keys())
+    
+    # get the keyword for the current spikeinterface api signature
+    argname = get_run_sorter_folder_arg()
+
+    kwargs = {
+        "sorter_name": "mountainsort5",
+        "recording": recording,
+        argname: Sorting_output_folder,   # dynamically insert correct key
+        "remove_existing_folder": True,
+        **Costum_MS5_params
+    }
+    
+    sorting_MS5 = ss.run_sorter(**kwargs)
+
     return sorting_MS5
 
 """ ################################################################ Kilosort 4 ####### """
@@ -235,7 +268,11 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
     
     print(costume_KS4_params)
     
-    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costume_KS4_params, recording=recording,output_folder=Sorting_output_folder, remove_existing_folder=True)
+    if not os.path.exists(Sorting_output_folder):
+        os.makedirs(Sorting_output_folder)
+    os.chdir(Sorting_output_folder)
+    
+    sortingKS4 = ss.run_sorter(sorter_name='kilosort4', **costume_KS4_params, recording=recording, remove_existing_folder=True)
     return sortingKS4
     
 """ ################################################################ Sorting Analyzer ####### """
@@ -313,12 +350,18 @@ def DeleteFolderContents(folder_path):
         print(f"An error occurred: {e}")
         
 def SaveSpikePosition_mat(PathForPhy,Analyzer):
-    print("Saving Spike Positions as .mat")
+    
     ext_SpikeLocations = Analyzer.get_extension("spike_locations")
     SpikePositions = ext_SpikeLocations.get_data()
     
-    FullFolder = PathForPhy + "/SpikePositions.mat";
+    FullFolder = os.path.join(PathForPhy,"SpikePositions.mat")
+    
     mdic = {"SpikePositions": SpikePositions, "label": "SpikePositions"}
+    
+    print(ext_SpikeLocations)
+    print(SpikePositions)
+    print("Saving Spike Positions as .mat to " + FullFolder)
+    
     savemat(FullFolder, mdic)
     
 def get_all_subfolders(folder_path):
@@ -377,3 +420,13 @@ def update_standards(standsorting_parameters, sorting_parameters):
 
     return standsorting_parameters
 
+def get_run_sorter_folder_arg():
+    sig = inspect.signature(ss.run_sorter)
+    if "output_folder" in sig.parameters:
+        print("SpikeInterface version signature key for sorting function: output_folder")
+        return "output_folder"
+    elif "folder" in sig.parameters:
+        print("SpikeInterface version signature key for sorting function: folder")
+        return "folder"
+    else:
+        raise RuntimeError("Neither 'folder' nor 'output_folder' found in run_sorter signature!")

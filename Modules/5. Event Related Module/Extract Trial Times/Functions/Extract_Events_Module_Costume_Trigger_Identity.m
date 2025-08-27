@@ -2,7 +2,7 @@ function [Data,Error] = Extract_Events_Module_Costume_Trigger_Identity(Data,Cost
 
 Error = 0;
 if length(CostumeChannelIdentityInfo.AllIdentities) ~= size(Data.Events{1},2)
-    msgbox(strcat("Error: selected file with trigger identities contains ",num2str(length(CostumeChannelIdentityInfo.AllIdentities))," trigger while current channel only contains ",num2str(size(Data.Events{1},2))," trigger! Returning without applying costume channel identity."))
+    msgbox(strcat("Error: selected file with trigger identities contains ",num2str(length(CostumeChannelIdentityInfo.AllIdentities))," trigger while current channel only contains ",num2str(size(Data.Events{1},2))," trigger! Returning without applying costum channel identity."))
     Error = 1;
     return
 end

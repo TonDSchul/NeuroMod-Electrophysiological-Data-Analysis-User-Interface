@@ -272,6 +272,7 @@ pip install scipy
 pip install numba
 pip install pyuac
 pip install pypiwin32
+pip install spikeinterface_gui
 ```
 
 **Note:** When you get there error during the second or 5th command: Error executing cmd /u /c "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64 && set or something similar, you don't have the necessary C++ packages installed in Visual Studios. In doubt start the Visual Studios installer again, click to modify the installation and select everything that has to do with C++. In doubt manually download and install CMake from https://cmake.org/download/

@@ -18,7 +18,7 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 % 2. RecordingType: char, data format selected when extracting data with
 % neo
 % 3. FormatToSaveNEOIn: char, gives info how NEO saved data and how to load
-% it, either "Costume files (.dat,.mat)" OR "NEO Format to .mat Conversion"
+% it, either "Costum files (.dat,.mat)" OR "NEO Format to .mat Conversion"
 
 % Output: 
 % 1. Data: nchannel x ntimespoints single matrix with extracted raw data
@@ -124,7 +124,7 @@ if SuccesfulLastLogger == 0
 end
 
 %% ------------------------------ Load Metadata ------------------------------
-if strcmp(FormatToSaveNEOIn,"Costume files (.dat,.mat)")
+if strcmp(FormatToSaveNEOIn,"Costum files (.dat,.mat)")
     try
         load(MetadataLocation)
     catch
@@ -157,7 +157,7 @@ if strcmp(FormatToSaveNEOIn,"Costume files (.dat,.mat)")
         HeaderInfo.startTimestamp = 1;
     end
 
-    %% ------------------------------ Costume GUI files ------------------------------
+    %% ------------------------------ Costum GUI files ------------------------------
     h = waitbar(0, 'Preparing Data to load...', 'Name','Preparing Data to load...');
     msg = sprintf('Preparing Data to load... (%d%% done)', 25);
     waitbar(25, h, msg);

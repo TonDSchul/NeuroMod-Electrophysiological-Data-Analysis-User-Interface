@@ -37,10 +37,10 @@ if ChangeApp
             for i = 1:4
                 ModuleOrder(i) = i;
             end
-            disp("No costume module order found. Loading standard modules.")
+            disp("No costum module order found. Loading standard modules.")
             save(FileToSearchFor,'ModuleOrder')
         else
-            disp("Loading costume module order.")
+            disp("Loading costum module order.")
             load(FileToSearchFor,'ModuleOrder')
         end
     else

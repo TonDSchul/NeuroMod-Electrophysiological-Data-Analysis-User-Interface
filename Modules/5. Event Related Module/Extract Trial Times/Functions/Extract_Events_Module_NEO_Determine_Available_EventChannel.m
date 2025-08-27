@@ -24,7 +24,7 @@ end
 EventDataLocation = strcat(ModifiedSaveFile,'\NEO_Saved_EventData.mat');
 MatlabNeoConversionLocation = strcat(ModifiedSaveFile,'\NEOMatlabConversion.mat');
 
-%% --------------- First Load saved event data .mat file if events saved as costume file ------------------
+%% --------------- First Load saved event data .mat file if events saved as costum file ------------------
 CostumeEventFilePresent = 0;
 if isfile(EventDataLocation)
     %load
@@ -48,7 +48,7 @@ if isfile(EventDataLocation)
     end
 
     CostumeEventFilePresent = 1;
-    disp("Loaded event data from costume Neo exported .mat format.")
+    disp("Loaded event data from costum Neo exported .mat format.")
 end
 
 if CostumeEventFilePresent == 0 && isfile(MatlabNeoConversionLocation)

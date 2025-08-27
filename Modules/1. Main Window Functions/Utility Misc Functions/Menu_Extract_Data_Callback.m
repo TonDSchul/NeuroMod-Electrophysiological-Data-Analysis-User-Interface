@@ -12,7 +12,7 @@ function Menu_Extract_Data_Callback (app, fileNames, DefaultFolder, Window)
 % Load_Data_Window_Info variable which holds the loaded channel order and
 % channelspacing 
 % 2. fileNames: string, name of the menu point the user clicked on (with a -mat at the end, equals savefilename)
-% 3. DefaultFolder: char, default folder saving costume probe information:
+% 3. DefaultFolder: char, default folder saving costum probe information:
 % GUI_Path/Channel Maps/Saved Probe Information
 
 

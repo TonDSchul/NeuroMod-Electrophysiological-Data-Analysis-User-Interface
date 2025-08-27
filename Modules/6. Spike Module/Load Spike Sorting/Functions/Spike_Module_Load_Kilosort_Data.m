@@ -235,15 +235,7 @@ end
 %% Specify SpikeType
 Data.Info.SpikeType = 'Kilosort';
 Data.Info.Sorter = 'External Kilosort GUI';
-
-%% Extract Waveforms
-% For Kilosort we dont have channel information to extract from raw or
-% preprocessed data --> Therefore we take channel closest to position
-
-% SpikePositions = Data.Spikes.SpikePositions(:,2);
-% SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
-% SpikePositions = round(SpikePositions)+1;
-% Data.Spikes.SpikeChannel = SpikePositions;
+Data.Info.SorterPath = SelectedFolder;
 
 %% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
 % Detect high pass filter

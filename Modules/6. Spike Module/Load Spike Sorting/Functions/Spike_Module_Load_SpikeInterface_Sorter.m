@@ -213,6 +213,7 @@ end
 %% Specify SpikeType
 Data.Info.SpikeType = 'SpikeInterface';
 Data.Info.Sorter = CurrentSorter;
+Data.Info.SorterPath = SelectedFolder;
 
 %% Extract Waveforms
 % For Kilosort we dont have channel information to extract from raw or

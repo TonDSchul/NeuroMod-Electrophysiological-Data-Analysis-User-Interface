@@ -97,7 +97,7 @@ if strcmp(DataToExtractFrom,"Raw Data")
     try
         Data.EventRelatedData = NaN(size(Data.Raw,1),length(Data.Events{EventChannelNr}),ntimepoints);
     catch
-        warning(strcat("Event channel ",Data.Info.EventChannelNames{EventChannelNr}, " with ",num2str(length(Data.Events{EventChannelNr}))," triggers is too big! Consider using a smaller timw window or divide the single event channel into multiple using the 'Load Costume Trigger Identities' button. Event channel is NOT used!"))
+        warning(strcat("Event channel ",Data.Info.EventChannelNames{EventChannelNr}, " with ",num2str(length(Data.Events{EventChannelNr}))," triggers is too big! Consider using a smaller timw window or divide the single event channel into multiple using the 'Load Costum Trigger Identities' button. Event channel is NOT used!"))
         ExcludedTrials = [ExcludedTrials,1:length(Data.Events{EventChannelNr})];
         Error = 1;
         close(h);
@@ -131,7 +131,7 @@ elseif strcmp(DataToExtractFrom,"Preprocessed Data")
     try
         Data.EventRelatedData = NaN(size(Data.Preprocessed,1),length(Data.Events{EventChannelNr}),ntimepoints);
     catch
-        warning(strcat("Event channel ",Data.Info.EventChannelNames{EventChannelNr}, " with ",num2str(length(Data.Events{EventChannelNr}))," triggers is too big! Consider using a smaller timw window or divide the single event channel into multiple using the 'Load Costume Trigger Identities' button. Event channel is NOT used!"))
+        warning(strcat("Event channel ",Data.Info.EventChannelNames{EventChannelNr}, " with ",num2str(length(Data.Events{EventChannelNr}))," triggers is too big! Consider using a smaller timw window or divide the single event channel into multiple using the 'Load Costum Trigger Identities' button. Event channel is NOT used!"))
         ExcludedTrials = [ExcludedTrials,1:length(Data.Events{EventChannelNr})];
         Error = 1;
         close(h);
