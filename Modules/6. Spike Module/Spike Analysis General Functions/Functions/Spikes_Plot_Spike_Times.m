@@ -301,8 +301,6 @@ if ~strcmp(Clustertoshow,"Non") && ~strcmp(Clustertoshow,"All")
     CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
 end
 
-
-
 % %%% TEST
 % Figure.NextPlot = "add";
 % SpikeTimessss = Data.Spikes.SpikeTimes./Data.Info.NativeSamplingRate;

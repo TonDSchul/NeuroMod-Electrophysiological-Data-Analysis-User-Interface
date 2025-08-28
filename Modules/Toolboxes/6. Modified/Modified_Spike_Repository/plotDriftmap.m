@@ -19,9 +19,10 @@ if ~isempty(Spikeline_handles)
 end
 
 if ~strcmpi(opt, 'show')
-  nColorBins = 300;
+  nColorBins = 200+2;
   ampRange = quantile(spikeAmps, [0.01 0.9]);
   colorBins = linspace(ampRange(1), ampRange(2), nColorBins);
+
   %colorBins = linspace(min(spikeAmps), max(spikeAmps), nColorBins);
 
   % Create colormap 
@@ -46,8 +47,11 @@ if ~strcmpi(opt, 'show')
   end
   
   SpikesPlotted = zeros(size(spikeTimes));
-
-  for b = 1:nColorBins-1
+  
+  for b = 2:nColorBins-1
+      if b == 2
+        disp("Now")
+      end
     theseSpikes = spikeAmps>=colorBins(b) & spikeAmps<=colorBins(b+1);
     
     line(Figure,spikeTimes(theseSpikes), spikeYpos(theseSpikes),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(b,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');
@@ -55,8 +59,39 @@ if ~strcmpi(opt, 'show')
     SpikesPlotted = SpikesPlotted + theseSpikes;
     %hold on;
   end  
+
+   % Not all spikes plotted so far, just within quantile ranges. Now plot
+   % the rest with the max and min color
+  SpikesPlotted(SpikesPlotted>1) = 1;
   
+  if sum(SpikesPlotted)>0
+      NotPlottedAmps = spikeAmps(SpikesPlotted==0);
+      NotPlottedTimes = spikeTimes(SpikesPlotted==0);
+      NotPlottedPos = spikeYpos(SpikesPlotted==0);
+      
+      if sum(NotPlottedAmps<colorBins(2))>0
+        line(Figure,NotPlottedTimes(NotPlottedAmps<colorBins(2)), NotPlottedPos(NotPlottedAmps<colorBins(2)),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(1,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');
+      end
+
+      if sum(NotPlottedAmps>colorBins(end-1))>0
+        line(Figure,NotPlottedTimes(NotPlottedAmps>colorBins(end-1)), NotPlottedPos(NotPlottedAmps>colorBins(end-1)),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(end,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');    
+      end
+  end
 end
+
+colormap(Figure, flip(colors));
+
+% Set color axis to amplitude range
+tempspikeAmps = -spikeAmps;
+caxis(Figure,[min(tempspikeAmps) max(tempspikeAmps)]);
+
+% Create colorbar linked to your axes
+cbar_handle = colorbar('peer', Figure, 'location', 'WestOutside');
+cbar_handle.Label.String   = PlotAppearance.InternalEventSpikePlot.CbarLabel;
+cbar_handle.Label.Rotation = 270;
+cbar_handle.Color          = 'k';
+cbar_handle.Label.Color    = 'k';
+
 if isempty(opt)
   return
 end

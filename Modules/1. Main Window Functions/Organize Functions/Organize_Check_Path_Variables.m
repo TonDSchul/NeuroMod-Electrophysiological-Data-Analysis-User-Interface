@@ -12,6 +12,7 @@ CED64VariablePath = strcat(executablefolder,"/Modules/MISC/Variables (do not edi
 
 SpikeInterfacePythonVariablePath = strcat(executablefolder,"/Modules/MISC/Variables (do not edit)/Python_Conda_Path.mat");
 NEOVariablePath = strcat(executablefolder,"/Modules/MISC/Variables (do not edit)/NEO_Python_Conda_Path.mat");
+PhyVariablePath = strcat(executablefolder,"/Modules/MISC/Variables (do not edit)/Phy_Python_Conda_Path.mat");
 
 %% ------------------------ Check CED64VariablePath ------------------------ 
 if isfile(CED64VariablePath)
@@ -62,7 +63,7 @@ else
 end
 
 
-%% ------------------------ Check SpikeInterface python path variabel ------------------------ 
+%% ------------------------ Check NEO python path variabel ------------------------ 
 if isfile(NEOVariablePath)
     try % try loading
         load(NEOVariablePath)
@@ -84,4 +85,29 @@ if isfile(NEOVariablePath)
     end
 else
     disp("No path to NEO python.exe found. Path has to be set when extracting a raw recording with NEO next time.")
+end
+
+
+%% ------------------------ Check Phy envirnment python path variable ------------------------ 
+if isfile(PhyVariablePath)
+    try % try loading
+        load(PhyVariablePath)
+        % check if variable expected from loading exists!
+        if exist('PhyPython_Conda_Environment_Path','var') % variable exists
+            if isfile(PhyPython_Conda_Environment_Path) %check path withion variable
+                disp("Valid path to the python.exe of the Phy environment folder found!")
+            else
+                delete(PhyVariablePath)
+                disp("File /Modules/MISC/Variables (do not edit)/Phy_Python_Conda_Path.mat found but it does not contain a valid path to a python.exe. Variable is deleted. Path has to be set again when wanting to open Phy next time.")
+            end
+        else
+            delete(PhyVariablePath)
+            disp("Phy_Python_Conda_Path.mat file in NeuroModPath/Modules/MISC/Variables (do not edit) could be loaded but does not contain the expected variable PhyPython_Conda_Environment_Path! Variable is deleted. Path has to be set again when wanting to open Phy next time.")
+        end
+    catch
+        disp("Phy_Python_Conda_Path.mat file in NeuroModPath/Modules/MISC/Variables (do not edit) could not be loaded and is deleted. Path has to be set again when wanting to open Phy next time.")
+        delete(PhyVariablePath)
+    end
+else
+    disp("No path to Phy python.exe found. Path has to be set again when wanting to open Phy next time.")
 end

@@ -25,8 +25,6 @@ function [Data,Error] = Organize_Delete_Dataset_Components(Data,ComponentToDelet
 
 Error = 0;
 
-Data.Info.SorterPath
-
 if strcmp(ComponentToDelete,"Spikes")
     
     if isfield(Data,'Spikes')

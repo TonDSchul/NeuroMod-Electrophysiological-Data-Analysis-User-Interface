@@ -191,6 +191,8 @@ if strcmp(Type,"InternalEventSpikePlot") || strcmp(Type,"All")
     % LineWidth
     PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth = 2; % 
     PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth = 2.5; % 
+    % Cbar
+    PlotAppearance.InternalEventSpikePlot.CbarLabel = 'Spike Amplitude [mV]'; % 
 
     % Spike rate over time
     % Lables and Fontsize

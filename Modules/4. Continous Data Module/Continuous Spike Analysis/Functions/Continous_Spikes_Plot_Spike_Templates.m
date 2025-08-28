@@ -1,4 +1,4 @@
-function CurrentPlotData = Continous_Kilosort_Spikes_Plot_Spike_Templates(Figure,Data,ChannelSelection,units,rgbMatrix,CurrentPlotData)
+function CurrentPlotData = Continous_Spikes_Plot_Spike_Templates(Figure,Data,ChannelSelection,units,rgbMatrix,CurrentPlotData)
  
 %________________________________________________________________________________________
 %% Function to plot template of spikes for each channel selected

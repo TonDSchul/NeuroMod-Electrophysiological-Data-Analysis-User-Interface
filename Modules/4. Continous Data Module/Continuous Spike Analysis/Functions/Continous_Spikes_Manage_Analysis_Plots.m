@@ -73,10 +73,14 @@ end
 if strcmp(TypeofAnalysis,"Spike Map")
     set(Figure, 'YDir','reverse');
 
-    if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
+    if strcmp(ClusterToShow,"All")
         CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",rgbMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    else
+        if strcmp(Data.Info.Sorter,'Mountainsort5') || strcmp(Data.Info.Sorter,'SpykingCircus2')
+            SpikeAmps(SpikeAmps<0)=abs(SpikeAmps(SpikeAmps<0));
+        end
     end
-
+    
     CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",rgbMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Data.Spikes.ChannelPosition,Figure,numCluster,ClusterToShow,PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
     CurrentPlotData = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,"Initial",rgbMatrix,ClusterToShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
 
@@ -275,3 +279,6 @@ if strcmp(TypeofAnalysis,"Spike Triggered LFP")
     
     TextArea.Value = texttoshow;
 end             
+
+% Resize Figures based on analysis and whether cbar is necessary
+Continous_Spikes_Resize_Figures(Figure,Figure2,Figure3,TypeofAnalysis,ClusterToShow)

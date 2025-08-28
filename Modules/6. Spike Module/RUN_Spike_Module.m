@@ -34,9 +34,11 @@ elseif strcmp(ModuleFunctionName,"Open Sorting in Phy")
     % 
     if isfield(app.Data,'Spikes')
         if strcmp(app.Data.Info.SpikeType,"SpikeInterface") || strcmp(app.Data.Info.SpikeType,"Kilosort")
-            [Success] = Manage_Dataset_Module_Start_Phy(app.Data,app.executableFolder);
+            [~] = Manage_Dataset_Module_Start_Phy(app.Data,app.executableFolder);
         else
             msgbox("No spike sorting data found! Please first load sorted data for the current dataset.")
         end
+    else
+        msgbox("No spike sorting data found! Please first load sorted data for the current dataset.")
     end
 end

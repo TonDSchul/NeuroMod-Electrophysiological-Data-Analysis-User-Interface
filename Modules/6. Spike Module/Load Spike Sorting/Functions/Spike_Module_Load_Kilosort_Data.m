@@ -104,6 +104,10 @@ end
 
 [Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel ,Data.Spikes.BiggestAmplWaveform, c] = ksDriftmap(folderPath,KSversion);
 
+% if KSversion == 4
+%     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps/1000; % in mV
+% end
+
 Data.Spikes.SpikeChannel = double(Data.Spikes.SpikeChannel);
 
 if KSversion == 3
@@ -153,6 +157,9 @@ for i = 1:length(fileNames)
         end
     elseif strcmp(fileNames{i},'templates_ind.npy')
         Data.Spikes.templates_ind = readNPY(fullfile(folderPath,fileNames{i}));
+    % elseif strcmp(fileNames{i},'amplitudes.npy')
+    %     Data.Spikes.SpikeAmps = readNPY(fullfile(folderPath,fileNames{i}));
+    %     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps/ScalingFactor;
     elseif strcmp(fileNames{i},'templates.npy')
         Data.Spikes.templates = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i},'spike_detection_templates.npy')

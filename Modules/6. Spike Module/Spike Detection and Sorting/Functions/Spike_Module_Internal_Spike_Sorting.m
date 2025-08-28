@@ -87,7 +87,7 @@ if strcmp(WhatToDo,"Clustering")
         save(strcat(SpikeSortingPath,'\GUISpikeData.mat'),"TempSpikes");
         clear TempSpikes
 
-        disp('Spike Data succesfully saved for Sorting.');
+        disp('Spike Data succesfully saved for Sorting. Please watch the Matlab command window to see when sorting finished.');
         
         disp('Starting Spike Sorting.');
 
@@ -132,7 +132,7 @@ if strcmp(WhatToDo,"Clustering")
     
         msgbox("Data for spike sorting was succesfull saved.");
         TempSpikes = Data.Spikes;
-        save(strcat(SpikeSortingPath,'\spikes.mat'),"index","spikes","sr","TempSpikes","SpikeInfo");
+        save(strcat(SpikeSortingPath,'\times_spikes.mat'),"index","spikes","sr","TempSpikes","SpikeInfo");
         clear TempSpikes
 
         disp('Spike Data succesfully saved for Sorting.');
@@ -141,7 +141,7 @@ if strcmp(WhatToDo,"Clustering")
 
         %% Call wave clus
     
-        Do_clustering(strcat(SpikeSortingPath,'\spikes.mat'),'parallel',true,'make_plots',false)
+        Do_clustering(strcat(SpikeSortingPath,'\times_spikes.mat'),'parallel',true,'make_plots',false)
 
     end
 
@@ -152,7 +152,7 @@ end
 if isfile(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')))
     disp('Loading Spike Sorting Data.');
     % First Load Spike Data and check whether its the same
-    load(strcat(strcat(SpikeSortingPath,'\spikes.mat')),'TempSpikes','SpikeInfo');
+    load(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')),'TempSpikes','SpikeInfo');
     
     if isfield(Data,'Spikes') && strcmp(Data.Info.SpikeType,"Internal")
         if ~isequal(TempSpikes.SpikeTimes,Data.Spikes.SpikeTimes) || ~isequal(TempSpikes.SpikePositions,Data.Spikes.SpikePositions)

@@ -88,10 +88,17 @@ end
 
 if strcmp(AnalysisTypeDropDown,"Spike Map")
     
-    if ~strcmp(ClustertoshowDropDown,"All") && ~strcmp(ClustertoshowDropDown,"Non")
+    if strcmp(ClustertoshowDropDown,"All")
         CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    else
+        if strcmp(Data.Info.Sorter,'Mountainsort5') || strcmp(Data.Info.Sorter,'SpykingCircus2')
+            SpikeAmplitude(SpikeAmplitude<0)=abs(SpikeAmplitude(SpikeAmplitude<0));
+        end
     end
-    
+
+    Figure.YLabel.Color = [0 0 0];
+    Figure.YColor = [0 0 0];
+
     CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,ClustertoshowDropDown,[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
     
     CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"BinsizeChangeInitial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
