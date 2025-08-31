@@ -1146,10 +1146,18 @@ if strcmp(Window,"Load_Sorting_Window")
     app.LoadingOptionsPanel.BackgroundColor  = WindowBackgroundColor;
     app.LoadingOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
+    app.OpenWithCurationSoftwarePanel.BackgroundColor  = WindowBackgroundColor;
+    app.OpenWithCurationSoftwarePanel.ForegroundColor  = WindowBackgroundColor;
+
+    app.GeneralOptionsPanel.BackgroundColor  = WindowBackgroundColor;
+    app.GeneralOptionsPanel.ForegroundColor  = WindowBackgroundColor;
+
     app.InformationTextArea.BackgroundColor = ComponentsInWindowColor;
 
     app.SpikeSorterDropDown.BackgroundColor = ComponentsInWindowColor;
     app.AmplitudeScalingFactorEditField.BackgroundColor = ComponentsInWindowColor;
+
+    app.CurationSoftwaretoOpenDropDown.BackgroundColor = ComponentsInWindowColor;
 
 end
 
@@ -1966,4 +1974,15 @@ if strcmp(Window,"TDTSelectLFPorAP")
     app.TDTDataSelectionUIFigure.Color  = WindowBackgroundColor;
 
     app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+end
+
+if strcmp(Window,"OpenCurationSoftwareWindow")    
+    % texts to black
+    set(findall(app.OpenCurationSoftwareWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.OpenCurationSoftwareWindowUIFigure.Color  = WindowBackgroundColor;
+
+
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.CurationSoftwaretoOpenDropDown.BackgroundColor   = ComponentsInWindowColor;
 end

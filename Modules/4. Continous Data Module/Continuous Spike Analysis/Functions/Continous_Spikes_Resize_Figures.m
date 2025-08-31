@@ -1,6 +1,6 @@
 function Continous_Spikes_Resize_Figures(MainFigure,SpikeRateTimeFig,SpikeRateChannelFig,AnalysisMethod,Cluster)
 
-if strcmp(AnalysisMethod,"Spike Map")
+if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSizeChange")
     if ~strcmp(Cluster,"All")
         MainFigure.Position = [338,123,998,715]; % heigth width xpos ypos
         MainFigure.PlotBoxAspectRatio = [1,0.509678284182306,0.509678284182306];
@@ -22,5 +22,5 @@ else
     MainFigure.PlotBoxAspectRatio = [1,0.435678284182306,0.435678284182306];
     % 
     SpikeRateTimeFig.Position = [282,15,1083,243];
-    SpikeRateTimeFig.PlotBoxAspectRatio = [1,0.20614711033275,0.20614711033275];
+    SpikeRateTimeFig.PlotBoxAspectRatio = [1,0.17614711033275,0.17614711033275];
 end

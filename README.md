@@ -35,6 +35,8 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
   - [How to Install NeuralEnsemble NEO to extend supported file formats in NeuroMod](#how-to-install-neuralensemble-NEO-to-extend-supported-file-formats-in-NeuroMod)
 
+  - [How to Install Phy to Open via NeuroMod](#how-to-install-phy-to-open-via-neuroMod)
+
   - [About Performance](#about-performance)
 
   - [General Remarks](#general-remarks)
@@ -53,7 +55,7 @@ Beisdes these shared formats, NeuroMod itself currently supports formats recorde
 
 <img src="Modules/MISC/Images/FormatOverview.jpg" align="right" width="70%" />
 
-**Note:** When you want to load Neuropixels recordings from the Open Ephys GUI with NEO, it does not support having multiple recording folder within the same session, i.e. when acquisition was stopped and started again within the same recording session. To handle and concatonate multiple recordings within the same session, use the MATLAB internal library! Switching the Formate to save and load back into MATLAB to the costume format 
+**Note:** When you want to load Neuropixels recordings from the Open Ephys GUI with NEO, it does not support having multiple recording folder within the same session, i.e. when acquisition was stopped and started again within the same recording session. To handle and concatonate multiple recordings within the same session, use the MATLAB internal library! Switching the Formate to save and load back into MATLAB to the costum format 
 
 **Note:** When using NEO to extract data from a raw recording, make sure there are no additional files or folder within the recording folder other than those that come from the recording software! Otherwise NEO might not detect the format correctly or at all.
 
@@ -165,15 +167,15 @@ When you extract .smrx for the first time, you are asked to select the folder 'C
 
 > ### **Overview of Other Toolboxes Used**
 
-Spike Sorting with Mountainsort 5 and SpyKING CIRCUS 2 as well as raw recording data extraction of some formats are handled by python libraries, that are called and executed via costume python functions. More specifically, SpikeInterface for spike sorting and NeuralEnsemble NEO for data extraction, which have to be installed manually but can then be used via NeuroMod without any coding. See below for more information.
+Spike Sorting with Mountainsort 5 and SpyKING CIRCUS 2 as well as raw recording data extraction of some formats are handled by python libraries, that are called and executed via costum python functions. More specifically, SpikeInterface for spike sorting and NeuralEnsemble NEO for data extraction, which have to be installed manually but can then be used via NeuroMod without any coding. See below for more information.
 
-Spike sorting with Mountainsort 5, SpykingCircus 2 is implemented in a costume python script executed via NeuroMod that uses the SpikeInterface library. 
+Spike sorting with Mountainsort 5, SpykingCircus 2 is implemented in a costum python script executed via NeuroMod that uses the SpikeInterface library. 
 
 Check out **SpikeInterface**: 
 
 https://github.com/SpikeInterface/spikeinterface
 
-Data extraction of Neuralynx, Open Ephys, Plexon, Blackrock and NeuroExplorer file formats is done via the NeuralEnsemble NEO python package and a costume python script, executed via NeuroMod.
+Data extraction of Neuralynx, Open Ephys, Plexon, Blackrock and NeuroExplorer file formats is done via the NeuralEnsemble NEO python package and a costum python script, executed via NeuroMod.
 
 Check out **NeuralEnsemble NEO**: 
 
@@ -187,13 +189,13 @@ Check out **Fieldtrip**:
 
 https://github.com/fieldtrip/fieldtrip
 
-Data and event extraction of Open Ephys data formats is handled by the Open Ephys Matlab Tools via a costume compatibility function. The remaining toolbox functions remain unchanged. It is also used as the source for the read_npy.m function. 
+Data and event extraction of Open Ephys data formats is handled by the Open Ephys Matlab Tools via a costum compatibility function. The remaining toolbox functions remain unchanged. It is also used as the source for the read_npy.m function. 
 
 Check out **Open Ephys Matlab Tools**: 
 
 https://github.com/open-ephys/open-ephys-matlab-tools/tree/main
 
-Spike Sorting for internally detected spikes (with thresholding) is done using the Wave_clus 3 Toolbox from Github and a costume compatibility function.
+Spike Sorting for internally detected spikes (with thresholding) is done using the Wave_clus 3 Toolbox from Github and a costum compatibility function.
 
 Check out the **Wave_clus 3 Toolbox**: 
 
@@ -222,7 +224,7 @@ https://github.com/petersaj/neuropixels_trajectory_explorer
 
 https://osf.io/fv7ed/files/osfstorage
 
-Saving the NeuroMod internal data structure in the .nwb (Neuroscience withouth borders) format is handled by the MatNWB toolbox via a costume compatibility function.
+Saving the NeuroMod internal data structure in the .nwb (Neuroscience withouth borders) format is handled by the MatNWB toolbox via a costum compatibility function.
 
 Check out **MatNWB**: 
 
@@ -244,7 +246,7 @@ https://github.com/cortex-lab/spikes
 
 > ### **How to Install SpikeInterface for Spike Sorting in NeuroMod**
 
-First you have to install Python, Anaconda and Visual Studios C++. After you done this, you have to type 'Anaconda Prompt' in your windows search bar and open the prompt window. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights (right-click, properties, security tab, give full control to user OR click on the compatibility tab and enable to execute it as an administrator). **Optional:** In the Anaconda Prompt, create a costume anaconda environment to install all the necessary packages in (for comprehensive tutorials see Youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After creating the environment, activate it using 'conda activate <YourEnvironmentName>' and install the necessary packages using the following commands. Alternatively just copy-paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment.
+First you have to install Python, Anaconda and Visual Studios C++ (during that install all C++ related options). After you done this, you have to type 'Anaconda Prompt' in your windows search bar and open the prompt window. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights (right-click, properties, security tab, give full control to user OR click on the compatibility tab and enable to execute it as an administrator). **Optional:** In the Anaconda Prompt, create a costum anaconda environment to install all the necessary packages in using this command: 'conda create --name YOURENVNAME python=3.10' (replace YOURENVNAME with the actual name you want to give that environment) (for comprehensive tutorials see Youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After creating the environment, activate it using 'conda activate <YourEnvironmentName>' and install the necessary packages using the following commands. Alternatively just copy-paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment. Which environment, the name of it and so on are not important, just that you know the name of the environment in which you installed everything.
 
 When you get the error message 'pip not found as internal command' or similar first use:
 
@@ -277,7 +279,7 @@ pip install spikeinterface_gui
 
 **Note:** When you get there error during the second or 5th command: Error executing cmd /u /c "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64 && set or something similar, you don't have the necessary C++ packages installed in Visual Studios. In doubt start the Visual Studios installer again, click to modify the installation and select everything that has to do with C++. In doubt manually download and install CMake from https://cmake.org/download/
 
-**IMPORTANT:** When you execute SpikeInterface for the first time within NeuroMod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costume environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. Also check if this folder contains a python.exe file! If not, try recreating the environment with 'conda create --name NEO python=3.10' after deleting it! In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
+**IMPORTANT:** When you execute SpikeInterface for the first time within NeuroMod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a costum environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costum environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. Also check if this folder contains a python.exe file! If not, try recreating the environment with 'conda create --name NEO python=3.10' after deleting it! In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
 
 Selecting a valid python.exe file will save it's location in a .mat file in 'NeuroMod_Path/Modules/MISC/Variables (do not edit)/Python_Conda_Path.mat'. Each time you start NeuroMod, it searches for this file and checks whether the path saved within is valid. So if you move NeuroMod to a different PC with a different path to the python.exe, this file is deleted. However, if you should accidently give a path to the wrong python.exe, either delete this variable manually, or use the menu bar on top of the NeurMod main window. Select 'Extras', 'Delete Saved Paths' and click 'Python Path to Spikeinterface Environment' to delete it. When you want to conduct spike sorting afterwards, you are asked again for a new location of the python.exe.
 The same holds true for the path to the Spike2 CEDS64ML folder when you want to load Spike2 recordings and to the pthon.exe for using the NeuralEnsemble NEO library.
@@ -307,9 +309,27 @@ pip install pynwb
 ```
 For more information visit: https://neo.readthedocs.io/en/latest/install.html
 
-**IMPORTANT:** When you execute NEO for the first time within NeuroMod, it will ask you for the path of a python.exe in the anaconda environment you installed the NEO in. If you haven't created a costume environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costume environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. Also check if this folder contains a python.exe file! If not, try recreating the environment with 'conda create --name NEO python=3.10' after deleting it! In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but data extraction is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
+**IMPORTANT:** When you execute NEO for the first time within NeuroMod, it will ask you for the path of a python.exe in the anaconda environment you installed the NEO in. If you haven't created a costum environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a costum environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. Also check if this folder contains a python.exe file! If not, try recreating the environment with 'conda create --name NEO python=3.10' after deleting it! In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but data extraction is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
 
 Selecting a valid python.exe file will save it's location in a .mat file in 'NeuroMod_Path/Modules/MISC/Variables (do not edit)/NEO_Python_Conda_Path.mat'. Each time you start NeuroMod, it searches for this file and checks whether the path saved within is valid. So if you move NeuroMod to a different PC with a different path to the python.exe, this file is deleted. However, if you should accidently give a path to the wrong python.exe, either delete this variable manually, or use the menu bar on top of the NeuroMod main window. Select 'Extras', 'Delete Saved Paths' and click 'Python Path to NEO Environment' to delete it. When you want to use NEO again afterwards, you are asked again for a new location of the python.exe.
+
+> ### **How to Install Phy to Open via NeuroMod**
+
+Follow the instructions to install Phy from https://github.com/cortex-lab/phy by either using the commands they provide or by installing the environment.yml. Also see instructions for installing SpikeInterface and Neo. In either case you should only install it in an environment separate to the others, since it needs legacy versions of numpy and joblib.
+
+When you should get the error: 12:23:18.933 [E] __init__:62 An error has occurred (TypeError): Memory.__init__() got an unexpected keyword argument 'bytes_limit' OR TypeError: Memory.__init__() got an unexpected keyword argument 'bytes_limit' you have to enter this in your anaconda prompt after activating your Phy environment:
+
+```python
+pip install joblib==1.2.0 (works up to joblib==1.3.1 ?!) 
+```
+
+In doubt also check your antivirus program, it can sometimes put the environmental python.exe into quarantine. 
+
+After successful installation you can now view and curate spike sorting results by using the 'Load Spike Sorting Window' in NeuroMod.
+
+**IMPORTANT:** When trying to start Phy for the first time, you are being asked for the path to a python.exe of the environment you installed Phy to. This is the same principle as for NEO and SpikeInterface and the path will be saved after selection for later use. If you installed Phy using the environment.yml, your environment will be called phy2.
+
+**Information:** You can load spike sorting results from Mountainsort 5 and Spyking Circus 2 with the SpikeInterface GUI too. However, this is done in the 'Spike Detection and Sorting' window by changing the spike sorting parameter. Activate the checkboxes to open the SpikeInterface GUI and optionally to load spike sorting results to not have to wait for the spike sorting itself to finish again.
 
 > ### **About Performance**
 > 

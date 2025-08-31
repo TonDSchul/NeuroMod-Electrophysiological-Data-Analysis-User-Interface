@@ -166,19 +166,25 @@ def main(subfolders,file_path):
         
         Recording = Recording.set_probe(Probe)
         
-        if Sorter in ['Kilosort 4']:
-            CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4, overwrite=True)
+        if LoadSpikeSorting == 0: 
+            if Sorter in ['Kilosort 4']:
+                CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4, overwrite=True)
+                CachedRecording.annotate(is_filtered=False)
+                CachedRecording = CachedRecording.set_probe(Probe)
+            if Sorter in ['SpyKING CIRCUS 2']:
+                CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
+                CachedRecording.annotate(is_filtered=False)
+                CachedRecording = CachedRecording.set_probe(Probe)
+            if Sorter in ['Mountainsort 5']:
+                CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
+                CachedRecording.annotate(is_filtered=False)
+                CachedRecording = CachedRecording.set_probe(Probe)
+        else:
+            CachedRecording = Recording
             CachedRecording.annotate(is_filtered=False)
+                        
             CachedRecording = CachedRecording.set_probe(Probe)
-        if Sorter in ['SpyKING CIRCUS 2']:
-            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
-            CachedRecording.annotate(is_filtered=False)
-            CachedRecording = CachedRecording.set_probe(Probe)
-        if Sorter in ['Mountainsort 5']:
-            CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
-            CachedRecording.annotate(is_filtered=False)
-            CachedRecording = CachedRecording.set_probe(Probe)
-            
+                
         if Apply_Preprocessing == 1:
             print("Preprocessing Data before Sorting")
             DumpedRecording = Preprocessing(CachedRecording,Probe,Apply_Preprocessing);
@@ -189,6 +195,7 @@ def main(subfolders,file_path):
             DumpedRecording = CachedRecording
             DumpedRecording.annotate(is_filtered=False)
             DumpedRecording = DumpedRecording.set_probe(Probe)
+            
         
         if PlotTraces == 1:
             combined_plot(CachedRecording,DumpedRecording,ypitch)
@@ -218,7 +225,7 @@ def main(subfolders,file_path):
         
         """ ################################################################ Create Analyzer ###################################################################### """
         
-        Analyzer = CreateSortingAnalyzer(DumpedRecording,sorting,Save_Sorting_Folder)
+        Analyzer = CreateSortingAnalyzer(DumpedRecording,sorting,Save_Sorting_Folder,LoadSpikeSorting)
         
         """ ################################################################ Plot Sorting ###################################################################### """
         if Plot_Results == 1:

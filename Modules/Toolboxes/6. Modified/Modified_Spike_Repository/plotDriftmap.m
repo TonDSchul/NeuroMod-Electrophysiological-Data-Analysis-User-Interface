@@ -49,9 +49,7 @@ if ~strcmpi(opt, 'show')
   SpikesPlotted = zeros(size(spikeTimes));
   
   for b = 2:nColorBins-1
-      if b == 2
-        disp("Now")
-      end
+    
     theseSpikes = spikeAmps>=colorBins(b) & spikeAmps<=colorBins(b+1);
     
     line(Figure,spikeTimes(theseSpikes), spikeYpos(theseSpikes),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(b,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');

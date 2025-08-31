@@ -276,27 +276,44 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
     return sortingKS4
     
 """ ################################################################ Sorting Analyzer ####### """
-def CreateSortingAnalyzer(recording,sorting,Save_Sorting_Folder):
+def CreateSortingAnalyzer(recording,sorting,Save_Sorting_Folder,LoadRecording):
     
     analyzer = si.create_sorting_analyzer(sorting=sorting, recording=recording, format="memory", folder='None')
     print(analyzer)
 
     # which is equivalent to this:
     job_kwargs = dict(n_jobs=1, chunk_duration="1s", progress_bar=True)
-    compute_dict = {
-        'random_spikes': {'method': 'uniform', 'max_spikes_per_unit': 500},
-        'waveforms': {'ms_before': 2.0, 'ms_after': 2.0},
-        'templates': {'operators': ["average", "median", "std"]},
-        'noise_levels':{},
-        'correlograms':{'window_ms':100, 'bin_ms':5.},
-        'spike_amplitudes':{'peak_sign':"neg"},
-        'unit_locations':{},
-        'spike_locations':{},
-        'isi_histograms':{},
-        'principal_components':{},
-        'quality_metrics':{'metric_names': ['snr', 'firing_rate','isi_violation']},
-        'template_similarity':{}
-    }
+    
+    if LoadRecording == 1:
+        compute_dict = {
+            'random_spikes': {'method': 'uniform', 'max_spikes_per_unit': 500},
+            'waveforms': {'ms_before': 2.0, 'ms_after': 2.0},
+            'templates': {'operators': ["average", "median", "std"]},
+            'noise_levels':{},
+            'correlograms':{'window_ms':100, 'bin_ms':5.},
+            'spike_amplitudes':{'peak_sign':"neg"},
+            'unit_locations':{},
+            'spike_locations':{},
+            'isi_histograms':{},
+            'principal_components':{},
+            #'quality_metrics':{'metric_names': ['snr', 'firing_rate','isi_violation']},
+            'template_similarity':{}
+        }
+    else:
+        compute_dict = {
+            'random_spikes': {'method': 'uniform', 'max_spikes_per_unit': 500},
+            'waveforms': {'ms_before': 2.0, 'ms_after': 2.0},
+            'templates': {'operators': ["average", "median", "std"]},
+            'noise_levels':{},
+            'correlograms':{'window_ms':100, 'bin_ms':5.},
+            'spike_amplitudes':{'peak_sign':"neg"},
+            'unit_locations':{},
+            'spike_locations':{},
+            'isi_histograms':{},
+            'principal_components':{},
+            'quality_metrics':{'metric_names': ['snr', 'firing_rate','isi_violation']},
+            'template_similarity':{}
+        }
     
     analyzer.compute(compute_dict, **job_kwargs, save=False)
     

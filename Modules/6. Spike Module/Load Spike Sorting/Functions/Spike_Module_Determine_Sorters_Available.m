@@ -40,14 +40,14 @@ if ManualSelection == 0
         if isfolder(SorterFolders(1))
             [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(1));
             InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(1));
-            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
             Path = SorterFolders(1);
             CurrentSorter = "Kilosort4";
             Sorter = [Sorter,1];
         else
             [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(2));
             InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(2));
-            InfoText = [InfoText;"";"Searching for sorting output results (.npy and .mat files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+            InfoText = [InfoText;"";"Searching for sorting output results (.npy and .mat files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
             Path = SorterFolders(2);
             CurrentSorter = "Kilosort3";
             Sorter = [Sorter,2];
@@ -57,14 +57,14 @@ if ManualSelection == 0
             if isfolder(SorterFolders(3))
                 [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(3));
                 InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(3));
-                InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+                InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
                 Path = SorterFolders(3);
                 CurrentSorter = "Mountainsort5";
                 Sorter = [Sorter,3];
             elseif isfolder(SorterFolders(4))
                 [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(4));
                 InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(4));
-                InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+                InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
                 Path = SorterFolders(4);
                 CurrentSorter = "SpykingCircus2";
                 Sorter = [Sorter,4];
@@ -81,7 +81,7 @@ if ManualSelection == 0
     elseif isfolder(SorterFolders(6))
             [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(6));
             InfoText = strcat("Auto-searched Path (Original Recording Folder): ", SorterFolders(6));
-            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
             Path = SorterFolders(6);
             CurrentSorter = "SpikeInterface Kilosort";
             Sorter = [Sorter,6];
@@ -101,7 +101,7 @@ if ManualSelection == 0
 
         JoinedSoterFolders = join(SorterFolders, ";     AND     ;");
         InfoText = strcat("Auto-searched Path for sorting output files (Original Recording Folder): ", JoinedSoterFolders);
-        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
         
         if isfolder(Data.Info.Data_Path)
             Path = Data.Info.Data_Path;
@@ -173,7 +173,7 @@ else % If manual Folderselection
     if isfolder(SorterFolders(1))
         [stringArray] = Utility_Extract_Contents_of_Folder(SorterFolders(1));
         InfoText = strcat("Manually selected Path: ", SorterFolders(1));
-        InfoText = [InfoText;"";"Searching for sorting output results (.npy files for SpikeInterface and Kilosort, .mat file for Waveclus) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+        InfoText = [InfoText;"";"Searching for sorting output results (.npy files for SpikeInterface and Kilosort, .mat file for Waveclus) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
         Path = SorterFolders(1);
 
         % Filter files with .npy extension
@@ -303,7 +303,7 @@ else % If manual Folderselection
     
             JoinedSoterFolders = join(SorterFolders, ";     AND     ;");
             InfoText = strcat("Auto-searched Path for sorting output files (Original Recording Folder): ", JoinedSoterFolders);
-            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+            InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
             
             if isfolder(Data.Info.Data_Path)
                 Path = Data.Info.Data_Path;
@@ -333,7 +333,7 @@ else % If manual Folderselection
 
         JoinedSoterFolders = join(SorterFolders, ";     AND     ;");
         InfoText = strcat("Auto-searched Path for sorting output files (Original Recording Folder): ", JoinedSoterFolders);
-        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done in this GUI, it will be created automatically."];
+        InfoText = [InfoText;"";"Searching for sorting output results (.npy files) that are used to start phy (either with native Kilosort ouput files or with Spikeinterface using the 'export to Phy' functionality). Scaling factor only needed when loading Kilosort output files.";"";"Note: When loading SpikeInterface results, a 'SpikePositions'.mat file is needed holding the spike positions in um. When Spikeinterface sorting is done via NeuroMod, it will be created automatically."];
         
         if isfolder(Data.Info.Data_Path)
             Path = Data.Info.Data_Path;
@@ -399,5 +399,5 @@ else
     AmplitudeScalingFactorEditField = "";
 end
 
-InfoText = ["When you conducted spike sorting on your dataset either with Kilosort (with the external Kilosort GUI yourself) or Spikeinterface (with your own python script or using this GUI), you can load the results in this GUI for spike analysis. When you exported your dataset in the automatically created folder (and dont change output folder in Kilosort or Spikeinterface), results can be loaded with one click. Otherwise manually select a folder containing the sorting output folder expected for the respective sorter (shown below).";"";InfoText];
+InfoText = ["When you conducted spike sorting on your dataset either with Kilosort (with the external Kilosort GUI yourself) or Spikeinterface (with your own python script or using NeuroMod), you can load the results in NeuroMod for spike analysis. When you exported your dataset in the automatically created folder (and dont change output folder in Kilosort or Spikeinterface), results can be loaded with one click. Otherwise manually select a folder containing the sorting output folder expected for the respective sorter (shown below).";"";InfoText];
 

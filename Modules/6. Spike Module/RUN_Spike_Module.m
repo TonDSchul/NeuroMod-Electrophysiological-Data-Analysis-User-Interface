@@ -28,17 +28,4 @@ elseif strcmp(ModuleFunctionName,"Load Spike Sorting Results")
     app.LoadfromKilosortWindowWindow = Load_Spike_Sorting_Window(app);
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LoadSorting");
 
-elseif strcmp(ModuleFunctionName,"Open Sorting in Phy")
-    % msgbox("Work in Progress.")
-    % return;
-    % 
-    if isfield(app.Data,'Spikes')
-        if strcmp(app.Data.Info.SpikeType,"SpikeInterface") || strcmp(app.Data.Info.SpikeType,"Kilosort")
-            [~] = Manage_Dataset_Module_Start_Phy(app.Data,app.executableFolder);
-        else
-            msgbox("No spike sorting data found! Please first load sorted data for the current dataset.")
-        end
-    else
-        msgbox("No spike sorting data found! Please first load sorted data for the current dataset.")
-    end
 end

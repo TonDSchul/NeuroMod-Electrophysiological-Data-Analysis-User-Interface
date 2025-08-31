@@ -543,8 +543,10 @@ if Activated
             app.LoadfromKilosortWindowWindow.SpikeSorterDropDown.Tooltip = "Select the sorter for which you want to load sorting results.";
             app.LoadfromKilosortWindowWindow.AmplitudeScalingFactorEditField.Tooltip = "If Kilosort was used, spike amplitudes are saved as integers and have to be converted back to mV which this factor. This factor is generated and saved automatically when saving data for spike sorting with Kilosort. Autosearched folder shown above is also searched through for this factor.";
 
-            app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "Manaully select the folder in which spike sorting results of one of the support sorters is saved.";
-            app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "Manaully select the amplitude scaling factor .mat file created when saving data for spike sorters.";
+            app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "Manully select the folder in which spike sorting results of one of the support sorters is saved.";
+            app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "Only for Kilosort: Manully select the amplitude scaling factor .mat file created when saving data for Kilosort.";
+            
+            app.LoadfromKilosortWindowWindow.CurationSoftwaretoOpenDropDown.Tooltip = "Select the software to curate and view spike sorting results.";
 
             app.LoadfromKilosortWindowWindow.LoadButton.Tooltip = "Click to load sorting results with the parameters above.";
         end
@@ -1090,7 +1092,9 @@ else %% Not activated
             app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "";
             app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "";
 
-            app.LoadButton.DropDown.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.CurationSoftwaretoOpenDropDown.Tooltip = "";
+
+            app.LoadfromKilosortWindowWindow.LoadButton.Tooltip = "";
         end
     end
     
