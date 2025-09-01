@@ -1,4 +1,4 @@
-function Error = Utility_Save_Data_as_TXT_CSV(Fullsavefile,PlottedData,Analysis)
+function Utility_Save_Data_as_xlsx(Fullsavefile,PlottedData,Analysis)
 
 %________________________________________________________________________________________
 %% Function to export plotted/Analyzed data as .csv or .txt files
@@ -43,84 +43,143 @@ if contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main
     end
 end
 
-%% Write Info File
-writecell({""},Fullsavefile);
-
-writecell({"***** Recording Infos *****"},Fullsavefile, 'WriteMode', 'append');
-
-if isfield(PlottedData.Info,'EventRelatedTime')
-    fieldsToDelete = {'EventRelatedTime'};
-    % Delete fields
-    PlottedData.Info = rmfield(PlottedData.Info, fieldsToDelete);
-end
-
-writestruct(PlottedData.Info, Fullsavefile, FileType="json");
-
-writecell({" "},Fullsavefile, 'WriteMode', 'append');
-
 %% First For spike analyis (Continous and events); Otherwise unit analysis window
 if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contains(Analysis,"Current") && ~contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
+    
+    if ~exist(fileparts(Fullsavefile), 'dir')
+        mkdir(fileparts(Fullsavefile));
+    end
 
-    %% Write TextInfos
-    if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes") % XData = Non - spike Data  
-        writematrix(strcat("***** ",convertStringsToChars(PlottedData.Type)," *****"),Fullsavefile, 'WriteMode', 'append'); % Main Window stuff, i.e. static spectrum, spike rate, power estimate and csd for main window plot
-    elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
-        if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") 
-            writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainRateUnitType)," *****"),Fullsavefile, 'WriteMode', 'append');
+    %% --- Collect TextInfos ---
+    TextInfos = {};
+    
+    % Main type info
+    if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes")
+        TextInfos{end+1} = ['***** ' char(PlottedData.Type) ' *****'];
+    elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")
+        if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit")
+            TextInfos{end+1} = ['***** ' char(PlottedData.MainRateUnitType) ' *****'];
         elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && contains(Analysis,"Channel")
-            writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainRateChannelType)," *****"),Fullsavefile, 'WriteMode', 'append');
+            TextInfos{end+1} = ['***** ' char(PlottedData.MainRateChannelType) ' *****'];
         elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && ~contains(Analysis,"Channel")
-            writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainRateTimeType)," *****"),Fullsavefile, 'WriteMode', 'append');
+            TextInfos{end+1} = ['***** ' char(PlottedData.MainRateTimeType) ' *****'];
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
-            writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainUnitType)," *****"),Fullsavefile, 'WriteMode', 'append');
+            TextInfos{end+1} = ['***** ' char(PlottedData.MainUnitType) ' *****'];
         elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
-            writematrix(strcat("***** ",convertStringsToChars(PlottedData.MainType)," *****"),Fullsavefile, 'WriteMode', 'append');
+            TextInfos{end+1} = ['***** ' char(PlottedData.MainType) ' *****'];
         elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && contains(Analysis,"Live")
-            writematrix(strcat("***** ",convertStringsToChars(PlottedData.LiveSpikeType)," *****"),Fullsavefile, 'WriteMode', 'append');
+            TextInfos{end+1} = ['***** ' char(PlottedData.LiveSpikeType) ' *****'];
         end
     end
+
+    % Time info
+    TextInfos{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
+    TextInfos{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
+    TextInfos{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
     
-    writematrix(strcat("***** Time Duration of Analyzed Data: ",num2str(PlottedData.TimeDuration),"s *****"),Fullsavefile, 'WriteMode', 'append');
-    
-    writematrix(strcat("***** Start Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(1)),"s *****"),Fullsavefile, 'WriteMode', 'append');
-    
-    writematrix(strcat("***** Stop Time of Analyzed Data: ",num2str(PlottedData.Time_Points_Plot(2)),"s *****"),Fullsavefile, 'WriteMode', 'append');
-    
+    %% Write TextInfos to Excel (starting at row 1, column A)
+    writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'E1');
+
     %% Write X,Y data
-    Utility_Save_Spike_Data(Analysis,Fullsavefile,PlottedData)
-    
+   
+    %% Choose X_Data, Y_Data, X_Tick depending on Analysis
+    if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes")
+        XData  = PlottedData.XData;
+        YData  = PlottedData.YData;
+        XTick  = PlottedData.XTicks;
+    elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")
+        % X_Data
+        if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit")
+            XData = PlottedData.MainRateUnitXData;
+            YData = PlottedData.MainRateUnitYData;
+            XTick = PlottedData.MainRateUnitXTicks;
+        elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && contains(Analysis,"Channel")
+            XData = PlottedData.MainRateChannelXData;
+            YData = PlottedData.MainRateChannelYData;
+            XTick = PlottedData.MainRateChannelXTicks;
+        elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && ~contains(Analysis,"Channel")
+            XData = PlottedData.MainRateTimeXData;
+            YData = PlottedData.MainRateTimeYData;
+            XTick = PlottedData.MainRateTimeXTicks;
+        elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
+            XData = PlottedData.MainUnitXData;
+            YData = PlottedData.MainUnitYData;
+            XTick = PlottedData.MainUnitXTicks;
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
+            XData = PlottedData.MainXData;
+            YData = PlottedData.MainYData;
+            XTick = PlottedData.MainXTicks;
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && contains(Analysis,"Live")
+            XData = PlottedData.LiveSpikeXData;
+            YData = PlottedData.LiveSpikeYData;
+            XTick = PlottedData.LiveSpikeXTicks;
+        end
+    end
+
+    %% Find max length to pad shorter columns with NaN
+    maxLen = max([length(XData), length(YData), length(XTick)]);
+    if length(XData) < maxLen
+        XData(end+1:maxLen) = NaN;
+    end
+    if length(YData) < maxLen
+        YData(end+1:maxLen) = NaN;
+    end
+    if length(XTick) < maxLen
+        XTick(end+1:maxLen) = {''};
+    end
+   
     %% Write CData if available (Z data is not saved since its the same as C data when 3d plot is selected)
     
+    %% --- Prepare C_Data ---
+    CData = [];  % default empty
+
     if ~contains(Analysis,"Spike") && ~contains(Analysis,"Spikes") % XData = Non - spike Data
         if ~isempty(PlottedData.CData)
-            writecell({" "},Fullsavefile, 'WriteMode', 'append');
-            writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-            writematrix(PlottedData.CData, Fullsavefile, 'WriteMode', 'append');
+            CData = PlottedData.CData;
         end
     elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
         if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") %% No Cdata for spike rate
-            % if ~isempty(PlottedData.CData)
-            %     writecell(num2cell(PlottedData.CData, Fullsavefile, 'WriteMode', 'append');
-            % end
-        elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") %% No Cdata for spike rate
-            % if ~isempty(PlottedData.CData)
-            %     writecell(num2cell(PlottedData.CData, Fullsavefile, 'WriteMode', 'append');
-            % end
+
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
             if ~isempty(PlottedData.MainUnitCData)
-                writecell({" "},Fullsavefile, 'WriteMode', 'append');
-                writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-                writematrix(PlottedData.MainUnitCData, Fullsavefile, 'WriteMode', 'append');
+                CData = PlottedData.MainUnitCData;
             end
-        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
+        elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live") && ~contains(Analysis,"Spike Times") || contains(Analysis,"Heatmap")
             if ~isempty(PlottedData.MainCData)
-                writecell({" "},Fullsavefile, 'WriteMode', 'append');
-                writecell({"***** C_Data *****"},Fullsavefile, 'WriteMode', 'append');
-                writematrix(PlottedData.MainCData, Fullsavefile, 'WriteMode', 'append');
+                CData = PlottedData.MainCData;
             end
         end
     end
+    
+    %% --- Convert to column if numeric ---
+    if ~isempty(CData)
+        CData = CData(:);  % convert to column
+    end
 
+    %% --- First write X/Y/XTick table (as before) ---
+    maxLen = max([length(XData), length(YData), length(XTick)]);
+    if length(XData) < maxLen, XData(end+1:maxLen) = NaN; end
+    if length(YData) < maxLen, YData(end+1:maxLen) = NaN; end
+    if length(XTick) < maxLen, XTick(end+1:maxLen) = {''}; end
+    if size(XTick,1)>size(XTick,2)
+        XTick = XTick';
+    end
+
+    T = table(XData', YData', XTick', 'VariableNames', {'X_Data','Y_Data','X_Tick'});
+    
+    % Write table to Excel
+    tableStartRow = length(TextInfos) + 2;  % leave 1 empty row below TextInfos
+    writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+
+    %% --- Combine with existing table if CData exists ---
+    if ~isempty(CData)
+        % Add a header
+        writecell({"***** C_Data *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+
+        % Write matrix as-is (keeps 2D shape!)
+        writematrix(PlottedData.CData, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
+    end
+        
 end %If spike analyis (Continous and events); 
 
 %% Inst. Frequency/Phase analysis

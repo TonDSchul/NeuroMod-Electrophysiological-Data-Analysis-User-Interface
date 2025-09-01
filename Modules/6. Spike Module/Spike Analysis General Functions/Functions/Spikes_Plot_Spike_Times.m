@@ -130,9 +130,9 @@ elseif strcmp(Clustertoshow,"Non")
     opt = [];
     Segmentlength = 200;
     if strcmp(Type,"Continous") 
-        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);  
+        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance,Data.Info.Sorter);  
     elseif strcmp(Type,"Eventrelated")
-        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);   
+        [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance,Data.Info.Sorter);   
     end
 
     SpikeCluster_handles = findobj(Figure,'Type', 'line', 'Tag', 'ClusterSpikes');
@@ -161,9 +161,9 @@ else %% If specific spike SpikeCluster selected
         opt = [];
         Segmentlength = 200;
         if strcmp(Type,"Continous")
-            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);   
+            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance,Data.Info.Sorter);   
         elseif strcmp(Type,"Eventrelated")
-            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance);   
+            [Figure] = plotDriftmap(SpikeTimes, SpikeAmps, SpikePositions(:), Figure, opt, Segmentlength,PlotAppearance,Data.Info.Sorter);   
         end
     end
 
@@ -300,8 +300,3 @@ if ~strcmp(Clustertoshow,"Non") && ~strcmp(Clustertoshow,"All")
     end
     CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
 end
-
-% %%% TEST
-% Figure.NextPlot = "add";
-% SpikeTimessss = Data.Spikes.SpikeTimes./Data.Info.NativeSamplingRate;
-% plot(Figure,SpikeTimessss,Data.Spikes.SpikePositions(:,1),'+','Color','r');

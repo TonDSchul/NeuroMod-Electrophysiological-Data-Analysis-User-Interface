@@ -27,10 +27,14 @@ infoString = '';
 % Iterate over the fields of the structure
 fields = fieldnames(TempInfo);
 for i = 1:numel(fields)
-    
+
     fieldName = fields{i};
     fieldValue = TempInfo.(fieldName);
     
+    if strcmp(fieldName,'EventRelatedTime')
+        continue;
+    end
+
     if isstruct( fieldValue ) 
         if isfield(app.Data.Info,'EventRelatedPreprocessing')
             EventRelatedfields = fieldnames(fieldValue);

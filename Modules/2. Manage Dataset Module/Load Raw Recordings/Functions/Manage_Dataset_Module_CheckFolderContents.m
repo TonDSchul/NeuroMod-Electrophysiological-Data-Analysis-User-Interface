@@ -225,14 +225,14 @@ if sum(contains(Formatsfound,".sev")) >= 1
     FileTypeDropDownItems{1} = 'TDT .sev';
 end
 
-%% NeuroExplorer
-if sum(contains(Formatsfound,".nex")) >= 1 
-    RecordingSystemDropDownItems = {};
-    RecordingSystemDropDownItems{1} = 'NeuroExplorer';
-    EmptyPlaceholder = {};
-    FileTypeDropDownItems = EmptyPlaceholder;
-    FileTypeDropDownItems{1} = 'NeuroExplorer .nex';
-end
+% %% NeuroExplorer
+% if sum(contains(Formatsfound,".nex")) >= 1 
+%     RecordingSystemDropDownItems = {};
+%     RecordingSystemDropDownItems{1} = 'NeuroExplorer';
+%     EmptyPlaceholder = {};
+%     FileTypeDropDownItems = EmptyPlaceholder;
+%     FileTypeDropDownItems{1} = 'NeuroExplorer .nex';
+% end
 
 %% Spike2
 if sum(contains(Formatsfound,".smrx")) >= 1 

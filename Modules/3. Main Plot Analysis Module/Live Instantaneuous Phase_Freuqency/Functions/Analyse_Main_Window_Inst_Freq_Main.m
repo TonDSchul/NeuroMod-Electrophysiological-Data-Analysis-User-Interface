@@ -128,20 +128,33 @@ if ForceFilterOFF == 0
             end
             %downsample
             FsTarget = 1000;
-            DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
-            DataToCompute = downsample(DataToCompute',DownsampleFactor)';
-            Time = downsample(Time,DownsampleFactor);
-            Samplefrequency = FsTarget;
-            FlagActualDownsample = 1;
+            if Data.Info.NativeSamplingRate>FsTarget
+                DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
+                DataToCompute = downsample(DataToCompute',DownsampleFactor)';
+                Time = downsample(Time,DownsampleFactor);
+                Samplefrequency = FsTarget;
+                FlagActualDownsample = 1;
+            else
+                FlagActualDownsample = 0;
+                Samplefrequency = Data.Info.NativeSamplingRate;
+            end
+            
             FlagActualLowPass = 1;
         elseif LowPassFlag == 1 && Downsampleflag == 0
             %downsample
             FsTarget = 1000;
-            DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
-            DataToCompute = downsample(DataToCompute',DownsampleFactor)';
-            Time = downsample(Time,DownsampleFactor);
-            Samplefrequency = FsTarget;
-            FlagActualDownsample = 1;
+            if Data.Info.NativeSamplingRate>FsTarget
+                DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
+                DataToCompute = downsample(DataToCompute',DownsampleFactor)';
+                Time = downsample(Time,DownsampleFactor);
+                Samplefrequency = FsTarget;
+                FlagActualDownsample = 1;
+            else
+                Samplefrequency = Data.Info.NativeSamplingRate;
+                FlagActualDownsample = 0;
+            end
+            
+            
         elseif LowPassFlag == 1 && Downsampleflag == 1
             Samplefrequency = Data.Info.DownsampledSampleRate;
         elseif LowPassFlag == 0 && Downsampleflag == 1
@@ -153,11 +166,16 @@ if ForceFilterOFF == 0
         if Downsampleflag == 0
             %downsample
             FsTarget = 1000;
-            DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
-            DataToCompute = downsample(DataToCompute',DownsampleFactor)';
-            Time = downsample(Time,DownsampleFactor);
-            Samplefrequency = FsTarget;
-            FlagActualDownsample = 1;
+            if Data.Info.NativeSamplingRate>FsTarget
+                DownsampleFactor = round(Data.Info.NativeSamplingRate/FsTarget);
+                DataToCompute = downsample(DataToCompute',DownsampleFactor)';
+                Time = downsample(Time,DownsampleFactor);
+                Samplefrequency = FsTarget;
+                FlagActualDownsample = 1;
+            else
+                Samplefrequency = Data.Info.NativeSamplingRate;
+                FlagActualDownsample = 0;
+            end
         end
     end
     %% ------------------------- Narrowbandfilter if necessary ---------------------------

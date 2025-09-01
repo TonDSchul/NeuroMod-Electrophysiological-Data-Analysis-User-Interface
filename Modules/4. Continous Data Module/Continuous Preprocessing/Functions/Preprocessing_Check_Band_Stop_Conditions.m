@@ -56,7 +56,11 @@ if strcmp(app.FilterMethodDropDown.Value,'Band-Stop')
 
     Proceed = 1;
     ExtraPrepro = 0;
-    NewSampleFrequency = 1000;
+    if app.Mainapp.Data.Info.NativeSamplingRate > 1000
+        NewSampleFrequency = 1000;
+    else
+        NewSampleFrequency = app.Mainapp.Data.Info.NativeSamplingRate;
+    end
 
     if flagDownsample == 0 && flagexistLowPass == 1 || flagDownsample == 1 && flagexistLowPass == 0 || flagDownsample == 0 && flagexistLowPass == 0
         NarrowbandFilterSettings = 'BandStop';

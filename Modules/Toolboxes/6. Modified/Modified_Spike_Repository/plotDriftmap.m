@@ -1,7 +1,7 @@
 % Inputs: spikeTimes, spikeAmps, spikeYpos - names self explanatory
 %         opt - optional, empty by default; 'mark' - will mark detected drifts, 'show' - will generate a different plot, 
 %               where only large spikes are used, and the detection of drift locations is demonstrated
-function [Figure] = plotDriftmap(spikeTimes, spikeAmps, spikeYpos, Figure, opt, Segmentlength,PlotAppearance)
+function [Figure] = plotDriftmap(spikeTimes, spikeAmps, spikeYpos, Figure, opt, Segmentlength,PlotAppearance,Sorter)
 if nargin < 4
   opt = '';
 end
@@ -20,7 +20,9 @@ end
 
 if ~strcmpi(opt, 'show')
   nColorBins = 200+2;
+
   ampRange = quantile(spikeAmps, [0.01 0.9]);
+
   colorBins = linspace(ampRange(1), ampRange(2), nColorBins);
 
   %colorBins = linspace(min(spikeAmps), max(spikeAmps), nColorBins);
@@ -44,6 +46,10 @@ if ~strcmpi(opt, 'show')
       for i = 1:3
           colors(:, i) = linspace(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(i), 0, nColorBins); 
       end
+  end
+
+  if strcmp(Sorter,'External Kilosort GUI')
+    colors = flip(colors);
   end
   
   SpikesPlotted = zeros(size(spikeTimes));
@@ -78,10 +84,14 @@ if ~strcmpi(opt, 'show')
 end
 
 colormap(Figure, flip(colors));
-
 % Set color axis to amplitude range
-tempspikeAmps = -spikeAmps;
-caxis(Figure,[min(tempspikeAmps) max(tempspikeAmps)]);
+
+if ~strcmp(Sorter,'External Kilosort GUI')
+    tempspikeAmps = -spikeAmps;
+    caxis(Figure,[min(tempspikeAmps) max(tempspikeAmps)]);
+else
+    caxis(Figure,[min(spikeAmps) max(spikeAmps)]);
+end
 
 % Create colorbar linked to your axes
 cbar_handle = colorbar('peer', Figure, 'location', 'WestOutside');

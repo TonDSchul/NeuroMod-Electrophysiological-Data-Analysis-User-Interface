@@ -154,3 +154,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
         CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
     end
 end  
+
+
+% Resize Figures based on analysis and whether cbar is necessary
+Event_Spikes_Resize_Figures(Figure,Figure2,Figure3,AnalysisTypeDropDown,ClustertoshowDropDown)

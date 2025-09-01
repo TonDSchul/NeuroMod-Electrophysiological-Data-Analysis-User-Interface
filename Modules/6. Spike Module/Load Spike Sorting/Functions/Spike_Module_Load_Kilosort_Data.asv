@@ -317,8 +317,7 @@ if HigPassFiltered == 0
     end
     
 else % If high pass was already applied
-    % Get Waveform Amplitudes
-    Data = Spike_Module_Get_Kilosort_Amplitude(Data);
+    
     [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
     
 end

@@ -140,7 +140,12 @@ if strcmp(WhatToDo,"Clustering")
         disp('Starting Spike Sorting.');
 
         %% Call wave clus
-    
+        try
+            cd(SpikeSortingPath)
+        catch
+            msgbox("Not possible to change directory in standalone app. Cant conduct WaveClus clustering with this so far.")
+            error("Not possible to change directory in standalone app. Cant conduct WaveClus clustering with this so far.")
+        end
         Do_clustering(strcat(SpikeSortingPath,'\times_spikes.mat'),'parallel',true,'make_plots',false)
 
     end
@@ -177,7 +182,7 @@ if isfile(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')))
         clear TempSpikes     
     end
 
-    load(strcat(strcat(SpikeSortingPath,'\times_spikes.mat')),'cluster_class','par');
+    load(strcat(strcat(SpikeSortingPath,'\times_times.mat')),'cluster_class','par');
 
     if min(Data.Spikes.SpikeChannel)==0
         Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel+1;

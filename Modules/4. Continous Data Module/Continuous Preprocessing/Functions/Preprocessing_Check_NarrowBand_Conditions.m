@@ -63,7 +63,11 @@ if strcmp(app.FilterMethodDropDown.Value,'Narrowband')
     if flagexistLowPass == 1 && flagDownsample == 1
         Proceed = 0;
         ExtraPrepro = 0;
-        NewSampleFrequency = 1000;
+        if app.Mainapp.Data.Info.NativeSamplingRate > 1000
+            NewSampleFrequency = 1000;
+        else
+            NewSampleFrequency = app.Mainapp.Data.Info.NativeSamplingRate;
+        end
         return;
     end
     

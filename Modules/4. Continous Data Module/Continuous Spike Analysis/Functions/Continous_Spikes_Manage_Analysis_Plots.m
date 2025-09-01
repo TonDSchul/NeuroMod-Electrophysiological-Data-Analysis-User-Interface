@@ -88,7 +88,6 @@ if strcmp(TypeofAnalysis,"Spike Map")
         yyaxis(Figure2, 'right');
         ylabel(Figure2,'Spike Rate [Hz]');
     end
-
 end
 
 if strcmp(TypeofAnalysis,"SpikeRateBinSizeChange")
@@ -193,10 +192,15 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     ChannelRange = PlotInfo.ChannelSelection;
 
     %% basic quantification of spiking plot
+    if strcmp(Data.Info.Sorter,'External Kilosort GUI')
+        SpikeAmps = abs(SpikeAmps);
+    end
+
     depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange))*Data.Info.ChannelSpacing;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
-
+    
+    
     %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
@@ -212,6 +216,10 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
 end
 
 if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
+    
+    if strcmp(Data.Info.Sorter,'External Kilosort GUI')
+        SpikeAmps = abs(SpikeAmps);
+    end
 
     if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         % Select Units
