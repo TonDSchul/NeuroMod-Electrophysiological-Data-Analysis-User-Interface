@@ -31,10 +31,11 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Create_Spike_Sorting'
 % 'Load_from_SpikeSorting'
 % 'Save_for_SpikeSorting'
+% 'Open_in_Phy'
 
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Static_Power_Spectrum"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Open_in_Phy","Continous_Spike_Analysis","Internal_Spike_Detection","Continous_Spike_Analysis"];
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
@@ -115,7 +116,7 @@ AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 
 % AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter"]
 % NOTE: 
 
-AutorunConfig.PreprocessCont.PreproMethod{1} = ["ASR"]; % Preprocessing method to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "ASR" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter"]; % Preprocessing method to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "ASR" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
 AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter","Downsample"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "ASR" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
 % Only if "Filter" is selected as one of the PreproMethods
 AutorunConfig.PreprocessCont.FilterMethod{1} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
@@ -163,7 +164,7 @@ AutorunConfig.ContSpikeAnalysis.AnalysisType = ["Spike Map","Spike Amplitude Den
 AutorunConfig.ContSpikeAnalysis.EventChannelToPlot = "Non"; %Non for no event plotting, empty for first automatically taking the first channel, otherwise eventName specified as char, like 'DIN-04' or 'ADC-01'
 AutorunConfig.ContSpikeAnalysis.TimeWindowSpiketriggredLFP = '-0.005,0.25'; %as char
 AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate = "200"; % Number of bins for the spike rate plots as char
-AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,10'; %as char
+AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,100'; %as char
 % Control Single Units in the above plots:
 % Every plot specified above is plotted once with Clustertoshow as selected unit.
 % If UnitsToPlot is non empty, all of the above plots will be plotted for
@@ -171,9 +172,9 @@ AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,10'; %as char
 % "units". If UnitsToPlot is empty, just plots for Clustertoshow are
 % created
 % All spikes
-AutorunConfig.ContSpikeAnalysis.Clustertoshow = "All"; %For spike map and indication of cluster in all spikes plots. 'All' OR 'Non' OR '1' (or whatever clusternumber you want (just one cluster!). Starts with 1!)
+AutorunConfig.ContSpikeAnalysis.Clustertoshow = "Non"; %For spike map and indication of cluster in all spikes plots. 'All' OR 'Non' OR '1' (or whatever clusternumber you want (just one cluster!). Starts with 1!)
 %Individual Unit Analysis
-AutorunConfig.ContSpikeAnalysis.UnitsToPlot = ["All"]; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+AutorunConfig.ContSpikeAnalysis.UnitsToPlot = "1,2,3"; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
 %% 3.4 Unit Analysis
 %______________________________________________________________________________________________________
 AutorunConfig.ContinousUnitAnalysis.NumBins = "150";
@@ -285,12 +286,12 @@ AutorunConfig.InternalSpikeDetection.WaveClus3_SpikeSortingType = 'AllChannelTog
 
 %% 5.2 Save for SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.SaveforSpikeSorting.Sorter = 'External Kilosort GUI'; % which Spike sorter was used to analyze your data? Options: 'External Kilosort GUI' OR 'SpikeInterface' (for Mountainsort 5 and SpyKING CIRCUS 2 within SpikeInterface)
+AutorunConfig.SaveforSpikeSorting.Sorter = 'SpikeInterface'; % which Spike sorter was used to analyze your data? Options: 'External Kilosort GUI' OR 'SpikeInterface' (for Mountainsort 5 and SpyKING CIRCUS 2 within SpikeInterface)
 AutorunConfig.SaveforSpikeSorting.SaveFormat = 'double'; % 'int32' or 'int16' for external Kilosort GUI OR "double" as char for SpikeInterface
 AutorunConfig.SaveforSpikeSorting.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data' to determine which part of the dataset is saved
 %% 5.2 Load from SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromSpikeSorting.Sorter = 'SpyKING CIRCUS 2'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
+AutorunConfig.LoadfromSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
 AutorunConfig.LoadfromSpikeSorting.ScalingFactor = []; % ONLY FOR KILOSORT: char, This is the 'int16' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and applied when you saved data for kilosort before.

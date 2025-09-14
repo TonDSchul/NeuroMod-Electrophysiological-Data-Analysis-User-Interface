@@ -50,6 +50,15 @@ if strcmp(Filetype,"Intan .dat")
         end
     end
 
+    if isempty(InfoRhd)
+        disp("Currently analysed folder is supposed to contain Intan data which was not found! Skipping")
+        Data = [];
+        HeaderInfo = [];
+        SampleRate = [];
+        RecordingType = [];
+        return;
+    end
+
     % Load Rhd Info file
     [~,~,frequency_parameters,~,~,~,~,~] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"NoExtracting",[]);
  

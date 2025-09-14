@@ -102,7 +102,7 @@ if sum(contains(stringArray,".npy")) == 0
 end
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
 
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel ,Data.Spikes.BiggestAmplWaveform, c] = ksDriftmap(folderPath,KSversion);
+[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel ,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
 
 Data.Spikes.SpikeChannel = double(Data.Spikes.SpikeChannel);
 

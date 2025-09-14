@@ -244,6 +244,13 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                     UnitIterations = 1;
                     ClusterToPlot = AutorunConfig.ContSpikeAnalysis.Clustertoshow;
                 else % if unit plot
+                    if isscalar(AutorunConfig.ContSpikeAnalysis.UnitsToPlot)
+                        AutorunConfig.ContSpikeAnalysis.UnitsToPlot = convertStringsToChars(AutorunConfig.ContSpikeAnalysis.UnitsToPlot);
+                        if contains(AutorunConfig.ContSpikeAnalysis.UnitsToPlot,',')
+                            AutorunConfig.ContSpikeAnalysis.UnitsToPlot = string(str2double(strsplit(AutorunConfig.ContSpikeAnalysis.UnitsToPlot,',')));
+                        end
+                    end
+
                     UnitIterations = length(AutorunConfig.ContSpikeAnalysis.UnitsToPlot);
                     ClusterToPlot = AutorunConfig.ContSpikeAnalysis.UnitsToPlot;
                 end
@@ -384,8 +391,13 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
     
                         FakeTextAre.Value = '';
                         
-                        [TempData,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance);
-                    
+                        if strcmp(Data.Info.SpikeType,'Internal') && strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Waveform Templates") || strcmp(Data.Info.SpikeType,'Internal') && strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Template from Max Amplitude Channel")
+                            disp("Template plots not available for NeuroMod internal spike detection data.")
+                            continue;
+                        else
+                            [TempData,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1);
+                        end
+
                         if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered Average")
                             if ~isempty(TempData)
                                 Data = TempData;
@@ -393,7 +405,11 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         else
                             %Data = TempData;
                         end
-    
+
+                        if ~strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")
+                            [~,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,"SpikeRateBinSizeChange",FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1);
+                        end
+
                         if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")
                             [~] = Execute_Autorun_Set_Up_Figure(UIAxes,1,"Left Axis Only",Data.Time,20,"Time [s]",[],[],8);
                         end
@@ -408,6 +424,12 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         end
                         [UIAxes_2] = Execute_Autorun_Set_Plot_Colors(UIAxes_2,AutorunConfig);
                         [UIAxes_3] = Execute_Autorun_Set_Plot_Colors(UIAxes_3,AutorunConfig);
+
+                        if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Cumulative Spike Amplitude Density Along Depth") || strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Amplitude Density Along Depth") || strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Average Waveforms Across Channel")
+                            c = findobj(UIAxes.Parent, 'Type', 'ColorBar');
+                            c.Color = 'k';   
+                            c.Label.Color = 'k';  
+                        end
                         
                         if strcmp(Data.Info.Sorter,'Non')
                             SpikeName = "Internal Spike Detection";

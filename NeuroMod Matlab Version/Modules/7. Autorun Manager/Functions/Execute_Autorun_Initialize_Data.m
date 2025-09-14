@@ -1,5 +1,9 @@
 function Data = Execute_Autorun_Initialize_Data(AutorunConfig,TempData,Time,HeaderInfo,SampleRate,RecordingType,SelectedFolder)
 
+if isempty(TempData)
+    Data = [];
+    return;
+end
  %% Define all important Variables based on extracted dat files
 if ~isa(TempData, 'single')
     Data.Raw = single(TempData);

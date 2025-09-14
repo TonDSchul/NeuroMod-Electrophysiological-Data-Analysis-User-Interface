@@ -1,4 +1,4 @@
-function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD,CurrentPlotData,PlotAppearance)
+function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD,CurrentPlotData,PlotAppearance,Autorun)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
@@ -45,6 +45,7 @@ function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,Pl
 % case user wants to export them
 % 18. PlotAppearance: structure holding plot style information like color
 % and linewidth
+% 19. Autorun: double 1 or 0 whether funtion is executed in autorun 
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info
@@ -288,5 +289,7 @@ if strcmp(TypeofAnalysis,"Spike Triggered LFP")
     TextArea.Value = texttoshow;
 end             
 
-% Resize Figures based on analysis and whether cbar is necessary
-Continous_Spikes_Resize_Figures(Figure,Figure2,Figure3,TypeofAnalysis,ClusterToShow)
+if Autorun == 0
+    % Resize Figures based on analysis and whether cbar is necessary
+    Continous_Spikes_Resize_Figures(Figure,Figure2,Figure3,TypeofAnalysis,ClusterToShow)
+end

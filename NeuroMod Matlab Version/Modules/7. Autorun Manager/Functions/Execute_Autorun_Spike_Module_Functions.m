@@ -303,13 +303,16 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
         ScalingFactor = [];
     end
 
-    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpyKING CIRCUS 2")
-        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,AutorunConfig.LoadfromSpikeSorting.Sorter);
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") 
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"Mountainsort5");
+    end
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpyKING CIRCUS 2")
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"SpykingCircus2");
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 4 external GUI") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 3 external GUI")
         % Function to load all relevant npy and .mat files Kilosort outputs
-        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,AutorunConfig.LoadfromSpikeSorting.Sorter);
+        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,"External Kilosort GUI");
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")
@@ -391,4 +394,28 @@ if strcmp(FunctionOrder,'Save_for_SpikeSorting')
         % Function to Save Raw Data as int32 in a .dat file
         [Data] = Spike_Module_Save_for_Kilosort(Data,AutorunDetection,FullPath,AutorunConfig.SaveforSpikeSorting.SaveFormat,AutorunConfig.SaveforSpikeSorting.Sorter,AutorunConfig.SaveforSpikeSorting.Dataset);
     end
+end
+
+%______________________________________________________________________________________________________
+% 5.5 Open In Phy
+%______________________________________________________________________________________________________
+
+if strcmp(FunctionOrder,'Open_in_Phy')
+
+    if strcmp(Data.Info.Sorter,"WaveClus 3") 
+        msgbox("WaveClus results cannot be openend in curation software!")
+        return
+    end
+
+    if strcmp(Data.Info.Sorter,"Mountainsort5")
+        ResultsFile = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\Mountainsort 5");
+    elseif strcmp(Data.Info.Sorter,"SpykingCircus2")
+        ResultsFile = strcat(Data.Info.Data_Path,"\SpikeInterface\SpikeInterface_Sorting_Phy_Results\SpyKING CIRCUS 2");
+    elseif strcmp(Data.Info.Sorter,"External Kilosort GUI")
+        ResultsFile = strcat(Data.Info.Data_Path,"\Kilosort\kilosort4");
+    end
+
+    [~] = Spike_Module_Start_Phy(Data,executableFolder,ResultsFile);
+    msgbox("Press enter in the Matlab command window to continue!")
+    input("Press Enter to Continue!")
 end
