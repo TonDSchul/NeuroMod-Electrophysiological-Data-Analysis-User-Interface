@@ -1,7 +1,0 @@
-*.m text eol=lf
-*.txt text eol=lf
-*.md text eol=lf
-*.mat binary
-*.exe binary
-*.prj binary
-*.html binary
