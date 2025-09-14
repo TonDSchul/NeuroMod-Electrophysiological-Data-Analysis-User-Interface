@@ -1,8 +1,8 @@
 # NeuroMod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab 
 
-<img src="Modules/MISC/Images/Logo.png" align="right" width="100" height="100"/>
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/Logo.png" align="right" width="100" height="100"/>
 
-<img src="Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
 
 ** Warning: Currently only Matlab Versions 2023a or newer are supported **
 
@@ -47,13 +47,13 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
 > ## **Data Formats and Capabilities**
 
-<img src="Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
 NeuroMod supports data extraction from raw recording data with two different 'libraries' - first the NeuroMod intern (Matlab-based) data extraction and second data extraction using the NeuralEnsemble NEO Python package - all through the user interface without the need for coding! Both libraries support recordings obtained with the Open Ephys GUI but to different extends - NeurMod supports all OE formats (binary .dat; .nwb and OE format files) from any recording system (OE acquisition board; Intan RHD acquisition board; Neuropixels basestation with NP1.0 or 2.0 probes), while NEO only supports binary format recordings, also including Neuropixels recordings with a Neuropixels basestation. Additionally, both libraries support extraction of Neuralynx .ncs recordings (.ncs; .nev; .nse and .ntt files).
 
 Beisdes these shared formats, NeuroMod itself currently supports formats recorded with the Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 software. This includes .dat and .rhd files from the Intan RHX and RHD software, TDT (Tucker Davis Tank format) recordings and .smrx files for Spike2 recordings. Through the use of the NEO library, NeuroMod furthermore offers to extract Plexon (.plx) recordings.
 
-<img src="Modules/MISC/Images/FormatOverview.jpg" align="right" width="70%" />
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/FormatOverview.jpg" align="right" width="70%" />
 
 **Note:** When you want to load Neuropixels recordings from the Open Ephys GUI with NEO, it does not support having multiple recording folder within the same session, i.e. when acquisition was stopped and started again within the same recording session. To handle and concatonate multiple recordings within the same session, use the MATLAB internal library! Switching the Formate to save and load back into MATLAB to the custom format 
 
@@ -64,7 +64,7 @@ Available types of analysis include current source density analysis, static powe
 
 The supported recording systems can be used with a wide range of probes designs, influencing downstream data analysis. Therefore, a fully interactive probe design and probe view window enables to set arbitrary probe designs (of longituinal single shank probes) while always having an overview and full control over which channel are used for the analysis. Even Neuropixel probe designs with hundreds of recording channels almost freely distributed over the whole shank can be analyzed without loosing oversight and with an visual representation of brain areas distributed over the probe based on coordinates obtained from the Neuropixels Trajectory Explorer. Note: Multishank recordings (for example from NP 2.0 probes) can also be loaded, but are integrated into the same shank design, requiring to manually select the active analysis channel corresponding to a single shank.
 
-<img src="Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
 
 Lastly, NeuroMod fully supports Kilosort, Mountainsort 5 and SpyKING CIRCUS 2 spike sorting. This firstly includes saving the dataset and probe design for external use in one of the sorting packages with your own code/the respective Sorting GUI provided with it. Secondly, you can apply automatic spike sorting with SpikeInterface completely handled by NeuroMod without the need to code with Mountainsort 5 and SpyKING CIRCUS 2. You just have to install the respective python packages (see below for instructions) and everything else is taken care of for you in NeuroMod, while still having full control over sorting parameters. In any case, spike sorting results from all these sorters can be loaded back into NeuroMod for further analysis (see below for details). If these sorters cant be used, NeuroMod also offers spike detection using different thresholding methods as well as spike clustering using WaveClus 3 (which does not has to be installed). Since every analysis is shown and editable in a separate window, spike and LFP analysis results can be easily compared and correlated. 
 
@@ -74,11 +74,11 @@ Lastly, NeuroMod fully supports Kilosort, Mountainsort 5 and SpyKING CIRCUS 2 sp
 
 After your extracted/loaded data into Neuromod, you can further save it in four different formats to load into other MATLAB or python toolboxes/codes. First, you can save it in a format compatible to load back into NeuroMod at a later stage with all dataset components in a .dat and separate .mat file. 
 
-Second, continuous channel data and event data can be saved in a .mat file that can be loaded into the NeuralEnsemble Neo python toolbox. This means, you can load the data into any python toolbox using NEO as the data extraction/managing foundation. An example python script to show how to load the NEO compatible .mat file into NEO and plot the data and events can be found here: [Load NEO compatible MATLAB file into NEO](Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py) (found at 'Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py'). 
+Second, continuous channel data and event data can be saved in a .mat file that can be loaded into the NeuralEnsemble Neo python toolbox. This means, you can load the data into any python toolbox using NEO as the data extraction/managing foundation. An example python script to show how to load the NEO compatible .mat file into NEO and plot the data and events can be found here: [Load NEO compatible MATLAB file into NEO](NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py) (found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py'). 
 
-The third option allows you to save data in the .nwb format using the MatNWB Matlab interface and can be loaded into any toolbox able to read nwb files. An example python script to show how to load the saved files into using pynwb and plot the data and events can be found here: [Load files saved as .nwb with pynwb](Modules/MISC/docs/Load_Saved_NWB_Example.py) (found at 'Modules/MISC/docs/Load_Saved_NWB_Example.py').
+The third option allows you to save data in the .nwb format using the MatNWB Matlab interface and can be loaded into any toolbox able to read nwb files. An example python script to show how to load the saved files into using pynwb and plot the data and events can be found here: [Load files saved as .nwb with pynwb](NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_NWB_Example.py) (found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_NWB_Example.py').
 
-Lastly data can be saved as a .bin file with additional .json files containing probe information and meta data to load into the SpikeInterface python toolbox. This means you can either conduct spike sorting with the newest spike sorting algorythms in SpikeInterface directly or interface all toolboxes working using the SpikeInterface data representation. An example python script to show how to load the saved files into SpikeInterface and plot the data and events can be found here: [Load files saved for SpikeInterface into SpikeInterface](Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py) (found at 'Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py').
+Lastly data can be saved as a .bin file with additional .json files containing probe information and meta data to load into the SpikeInterface python toolbox. This means you can either conduct spike sorting with the newest spike sorting algorythms in SpikeInterface directly or interface all toolboxes working using the SpikeInterface data representation. An example python script to show how to load the saved files into SpikeInterface and plot the data and events can be found here: [Load files saved for SpikeInterface into SpikeInterface](NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py) (found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py').
 
 **NOTE:** This is different from using the SpikeInterface library within NeuroMod to sort spike data. This can be done without any additional code! The same holds true for extracting some of the recording formats supported by NEO into NeuroMod.
 
@@ -107,9 +107,9 @@ Neuromod_Toolbox_GUI
   
 > ### **Get Started With Example Data**
 
-<img src="Modules/MISC/Images/LoadDataGIF.gif" width="700" height="500" />
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/LoadDataGIF.gif" width="700" height="500" />
 
-In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](Modules/MISC/docs/NeuroMod_Toolbox_Manual.docx)
+In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod Matlab Version/Modules/MISC/docs/NeuroMod_Toolbox_Manual.docx)
 
 In order to get started after opening the user interface for the first time, you can load an example dataset to explore all functionalities this toolbox provides and get used to it. 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with NeuroMod. 
