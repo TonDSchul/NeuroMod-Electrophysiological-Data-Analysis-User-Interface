@@ -1,0 +1,11 @@
+echo "# Normalize line endings
+* text=auto eol=lf
+*.m text eol=lf
+*.asv text eol=lf
+*.mat binary
+*.txt text eol=lf
+*.md text eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.pdf binary" > .gitattributes
