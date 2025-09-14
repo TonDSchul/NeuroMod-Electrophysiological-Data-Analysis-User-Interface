@@ -1,0 +1,140 @@
+function Organize_Plot_Trigger_Indices(Data,Figure,EventToPlot,Time,ActiveChannel,EventstoPlotDropDown,SpacingSlider,EventTriggerChannel,TimearoundEvent,DataToExtractFromDropDown,DataSourceDropDown,ColorMap)
+
+%________________________________________________________________________________________
+
+%% Function to plot event related data around trigger
+
+% This function is called in the Trigger Deletion Window to plot data
+% around each selected trigger.
+
+
+% Inputs: 
+% 1. Data: main app object holding all main dataset components
+% 2. Figure: app.UIAxes object handle from app to plot in
+% 3. EventToPlot: double, trigger number selected to plot (except mean was selected)
+% 4. Time: double vector with time plotted around events, specified in the
+% app window
+% 5. ActiveChannel: double vector with all currently active channel from
+% the probe view window
+% 6. EventstoPlotDropDown: char, from event to plot dropdown, to check if it is "Mean over all Trigger" 
+% 7. SpacingSlider: double, spacing selected in the slider of the app
+% window
+% 8. EventTriggerChannel: Name of the event channel from which trigger are
+% extracted, from Info.EventChannelNames
+% 9. TimearoundEvent: 1x2 double with time around event (before and after trigger, both positive)
+% DataToExtractFromDropDown: char, either 'Raw Data' or 'Preprocessed
+% Data', depending from which dataset channel data is extracted
+% DataSourceDropDown: char, either 'Raw Event Related Data' or 'Preprocessed Event Related Data'
+% ColorMap: nchannel x 3 parula color map
+
+% Output:
+% app object with updated app.CurrentTimePoints value capturing the first time
+% point of the main window plot that is shown (in samples)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+[SelectedChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
+
+%% -------------------- Extract Event Related Data -------------------- 
+[Data,~] = Event_Module_Extract_Event_Related_Data(Data,EventTriggerChannel,TimearoundEvent,DataToExtractFromDropDown,DataSourceDropDown);
+
+ArtefactRelatedData = squeeze(Data.EventRelatedData(SelectedChannel,EventToPlot,:));
+
+if isscalar(SelectedChannel)
+    ArtefactRelatedData = ArtefactRelatedData';
+end
+
+[Data,~] = Organize_Delete_Dataset_Components(Data,"EventRelatedData");
+
+%% Select Data based on user input
+
+if strcmp(EventstoPlotDropDown,"Mean over all Trigger")
+    ArtefactRelatedData = squeeze(mean(ArtefactRelatedData,2));
+end
+
+if isscalar(SelectedChannel)
+    if size(ArtefactRelatedData,1)>size(ArtefactRelatedData,2)
+        ArtefactRelatedData = ArtefactRelatedData';
+    end
+end
+%% Add ChannelSapcing for proper plot
+for i = 1:size(ArtefactRelatedData,1)     
+    ArtefactRelatedData(i, :) = ArtefactRelatedData(i, :) - (i - 1) * SpacingSlider;
+end
+
+%% Plot Data
+colorMap = ColorMap(SelectedChannel,:);
+%colorMap = eval(strcat("parula","(size(ArtefactRelatedData,1))")); % Example colormap: You can use any other colormap
+
+ArtefactData_handles = findobj(Figure, 'Tag', 'TracesAroundArtefacts');
+EventData_handles = findobj(Figure, 'Tag', 'EventLine');
+ArtefactLine_handles = findobj(Figure, 'Tag', 'ArtefactLine');
+
+if length(ArtefactLine_handles)>size(ArtefactRelatedData,1)
+    delete(ArtefactLine_handles(size(ArtefactRelatedData,1)+1:end));
+end
+
+if isempty(ArtefactData_handles)
+    for i = 1:size(ArtefactRelatedData,1) % over channel for costum color
+        line(Figure,Time,ArtefactRelatedData(i,:),'Color',colorMap(i,:),'LineWidth',1,'Tag',"TracesAroundArtefacts")
+    end
+    % Red event line in middle
+    line(Figure,[0,0],[min(ArtefactRelatedData,[],'all') max(ArtefactRelatedData,[],'all')],'Tag','EventLine','LineWidth',2,'Color','r');
+    
+    ArtefactData_handles = findobj(Figure, 'Tag', 'TracesAroundArtefacts');
+    EventData_handles = findobj(Figure, 'Tag', 'EventLine');
+
+    legend(Figure,EventData_handles, {'Trigger'}, 'Location', 'northeast');
+
+else
+    if length(ArtefactData_handles)>size(ArtefactRelatedData,1)
+        delete(ArtefactData_handles(size(ArtefactRelatedData,1)+1:end));
+        ArtefactData_handles = findobj(Figure, 'Tag', 'TracesAroundArtefacts');
+    end
+
+    if length(EventData_handles)>1
+        delete(EventData_handles(2:end));
+    end
+
+    for i = 1:size(ArtefactRelatedData,1)
+        if length(ArtefactData_handles) >= i
+            set(ArtefactData_handles(i), 'XData', Time, 'YData', ArtefactRelatedData(i,:),'Color',colorMap(i,:), 'Tag', 'TracesAroundArtefacts','LineWidth',1);
+        else
+            line(Figure,Time,ArtefactRelatedData(i,:),'Color',colorMap(i,:),'LineWidth',1,'Tag',"TracesAroundArtefacts")
+        end
+    end
+
+    set(EventData_handles(1), 'XData', [0,0], 'YData', [min(ArtefactRelatedData,[],'all') max(ArtefactRelatedData,[],'all')], 'Tag', 'EventLine','LineWidth',2,'Color','r');
+    eventline = EventData_handles(1);
+
+    if length(ArtefactLine_handles)>2
+        delete(ArtefactLine_handles(3:end));
+    end
+
+    % Bring Event Line to the front
+    uistack(eventline, 'top');
+    % Add legend for the three specific lines
+    legend(Figure,eventline, {'Trigger'}, 'Location', 'northeast');
+end
+
+Figure.FontSize = 11;
+xlabel(Figure,"Time [ms]")
+ylabel(Figure,"Channel")
+if strcmp(EventstoPlotDropDown,"Mean over all Trigger")
+    title(Figure,"ERP Around all Trigger");
+else
+    title(Figure,strcat("Data Around Trigger ",num2str(EventToPlot)));
+end
+
+xlim(Figure,[Time(1),Time(end)])
+ylim(Figure,[min(ArtefactRelatedData,[],'all') max(ArtefactRelatedData,[],'all')]);
+Figure.XLabel.Color = [0 0 0];
+Figure.YLabel.Color = [0 0 0];       
+Figure.YColor = 'k';  
+Figure.XColor = 'k';  
+Figure.Title.Color = 'k';  
+Figure.Box ="off";

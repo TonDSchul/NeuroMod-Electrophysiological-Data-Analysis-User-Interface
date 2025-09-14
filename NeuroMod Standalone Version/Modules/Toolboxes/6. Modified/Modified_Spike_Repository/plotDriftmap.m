@@ -1,0 +1,199 @@
+% Inputs: spikeTimes, spikeAmps, spikeYpos - names self explanatory
+%         opt - optional, empty by default; 'mark' - will mark detected drifts, 'show' - will generate a different plot, 
+%               where only large spikes are used, and the detection of drift locations is demonstrated
+function [Figure] = plotDriftmap(spikeTimes, spikeAmps, spikeYpos, Figure, opt, Segmentlength,PlotAppearance,Sorter)
+if nargin < 4
+  opt = '';
+end
+
+% Delete Spike Handles
+Spikeline_handles = findobj(Figure,'Type', 'line', 'Tag', 'SpikeAmps');
+
+% Loop through all lines and delete those with the tag 'SpikeRateCluster'
+if ~isempty(Spikeline_handles)
+    for i = 1:length(Spikeline_handles)
+        if strcmp(get(Spikeline_handles(i), 'Tag'), 'SpikeAmps')
+            delete(Spikeline_handles(i));
+        end
+    end
+end
+
+if ~strcmpi(opt, 'show')
+  nColorBins = 200+2;
+
+  ampRange = quantile(spikeAmps, [0.01 0.9]);
+
+  colorBins = linspace(ampRange(1), ampRange(2), nColorBins);
+
+  %colorBins = linspace(min(spikeAmps), max(spikeAmps), nColorBins);
+
+  % Create colormap 
+  %-- standard:
+  % colors = gray(nColorBins); 
+  % colors = colors(end:-1:1, :); % first bin is smalles spikes, starts white
+
+  % Costum:
+  % Interpolate between the selected color and black if grey, from white to
+  % color otherwise
+
+  % From white to selected color
+  if sum(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor == 0.9) < 3 % If no grey (standarad value), bc then its better to show color from white to black
+      colors = [linspace(1, PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(1), nColorBins)', ...
+                  linspace(1, PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(2), nColorBins)', ...
+                  linspace(1, PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(3), nColorBins)'];
+  else % if grey: from white to black
+      colors = zeros(nColorBins, 3); % Initialize colormap matrix
+      for i = 1:3
+          colors(:, i) = linspace(PlotAppearance.InternalEventSpikePlot.MainPlotSpikeColor(i), 0, nColorBins); 
+      end
+  end
+
+  if strcmp(Sorter,'External Kilosort GUI')
+    colors = flip(colors);
+  end
+  
+  SpikesPlotted = zeros(size(spikeTimes));
+  
+  for b = 2:nColorBins-1
+    
+    theseSpikes = spikeAmps>=colorBins(b) & spikeAmps<=colorBins(b+1);
+    
+    line(Figure,spikeTimes(theseSpikes), spikeYpos(theseSpikes),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(b,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');
+    
+    SpikesPlotted = SpikesPlotted + theseSpikes;
+    %hold on;
+  end  
+
+   % Not all spikes plotted so far, just within quantile ranges. Now plot
+   % the rest with the max and min color
+  SpikesPlotted(SpikesPlotted>1) = 1;
+  
+  if sum(SpikesPlotted)>0
+      NotPlottedAmps = spikeAmps(SpikesPlotted==0);
+      NotPlottedTimes = spikeTimes(SpikesPlotted==0);
+      NotPlottedPos = spikeYpos(SpikesPlotted==0);
+      
+      if sum(NotPlottedAmps<colorBins(2))>0
+        line(Figure,NotPlottedTimes(NotPlottedAmps<colorBins(2)), NotPlottedPos(NotPlottedAmps<colorBins(2)),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(1,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');
+      end
+
+      if sum(NotPlottedAmps>colorBins(end-1))>0
+        line(Figure,NotPlottedTimes(NotPlottedAmps>colorBins(end-1)), NotPlottedPos(NotPlottedAmps>colorBins(end-1)),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', colors(end,:),'MarkerEdgeColor','k','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps');    
+      end
+  end
+end
+
+colormap(Figure, flip(colors));
+% Set color axis to amplitude range
+
+if ~strcmp(Sorter,'External Kilosort GUI')
+    tempspikeAmps = -spikeAmps;
+    caxis(Figure,[min(tempspikeAmps) max(tempspikeAmps)]);
+else
+    caxis(Figure,[min(spikeAmps) max(spikeAmps)]);
+end
+
+% Create colorbar linked to your axes
+cbar_handle = colorbar('peer', Figure, 'location', 'WestOutside');
+cbar_handle.Label.String   = PlotAppearance.InternalEventSpikePlot.CbarLabel;
+cbar_handle.Label.Rotation = 270;
+cbar_handle.Color          = 'k';
+cbar_handle.Label.Color    = 'k';
+
+if isempty(opt)
+  return
+end
+
+for d = 0:Segmentlength:max(spikeYpos) % break the recording into 800 um segments
+  tmp = spikeAmps(spikeYpos >= d & spikeYpos < d+Segmentlength);
+  I = spikeAmps > mean(tmp) + 1.5*std(tmp) & spikeYpos >= d & spikeYpos < d+Segmentlength; % large spikes in current segment
+  driftEvents = detectDriftEvents(spikeTimes(I), spikeYpos(I), strcmpi(opt, 'show'),Figure);
+  if strcmpi(opt, 'mark') && ~isempty(driftEvents)
+    line(Figure,driftEvents(:,1), driftEvents(:,2),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', 'red','MarkerEdgeColor','red','MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure,'Tag','SpikeAmps')
+    % text(driftEvents(:,1)+1, driftEvents(:,2), num2str(round(driftEvents(:,3))), 'Color', 'r') % the magnitude of the drift
+  end
+end
+if strcmpi(opt, 'show')
+  %ylim(Figure,[min(spikeYpos) max(spikeYpos)]) 
+end
+
+% driftEvents will contain a column of times, a column of depths, and a column of drift magnitudes
+function driftEvents = detectDriftEvents(spikeTimes, spikeDepths, doPlot, Figure)
+if nargin < 3
+  doPlot = false;
+end
+driftEvents = [];
+if isempty(spikeTimes)
+  return % null input ==> nothing to do
+end
+
+D = 2; % um
+bins = min(spikeDepths)-D:D:max(spikeDepths)+D;
+h = histc(spikeDepths, bins);
+
+h = h(1:end-1); % last bin represents the scalar value bins(end), not an interval
+bins = bins(1:end - 1) + D/2; % now it's the centre of each interval
+
+if numel(h) < 3
+  locs = []; % findpeaks needs an input with >=3 values
+else
+  [~, locs] = findpeaks(h);
+end
+
+if doPlot
+  ax(1) = subplot(1, 5, 1); hold on;
+  plot(h, bins, 'k')
+  box off
+  ylabel('y position')
+  ax(2) = subplot(1, 5, 2:5); hold on;
+  line(spikeTimes, spikeDepths,'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', 0.5*[1,1,1],'MarkerEdgeColor',0.5*[1,1,1],'MarkerSize',1.5)
+  linkaxes(ax, 'y')
+  xlim([0 spikeTimes(end)+1])
+  xlabel('time')
+end
+
+for p = 1:numel(locs)
+  if h(locs(p)) < 0.3*spikeTimes(end)
+    continue
+    % we want the peaks to correspond to some minimal firing rate (otherwise peaks by very few spikes will be considered as well...)
+  end
+  if doPlot
+    subplot(1, 5, 1); hold on;
+  end
+  
+  posBegin = find(h(1:locs(p)) < 0.05*h(locs(p)), 1, 'last');
+  if isempty(posBegin)
+    posBegin = 1;
+  end
+  posEnd   = find(h(locs(p):end) < 0.05*h(locs(p)), 1, 'first') + locs(p) - 1;
+  if isempty(posEnd)
+    posEnd = numel(bins);
+  end
+  if (p > 1 && posBegin < locs(p-1)) || (p < numel(locs) && posEnd > locs(p+1))
+    if doPlot
+      plot(h(locs(p)), bins(locs(p)), 'bo')
+    end
+    continue % no clean enough separation from neighbour peak(s
+  elseif doPlot
+    plot(h(locs(p)), bins(locs(p)), 'ro')
+    plot(xlim, bins(posBegin)*[1 1], '--', 'Color', 0.5*[1 1 1])
+    plot(xlim, bins(posEnd)*[1 1], '--', 'Color', 0.5*[1 1 1])
+  end
+  
+  I = spikeDepths > bins(posBegin) & spikeDepths < bins(posEnd);
+  
+  currentspikeDepths = spikeDepths(I);
+  currentspikeTimes  = spikeTimes(I);
+  for t = 0:10:spikeTimes(end)-10
+    I = currentspikeTimes >= t & currentspikeTimes <= t+10;
+    driftSize = bins(locs(p)) - median(currentspikeDepths(I)); 
+    if abs(driftSize) > 6 && sum(I) > 10 % 6 um is the hardcoded threshold for drift, and we want at least 10 spikes for the median calculation
+      driftEvents(end+1,:) = [t+5, bins(locs(p)), driftSize];
+    end
+  end
+  if doPlot && ~isempty(driftEvents)
+    subplot(1, 5, 2:5); hold on;
+    plot(driftEvents(:,1), driftEvents(:,2), 'o', 'MarkerEdgeColor', 'none', 'MarkerFaceColor', 'r')
+    text(driftEvents(:,1)+1, driftEvents(:,2), num2str(round(driftEvents(:,3))), 'Color', 'r') % the magnitude of the drift
+  end    
+end % loop on peak locations

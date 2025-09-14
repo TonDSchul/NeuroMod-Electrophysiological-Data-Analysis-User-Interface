@@ -1,21 +1,7 @@
-# All text files → use LF inside repo (cross-platform safe)
-* text=auto eol=lf
-
-# MATLAB source code
-*.m   text eol=lf
-*.asv text eol=lf
-
-# Data files (don’t mess with line endings)
-*.mat binary
-
-# Text docs
+*.m text eol=lf
 *.txt text eol=lf
-*.md  text eol=lf
-
-# Windows scripts (keep CRLF if you ever use batch files)
-*.bat text eol=crlf
-
-# Images and binaries
-*.png binary
-*.jpg binary
-*.pdf binary
+*.md text eol=lf
+*.mat binary
+*.exe binary
+*.prj binary
+*.html binary
