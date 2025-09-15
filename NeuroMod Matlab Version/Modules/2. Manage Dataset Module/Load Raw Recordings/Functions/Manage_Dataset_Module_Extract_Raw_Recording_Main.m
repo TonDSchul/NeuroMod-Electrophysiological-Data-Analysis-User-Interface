@@ -108,7 +108,7 @@ elseif strcmp(RecordingSystem,"Neuralynx")
         
     [HeaderInfo] = ft_read_header(SelectedFolder);
     
-    HeaderInfo.startTimestamp = FirstTimeStamp;
+    HeaderInfo.startTimestamp = double(HeaderInfo.FirstTimeStamp);
 
     if isempty(HeaderInfo)
         Data = [];

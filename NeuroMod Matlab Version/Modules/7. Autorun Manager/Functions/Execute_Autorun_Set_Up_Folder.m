@@ -35,6 +35,10 @@ elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunCon
     SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
 elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"Spike2")
     SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
+elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && contains(AutorunConfig.ExtractRawRecording.RecordingsSystem,"NEO")
+    SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
+elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"TDT Tank Data")
+    SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
 else
     SelectedFolder = AutorunConfig.selected_folder;
 end

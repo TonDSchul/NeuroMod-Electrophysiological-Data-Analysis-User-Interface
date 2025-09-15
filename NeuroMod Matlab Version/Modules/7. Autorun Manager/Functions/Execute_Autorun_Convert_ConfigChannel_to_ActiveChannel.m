@@ -51,17 +51,17 @@ else
     AutorunConfig.ContSpikeAnalysis.ChannelSelection = ActiveChannel;
 end
 % Preprocess Event related Data Channel Rejection
-if ~isempty(AutorunConfig.PreproEventDataModule.ChannelToReject)
-    commaindidcie = find(AutorunConfig.PreproEventDataModule.ChannelToReject);
-    Ch(1) = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject(1:commaindidcie(1)));
-    Ch(2) = str2double(AutorunConfig.PreproEventDataModule.ChannelToReject(commaindidcie(1)+1:end));
+if ~isempty(AutorunConfig.PreproEventDataModule.ChannelToInterpolate) && AutorunConfig.PreproEventDataModule.ChannelInterpolation == true
+    commaindidcie = find(AutorunConfig.PreproEventDataModule.ChannelToInterpolate);
+    Ch(1) = str2double(AutorunConfig.PreproEventDataModule.ChannelToInterpolate(1:commaindidcie(1)));
+    Ch(2) = str2double(AutorunConfig.PreproEventDataModule.ChannelToInterpolate(commaindidcie(1)+1:end));
 
-    AutorunConfig.PreproEventDataModule.ChannelToReject = [];
-    AutorunConfig.PreproEventDataModule.ChannelToReject(1) = Ch(1);
-    AutorunConfig.PreproEventDataModule.ChannelToReject(2) = Ch(2);
+    AutorunConfig.PreproEventDataModule.ChannelToInterpolate = [];
+    AutorunConfig.PreproEventDataModule.ChannelToInterpolate(1) = Ch(1);
+    AutorunConfig.PreproEventDataModule.ChannelToInterpolate(2) = Ch(2);
 else
-    AutorunConfig.PreproEventDataModule.ChannelToReject(1) = 1;
-    AutorunConfig.PreproEventDataModule.ChannelToReject(2) = length(ActiveChannel);
+    AutorunConfig.PreproEventDataModule.ChannelToInterpolate(1) = 1;
+    AutorunConfig.PreproEventDataModule.ChannelToInterpolate(2) = length(ActiveChannel);
 end
 % % Preprocess Event related Data Artefact rejection channel
 % if ~isempty(AutorunConfig.PreproEventDataModule.ArtefactChannelToReject)

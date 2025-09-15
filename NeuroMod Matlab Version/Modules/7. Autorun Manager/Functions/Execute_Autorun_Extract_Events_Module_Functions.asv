@@ -47,10 +47,6 @@ if strcmp(FunctionOrder,'Extract_Events')
         [EventInfo,~,~,~,Info] = Extract_Events_Module_Determine_Available_EventChannel(Data,Path,AutorunConfig.ExtractEventDataModule.ChannelOfInterest);
     end
     
-    if strcmp(Data.Info.RecordingType,"TDT Tank Data")
-        Info.State = 'Rising Edge';
-    end
-
     %% Set general settings necessary to run event extraction function
     AdditionalEventInfo = Info;
     
@@ -208,6 +204,11 @@ end
 % 4.2 Extract Events and Data
 %______________________________________________________________________________________________________
 
+AutorunConfig.ExtractEventDataModule.ImportEventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+AutorunConfig.ExtractEventRelatedDataModule.ImportTimeBeforeEvent = '0.3'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
+AutorunConfig.ExtractEventRelatedDataModule.ImportTimeAfterEvent = '0.6'; %Time in seconds extracted after events as char
+AutorunConfig.ExtractEventRelatedDataModule.EventNames = 'Event TTL Nr.1,Event TTL Nr.2'; % Name of the event channel you import. One name for each channel, format: comma separated within char like 'Event TTL Nr.1,Event TTL Nr.2'
+
 ImportEventInfo = [];
 
 if strcmp(FunctionOrder,'Import_Events')
@@ -231,13 +232,14 @@ if strcmp(FunctionOrder,'Import_Events')
     else
         succesmessagetoshow = [];
         for i = 1:length(Data.Events)
-            succesmessagetoshow{i} = ['Saved ',num2str(length(Data.Events{i})) ,' Event/TTL Trigger for channel ',Data.Info.EventChannelNames{i}];
+            succesmessagetoshow{i} = ['Saved ',num2str(length(Data.Events{i})) ,' Event/TTL Trigger for channel ',app.Mainapp.Data.Info.EventChannelNames{i}];
         end
-        disp(succesmessagetoshow);
+        app.TextArea_2.Value = succesmessagetoshow;
 
         %% Save event related infos for later on the fly extraction
-        Data = Extract_Events_Module_Add_EventRelatedInfo(Data,AutorunConfig.ExtractEventRelatedDataModule.ImportTimeBeforeEvent,AutorunConfig.ExtractEventRelatedDataModule.ImportTimeAfterEvent);
+        app.Mainapp.Data = Extract_Events_Module_Add_EventRelatedInfo(app.Mainapp.Data,app.TimeWindowBeforeEventssEditField.Value,app.TimeWindowAfterEventssEditField.Value);
     end
+      
 end
 
 %______________________________________________________________________________________________________
@@ -395,15 +397,15 @@ if isfield(Data,'Events')
     
                         UIAxes.YScale = 'linear';
                                
-                        if ~ischar(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze)
-                            if ~isempty(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze)
-                                SelectedEvents = AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze;
+                        if ~ischar(AutorunConfig.EventRange)
+                            if ~isempty(AutorunConfig.EventRange)
+                                SelectedEvents = AutorunConfig.EventRange;
                             else
                                 SelectedEvents = [1,size(Data.EventRelatedData,2)];
                             end
                         else
-                            if ~isempty(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze)
-                                SelectedEvents = str2double(split(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze,','))';
+                            if ~isempty(AutorunConfig.EventRange)
+                                SelectedEvents = str2double(split(AutorunConfig.EventRange,','))';
                             else
                                 SelectedEvents = [1,size(Data.EventRelatedData,2)];
                             end
@@ -437,7 +439,7 @@ if isfield(Data,'Events')
                         UIAxes = axes;
                         UIAxes.NextPlot = "add";
             
-                        ChannelSelection = AutorunConfig.AnalyseEventDataModule.ChannelSelection;
+                        ChannelSelection = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
                 
                         EventSelection = TriggerToAnayze;
                         
@@ -625,6 +627,8 @@ if isfield(Data,'Events')
 
             ChannelSelection.Value = DepthChannel;
             UnitsToPlot.Value = AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot;
+            NumBinsSpikeRate.Value = AutorunConfig.AnalyseEventSpikesModule.SpikeRateNumBins;
+            TimeWindowSpiketriggredLFP.Value = AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage;
 
             if isempty(UnitsToPlot.Value) || strcmp(Data.Info.SpikeType,'Internal')
                 TotalIterations = 1;

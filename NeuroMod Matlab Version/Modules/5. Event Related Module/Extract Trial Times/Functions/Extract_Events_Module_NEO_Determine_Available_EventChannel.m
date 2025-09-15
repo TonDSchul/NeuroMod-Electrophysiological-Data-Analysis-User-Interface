@@ -169,7 +169,7 @@ if CostumeEventFilePresent == 1
         EventInfo.event_labels =  event_labels;
     end
     
-    EventInfo.event_samples = (double(event_samples)-NeoEventStartTimeStamp)+1;
+    EventInfo.event_samples = round((double(event_samples)-NeoEventStartTimeStamp)+1);
     
     % create info text to show
     texttoshow = strings(EventInfo.NumEvents, 1);

@@ -1,4 +1,4 @@
-function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance,ActiveChannel,EventDataType,EventChannelName)
+function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance,ActiveChannel,EventDataType,EventChannelName,Autorun)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for event kilosort spikes based on user input
@@ -49,6 +49,8 @@ function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,Spik
 % Event Related Data'. 
 % 20. EventChannelName: char, name of the event channel for which event
 % related spiokes are extracted
+% 21. Autorun: double, 1 or 0 whether fucntion is executed in autorun
+% functions
 
 % Outputs:
 % 1. Data: main app data structure 
@@ -155,6 +157,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     end
 end  
 
-
-% Resize Figures based on analysis and whether cbar is necessary
-Event_Spikes_Resize_Figures(Figure,Figure2,Figure3,AnalysisTypeDropDown,ClustertoshowDropDown)
+if Autorun == 0
+    % Resize Figures based on analysis and whether cbar is necessary
+    Event_Spikes_Resize_Figures(Figure,Figure2,Figure3,AnalysisTypeDropDown,ClustertoshowDropDown);
+end

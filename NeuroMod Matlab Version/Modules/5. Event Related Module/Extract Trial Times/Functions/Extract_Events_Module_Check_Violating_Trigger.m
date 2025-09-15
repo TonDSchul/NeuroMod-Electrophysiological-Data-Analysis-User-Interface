@@ -88,11 +88,16 @@ for nevents = 1:length(Events)
     end
 end
 
+IndiceToDelete = [];
 for j = 1:length(Events)
     if isempty(Events{j})
-        Events(j) = [];
-        Data.Info.EventChannelNames(j) = [];
+        IndiceToDelete = [IndiceToDelete,j];
     end
+end
+
+if ~isempty(IndiceToDelete)
+    Events(IndiceToDelete) = [];
+    Data.Info.EventChannelNames(IndiceToDelete) = [];
 end
 
 if ~isempty(Delete_Time_Violating_TriggerWindow)

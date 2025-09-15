@@ -130,6 +130,24 @@ else
             else
                 [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.smrx');
             end
+        elseif contains(AutorunConfig.ExtractRawRecording.RecordingsSystem,"NEO Neuralynx")
+            if find(AutorunConfig.FunctionOrder == "Load_Data")
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.dat');
+            else
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.ncs');
+            end
+        elseif contains(AutorunConfig.ExtractRawRecording.RecordingsSystem,"NEO Plexon")
+            if find(AutorunConfig.FunctionOrder == "Load_Data")
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.dat');
+            else
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.plx');
+            end
+        elseif contains(AutorunConfig.ExtractRawRecording.RecordingsSystem,"TDT Tank Data")
+            if find(AutorunConfig.FunctionOrder == "Load_Data")
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.dat');
+            else
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.sev');
+            end
         end
 
         if containsFiles == false

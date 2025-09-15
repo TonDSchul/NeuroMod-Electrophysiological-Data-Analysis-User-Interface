@@ -18,6 +18,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 %--- Event Module ---
 %______________________
 % 'Extract_Events'
+% 'Import_Events'
 % 'Event_Spike_Analysis'
 % 'PreproEventDataModule'
 % 'Event_Analysis_ERP'
@@ -34,12 +35,10 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Open_in_Phy'
 
 % What to execute
-
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Open_in_Phy","Continous_Spike_Analysis","Internal_Spike_Detection","Continous_Spike_Analysis"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD"];
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
-AutorunConfig.EventRange = []; % Only necessary if events are extracted and analyzed, Empty for all events, otherwise char, '1,10' for events 1:10; (only two numbers allowed, '1','2','3','4' will not work!)
 
 % General Information
 AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
@@ -52,10 +51,10 @@ AutorunConfig.DeleteFigureAfterSaving = "on";
 
 AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";
 AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
-AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD" to show image plots as 2D plots or as 3D plotsbbbbbbbbbbbbbbbbbb<<$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD" to show image plots as 2D plots or as 3D plots
 AutorunConfig.AdditionalAmpFactor = []; % Additional signal amplification factor; empty for non, otherwise factor raw data gets multiplied with
 
-% Fire Appearance
+% Plot Appearance
 AutorunConfig.ColorMode = 'DarkMode_Dark_Light'; % DarkMode_Light_Dark OR "DarkMode_Dark_Light" OR "LightMode_Dark_Light" OR "LightMode_Light_Dark"
 
 % When Autorun window is openend, just the above information are taken to populate
@@ -88,7 +87,7 @@ AutorunConfig.LoadData.Format = 'Saved NWB format'; % 'Saved NeuroMod format' OR
 %% 1.3 Save data loaded in GUI
 %______________________________________________________________________________________________________
 AutorunConfig.SaveData.SaveFor = 'Other'; % 'NeuroMod' OR 'NEO' OR 'Other'
-AutorunConfig.SaveData.SaveAs = 'NWB File (Neuroscience Without Borders)'; % '.dat' OR 'Neo Compatible .mat File' OR 'SpikeInterface Compatible Binary File' OR 'NWB File (Neuroscience Without Borders)'
+AutorunConfig.SaveData.SaveAs = 'NWB File (Neuroscience Without Borders)'; % '.dat' (NeuroMod) OR 'Neo Compatible .mat File' OR 'SpikeInterface Compatible Binary File' OR 'NWB File (Neuroscience Without Borders)'
 
 AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 6 numbers being either a 1 or a 0. Each
 % indicie of the vector stands for a component of the dataset. A 1 indicates, that this component
@@ -160,7 +159,7 @@ AutorunConfig.StaticPowerSpectrum.WindowSize = 25000; % Only if UseCostumeWindow
 %______________________________________________________________________________________________________
 % Kilosort Plots
 AutorunConfig.ContSpikeAnalysis.AnalysisType = ["Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel"]; % "Spike Map","Spike Amplitude Density Along Depth","Cumulative Spike Amplitude Density Along Depth","Average Waveforms Across Channel","Spike Waveforms","Waveform Templates","Template from Max Amplitude Channel","Spike Triggered LFP"
-% For Kilosort AND Internal Spikes:
+% For Sorting AND Internal Spikes:
 AutorunConfig.ContSpikeAnalysis.EventChannelToPlot = "Non"; %Non for no event plotting, empty for first automatically taking the first channel, otherwise eventName specified as char, like 'DIN-04' or 'ADC-01'
 AutorunConfig.ContSpikeAnalysis.TimeWindowSpiketriggredLFP = '-0.005,0.25'; %as char
 AutorunConfig.ContSpikeAnalysis.NumBinsSpikeRate = "200"; % Number of bins for the spike rate plots as char
@@ -171,7 +170,6 @@ AutorunConfig.ContSpikeAnalysis.WaveformsToPlot = '1,100'; %as char
 % each unit specified in UnitsToPlot and saved in a seperate folder calles
 % "units". If UnitsToPlot is empty, just plots for Clustertoshow are
 % created
-% All spikes
 AutorunConfig.ContSpikeAnalysis.Clustertoshow = "Non"; %For spike map and indication of cluster in all spikes plots. 'All' OR 'Non' OR '1' (or whatever clusternumber you want (just one cluster!). Starts with 1!)
 %Individual Unit Analysis
 AutorunConfig.ContSpikeAnalysis.UnitsToPlot = "1,2,3"; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
@@ -190,38 +188,45 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 4. Event Data Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 4.1 Extract Events and Data
+%% 4.1 Extract Events Trigger
 %______________________________________________________________________________________________________
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
 AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'DIN Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; 
-AutorunConfig.ExtractEventDataModule.EventType = 'Rising Edge'; % char, Either 'Rising Edge' or 'Falling Edge' to determine whether rising or falling edge should be detected
-AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1,2,3'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+AutorunConfig.ExtractEventDataModule.TriggerType = 'Rising Edge'; % char, Either 'Rising Edge' or 'Falling Edge' to determine whether rising or falling edge should be detected
+AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.02'; % Threshold of event signal at which events are extracted as char
-AutorunConfig.ExtractEventRelatedDataModule.EventChanneltoUse = []; %Name of the event channel to extract data from. Empty for the first one. Otherwise specify as string, like "DIN-04" or "ADC-01"
-AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.2'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
-AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.5'; %Time in seconds extracted after events as char
-AutorunConfig.ExtractEventRelatedDataModule.DataSource = "Raw"; %"Raw" OR "Preprocessed" as char
+% Event Related Data
+AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.3'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
+AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.6'; %Time in seconds extracted after events as char
 
 AutorunConfig.ExtractEventRelatedDataModule.CombineEventChannel = []; % which event channel should be combined? Has to be part of AutorunConfig.ExtractEventDataModule.EventChannelSelection, Format: char, comma separated numbers or empty for no combination
 AutorunConfig.ExtractEventRelatedDataModule.NewEventChannelName = 'Combined Event Channel 1'; % char, name of the newly created/combined event channel. So far in Autorun it is only possible to combine to a single event channel, not multiple ones so enter only one channel name. In the GUI you can combine to multiple event channel.
 
 AutorunConfig.ExtractEventRelatedDataModule.LoadCosutmeTriggerIdentity = '0'; % char, 1 or 0 whether to to load costume trigger identity. If set to 1, widnow will open to ask you for the location of the file containing costume identites.
-%% 4.2 Prepro event related data
+
+%% 4.2 Import Event Trigger
+%______________________________________________________________________________________________________
+AutorunConfig.ExtractEventDataModule.ImportEventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+AutorunConfig.ExtractEventRelatedDataModule.ImportTimeBeforeEvent = '0.3'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
+AutorunConfig.ExtractEventRelatedDataModule.ImportTimeAfterEvent = '0.6'; %Time in seconds extracted after events as char
+AutorunConfig.ExtractEventRelatedDataModule.EventNames = 'Event TTL Nr.1,Event TTL Nr.2'; % Name of the event channel you import. One name for each channel, format: comma separated within char like 'Event TTL Nr.1,Event TTL Nr.2'
+
+%% 4.3 Prepro event related data
 %______________________________________________________________________________________________________
 % Trial/Event Deletion
 AutorunConfig.PreproEventDataModule.TrialRejection = false; % false if you dont want this step to be executed
 AutorunConfig.PreproEventDataModule.TrialsToReject = '1,4'; % char, specify events/trials to be deleted, i.e. '1,10' for trials 1 to 10
-% Channel Deletion and Interpolation
-AutorunConfig.PreproEventDataModule.ChannelRejection = false;
-AutorunConfig.PreproEventDataModule.ChannelToReject = '1,5'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
+% Channel Interpolation
+AutorunConfig.PreproEventDataModule.ChannelInterpolation = false;
+AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1,5'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
 
-%% 4.3 Analyse event related signal
+%% 4.4 Analyse event related signal
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
-AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'DIN-04'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest!
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Event TTL Nr.1'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
 AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
 % ERP Settings
@@ -241,7 +246,7 @@ AutorunConfig.AnalyseEventDataModule.TFChannelSelection = '10'; % char, channel 
 AutorunConfig.AnalyseEventDataModule.TFCycleWidth = '5,9'; % Cycle width as char in format : Lowest Width, Highest Width
 AutorunConfig.AnalyseEventDataModule.TFPlotType = ["TF","ITPC"]; % 'Time Frequency' OR 'Intertrial Phase Clustering'; If just one: format is char!
 AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonPhaseLocked"]; % 'Phase independent' OR 'Phase locked' OR 'Non-phase locked'; If just one: format is char!
-%% 4.4 Analyse event related spikes
+%% 4.5 Analyse event related spikes
 %______________________________________________________________________________________________________
 % Standard Settings
 AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map","Spike Rate Heatmap","Spike Triggered Average"]; %"Spike Map" OR "Spike Rate Heatmap" OR "Spike Triggered Average"
@@ -255,7 +260,7 @@ AutorunConfig.AnalyseEventSpikesModule.BaselineWindow = '-0.2,-0.05'; % Window o
 AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage = '-0.005,0.1';
 
 AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = "Non"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 1!)
-AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot = []; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot = 'All'; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5. Spike Module
@@ -264,7 +269,7 @@ AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot = []; % 'All' will create a f
 %______________________________________________________________________________________________________
 AutorunConfig.InternalSpikeDetection.Detectionmethod = 'Quiroga Method'; % 'Quiroga Method' OR 'Threshold: Mean - Std' OR 'Threshold: Median - Std'
 AutorunConfig.InternalSpikeDetection.Type = 'All Channel Max Values'; % 'All Channel Max Values' OR 'All Channel' OR 'Individual Ch.'
-AutorunConfig.InternalSpikeDetection.STDThreshold = '6'; % Number of standard deviations from mean to set threshold.
+AutorunConfig.InternalSpikeDetection.STDThreshold = '5.5'; % Number of standard deviations from mean to set threshold.
 AutorunConfig.InternalSpikeDetection.Filterspikes = true;
 AutorunConfig.InternalSpikeDetection.FilterSpikeTimeOffset = '3';
 AutorunConfig.InternalSpikeDetection.FilterArtefactDepth = '200';
