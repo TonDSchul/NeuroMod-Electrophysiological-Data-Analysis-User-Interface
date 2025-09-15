@@ -74,11 +74,11 @@ Lastly, NeuroMod fully supports Kilosort, Mountainsort 5 and SpyKING CIRCUS 2 sp
 
 After your extracted/loaded data into Neuromod, you can further save it in four different formats to load into other MATLAB or python toolboxes/codes. First, you can save it in a format compatible to load back into NeuroMod at a later stage with all dataset components in a .dat and separate .mat file. 
 
-Second, continuous channel data and event data can be saved in a .mat file that can be loaded into the NeuralEnsemble Neo python toolbox. This means, you can load the data into any python toolbox using NEO as the data extraction/managing foundation. An example python script to show how to load the NEO compatible .mat file into NEO and plot the data and events can be found here: [Load NEO compatible MATLAB file into NEO] (/NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py) found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py'. 
+Second, continuous channel data and event data can be saved in a .mat file that can be loaded into the NeuralEnsemble Neo python toolbox. This means, you can load the data into any python toolbox using NEO as the data extraction/managing foundation. An example python script to show how to load the NEO compatible .mat file into NEO and plot the data and events can be found here: [Load NEO compatible MATLAB file into NEO](NeuroMod%20Matlab%20Version/Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py) found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Mat_For_Neo_Example.py'. 
 
-The third option allows you to save data in the .nwb format using the MatNWB Matlab interface and can be loaded into any toolbox able to read nwb files. An example python script to show how to load the saved files into using pynwb and plot the data and events can be found here: [Load files saved as .nwb with pynwb] (/NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_NWB_Example.py) found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_NWB_Example.py‘.
+The third option allows you to save data in the .nwb format using the MatNWB Matlab interface and can be loaded into any toolbox able to read nwb files. An example python script to show how to load the saved files into using pynwb and plot the data and events can be found here: [Load files saved as .nwb with pynwb](NeuroMod%20Matlab%20Version/Modules/MISC/docs/Load_Saved_NWB_Example.py) found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_NWB_Example.py‘.
 
-Lastly data can be saved as a .bin file with additional .json files containing probe information and meta data to load into the SpikeInterface python toolbox. This means you can either conduct spike sorting with the newest spike sorting algorythms in SpikeInterface directly or interface all toolboxes working using the SpikeInterface data representation. An example python script to show how to load the saved files into SpikeInterface and plot the data and events can be found here: [Load files saved for SpikeInterface into SpikeInterface] (/NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py) found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py'.
+Lastly data can be saved as a .bin file with additional .json files containing probe information and meta data to load into the SpikeInterface python toolbox. This means you can either conduct spike sorting with the newest spike sorting algorythms in SpikeInterface directly or interface all toolboxes working using the SpikeInterface data representation. An example python script to show how to load the saved files into SpikeInterface and plot the data and events can be found here: [Load files saved for SpikeInterface into SpikeInterface](NeuroMod%20Matlab%20Version/Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py) found at 'NeuroMod Matlab Version/Modules/MISC/docs/Load_Saved_Data_For_SpikeInterface.py'.
 
 **NOTE:** This is different from using the SpikeInterface library within NeuroMod to sort spike data. This can be done without any additional code! The same holds true for extracting some of the recording formats supported by NEO into NeuroMod.
 
@@ -106,9 +106,9 @@ Neuromod_Toolbox_GUI
   
 > ### **Get Started With Example Data**
 
-<img src="NeuroMod Matlab Version/Modules/MISC/Images/LoadDataGIF.gif" width="700" height="500" />
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/Get_Started_Image.jpg" width="1000" height="700" />
 
-In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod Matlab Version/Modules/MISC/docs/NeuroMod_Toolbox_Manual.docx)
+In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod%20Matlab%20Version/Modules/MISC/docs/NeuroMod_Toolbox_Manual.docx)
 
 Download and extract the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording!
 
