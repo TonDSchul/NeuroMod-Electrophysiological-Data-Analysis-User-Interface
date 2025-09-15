@@ -33,9 +33,9 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
   - [How to Install SpikeInterface for Spike Sorting in NeuroMod](#how-to-install-spikeinterface-for-spike-sorting-in-neuromod)
 
-  - [How to Install NeuralEnsemble NEO to extend supported file formats in NeuroMod](#how-to-install-neuralensemble-NEO-to-extend-supported-file-formats-in-NeuroMod)
+  - [How to Install NeuralEnsemble NEO to extend supported file formats in NeuroMod](#how-to-install-neuralensemble-neo-to-extend-supported-file-formats-in-neuromod)
 
-  - [How to Install Phy to Open via NeuroMod](#how-to-install-phy-to-open-via-neuroMod)
+  - [How to Install Phy to Open via NeuroMod](#how-to-install-phy-to-open-via-neuromod)
 
   - [About Performance](#about-performance)
 
@@ -53,7 +53,7 @@ NeuroMod supports data extraction from raw recording data with two different 'li
 
 Besides these shared formats, NeuroMod itself currently supports formats recorded with the Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 software. This includes .dat and .rhd files from the Intan RHX and RHD software, TDT (Tucker Davis Tank format) recordings and .smrx files for Spike2 recordings. Through the use of the NEO library, NeuroMod furthermore offers to extract Plexon (.plx) recordings.
 
-<img src="NeuroMod Matlab Version/Modules/MISC/Images/FormatOverview.jpg" align="right" width="70%" />
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/FormatOverview.jpg" align="right" width="45%" />
 
 **Note:** When you want to load Neuropixels recordings from the Open Ephys GUI with NEO, it does not support having multiple recording folder within the same session, i.e. when acquisition was stopped and started again within the same recording session. To handle and concatenate multiple recordings within the same session, use the MATLAB internal library! Switching the format to save and load back into MATLAB to the custom format.
 
