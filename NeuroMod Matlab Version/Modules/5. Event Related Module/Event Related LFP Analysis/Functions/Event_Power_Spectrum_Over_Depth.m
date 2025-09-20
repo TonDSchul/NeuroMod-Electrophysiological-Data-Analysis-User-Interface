@@ -109,8 +109,8 @@ plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPo
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);
 nC = size(BandPower.allPowerEst,1); 
 
-CurrentPlotData.XData = BandPower.F(dispF)';
-CurrentPlotData.YData = (0:nC-1)*Data.Info.ChannelSpacing;
-CurrentPlotData.CData = 10*log10(BandPower.allPowerEst(:,dispF))';
-CurrentPlotData.Type = "Power Spectrum over Depth";
-CurrentPlotData.XTicks = Figure.XTickLabel';
+CurrentPlotData.EventSpectrumDepthXData = BandPower.F(dispF)';
+CurrentPlotData.EventSpectrumDepthYData = (0:nC-1)*Data.Info.ChannelSpacing;
+CurrentPlotData.EventSpectrumDepthCData = 10*log10(BandPower.allPowerEst(:,dispF))';
+CurrentPlotData.EventSpectrumDepthType = "Event Related Power Spectrum over Depth";
+CurrentPlotData.EventSpectrumDepthXTicks = Figure.XTickLabel';

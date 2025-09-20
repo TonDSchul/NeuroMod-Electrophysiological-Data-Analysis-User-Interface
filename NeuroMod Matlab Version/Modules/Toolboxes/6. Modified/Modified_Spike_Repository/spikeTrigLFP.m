@@ -176,22 +176,45 @@ if Plot
     Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);
 end
 
-CurrentPlotData.MainXData = Time;
-CurrentPlotData.MainYData = ydata;
-CurrentPlotData.MainCData = mnLFP;
-
-if strcmp(AppWidnow,"Continous")
-    if strcmp(Data.Info.SpikeType,"Kilosort")
-        CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Spike Triggered Average");
+if ~strcmp(ClustertoShow,"Non") && ~strcmp(ClustertoShow,"All")
+    CurrentPlotData.MainUnitXData = Time;
+    CurrentPlotData.MainUnitYData = ydata;
+    CurrentPlotData.MainUnitCData = mnLFP;
+    
+    if strcmp(AppWidnow,"Continous")
+        if strcmp(Data.Info.Sorter,"Non")
+            CurrentPlotData.MainUnitType = strcat("Continous Internal Spikes: Spike Triggered Average Unit ",ClustertoShow);
+        else
+            CurrentPlotData.MainUnitType = strcat("Continous ",Data.Info.Sorter," Spikes: Spike Triggered Average Unit ",ClustertoShow);
+        end
     else
-        CurrentPlotData.MainType = strcat("Continous Internal Spikes: Spike Triggered Average");
+        if strcmp(Data.Info.Sorter,"Non")
+            CurrentPlotData.MainUnitType = strcat("Events Internal Spikes: Spike Triggered Average Unit ",ClustertoShow);
+        else
+            CurrentPlotData.MainUnitType = strcat("Events ",Data.Info.Sorter," Spikes: Spike Triggered Average Unit ",ClustertoShow);
+        end
     end
+    
+    CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
+
 else
-    if strcmp(Data.Info.SpikeType,"Kilosort")
-        CurrentPlotData.MainType = strcat("Events Kilosort Spikes: Spike Triggered Average");
+    CurrentPlotData.MainXData = Time;
+    CurrentPlotData.MainYData = ydata;
+    CurrentPlotData.MainCData = mnLFP;
+    
+    if strcmp(AppWidnow,"Continous")
+        if strcmp(Data.Info.Sorter,"Non")
+            CurrentPlotData.MainType = strcat("Continous Internal Spikes: Spike Triggered Average");
+        else
+            CurrentPlotData.MainType = strcat("Continous ",Data.Info.Sorter," Spikes: Spike Triggered Average");
+        end
     else
-        CurrentPlotData.MainType = strcat("Events Internal Spikes: Spike Triggered Average");
+        if strcmp(Data.Info.Sorter,"Non")
+            CurrentPlotData.MainType = strcat("Events Internal Spikes: Spike Triggered Average");
+        else
+            CurrentPlotData.MainType = strcat("Events ",Data.Info.Sorter," Spikes: Spike Triggered Average");
+        end
     end
+    
+    CurrentPlotData.MainXTicks = Figure.XTickLabel;
 end
-
-CurrentPlotData.MainXTicks = Figure.XTickLabel;

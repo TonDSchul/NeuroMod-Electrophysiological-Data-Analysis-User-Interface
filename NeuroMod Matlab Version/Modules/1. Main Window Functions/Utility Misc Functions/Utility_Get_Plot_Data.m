@@ -38,6 +38,8 @@ function PlottedData = Utility_Get_Plot_Data(PlottedData,Data,Format,executableF
 
 %________________________________________________________________________________________
 
+Error = 0;
+
 PlottedData.TimeDuration = TimeRangeLiveWindows;
 PlottedData.Time_Points_Plot = [StartTime,StartTime+TimeRangeLiveWindows];
 PlottedData.Info = Data.Info;
@@ -81,30 +83,7 @@ if strcmp(Format,'.mat')
 elseif strcmp(Format,'.txt') || strcmp(Format,'.csv')
     Error = Utility_Save_Data_as_TXT_CSV(Fullsavefile,PlottedData,AnalysisType);
 elseif strcmp(Format,'.xlsx')
-    Utility_Save_Data_as_xlsx(Fullsavefile,PlottedData,AnalysisType);
-    % try
-    %     Utility_Save_Data_as_xlsx(Fullsavefile,PlottedData,AnalysisType);
-    % catch
-    %     msgbox("File cannot be created probably due to permission issues. Please seelct a different location to save. Try Desktop!")
-    %     msgbox("Please select a folder to save the results in.")
-    % 
-    %     % Prompt user to select a folder
-    %     filetype = strcat('*',Format);
-    %     [filename, filepath] = uiputfile(filetype, 'Save as');
-    % 
-    %     % Check if the user canceled the dialog
-    %     if isequal(filename,0) || isequal(filepath,0)
-    %         disp('User canceled folder selection.');
-    %         return;
-    %     else
-    %         Fullsavefile = fullfile(filepath,filename);
-    %         disp(['Selected folder: ', Fullsavefile]);
-    %     end
-    % 
-    %     Utility_Save_Data_as_xlsx(Fullsavefile,PlottedData,AnalysisType);
-    % 
-    % end
-    Error = 0;
+    Error = Utility_Save_Data_as_xlsx(Fullsavefile,PlottedData,AnalysisType);
 end
 
 if Error == 0

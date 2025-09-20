@@ -17,7 +17,7 @@ function [Data,AutorunConfig] = Execute_Autorun_Manage_Dataset_Module_Functions(
 % integers, empty if non
 % 6. executableFolder: char, folder this instance of the Toolbox is saved in and
 % executed from 
-%7. AutorunConfig.selected_folder: char, Path to currently analyzed folder
+% 7. AutorunConfig.selected_folder: char, Path to currently analyzed folder
 
 % Outputs:
 % 1. Data: main data structure 
@@ -59,6 +59,14 @@ end
 if strcmp(FunctionOrder,'Extract_Raw_Recording')
 
     [Data,SelectedFolder] = Execute_Autorun_Set_Up_Folder(AutorunConfig,Data,nRecordings);
+    
+    if contains(AutorunConfig.ExtractRawRecording.RecordingsSystem,'NEO')
+        if contains(SelectedFolder,'Neo SaveFile')
+            warning("Current folder name contains 'Neo SaveFile' and is identified as a automatically created NEO save folder. Skipping. If this should be a proper recording folder with the native recording files, consider renaming the folder.")
+            SelectedFolder = [];
+            Data = [];
+        end
+    end
 
     if ~isempty(SelectedFolder)
         
@@ -129,8 +137,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
     else
         % If the user hasnt selected a folder yet, display that and
         % return
-        stringtoshow = "Error. No folder selected";
-        msgbox(stringtoshow);
+        disp("Error. No folder selected");
         return;
     end
 end

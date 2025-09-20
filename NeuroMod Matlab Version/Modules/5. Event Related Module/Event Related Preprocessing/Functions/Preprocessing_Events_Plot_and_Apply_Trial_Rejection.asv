@@ -338,11 +338,11 @@ PosThreshHandle = findobj(BottomFigure, 'Tag', 'PosThresh');
 NegThreshHandle = findobj(BottomFigure, 'Tag', 'NegThresh');
 if length(PosThreshHandle)>1
     delete(PosThreshHandle(2:end));
-    PosThreshHandle = findobj(BottomFigure, 'Tag', 'PosThresh');
+    PosThreshHandle = findobj(BottomFigure, 'Tag', 'Thresh');
 end
 if length(NegThreshHandle)>1
     delete(NegThreshHandle(2:end));
-    NegThreshHandle = findobj(BottomFigure, 'Tag', 'NegThresh');
+    NegThreshHandle = findobj(BottomFigure, 'Tag', 'Thresh');
 end
 if ThresholdSign(1)==0
     delete(PosThreshHandle);
@@ -354,25 +354,44 @@ end
 % plot threshold
 if PlotThreshold == 1 
     %ThreshHandle = [NaN NaN];
-    if ThresholdSign(1)==1
-        if isempty(PosThreshHandle)
+    if isempty(PosThreshHandle)
+        if ThresholdSign(1)==1
             threshline(1) = line(BottomFigure,[Time(1),Time(end)],[Threshold,Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','PosThresh');
-        else
-            set(PosThreshHandle, 'XData', [Time(1),Time(end)], 'YData',[Threshold,Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','PosThresh');
-            threshline(1) = PosThreshHandle;
         end
+    else
+
     end
     
-    if ThresholdSign(2)==1
-        if isempty(NegThreshHandle)
+        if ThresholdSign(2)==1
             threshline(2) = line(BottomFigure,[Time(1),Time(end)],[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','NegThresh');
-        else
-            set(NegThreshHandle, 'XData', [Time(1),Time(end)], 'YData',[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','NegThresh');
-            threshline(1) = NegThreshHandle;
         end
-    end
-end
+    else
 
+
+
+        if ThresholdSign(1)==1 && ThresholdSign(2)==1 % positive and negative threshold sign
+            set(ThreshHandle(1), 'XData', [Time(1),Time(end)], 'YData',[Threshold,Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+            if isscalar(ThreshHandle)
+                line(BottomFigure,[Time(1),Time(end)],[Threshold,Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+            else
+                set(ThreshHandle(1), 'XData', [Time(1),Time(end)], 'YData',[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+            end
+        elseif ThresholdSign(1)==1 && ThresholdSign(2)==0 % positive threshold sign
+            if length(ThreshHandle)>2
+                delete(ThreshHandle(2));
+            end
+            set(ThreshHandle(1), 'XData', [Time(1),Time(end)], 'YData',[Threshold,Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+        elseif ThresholdSign(1)==0 && ThresholdSign(2)==1 % negative threshold sign
+            if length(ThreshHandle)>2
+                delete(ThreshHandle(2));
+            end
+            set(ThreshHandle(1), 'XData', [Time(1),Time(end)], 'YData',[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','Thresh');
+        end
+
+        threshline = ThreshHandle;
+    end
+    
+end
 % plot events
 if isempty(EventHandle)
     eventline = line(BottomFigure,[0,0],[min(EventRelatedData,[],'all') max(EventRelatedData,[],'all')],'Color','k','LineStyle','--','LineWidth',2,'Tag','Eventline');

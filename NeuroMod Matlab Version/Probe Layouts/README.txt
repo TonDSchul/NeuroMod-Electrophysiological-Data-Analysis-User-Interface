@@ -1,5 +1,5 @@
 ______________________________________________
-NeuroMod Toolbox; ChannelMaps Folder README
+NeuroMod Toolbox; Probe Layouts Folder README
 Author: Tony de Schultz
 ______________________________________________
 

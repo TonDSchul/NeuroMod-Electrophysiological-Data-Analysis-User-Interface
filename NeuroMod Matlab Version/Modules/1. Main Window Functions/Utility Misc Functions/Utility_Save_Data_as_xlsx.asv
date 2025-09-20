@@ -322,7 +322,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         XData = PlottedData.ERPoverChannelXData;
         YData = NaN(size(XData));
         XTick = PlottedData.ERPoverChannelXTicks;
-        CData = PlottedData.ERPoverChannelYData';
+        CData = YData';
         % No CData
         
     elseif contains(Analysis,"Current")
@@ -330,28 +330,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         XData = PlottedData.CSDXData;
         YData = PlottedData.CSDYData;
         XTick = PlottedData.CSDXTicks;
-        CData = PlottedData.CSDCData';
-
-    elseif contains(Analysis,"Static Spectrum")
-        if contains(Analysis,"Depth")
-            TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.EventSpectrumDepthType) ' *****'];
-            XData = PlottedData.EventSpectrumDepthXData;
-            YData = PlottedData.EventSpectrumDepthYData;
-            XTick = PlottedData.EventSpectrumDepthXTicks;
-            CData = PlottedData.EventSpectrumDepthCData;
-        else
-            TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.EventSpectrumType) ' *****'];
-            XData = PlottedData.EventSpectrumXData;
-            YData = PlottedData.EventSpectrumYData;
-            XTick = PlottedData.EventSpectrumXTicks;
-            CData = [];
-        end
-    elseif contains(Analysis,"Time Frequency Power")
-        TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.TFPowerType) ' *****'];
-        XData = PlottedData.TFPowerXData;
-        YData = PlottedData.TFPowerYData;
-        XTick = PlottedData.TFPowerXTicks;
-        CData = PlottedData.TFPowerCData';
+        CData = PlottedData.CSDCData;
     end
 
     %% Write TextInfos to Excel (starting at row 1, column A)
@@ -404,9 +383,6 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         if contains(Analysis,"Potential") && contains(Analysis,"Events") 
             writecell({"***** Time x Trials Matrix *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
         elseif contains(Analysis,"Potential") && contains(Analysis,"Channel")
-            writecell({"***** Time x Channel Matrix *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
-        elseif contains(Analysis,"Time Frequency Power")
-            writecell({"***** Time x Frequency Matrix *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
         else
             if size(PlottedData.CData,1)>size(PlottedData.CData,2)
                 writecell({"***** C_Data (Channel x Time)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
@@ -417,52 +393,52 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
     end
 end
 
-% if contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
-% 
-%     TextInfos{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
-%     TextInfos{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
-%     TextInfos{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
-% 
-%     TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.TFPowerType) ' *****'];
-%     XData = PlottedData.TFPowerXData;
-%     YData = PlottedData.TFPowerYData;
-%     XTick = PlottedData.TFPowerXTicks;
-%     CData = PlottedData.TFPowerCData;
-% 
-%     %% Write TextInfos to Excel (starting at row 1, column A)
-%     writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'E1');
-% 
-%     %% --- First write X/Y/XTick table (as before) ---
-%     maxLen = max([length(XData), length(YData), length(XTick)]);
-%     if length(XData) < maxLen, XData(end+1:maxLen) = NaN; end
-%     if length(YData) < maxLen, YData(end+1:maxLen) = NaN; end
-%     if length(XTick) < maxLen, XTick(end+1:maxLen) = {''}; end
-%     if size(XTick,1)>size(XTick,2)
-%         XTick = XTick';
-%     end
-% 
-%     T = table(XData', YData', XTick', 'VariableNames', {'X_Data','Y_Data','X_Tick'});
-% 
-%     % Write table to Excel
-%     tableStartRow = length(TextInfos) + 2;  % leave 1 empty row below TextInfos
-%     writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
-% 
-%     %% --- Combine with existing table if CData exists ---
-%     if ~isempty(CData)
-%         % Add a header
-%         try
-%             writematrix(PlottedData.CData, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
-%         catch
-%             writematrix(PlottedData.CData', Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
-%         end
-% 
-%         if size(PlottedData.CData,1)>size(PlottedData.CData,2)
-%             writecell({"***** C_Data (Channel x Time)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
-%         else
-%             writecell({"***** C_Data (Time x Channel)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
-%         end
-% 
-%     end
-% end
+if contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
+
+    TextInfos{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
+    TextInfos{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
+    TextInfos{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
+
+    TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.TFPowerType) ' *****'];
+    XData = PlottedData.TFPowerXData;
+    YData = PlottedData.TFPowerYData;
+    XTick = PlottedData.TFPowerXTicks;
+    CData = PlottedData.TFPowerCData;
+
+    %% Write TextInfos to Excel (starting at row 1, column A)
+    writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'E1');
+    
+    %% --- First write X/Y/XTick table (as before) ---
+    maxLen = max([length(XData), length(YData), length(XTick)]);
+    if length(XData) < maxLen, XData(end+1:maxLen) = NaN; end
+    if length(YData) < maxLen, YData(end+1:maxLen) = NaN; end
+    if length(XTick) < maxLen, XTick(end+1:maxLen) = {''}; end
+    if size(XTick,1)>size(XTick,2)
+        XTick = XTick';
+    end
+    
+    T = table(XData', YData', XTick', 'VariableNames', {'X_Data','Y_Data','X_Tick'});
+    
+    % Write table to Excel
+    tableStartRow = length(TextInfos) + 2;  % leave 1 empty row below TextInfos
+    writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+    
+    %% --- Combine with existing table if CData exists ---
+    if ~isempty(CData)
+        % Add a header
+        try
+            writematrix(PlottedData.CData, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
+        catch
+            writematrix(PlottedData.CData', Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
+        end
+
+        if size(PlottedData.CData,1)>size(PlottedData.CData,2)
+            writecell({"***** C_Data (Channel x Time)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+        else
+            writecell({"***** C_Data (Time x Channel)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+        end
+
+    end
+end
 
 

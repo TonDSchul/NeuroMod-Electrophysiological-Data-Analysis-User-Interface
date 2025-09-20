@@ -112,12 +112,24 @@ if max(WaveformsInCluster,[],'all') ~= min(WaveformsInCluster,[],'all')
     ylim(Figure,[min(WaveformsInCluster,[],'all'),max(WaveformsInCluster,[],'all')])
 end
 
-CurrentPlotData.MainXData = Time;
-CurrentPlotData.MainYData = WaveformsInCluster;
-CurrentPlotData.MainCData = [];
-if strcmp(Data.Info.SpikeType,"Kilosort")
-    CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Individual Spike Waveforms");
+if ~strcmp(ClusterSelection,"Non") && ~strcmp(ClusterSelection,"All")
+    CurrentPlotData.MainUnitXData = Time;
+    CurrentPlotData.MainUnitYData = WaveformsInCluster;
+    CurrentPlotData.MainUnitCData = [];
+    if strcmp(Data.Info.Sorter,"Non")
+        CurrentPlotData.MainUnitType = strcat("Continuous Internal Spikes: Individual Spike Waveforms Unit ",ClusterSelection);
+    else
+        CurrentPlotData.MainUnitType = strcat("Continuous ",Data.Info.Sorter," Spikes: Individual Spike Waveforms Unit ",ClusterSelection);
+    end
+    CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
 else
-    CurrentPlotData.MainType = strcat("Continous Internal Spikes: Individual Spike Waveforms");
+    CurrentPlotData.MainXData = Time;
+    CurrentPlotData.MainYData = WaveformsInCluster;
+    CurrentPlotData.MainCData = [];
+    if strcmp(Data.Info.Sorter,"Non")
+        CurrentPlotData.MainType = strcat("Continuous Internal Spikes: Individual Spike Waveforms");
+    else
+        CurrentPlotData.MainType = strcat("Continuous ",Data.Info.Sorter," Spikes: Individual Spike Waveforms");
+    end
+    CurrentPlotData.MainXTicks = Figure.XTickLabel;
 end
-CurrentPlotData.MainXTicks = Figure.XTickLabel;

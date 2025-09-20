@@ -145,12 +145,24 @@ Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);
 
 %% save plotted data in case user wants to save 
 
-CurrentPlotData.MainXData = Time;
-CurrentPlotData.MainYData = ydata;
-CurrentPlotData.MainCData = squeeze(MeanWaveform);
-if strcmp(Data.Info.SpikeType,"Kilosort")
-    CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Average Waveform");
+if ~isempty(UnitstoPlot) && ~isnan(UnitstoPlot) % units
+    CurrentPlotData.MainUnitXData = Time;
+    CurrentPlotData.MainUnitYData = ydata;
+    CurrentPlotData.MainUnitCData = squeeze(MeanWaveform);
+    if strcmp(Data.Info.Sorter,"Non")
+        CurrentPlotData.MainUnitType = strcat("Continuous Internal Spikes: Average Waveform Unit ",num2str(UnitstoPlot));
+    else
+        CurrentPlotData.MainUnitType = strcat("Continuous ",Data.Info.Sorter," Spikes: Average Waveform Unit ",num2str(UnitstoPlot));
+    end
+    CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
 else
-    CurrentPlotData.MainType = strcat("Continous Internal Spikes: Average Waveform");
+    CurrentPlotData.MainXData = Time;
+    CurrentPlotData.MainYData = ydata;
+    CurrentPlotData.MainCData = squeeze(MeanWaveform);
+    if strcmp(Data.Info.Sorter,"Non")
+        CurrentPlotData.MainType = strcat("Continuous Internal Spikes: Average Waveform");
+    else
+        CurrentPlotData.MainType = strcat("Continuous ",Data.Info.Sorter," Spikes: Average Waveform");
+    end
+    CurrentPlotData.MainXTicks = Figure.XTickLabel;
 end
-CurrentPlotData.MainXTicks = Figure.XTickLabel;

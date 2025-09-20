@@ -138,9 +138,8 @@ drawnow;
 hold(Figure, 'off' );
 
 %% save plotted data in case user wants to save 
-CurrentPlotData.XData = Freq(DispIndicies)';
-CurrentPlotData.YData = 10*log10(Welchpowspect(DispIndicies))';
-CurrentPlotData.CData = [];
-CurrentPlotData.Type = "Static P-Welch Spectrum";
-CurrentPlotData.XTicks = Figure.XTickLabel;
+CurrentPlotData.EventSpectrumXData = Freq(DispIndicies)';
+CurrentPlotData.EventSpectrumYData = 10*log10(Welchpowspect(DispIndicies))';
+CurrentPlotData.EventSpectrumType = strcat("Event Related Static P-Welch Spectrum Single Channel ",num2str(SelectedChannel));
+CurrentPlotData.EventSpectrumXTicks = Figure.XTickLabel;
 

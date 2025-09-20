@@ -201,19 +201,28 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
     
-    
     %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
-   
-    depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
-    ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
-    CurrentPlotData.MainXData = ampX;
-    CurrentPlotData.MainYData = depthX;
-    CurrentPlotData.MainCData = pdfs;
-    CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Spike Amplitude Density Along Depth");
-    CurrentPlotData.MainXTicks = Figure.XTickLabel;
+    
+    if ~strcmp(ClusterToShow,"Non") && ~strcmp(ClusterToShow,"All") % units
+        depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
+        ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
+        CurrentPlotData.MainUnitXData = ampX;
+        CurrentPlotData.MainUnitYData = depthX;
+        CurrentPlotData.MainUnitCData = pdfs;
+        CurrentPlotData.MainUnitType = strcat("Continuous Spikes: Spike Amplitude Density Along Depth Unit ",ClusterToShow);
+        CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
+    else
+        depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
+        ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
+        CurrentPlotData.MainXData = ampX;
+        CurrentPlotData.MainYData = depthX;
+        CurrentPlotData.MainCData = pdfs;
+        CurrentPlotData.MainType = strcat("Continuous Spikes: Spike Amplitude Density Along Depth");
+        CurrentPlotData.MainXTicks = Figure.XTickLabel;
+    end
 end
 
 if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
@@ -249,14 +258,24 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
-                    
-    depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
-    ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
-    CurrentPlotData.MainXData = ampX;
-    CurrentPlotData.MainYData = depthX;
-    CurrentPlotData.MainCData = cdfs;
-    CurrentPlotData.MainType = strcat("Continous Kilosort Spikes: Cumulative Spike Amplitude Density Along Depth");
-    CurrentPlotData.MainXTicks = Figure.XTickLabel;
+    
+    if ~strcmp(ClusterToShow,"Non") && ~strcmp(ClusterToShow,"All") % units
+        depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
+        ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
+        CurrentPlotData.MainUnitXData = ampX;
+        CurrentPlotData.MainUnitYData = depthX;
+        CurrentPlotData.MainUnitCData = pdfs;
+        CurrentPlotData.MainUnitType = strcat("Continuous Spikes: Cumulative Spike Amplitude Density Along Depth Unit ",ClusterToShow);
+        CurrentPlotData.MainUnitXTicks = Figure.XTickLabel;
+    else
+        depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
+        ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
+        CurrentPlotData.MainXData = ampX;
+        CurrentPlotData.MainYData = depthX;
+        CurrentPlotData.MainCData = cdfs;
+        CurrentPlotData.MainType = strcat("Continuous Spikes: Cumulative Spike Amplitude Density Along Depth");
+        CurrentPlotData.MainXTicks = Figure.XTickLabel;
+    end
 end
 
 if strcmp(TypeofAnalysis,"Template from Max Amplitude Channel")
