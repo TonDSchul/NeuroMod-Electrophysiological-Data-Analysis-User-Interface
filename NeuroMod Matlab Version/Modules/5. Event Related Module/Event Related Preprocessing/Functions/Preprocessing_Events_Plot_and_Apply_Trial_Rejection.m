@@ -213,9 +213,9 @@ hold(TopFigure, 'on' )
 cla(TopFigure);
 TopFigure.NextPlot = "replace";
 if size(EventRelatedData,2)>1
-    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,:,:)),1),squeeze(EventRelatedData(ChannelSelection,:,:)))
+    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,:,:)),1),squeeze(EventRelatedData(ChannelSelection,:,:)),'Tag','TrialsImageSC')
 else % just one trial
-    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,:,:))',1),squeeze(EventRelatedData(ChannelSelection,:,:))')
+    imagesc(TopFigure,Time ,1:size(squeeze(EventRelatedData(ChannelSelection,:,:))',1),squeeze(EventRelatedData(ChannelSelection,:,:))','Tag','TrialsImageSC')
 end
 set(TopFigure,'YDir','normal');
 titlestring = strcat("Broadband Plot Channel ",OriginalChannelSelection);

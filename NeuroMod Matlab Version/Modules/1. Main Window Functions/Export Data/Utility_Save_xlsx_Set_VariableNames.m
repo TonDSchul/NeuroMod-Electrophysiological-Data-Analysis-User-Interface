@@ -27,8 +27,8 @@ elseif contains(Analysis,"Average Waveforms")
     T = table(XData', YData', XTick', 'VariableNames', {'Time (s)','Depth (um)','Time Labels (s)'});
 elseif contains(Analysis,"Spike Waveforms") && ~contains(Analysis,"Average")
     T = table(XData', YData', XTick', 'VariableNames', {'Time (s)','-','Time Labels (s)'});
-elseif contains(Analysis,"Spike Times Spike Triggered LFP")
-    T = table(XData', YData', XTick', 'VariableNames', {'X_Data','Y_Data','X_Tick'});
+elseif contains(Analysis,"Spike Triggered")
+    T = table(XData', YData', XTick', 'VariableNames', {'Time (ms)','Depth (um)','Time Labels (ms)'});
 %% Live Plot Analysis
 elseif strcmp(Analysis,"Live_Spectral_Power_Estimate_Main_Window")
     T = table(XData', YData', XTick', 'VariableNames', {'Bar Index','Power/Frequency (dB/Hz)','Frequency Band Labels'});
@@ -65,6 +65,18 @@ elseif contains(Analysis,"Event Related Static Spectrum") && contains(Analysis,"
 elseif contains(Analysis,"Time Frequency Power") 
     T = table(XData', YData', XTick', 'VariableNames', {'Time (s)','Frequency (Hzs)','Time Labels (s)'});
 
+%% Event Related Spike Analyis
+elseif strcmp(Analysis,"Heatmap")
+    T = table(XData', YData', XTick', 'VariableNames', {'Time (s)','Depth (um)','Time Labels (s)'});
+
+%% Unit alaysis
+elseif contains(Analysis,"Waveform Analysis") && contains(Analysis,"Plot")
+    T = table(XData', YData', XTick', 'VariableNames', {'Time (ms)','-','Time Labels (ms)'});
+elseif contains(Analysis,"ISI") && contains(Analysis,"Plot")
+    T = table(XData', YData', XTick', 'VariableNames', {'Time Bins','ISI (s)','Time Labels (s)'});
+elseif contains(Analysis,"Auto") && contains(Analysis,"Plot")
+    T = table(XData', YData', XTick', 'VariableNames', {'Time Lag (ms)','Spike Count','Time Lag Labels (ms)'});
+%% anything else
 else
     T = table(XData', YData', XTick', 'VariableNames', {'X_Data','Y_Data','X_Tick'});
 end

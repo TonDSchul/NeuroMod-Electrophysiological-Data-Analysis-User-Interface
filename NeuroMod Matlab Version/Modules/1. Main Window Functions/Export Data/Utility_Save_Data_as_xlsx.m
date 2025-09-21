@@ -38,6 +38,23 @@ end
 
 TextInfos = {};
 
+%% Delete Info files too big to reasonably show
+if isfield(PlottedData.Info,'Channelorder')
+    fieldsToDelete = {'Channelorder'};
+    % Delete fields
+    PlottedData.Info = rmfield(PlottedData.Info, fieldsToDelete);
+end
+if isfield(PlottedData.Info,'EventRelatedActiveChannel')
+    fieldsToDelete = {'EventRelatedActiveChannel'};
+    % Delete fields
+    PlottedData.Info = rmfield(PlottedData.Info, fieldsToDelete);
+end
+if isfield(PlottedData.Info,'EventRelatedTime')
+    fieldsToDelete = {'EventRelatedTime'};
+    % Delete fields
+    PlottedData.Info = rmfield(PlottedData.Info, fieldsToDelete);
+end
+
 %% First For spike analyis (Continous and events); Otherwise unit analysis window
 if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contains(Analysis,"Current") && ~contains(Analysis,"Phase") && ~contains(Analysis,"Instantaneous")
 
@@ -104,14 +121,18 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
             XData = PlottedData.MainRateChannelXData;
             YData = PlottedData.MainRateChannelYData;
             XTick = PlottedData.MainRateChannelXTicks;
-        elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && ~contains(Analysis,"Channel")
+        elseif contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit") && ~contains(Analysis,"Channel") && ~contains(Analysis,"Heatmap")
             XData = PlottedData.MainRateTimeXData;
             YData = PlottedData.MainRateTimeYData;
             XTick = PlottedData.MainRateTimeXTicks;
+        elseif contains(Analysis,"Heatmap")
+            XData = PlottedData.MainXData;
+            YData = PlottedData.MainYData;
+            XTick = PlottedData.MainXTicks;
         elseif contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate")
-                XData = PlottedData.MainUnitXData;
-                YData = PlottedData.MainUnitYData;
-                XTick = PlottedData.MainUnitXTicks;
+            XData = PlottedData.MainUnitXData;
+            YData = PlottedData.MainUnitYData;
+            XTick = PlottedData.MainUnitXTicks;
         elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live")
             if contains(Analysis,"Waveforms") && ~contains(Analysis,"Average")
                 XData = PlottedData.MainXData;
@@ -157,9 +178,9 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
     elseif contains(Analysis,"Spike") || contains(Analysis,"Spikes")  % MainXData = Main Spike analysis Plots without unit information
         if contains(Analysis,"Spike Rate") && contains(Analysis,"Unit") %% No Cdata for spike rate
         
-        elseif contains(Analysis,"Spike Triggered LFP") && ~contains(Analysis,"Unit")
+        elseif contains(Analysis,"Spike Triggered") && ~contains(Analysis,"Unit")
             CData = PlottedData.MainCData;
-        elseif contains(Analysis,"Spike Triggered LFP") && contains(Analysis,"Unit")
+        elseif contains(Analysis,"Spike Triggered") && contains(Analysis,"Unit")
             CData = PlottedData.MainUnitCData;
         elseif contains(Analysis,"Amplitude Density Along Depth") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Unit")
             CData = PlottedData.MainCData;
@@ -179,7 +200,7 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
             end
         elseif ~contains(Analysis,"Unit") && ~contains(Analysis,"Spike Rate") && ~contains(Analysis,"Live") && ~contains(Analysis,"Spike Times") || contains(Analysis,"Heatmap")
             if ~isempty(PlottedData.MainCData)
-                CData = PlottedData.MainCData;
+                CData = PlottedData.MainCData';
             end
         end
     end
@@ -211,6 +232,8 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
         
         if contains(Analysis,"Waveforms") && ~contains(Analysis,"Average")
             writecell({"***** Waveform Data (Waveforms x Time)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+        elseif contains(Analysis,"Heatmap")
+            writecell({"***** Heatmap data (Time x Channel)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
         elseif contains(Analysis,"Spike Triggered LFP")
             writecell({"***** Spike Triggered LFP (Depth x Time)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
         elseif contains(Analysis,"Waveforms") && contains(Analysis,"Average")
@@ -228,14 +251,15 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
         
 end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% If spike analyis (Continous and events); 
 
-
+TextInfosStart = {};
 %% -------------------- Unit Analysis -------------------- 
 if contains(Analysis,"Plot")
-    TextInfos{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
-    TextInfos{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
-    TextInfos{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
+    TextInfosStart{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
+    TextInfosStart{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
+    TextInfosStart{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
     
     CData = [];
+    TotalLengthSoFarlength = 0;
 
     for nrunit = 1:size(PlottedData.UnitAnalyisWaveformsType,2)
         AnalyisText = convertStringsToChars(Analysis);
@@ -246,6 +270,8 @@ if contains(Analysis,"Plot")
             XData = PlottedData.UnitAnalyisWaveformsXData{SelectedPlot,nrunit};
             YData = PlottedData.UnitAnalyisWaveformsYData{SelectedPlot,nrunit};
             XTick = PlottedData.UnitAnalyisWaveformsXTicks{SelectedPlot,nrunit};
+            CData = YData';
+            YData = [];
             % No CData
             
         elseif contains(Analysis,"ISI Analyis")
@@ -263,13 +289,43 @@ if contains(Analysis,"Plot")
             % No CData
             
         end
-
-        % You can store TextInfo if you want to write later
-        TextInfos{end+1} = TextInfo;
-
-        %% Write TextInfos to Excel (starting at row 1, column A)
-        writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'E1');
         
+        % You can store TextInfo if you want to write later
+        TextInfosStart{end+1} = TextInfo;
+
+        % Only do once
+        if nrunit == 1
+
+            %% Write Info
+            % Example: Convert structure fields into "field: value" text
+            fn = fieldnames(PlottedData.Info);
+            TextInfos = {};
+            for k = 1:numel(fn)
+                val = PlottedData.Info.(fn{k});
+                if isnumeric(val)
+                    valStr = num2str(val);
+                elseif isstring(val) || ischar(val)
+                    valStr = char(val);
+                else
+                    valStr = '<non-displayable>';
+                end
+                TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+            end
+            
+            % Write to Excel (column E, starting at row 1)
+            writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', 'F1');
+        end
+        
+        if nrunit == 1
+            TotalLengthSoFarlength = TotalLengthSoFarlength+length(TextInfos)+1;
+            %% Write TextInfos to Excel (starting at row 1, column A)
+            writecell(TextInfosStart', Fullsavefile, 'Sheet', 1, 'Range', 'A1');
+        else
+            TotalLengthSoFarlength = TotalLengthSoFarlength+length(XData)+1;
+            %% Write TextInfos to Excel (starting at row 1, column A)
+            writecell(TextInfosStart', Fullsavefile, 'Sheet', 1, 'Range', strcat('A',num2str(TotalLengthSoFarlength)));
+        end
+
         %% --- First write X/Y/XTick table (as before) ---
         maxLen = max([length(XData), length(YData), length(XTick)]);
         if length(XData) < maxLen, XData(end+1:maxLen) = NaN; end
@@ -279,22 +335,26 @@ if contains(Analysis,"Plot")
             XTick = XTick';
         end
         
-        T = table(XData', YData', XTick', 'VariableNames', {'X_Data','Y_Data','X_Tick'});
-        
+        T = Utility_Save_xlsx_Set_VariableNames(PlottedData,Analysis,XData,YData,XTick);
+
         % Write table to Excel
         tableStartRow = length(TextInfos) + 2;  % leave 1 empty row below TextInfos
-        writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+        writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(TotalLengthSoFarlength)]);
         
         %% --- Combine with existing table if CData exists ---
         if ~isempty(CData)
           
             % Add a header
-            writecell({"***** C_Data *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+            if contains(Analysis,"Waveform Analysis")
+                writecell({"***** Time x Waveforms *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(TotalLengthSoFarlength)]);
+            else
+                writecell({"***** C_Data *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(TotalLengthSoFarlength)]);
+            end
         
             try
-                writematrix(PlottedData.CData, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
+                writematrix(CData, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(TotalLengthSoFarlength+1)]);
             catch
-                writematrix(PlottedData.CData', Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
+                writematrix(CData', Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(TotalLengthSoFarlength+1)]);
             end
         end
 
@@ -353,7 +413,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         XTick = PlottedData.TFPowerXTicks;
         CData = PlottedData.TFPowerCData';
     end
-
+    
     %% Write TextInfos to Excel (starting at row 1, column A)
     writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'A1');
     

@@ -2,7 +2,24 @@ function Error = Utility_Check_Saved_Spike_PlotData(PlottedData,Analysis)
 
 Error = 0;
 
-%%------------------------------------------------------- Spike Triggered Averafe -------------------------------------------------------
+%%------------------------------------------------------- Event Related Spike Rate Heatmap -------------------------------------------------------
+%% Non-Unit!
+if contains(Analysis,'Heatmap') && ~contains(Analysis,'Unit') 
+    if ~contains(PlottedData.MainType,'Heatmap')
+        msgbox("Please first plot heatmap for all spikes (no unit selection) before exporting results of all spikes.")
+        Error = 1;
+        return
+    end
+end
+%% Unit!
+if contains(Analysis,'Heatmap') && contains(Analysis,'Unit') 
+    Error = 1;
+    
+    warning("Export unit analysis for heatmap just exports the whole heatmap since unit information is just overlayed. To export unit information use the spike map.")
+    return
+end
+
+%%------------------------------------------------------- Spike Triggered Average -------------------------------------------------------
 %% Non-Unit!
 if contains(Analysis,'Spike Triggered') && ~contains(Analysis,'Unit') 
     if ~contains(PlottedData.MainType,'Spike Triggered')
@@ -36,7 +53,7 @@ if contains(Analysis,'Waveform') && ~contains(Analysis,'Average') && ~contains(A
     end
 end
 %% Unit!
-if contains(Analysis,'Waveform') && ~contains(Analysis,'Average') && contains(Analysis,'Unit') 
+if contains(Analysis,'Waveform') && ~contains(Analysis,'Average') && contains(Analysis,'Unit') && ~contains(Analysis,'Plot') 
     try
         if ~contains(PlottedData.MainType,'Individual Spike Waveforms')
             msgbox("Please first plot individual spike waveforms for a unit before exporting results of a unit.")

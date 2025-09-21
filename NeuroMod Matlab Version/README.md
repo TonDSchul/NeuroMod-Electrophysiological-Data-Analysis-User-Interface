@@ -4,7 +4,7 @@
 
 <img src="Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
 
-** Warning: Currently only Matlab Versions 2023a or newer are supported **
+** Warning: If you want to use NeuroMod with a valid MATLAB license, it will only work with Matlab Versions 2023a or newer **
 
 If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder structure, 'cd' into the directory within Matlab and launch the NeuroMod_Toolbox_GUI.mlapp file. Then you have several options to launch the GUI:
   1. Double-click the 'NeuroMod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.

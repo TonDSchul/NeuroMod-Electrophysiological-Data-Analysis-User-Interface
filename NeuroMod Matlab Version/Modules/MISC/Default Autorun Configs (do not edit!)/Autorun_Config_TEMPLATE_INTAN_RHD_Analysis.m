@@ -215,12 +215,13 @@ AutorunConfig.ExtractEventRelatedDataModule.EventNames = 'Event TTL Nr.1,Event T
 
 %% 4.3 Prepro event related data
 %______________________________________________________________________________________________________
+AutorunConfig.PreproEventDataModule.EventChannelSelection = 'DIN-04'; % Event Channel for which you want to apply preprocessing
 % Trial/Event Deletion
 AutorunConfig.PreproEventDataModule.TrialRejection = false; % false if you dont want this step to be executed
-AutorunConfig.PreproEventDataModule.TrialsToReject = '1,4'; % char, specify events/trials to be deleted, i.e. '1,10' for trials 1 to 10
+AutorunConfig.PreproEventDataModule.TrialsToReject = '1:48'; % Matlab expression as char, specify events/trials to be deleted, i.e. '1:49' for trigger 1 to 49
 % Channel Interpolation
 AutorunConfig.PreproEventDataModule.ChannelInterpolation = false;
-AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1,5'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
+AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expression as charwith two channel i.e. '1:10' for channel 1 to 10 or 1,1 for just channel 1
 
 %% 4.4 Analyse event related signal
 %______________________________________________________________________________________________________

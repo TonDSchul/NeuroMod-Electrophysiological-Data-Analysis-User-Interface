@@ -35,7 +35,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Open_in_Phy'
 
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","PreproEventDataModule","Event_Analysis_ERP"];
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
@@ -196,7 +196,7 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'DIN Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; 
 AutorunConfig.ExtractEventDataModule.TriggerType = 'Rising Edge'; % char, Either 'Rising Edge' or 'Falling Edge' to determine whether rising or falling edge should be detected
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
-AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.02'; % Threshold of event signal at which events are extracted as char
+AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % Threshold of event signal at which events are extracted as char
 % Event Related Data
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.3'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.6'; %Time in seconds extracted after events as char
@@ -215,18 +215,19 @@ AutorunConfig.ExtractEventRelatedDataModule.EventNames = 'Event TTL Nr.1,Event T
 
 %% 4.3 Prepro event related data
 %______________________________________________________________________________________________________
+AutorunConfig.PreproEventDataModule.EventChannelSelection = 'DIN-04'; % Event Channel for which you want to apply preprocessing
 % Trial/Event Deletion
 AutorunConfig.PreproEventDataModule.TrialRejection = false; % false if you dont want this step to be executed
-AutorunConfig.PreproEventDataModule.TrialsToReject = '1,4'; % char, specify events/trials to be deleted, i.e. '1,10' for trials 1 to 10
+AutorunConfig.PreproEventDataModule.TrialsToReject = '1:48'; % Matlab expression as char, specify events/trials to be deleted, i.e. '1:49' for trigger 1 to 49
 % Channel Interpolation
 AutorunConfig.PreproEventDataModule.ChannelInterpolation = false;
-AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1,5'; % char with two channel i.e. '1,10' for channel 1 to 10 or 1,1 for just channel 1
+AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expression as charwith two channel i.e. '1:10' for channel 1 to 10 or 1,1 for just channel 1
 
 %% 4.4 Analyse event related signal
 %______________________________________________________________________________________________________
-AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
+AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Preprocessed Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
-AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Event TTL Nr.1'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'DIN-04'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
 AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
 % ERP Settings

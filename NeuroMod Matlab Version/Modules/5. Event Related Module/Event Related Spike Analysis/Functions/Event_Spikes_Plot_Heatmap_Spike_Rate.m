@@ -1,4 +1,4 @@
-function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(SpikeTimes,SpikePositions,Figure,SR,time_bin_size,depth_edges,time_edges,nevents,eventtime,Normalize,NormWindow,Clustertoshow,ClusterIdentity,rgbMatrix,ChannelsToPlot,ChannelSpacing,appWindow,TwoORThreeD,CurrentPlotData,PlotAppearance)
+function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(Data,SpikeTimes,SpikePositions,Figure,SR,time_bin_size,depth_edges,time_edges,nevents,eventtime,Normalize,NormWindow,Clustertoshow,ClusterIdentity,rgbMatrix,ChannelsToPlot,ChannelSpacing,appWindow,TwoORThreeD,CurrentPlotData,PlotAppearance)
 
 %________________________________________________________________________________________
 
@@ -11,6 +11,7 @@ function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(SpikeTimes,Spike
 % for event spike analysis (Internal and Kilosort)
 
 % Input:
+% 1. Data: Main window data structure with all relevant data components
 % 1. SpikeTimes: nspikes x 1 double in seconds. Spike time before event is
 % negativ
 % 2. SpikePositions: nspikes x 1 double with spike positions (in um) - for
@@ -250,11 +251,12 @@ xlabel(Figure,"Time [ms]")
 CurrentPlotData.MainXData = time_edges(1:end-1);
 CurrentPlotData.MainYData = DepthToPlot;
 CurrentPlotData.MainCData = spike_rates;
+CurrentPlotData.MainCData = CurrentPlotData.MainCData';
 
-if strcmp(appWindow,"Kilosort")
-    CurrentPlotData.MainType = strcat("Event Kilosort Heatmap Spike Rates");
+if strcmp(Data.Info.Sorter,"Non")
+    CurrentPlotData.MainType = strcat("Event Internal Heatmap Spike Rate");
 else
-    CurrentPlotData.MainType = strcat("Event Internal Heatmap Spike Rates");
+    CurrentPlotData.MainType = strcat("Event ",Data.Info.Sorter," Heatmap Spike Rate");
 end
 
 CurrentPlotData.MainXTicks = Figure.XTickLabel;
