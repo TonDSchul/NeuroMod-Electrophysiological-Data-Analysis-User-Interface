@@ -1,6 +1,6 @@
 # NeuroMod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab 
 
-<img src="NeuroMod Matlab Version/Modules/MISC/Images/Logo.png" align="right" width="100" height="100"/>
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/GITLOGO.png" align="right" width="100" height="100"/>
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
 
@@ -113,6 +113,8 @@ In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](Neuro
 Download and extract the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording!
 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with NeuroMod. To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option in NeuroMod and click on the "RUN" button on the left side in the "Manage Dataset" module. Select a folder containing your recording (or the example recording folder containing the individual recording files) and specify your probe design. Some probe designs (also for the example dataset) are already available to load using the menu on top of the window (called Load Saved Probe Information). For the example dataset select the saved Probe_Info_64_ASSY_77_H3_acute_ChannelOrder.mat file. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is. 
+
+**NOTE:** Spike sorting results are not optimized and do not represent the best possible outcome with the respective sorter. 
 
 > ### **Overview of required Matlab toolboxes**
 
