@@ -133,6 +133,7 @@ if strcmp(Window,"Probe_View_Window")
     app.ChannelSelectionEditField.BackgroundColor   = ComponentsInWindowColor;
     
     app.Panel.BackgroundColor   = WindowBackgroundColor;
+    app.Panel.ForegroundColor   = WindowBackgroundColor;
 
     app.ScrollandclicktosetactiveanalysischannelLabel.BackgroundColor = WindowBackgroundColor;
     % Plot text to black
@@ -255,7 +256,8 @@ if strcmp(Window,"Spike2_Select_Event_Channel_Window")
 
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;
-    app.Panel.BackgroundColor  = WindowBackgroundColor;
+    app.Panel.BackgroundColor   = WindowBackgroundColor;
+    app.Panel.ForegroundColor   = WindowBackgroundColor;
 
     app.TextArea.BackgroundColor   = WindowBackgroundColor;
     app.TextArea_2.BackgroundColor   = WindowBackgroundColor;
@@ -1985,4 +1987,46 @@ if strcmp(Window,"OpenCurationSoftwareWindow")
 
     app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
     app.CurationSoftwaretoOpenDropDown.BackgroundColor   = ComponentsInWindowColor;
+end
+
+if strcmp(Window,"Select_Event_Window")    
+    % texts to black
+    set(findall(app.SelectEventWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.SelectEventWindowUIFigure.Color  = WindowBackgroundColor;
+
+
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.EventChannelToUseDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.EventRelatedDataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+end
+
+
+if strcmp(Window,"FieldTripEventWindow")    
+    % texts to black
+    set(findall(app.FieldTripEventAnalysisUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.FieldTripEventAnalysisUIFigure.Color  = WindowBackgroundColor;
+    
+    app.EventRelatedPotentialPanel.BackgroundColor   = WindowBackgroundColor;
+    app.EventRelatedPotentialPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.AnalysisParameterPanel.BackgroundColor   = WindowBackgroundColor;
+    app.AnalysisParameterPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.TimeFrequencyPowerPanel.BackgroundColor   = WindowBackgroundColor;
+    app.TimeFrequencyPowerPanel.ForegroundColor   = WindowBackgroundColor;
+
+    app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.ChannelSelectionDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
+    app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventChannelSelectionDropDown.BackgroundColor  = ComponentsInWindowColor;
+
+    app.EventNumberSelectionEditField_2.BackgroundColor  = ComponentsInWindowColor;
+
+    app.TFMethodDropDown.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField_4.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField_3.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField_5.BackgroundColor  = ComponentsInWindowColor;
 end

@@ -54,9 +54,11 @@ Module{3}.Title = 'Event Related Data Module';
 Module{3}.Function = 'RUN_Event_Data_Module';
 Module{3}.Items{1} = 'Extract Trigger Times';
 Module{3}.Items{2} = 'Import Trigger Times';
-Module{3}.Items{3} = 'Event Related Preprocessing';
-Module{3}.Items{4} = 'Event Related LFP Analysis';
+Module{3}.Items{3} = 'Event Related LFP Analysis';
+Module{3}.Items{4} = 'FieldTrip Event Analysis';
 Module{3}.Items{5} = 'Event Related Spike Analysis';
+Module{3}.Items{6} = 'Event Related Preprocessing';
+
 %% Spike Module
 Module{4}.Title = 'Spike Data Module';
 Module{4}.Function = 'RUN_Spike_Module';

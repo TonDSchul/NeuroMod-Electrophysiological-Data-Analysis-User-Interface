@@ -1,6 +1,6 @@
 # NeuroMod - Fully Interactive Ephys Data Analysis <br> and Visualization for Matlab 
 
-<img src="Modules/MISC/Images/Logo.png" align="right" width="100" height="100"/>
+<img src="Modules/MISC/Images/GITLOGO.png" align="right" width="100" height="100"/>
 
 <img src="Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
 

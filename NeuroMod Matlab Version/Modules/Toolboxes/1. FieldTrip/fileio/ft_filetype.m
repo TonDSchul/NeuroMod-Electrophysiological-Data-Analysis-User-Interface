@@ -74,7 +74,7 @@ function [type] = ft_filetype(filename, desired, varargin)
 %  - NIRx *.tpl, *.wl1 and *.wl2
 %  - York Instruments *.meghdf5
 
-% Copyright (C) 2003-2023, Robert Oostenveld
+% Copyright (C) 2003-2024, Robert Oostenveld
 %
 % This file is part of FieldTrip, see http://www.fieldtriptoolbox.org
 % for the documentation and details.
@@ -1637,7 +1637,7 @@ elseif filetype_check_extension(filename, '.msh') && filetype_check_header(filen
   content = 'geometrical meshes';
 elseif filetype_check_extension(filename, '.vtk') && filetype_check_header(filename, '# vtk') && filetype_check_ascii(filename, inf)
   type = 'vtk';
-  manufacturer = 'ParaView';
+  manufacturer = 'Visualization Toolkit';
   content = 'geometrical meshes';
 elseif filetype_check_extension(filename, '.bin') && exist(fullfile(p, [f '.meta']), 'file') 
   type = 'spikeglx_bin';

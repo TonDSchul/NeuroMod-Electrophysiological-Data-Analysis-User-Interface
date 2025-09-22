@@ -39,6 +39,18 @@ elseif strcmp(ModuleFunctionName,"Event Related LFP Analysis")
         app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
     end
 
+elseif strcmp(ModuleFunctionName,"FieldTrip Event Analysis")
+
+    if ~isfield(app.Data.Info,'EventChannelNames')
+        msgbox("Error: No event related information found. Please first extract events to set event related information");
+    else
+        FieldTrip_Event_Analysis_Window(app);
+    end
+
+    if isempty(app.ProbeViewWindowHandle)
+        app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+    end
+
 elseif strcmp(ModuleFunctionName,"Event Related Spike Analysis")
 
     % Delete Part of CurrentPlotData holding previous spike

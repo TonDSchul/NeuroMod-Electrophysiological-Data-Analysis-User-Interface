@@ -193,8 +193,6 @@ else
   nsample = endsample-begsample+1;
   dat     = zeros(nchan, nsample);
   
-  h = waitbar(0, 'Extracting Data..', 'Name','Extracting Data...');
-
   for i=1:nchan
     thischan = chanindx(i);
     thisfile = hdr.filename{thischan};
@@ -227,9 +225,5 @@ else
         dat(i,sample) = dat(i,sample) + 1;
         
     end % switch ft_filetype
-    fraction = i/nchan;
-   msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
-   waitbar(fraction, h, msg);
   end % for nchan
-  close(h);
 end % reading data
