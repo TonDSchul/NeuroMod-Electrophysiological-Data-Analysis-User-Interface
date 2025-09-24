@@ -139,7 +139,7 @@ if strcmp(WhattoPlot,"Just Frequency Bands") || strcmp(WhattoPlot,"All")
     end
     xlabel(FrequencyBandsFigure,'Power (dB)');
     h = legend(FrequencyBandsFigure,cellfun(@(x)sprintf('%.1f - %.1f Hz', x(1), x(2)), freqBands, 'uni', false));
-    set(h, 'Position', [ 0.8771    0.7856    0.0980    0.1009]);
+    set(h, 'Position', [ 0.8971    0.8856    0.0980    0.1009]);
 
     FrequencyBandsFigure.FontSize = PlotAppearance.SpectrumWindow.Data.TimeFontSize;
     FrequencyBandsFigure.Color = PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;

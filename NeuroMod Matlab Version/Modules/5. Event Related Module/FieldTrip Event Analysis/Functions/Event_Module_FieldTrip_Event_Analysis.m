@@ -1,29 +1,35 @@
-function Event_Module_FieldTrip_Event_Analysis(Data,DataType,AnalysisType,SingleERPChannel,EventChannelToUse,EventTimeBeforeAfter,Info,EventDataType,TrialSelection)
+function CurrentPlotData = Event_Module_FieldTrip_Event_Analysis(Data,DataType,AnalysisType,SingleERPChannel,EventChannelToUse,EventTimeBeforeAfter,Info,EventDataType,TrialSelection)
+
+CurrentPlotData = [];
 
 %% -------------------------------------------------------------------------------------------------
 %% ------------------------------ Get Fieldtrip compatible Event data ------------------------------
 %% -------------------------------------------------------------------------------------------------
 
-[Error,SavePath,raw,event,eventdata] = Manage_Dataset_SaveData_FieldTrip(Data,DataType,1,0,0,0,"No",[],EventChannelToUse,EventDataType);
+[Error,~,~,~,eventdata] = Manage_Dataset_SaveData_FieldTrip(Data,DataType,1,0,0,0,"No",[],EventChannelToUse,EventDataType);
 
 %% -------------------------------------------------------------------------------------------------
 %% ------------------------------ Create Probe Layout ------------------------------
 %% -------------------------------------------------------------------------------------------------
-nChannels = 64;
-spacing   = 20;  % 20 µm
+
+%% ------------------------- Set Basic Parameter -------------------------
+NrChannels = str2double(Data.Info.ProbeInfo.NrChannel);
+
+tempactivechannel = strjoin(string(Data.Info.ProbeInfo.ActiveChannel), ',');
+activechannel{1} = convertStringsToChars(tempactivechannel);
+[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort("",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
 
 elec = [];
-elec.label    = arrayfun(@(x) sprintf('chan%d', x), 1:nChannels, 'UniformOutput', false);
-elec.elecpos  = [zeros(nChannels,1), (0:nChannels-1)'*spacing, zeros(nChannels,1)];
+elec.label    = arrayfun(@(x) sprintf('chan%d', x), 1:NrChannels, 'UniformOutput', false);
+elec.elecpos  = [xcoords', ycoords', zeros(NrChannels,1)];  
 elec.chanpos  = elec.elecpos;
 elec.unit     = 'um';
 elec.type     = 'other';
-elec.chanunit = repmat({'um'}, nChannels, 1);   % <-- must be CELL array of strings
+elec.chanunit = repmat({'um'}, NrChannels, 1);   % <-- must be CELL array of strings
 
 % Create a layout
 cfg_layout = [];
 cfg_layout.elec = elec;
-cfg_layout.rotate = 45;
 cfg_layout.showlabels = 'yes';
 
 layout = ft_prepare_layout(cfg_layout, eventdata);   % creates proper 2D layout for plotting
@@ -54,7 +60,14 @@ if strcmp(AnalysisType,"SingleERP") || strcmp(AnalysisType,"MultipleERP")
     selectedData = ft_selectdata(cfg, eventdata);
     
     avg = ft_timelockanalysis(cfg, selectedData);
-    
+
+    if Info.BaselineNormalizeERP
+        Baseline = str2double(strsplit(Info.BaseLineWindow,','));
+        cfg_bs = [];
+        cfg_bs.baseline = Baseline;   % adapt to your time axis
+        avg = ft_timelockbaseline(cfg_bs, avg);
+    end
+
     fieldsToDelete = {'trials'};
     % Delete fields
     cfg = rmfield(cfg, fieldsToDelete);
@@ -66,6 +79,8 @@ if strcmp(AnalysisType,"SingleERP") || strcmp(AnalysisType,"MultipleERP")
     if strcmp(AnalysisType,"SingleERP")
         ft_singleplotER(cfg, avg);
     end
+
+    CurrentPlotData.ERP_AVERAGE = avg;
 
 end
 
@@ -111,35 +126,130 @@ if strcmp(AnalysisType,"SingleChannelTimeFrequencyPower")
     xlabel('Time (s)');
     ylabel('Frequency (Hz)');
 
+    CurrentPlotData.TFrequencyPowerResultSingleChannel = TFR;
+
+end
+
+if strcmp(AnalysisType,"AllChannelTimeFrequencyPower")
+
+    freqs = str2double(strsplit(Info.TimeFrequenyPowerFreqs,','));
+    cfg = [];
+    cfg.output     = 'pow';             % 'pow' = power, 'fourier' = complex output for connectivity
+    cfg.channel    = 'all';             % analyze all channels
+    cfg.foi        = freqs(1):freqs(3):freqs(2);   % frequencies of interest (Hz)
+    cfg.trials     = eval(TrialSelection);
+
+    if strcmp(Info.TFMethod,"Wavelet")
+        cfg.method     = 'wavelet';         
+        cfg.width      = str2double(Info.SlidingWindowLength);   % number of cycles
+    else
+        cfg.method     = 'mtmconvol';        
+        cfg.taper      = 'hanning';     
+        cfg.t_ftimwin  = str2double(Info.SlidingWindowLength)./ cfg.foi;  
+    end
+    
+    cfg.toi        = -EventTimeBeforeAfter(1):str2double(Info.TimeStepLength):EventTimeBeforeAfter(2);     
+    cfg.pad        = 'maxperlen';       
+    cfg.keeptrials = 'no';              
+    
+    selectedData = ft_selectdata(cfg, eventdata);
+
+    TFR = ft_freqanalysis(cfg, selectedData);
+
+    cfg_plot = [];
+    cfg_plot.layout = layout;  
+    cfg_plot.showlabels = 'yes';
+
+    if Info.BaselineNormalize
+        Baseline = str2double(strsplit(Info.BaseLineWindow,','));
+        cfg_plot.baseline     = [Baseline(1) Baseline(2)];
+        cfg_plot.baselinetype = 'db';   % or 'absolute'/'relative'/'relchange'
+    end
+
+    cfg_plot.zlim = 'maxabs';
+
+    % Option 1: multiplot of all channels
+    ft_multiplotTFR(cfg_plot, TFR);
+
+    % Option 2: topographic distribution (pick a time/freq window)
+    % cfg_plot.xlim = [0.3 0.5];   % time window in seconds
+    % cfg_plot.ylim = [8 12];      % frequency window (Hz)
+    % ft_topoplotTFR(cfg_plot, TFR);
+
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
+
+    CurrentPlotData.TFrequencyPowerResultAllChannel = TFR;
+
 end
 
 if strcmp(AnalysisType,"ConnectivityAnalysis")
     
+    try
+        ChannelCharsToCompare = cell(1,1);
+        ChannelToCompare = eval(Info.ChannelToCompare);
+        for i = 1:length(ChannelToCompare)
+            if i ~= length(ChannelToCompare)
+                ChannelCharsToCompare{1} = [ChannelCharsToCompare{1},strcat('chan',num2str(ChannelToCompare(i)),',')];
+            else
+                ChannelCharsToCompare{1} = [ChannelCharsToCompare{1},strcat('chan',num2str(ChannelToCompare(i)))];
+            end
+        end
+    catch
+        Error = 1;
+        msgbox("Format error. Please only use Maltab expressions for channel to compare.")
+        return;
+    end
+
+    % --- select trials / channels as before
     cfg.trials = eval(TrialSelection);
     selectedData = ft_selectdata(cfg, eventdata);
     
+    % --- preprocessing
     cfg = [];
-    cfg.demean  = 'yes';   % remove DC offset
-    cfg.detrend = 'yes';   % optional
+    cfg.demean  = 'yes';
+    cfg.detrend = 'yes';
     data_preproc = ft_preprocessing(cfg, selectedData);
     
+    % --- frequency decomposition: keep trials (important!)
     freqs = str2double(strsplit(Info.TimeFrequenyPowerFreqs,','));
     cfg = [];
-    cfg.output    = 'fourier';      % complex numbers for phase and amplitude
-    cfg.channel    = {'chan1','chan2'};             % channels to analyze
-    cfg.foi        = freqs(1):freqs(3):freqs(2);           % frequencies of interest (Hz)
-    cfg.trials = eval(TrialSelection);
-    cfg.method     = 'wavelet';         % or 'mtmconvol'
-    cfg.width = str2double(Info.SlidingWindowLength);
-    cfg.pad = 'maxperlen';  % pad each trial to the length of the longest trial
-    cfg.toi        = -EventTimeBeforeAfter(1):str2double(Info.TimeStepLength):EventTimeBeforeAfter(2);     % time points (s) relative to event onset
-    
+    cfg.output    = 'fourier';                 % complex Fourier/wavelet output
+    cfg.channel   = {'chan1','chan2'};         % the channels you want to analyze (or 'all')
+    cfg.foi       = freqs(1):freqs(3):freqs(2);
+    cfg.method    = 'wavelet';
+    cfg.width     = str2double(Info.SlidingWindowLength);
+    cfg.pad       = 'maxperlen';
+    cfg.toi       = -EventTimeBeforeAfter(1):str2double(Info.TimeStepLength):EventTimeBeforeAfter(2);
+    cfg.keeptrials = 'yes';                    % <-- REQUIRED for connectivity
     TFR = ft_freqanalysis(cfg, data_preproc);
     
-    cfg = [];
-    cfg.parameter = 'plvspctrm';
-    cfg.channelcmb = {'chan1','chan2'};
-    ft_connectivityplot(cfg, conn);
+    % --- connectivity analysis (PLV)
+    cfg_conn = [];
+    cfg_conn.method = 'plv';                   % choose method: 'plv','coh','ppc','wpli', ...
+    cfg_conn.channelcmb = {'chan1','chan2'};   % specific channel pair(s) as a N x 2 cell array
+    % alternatively compute for all pairs:
+    % chanlabels = TFR.label;
+    % idx = nchoosek(1:numel(chanlabels),2);
+    % cfg_conn.channelcmb = cell(size(idx,1),2);
+    % for i=1:size(idx,1)
+    %   cfg_conn.channelcmb{i,1} = chanlabels{idx(i,1)};
+    %   cfg_conn.channelcmb{i,2} = chanlabels{idx(i,2)};
+    % end
+    
+    conn = ft_connectivityanalysis(cfg_conn, TFR);
+    
+    % conn now contains e.g. conn.plvspctrm (freq x time or pair x freq x time depending on config)
+    CurrentPlotData.TFrequencyComplexFourierResult = TFR;
+    CurrentPlotData.ConnectivityResult = conn;
+    
+    % --- plotting
+    cfg_plot = [];
+    cfg_plot.parameter = 'plvspctrm';          % name depends on chosen method
+    cfg_plot.channelcmb = {'chan1','chan2'};   % keep consistent with analysis
+    ft_connectivityplot(cfg_plot, conn);
+    xlabel('Time (s)');
+    ylabel('Frequency (Hz)');
 
 end
 

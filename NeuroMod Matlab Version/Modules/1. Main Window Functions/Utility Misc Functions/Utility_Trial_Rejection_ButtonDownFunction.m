@@ -51,8 +51,9 @@ if ~isempty(closestLine)
         if ~isempty(TrialTextObjects)
             delete(TrialTextObjects);
         end
-
-        label = app.UIAxes.YTickLabel{idxMatch};
+        
+        label = app.AllYLabels{idxMatch};
+        %label = app.UIAxes.YTickLabel{idxMatch};
         msg = sprintf('Trial: %s', label);
         
         %plot text

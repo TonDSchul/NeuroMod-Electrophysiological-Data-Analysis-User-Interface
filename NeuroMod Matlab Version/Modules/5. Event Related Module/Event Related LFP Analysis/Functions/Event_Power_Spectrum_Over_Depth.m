@@ -105,6 +105,9 @@ Figure_2.FontSize = 10;
 Figure.FontSize = 10;
 plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance);
 
+lgd = findobj(Figure_2.Parent, 'Type', 'Legend');
+set(lgd, 'Position', [ 0.8971    0.8856    0.0980    0.1009]);
+
 %% save plotted data in case user wants to save 
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);
 nC = size(BandPower.allPowerEst,1); 

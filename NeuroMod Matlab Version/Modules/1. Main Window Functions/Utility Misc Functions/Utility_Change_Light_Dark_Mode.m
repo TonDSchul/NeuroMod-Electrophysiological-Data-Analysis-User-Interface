@@ -2014,8 +2014,8 @@ if strcmp(Window,"FieldTripEventWindow")
     app.AnalysisParameterPanel.BackgroundColor   = WindowBackgroundColor;
     app.AnalysisParameterPanel.ForegroundColor   = WindowBackgroundColor;
 
-    app.TimeFrequencyPowerPanel.BackgroundColor   = WindowBackgroundColor;
-    app.TimeFrequencyPowerPanel.ForegroundColor   = WindowBackgroundColor;
+    app.TimeFrequencyPowerandConnectivityAnalysisPanel.BackgroundColor   = WindowBackgroundColor;
+    app.TimeFrequencyPowerandConnectivityAnalysisPanel.ForegroundColor   = WindowBackgroundColor;
 
     app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.ChannelSelectionDropDown.BackgroundColor  = ComponentsInWindowColor;
@@ -2029,4 +2029,8 @@ if strcmp(Window,"FieldTripEventWindow")
     app.EventNumberSelectionEditField_4.BackgroundColor  = ComponentsInWindowColor;
     app.EventNumberSelectionEditField_3.BackgroundColor  = ComponentsInWindowColor;
     app.EventNumberSelectionEditField_5.BackgroundColor  = ComponentsInWindowColor;
+
+    app.EventNumberSelectionEditField_6.BackgroundColor  = ComponentsInWindowColor;
+
+    app.CurrentlyAvailableVariablestoExportTextArea.BackgroundColor  = ComponentsInWindowColor;
 end

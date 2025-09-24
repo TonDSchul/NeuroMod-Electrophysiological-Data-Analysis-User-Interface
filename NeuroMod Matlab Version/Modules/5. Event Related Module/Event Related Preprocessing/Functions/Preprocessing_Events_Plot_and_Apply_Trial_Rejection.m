@@ -1,4 +1,4 @@
-function [EventRelatedData,EventsToPlot,TrialsToReject,ThresCrossingTrials] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject,EventsToPlot,PlotThreshold,Threshold,EventChannelname,ThresholdSign)
+function [EventRelatedData,EventsToPlot,TrialsToReject,ThresCrossingTrials,AllYLabels] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(Data,EventRelatedData,Time,Type,TopFigure,BottomFigure,ChannelSelection,TrialsToReject,EventsToPlot,PlotThreshold,Threshold,EventChannelname,ThresholdSign)
 
 %________________________________________________________________________________________
 %% Function to apply and plot event/trial rejection
@@ -270,6 +270,14 @@ if isfield(Data.Info,'EventRelatedPreprocessing')
             TopFigure.YTick = 1:length(a);
             TopFigure.YTickLabel = string(a);
         end
+
+        % Get all labels 
+        atemp = [];
+        for i = 1:1:length(a)
+            atemp = [atemp,a(i)];
+        end
+        AllYLabels = string(atemp);
+        
     else
         %% costume y labels
         TrialNumbers = string(AllTrials);
@@ -290,6 +298,13 @@ if isfield(Data.Info,'EventRelatedPreprocessing')
             TopFigure.YTick = 1:length(a);
             TopFigure.YTickLabel = string(a);
         end
+
+        % Get all labels 
+        atemp = [];
+        for i = 1:1:length(a)
+            atemp = [atemp,a(i)];
+        end
+        AllYLabels = string(atemp);
     end
 else
     %% costume y labels
@@ -311,6 +326,13 @@ else
             TopFigure.YTick = 1:length(a);
             TopFigure.YTickLabel = string(a);
         end
+
+        % Get all labels 
+        atemp = [];
+        for i = 1:1:length(a)
+            atemp = [atemp,a(i)];
+        end
+        AllYLabels = string(atemp);
 end
 
 
