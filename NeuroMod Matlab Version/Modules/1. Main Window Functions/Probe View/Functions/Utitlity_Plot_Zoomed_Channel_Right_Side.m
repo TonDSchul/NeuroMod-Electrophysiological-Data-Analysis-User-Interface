@@ -1,4 +1,4 @@
-function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom)
+function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xdistances,AllYPositions] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom)
 
 %________________________________________________________________________________________
 %% Function to plot the zoomed channel selection on the right.
@@ -51,12 +51,22 @@ end
 highylimits = yLimitBracktes(2);
 lowylimits = yLimitBracktes(1);
 
+if ChannelRows > 2
+    highylimits = highylimits+0.3*ChannelSpacing;
+    lowylimits = lowylimits+0.3*ChannelSpacing;
+end
+
 squareHeight = (highylimits-lowylimits)/numSquares;
 
 if ShowChannelSpacing
     PlottedSquareHeight = floor(squareHeight/2);
 else
     PlottedSquareHeight = squareHeight;
+end
+
+% Different spacing if wider
+if ChannelRows>2
+    PlottedSquareHeight = floor(squareHeight/3);
 end
 
 x1 = 4;   % x-position of the first vertical line
@@ -85,6 +95,10 @@ else
 end
 
 squareWidth = xdistances(2)-xdistances(1);
+% Different spacing if wider
+if ChannelRows>2
+    squareWidth = squareWidth*ChannelRows;
+end
 
 %% 1 Row
 if ChannelRows == 1
@@ -104,21 +118,29 @@ if ChannelRows == 1
     end
 %% 2 rows
 else
-    % differentiate left and right row
-    AllChannelLeft = 2*NrChannel-1:-2:1;
-    CurrentChannelLeft = AllChannelLeft(FirstZoomChannel);
-
-    if NrChannel>=32
-        ChannelLeft = CurrentChannelLeft:-2:CurrentChannelLeft-63;
-        ChannelRight = CurrentChannelLeft+1:-2:CurrentChannelLeft-62;
+    if ChannelRows == 2
+        % differentiate left and right row
+        AllChannelLeft = 2*NrChannel-1:-2:1;
+        CurrentChannelLeft = AllChannelLeft(FirstZoomChannel);
+    
+        if NrChannel>=32
+            ChannelLeft = CurrentChannelLeft:-2:CurrentChannelLeft-63;
+            ChannelRight = CurrentChannelLeft+1:-2:CurrentChannelLeft-62;
+        else
+            ChannelLeft = CurrentChannelLeft:-2:CurrentChannelLeft-(NrChannel*2-1);
+            ChannelRight = CurrentChannelLeft+1:-2:CurrentChannelLeft-(NrChannel*2-2);
+        end
+    
+        if SwitchTopBottom == 1
+            ChannelLeft = ChannelLeft+1;
+            ChannelRight = ChannelRight-1;
+        end
     else
-        ChannelLeft = CurrentChannelLeft:-2:CurrentChannelLeft-(NrChannel*2-1);
-        ChannelRight = CurrentChannelLeft+1:-2:CurrentChannelLeft-(NrChannel*2-2);
-    end
+        AllChannelLeft = 1:1:NrRows*NrChannel;
+        ChannelRight = 1:1:NrRows*NrChannel;
+        ChannelLeft = 1:1:NrRows*NrChannel;
 
-    if SwitchTopBottom == 1
-        ChannelLeft = ChannelLeft+1;
-        ChannelRight = ChannelRight-1;
+        CurrentChannelLeft = AllChannelLeft(FirstZoomChannel);
     end
 
 end
@@ -126,10 +148,28 @@ end
 Squareplots = 0;
 CurrentChannel = 0;
 
+%% If array: More distance between channel
+if ChannelRows>2
+    xdistances(:) = xdistances(:) - 2;
+    PreviousDist = xdistances(4)-xdistances(3);
+    xdistances(3) = xdistances(3) + 1;
+    xdistances(4) = xdistances(3) + PreviousDist;
+    DistFirstTwo = xdistances(3)-xdistances(2);
+    
+    if length(xdistances)>4
+        for i = 5:2:length(xdistances)
+            xdistances(i:i+1) = xdistances(i-1)+DistFirstTwo;
+            xdistances(i+1) = xdistances(i+1) + PreviousDist;
+        end
+    end
+end
+
+AllYPositions = [];
 % loop over probe channel rows
 for nrows = 1:ChannelRows
 
     xPos = xdistances(nrows+nrows);
+    
 
     for i = 0:((numSquares) - 1)  
 
@@ -151,8 +191,8 @@ for nrows = 1:ChannelRows
                 end
                 xPos = xPos+2.7;
             end
-        else
-            if OffSetRows 
+        elseif ChannelRows == 2
+            if OffSetRows
                 if nrows==1
                     if mod(FirstZoomChannel,2)==0
                         if mod(i, 2) == 0
@@ -182,7 +222,17 @@ for nrows = 1:ChannelRows
                         end
                     end
                 end
+                
                 xPos = xPos+1.9;
+                
+            end
+        else % mmore than 2 rows
+            if OffSetRows
+                if mod(i,2)==0
+                    xPos = xPos + 0.72;
+                else
+                    xPos = xPos - 0.72;
+                end
             end
         end
 
@@ -192,11 +242,57 @@ for nrows = 1:ChannelRows
             yPos = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2); % y-position of the square
         end
         
+        AllYPositions = [AllYPositions,yPos];
+
         %% Determine Color
         
         CurrentChannel = 0;
-        
-        [faceColor,EdgeColor] = ProbeView_ZoomedChannel_Color_Selection(i,FirstZoomChannel,ChannelRows,OffSetRows,ReversedActiveChannelLeft,AllActiveChannel,ChannelRight,ChannelLeft,nrows,NrChannel,CurrentChannel,ActiveChannel);
+        if NrRows <= 2
+            [faceColor,EdgeColor] = ProbeView_ZoomedChannel_Color_Selection(i,FirstZoomChannel,ChannelRows,OffSetRows,ReversedActiveChannelLeft,AllActiveChannel,ChannelRight,ChannelLeft,nrows,NrChannel,CurrentChannel,ActiveChannel);
+        else % If array
+            
+            if SwitchTopBottom == 1
+                TempActiveChannel = NaN(size(ActiveChannel));
+                for nac = 1:length(ActiveChannel)
+                    TempActiveChannel(nac) = (NrChannel*NrRows) - ActiveChannel(nac) + 1;
+                end
+                TempAllActiveChannel = NaN(size(AllActiveChannel));
+                for nac = 1:length(AllActiveChannel)
+                    TempAllActiveChannel(nac) = (NrChannel*NrRows) - AllActiveChannel(nac) + 1;
+                end
+
+                CurrentArrayChannel = nrows + (i*NrRows);
+            else
+                TempActiveChannel = ActiveChannel;
+                TempAllActiveChannel = AllActiveChannel;
+                CurrentArrayChannel = ((NrChannel*NrRows) - (i+1) * NrRows) + 1 + (nrows-1);
+            end
+
+            if sum(TempActiveChannel==CurrentArrayChannel)>0
+                faceColor = 'y';
+            else
+                if mod(i,2)==1
+                    if mod(nrows,2)==1
+                        faceColor = 'k';
+                    else
+                        faceColor = [0.5 0.5 0.5];
+                    end
+                else
+                    if mod(nrows,2)==0
+                        faceColor = 'k';
+                    else
+                        faceColor = [0.5 0.5 0.5];
+                    end
+                end    
+            end
+
+            if sum(TempAllActiveChannel==CurrentArrayChannel)>0
+                EdgeColor = 'r';
+            else
+                EdgeColor = 'k';
+            end
+
+        end
 
         Squareplots = Squareplots+1;
 
@@ -216,4 +312,8 @@ for nrows = 1:ChannelRows
             end
         end
     end
+end
+
+if ~isempty(AllYPositions)
+    AllYPositions = unique(AllYPositions);
 end

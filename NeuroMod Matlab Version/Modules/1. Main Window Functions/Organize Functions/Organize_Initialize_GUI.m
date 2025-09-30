@@ -279,10 +279,11 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
     app.Data.Info.ProbeInfo.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
     
+    app.Data.Info.ProbeInfo.ECoGArray = Load_Data_Window_Info.ECoGArray;
     app.Data.Info.ProbeInfo.SwitchTopBottomChannel = Load_Data_Window_Info.SwitchTopBottomChannel;
     app.Data.Info.ProbeInfo.SwitchLeftRightChannel = Load_Data_Window_Info.SwitchLeftRightChannel;
     app.Data.Info.ProbeInfo.FlipLoadedData = Load_Data_Window_Info.FlipLoadedData;
-
+    
     app.Data.Info.ProbeInfo.OffSetRows = double(Load_Data_Window_Info.OffSetRows);
     app.Data.Info.ProbeInfo.OffSetRowsDistance = Load_Data_Window_Info.OffSetRowsDistance;
 

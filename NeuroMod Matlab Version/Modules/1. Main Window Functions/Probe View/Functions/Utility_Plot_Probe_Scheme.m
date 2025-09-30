@@ -1,4 +1,4 @@
-function [yPoint,yLimits,ActiveChannel,yLimitsSquares,squareHeight] = Utility_Plot_Probe_Scheme(Figure,GrayProbeFilling,ProbeLines,ChannelViewLeft,NrChannel,ChannelSpacing,ActiveChannel,VerOffset,ChannelRows,LeftProbeChanged,AllActiveChannel,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,FirstZoomChannel)
+function [yPoint,yLimits,ActiveChannel,yLimitsSquares,squareHeight] = Utility_Plot_Probe_Scheme(Figure,GrayProbeFilling,ProbeLines,ChannelViewLeft,NrChannel,ChannelSpacing,ActiveChannel,VerOffset,ChannelRows,LeftProbeChanged,AllActiveChannel,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,FirstZoomChannel,ECogArray)
 
 %________________________________________________________________________________________
 %% Function to plot the complete probe scheme on the right of the probe view windows
@@ -31,6 +31,7 @@ function [yPoint,yLimits,ActiveChannel,yLimitsSquares,squareHeight] = Utility_Pl
 % 16. RowClicked: 0 if clicked on a row on the left
 % 17. FirstZoomChannel: First Channel shown in zoomed channel view on the
 % right (lowest channel) - comes from ClickCallback functions
+% 18. ECogArray: logical 1 or 0 if probe is a ECoG array
 
 % Outputs:
 % 1. yPoint: y value of grey probe tip (warning: most likely negative!)
@@ -63,7 +64,9 @@ if isnan(VerOffset)
 end
 
 %% Set limits of plot
+
 yLimits = [0 ((NrChannel-1)*ChannelSpacing)+(ChannelSpacing)*2];  % Get current y-axis limits to extend the lines
+
 yPoint = yLimits(1) - (yLimits(2) - yLimits(1)) / 10;  % y position below the minimum of the plotted lines
 
 %% Plot grey probe model on the left
@@ -71,47 +74,49 @@ yPoint = yLimits(1) - (yLimits(2) - yLimits(1)) / 10;  % y position below the mi
 x1 = 0;   % x-position of the first line
 x2 = 1;   % x-position of the second line
 
-if LeftProbeChanged && CreateProbeWindow
-    % Fill the area between the two lines with grey color
-    if isempty(GrayProbeFilling)
-        fill(Figure, [x1, x2, x2, x1], [yLimits(1), yLimits(1), yLimits(2), yLimits(2)], ...
-             [0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Grey color fill
-    else
-        set(GrayProbeFilling(1),'XData', [x1, x2, x2, x1],'YData', [yLimits(1), yLimits(1), yLimits(2), yLimits(2)], ...
-             'FaceColor',[0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Grey color fill
-    end
-    
-    if isempty(ProbeLines)
-        % Plot the two vertical lines
-        line(Figure, [x1, x1], yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % First line
-        line(Figure, [x2, x2], yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Second line
-    else
-        set(ProbeLines(1), 'XData',[x1, x1],'YData', yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % First line
-        set(ProbeLines(2), 'XData',[x2, x2],'YData', yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Second line
-    end
-    
-    % Calculate the position for the point
-    xPoint = (x1 + x2) / 2;  % Midpoint x position between the two lines
-    
-    if isempty(ProbeLines)
-        % Draw lines from the minimum of the vertical lines to the point
-        line(Figure, [x1, xPoint], [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Left line
-        line(Figure, [x2, xPoint], [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Right line
-    else
-        set(ProbeLines(3), 'XData',[x1, xPoint],'YData', [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % First line
-        set(ProbeLines(4), 'XData',[x2, xPoint],'YData', [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Second line
-    end
-    
-    if isempty(GrayProbeFilling)
-        % Fill the triangle formed by the point and the two lines
-        fill(Figure, [x1, xPoint, x2], [yLimits(1), yPoint, yLimits(1)], ...
-             [0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Light grey fill for the triangle
-    else
-        set(GrayProbeFilling(2),'XData', [x1, xPoint, x2],'YData', [yLimits(1), yPoint, yLimits(1)], ...
-             'FaceColor',[0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Grey color fill
+if ~ECogArray
+    if LeftProbeChanged && CreateProbeWindow
+        % Fill the area between the two lines with grey color
+        if isempty(GrayProbeFilling)
+            fill(Figure, [x1, x2, x2, x1], [yLimits(1), yLimits(1), yLimits(2), yLimits(2)], ...
+                 [0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Grey color fill
+        else
+            set(GrayProbeFilling(1),'XData', [x1, x2, x2, x1],'YData', [yLimits(1), yLimits(1), yLimits(2), yLimits(2)], ...
+                 'FaceColor',[0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Grey color fill
+        end
+        
+        if isempty(ProbeLines)
+            % Plot the two vertical lines
+            line(Figure, [x1, x1], yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % First line
+            line(Figure, [x2, x2], yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Second line
+        else
+            set(ProbeLines(1), 'XData',[x1, x1],'YData', yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % First line
+            set(ProbeLines(2), 'XData',[x2, x2],'YData', yLimits, 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Second line
+        end
+        
+        % Calculate the position for the point
+        xPoint = (x1 + x2) / 2;  % Midpoint x position between the two lines
+        
+      
+        if isempty(ProbeLines)
+            % Draw lines from the minimum of the vertical lines to the point
+            line(Figure, [x1, xPoint], [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Left line
+            line(Figure, [x2, xPoint], [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Right line
+        else
+            set(ProbeLines(3), 'XData',[x1, xPoint],'YData', [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % First line
+            set(ProbeLines(4), 'XData',[x2, xPoint],'YData', [yLimits(1), yPoint], 'Color', [0.5, 0.5, 0.5], 'LineWidth', 1.5,'Tag','ProbeLines');  % Second line
+        end
+        
+        if isempty(GrayProbeFilling)
+            % Fill the triangle formed by the point and the two lines
+            fill(Figure, [x1, xPoint, x2], [yLimits(1), yPoint, yLimits(1)], ...
+                 [0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Light grey fill for the triangle
+        else
+            set(GrayProbeFilling(2),'XData', [x1, xPoint, x2],'YData', [yLimits(1), yPoint, yLimits(1)], ...
+                 'FaceColor',[0.5, 0.5, 0.5], 'EdgeColor', 'none','Tag','GrayProbeFilling');  % Grey color fill
+        end  
     end
 end
-
 
 %% Plot squares in that probe
 % define x position of sqaures
@@ -146,6 +151,9 @@ if ChannelActivation && CreateProbeWindow
         ReversedActiveChannelLeft = (numSquares+1)-ActiveChannel(ActiveChannelLeft);
         AllReversedActiveChannelLeft = (numSquares+1)-AllActiveChannel;
     elseif ChannelRows == 2     
+        AllChannelLeft = NrChannel*2-1:-2:1;
+        AllChannelRight = NrChannel*2:-2:1;
+    elseif ChannelRows >= 3   
         AllChannelLeft = NrChannel*2-1:-2:1;
         AllChannelRight = NrChannel*2:-2:1;
     end
@@ -286,6 +294,56 @@ if ChannelActivation && CreateProbeWindow
                 end
             end % 2 rows
 
+            %% Three or more rows
+            if ChannelRows >= 3
+
+                CurrentChannel = CurrentChannel+1;
+
+                % Determine the color based on the iteration index - iterate
+                % through black and white or set to yellow when active channel
+                if nrows == 1
+                    if mod(i+1, 2) == 0
+                        faceColor = 'k'; %
+                    else
+                        faceColor = 'w'; 
+                    end
+                else
+                    if mod(i+1, 2) == 0
+                        faceColor = 'w'; %
+                    else
+                        faceColor = 'k'; 
+                    end 
+                end
+
+                if CurrentChannel>NrChannel %% Right Row: even channel
+
+                    RealChannel = AllChannelRight(i+1);
+
+                    if sum(RealChannel==ActiveChannel)>0
+                        faceColor = 'y'; 
+                    end
+    
+                    if sum(RealChannel==AllActiveChannel)>0
+                        Edgecolor = 'r';
+                    else
+                        Edgecolor = 'none';
+                    end                
+                else %% Left Row: odd channel 
+
+                    RealChannel = AllChannelLeft(i+1);
+
+                    if sum(RealChannel==ActiveChannel)>0
+                        faceColor = 'y'; 
+                    end
+    
+                    if sum(RealChannel==AllActiveChannel)>0
+                        Edgecolor = 'r';
+                    else
+                        Edgecolor = 'none';
+                    end      
+                end
+            end % 2 rows
+
             if i == 0
                 yLimitsSquares(1) = yPos;
             elseif i == (numSquares - 1)  
@@ -293,41 +351,43 @@ if ChannelActivation && CreateProbeWindow
             end
     
             Squareplots = Squareplots+1;
-    
-            if LeftProbeChanged
-                if isempty(ChannelViewLeft)
-                    % Plot the square using patch instead of rectangle
-                    rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                        'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
-                else
-                    if ~CreateProbeWindow
-                        if length(ChannelViewLeft) >= Squareplots
-                            % Update the existing patch position
-                            if ChannelRows == 1
-                                set(ChannelViewLeft((numSquares+1)-Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                                  'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
 
+            if ~ECogArray
+                if LeftProbeChanged
+                    if isempty(ChannelViewLeft)
+                        % Plot the square using patch instead of rectangle
+                        rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                            'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                    else
+                        if ~CreateProbeWindow
+                            if length(ChannelViewLeft) >= Squareplots
+                                % Update the existing patch position
+                                if ChannelRows == 1
+                                    set(ChannelViewLeft((numSquares+1)-Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                      'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+    
+                                else
+                                    set(ChannelViewLeft((length(ChannelViewLeft)+1)-Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                      'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                                end
                             else
-                                set(ChannelViewLeft((length(ChannelViewLeft)+1)-Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                                  'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                                % Plot the square using patch
+                                rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                    'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                             end
                         else
-                            % Plot the square using patch
-                            rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                                'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                            if length(ChannelViewLeft) >= Squareplots
+                                % Update the existing patch position
+                                set(ChannelViewLeft(Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                  'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                            else
+                                % Plot the square using patch
+                                rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                    'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                            end
                         end
-                    else
-                        if length(ChannelViewLeft) >= Squareplots
-                            % Update the existing patch position
-                            set(ChannelViewLeft(Squareplots), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                              'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
-                        else
-                            % Plot the square using patch
-                            rectangle(Figure, 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                                'EdgeColor', Edgecolor, 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
-                        end
-                    end
-                end   
+                    end   
+                end%%
             end
         end
     end
@@ -363,7 +423,7 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
                 else
                     xPos = xdistances(1+1);
                 end
-            else
+            elseif ChannelRows == 2
                 if OffSetRows %%%%%%%%%%%%%% Left Right
                     if mod(FirstZoomChannel, 2) == 0
                         if RowClicked == 1   %1 = L1 2 = L2 3 = R1 
@@ -398,42 +458,47 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
     
             if ChannelRows == 1
                 yPos = ((ChannelClicked-1) * (ChannelSpacing)) ; % y-position of the square
-            else
+            elseif ChannelRows == 2
                 if sum(AllChannelLeft==ChannelClicked)
                     ChannelIndex = find(AllChannelLeft==ChannelClicked);
                 elseif sum(AllChannelRight==ChannelClicked)
                     ChannelIndex = find(AllChannelRight==ChannelClicked);
                 end
                 yPos = ((ChannelIndex-1) * (ChannelSpacing))+ VerOffset ; % y-position of the square
+            else %XXXX
+                ChannelIndex = ChannelClicked;
+                yPos = ((ChannelIndex-1) * (ChannelSpacing))+ VerOffset ; % y-position of the square
             end
 
             yPos = ((NrChannel-1) * (ChannelSpacing))-yPos;
 
-            if ChannelRows == 1
-                set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                                              'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
-            else
-                if mod(ChannelClicked, 2) == 1 %odd - plot on the left
-                    AllLeft = 1:2:NrChannel*2;
-                    TempChannelClicked = find(ChannelClicked==AllLeft);
-                    if ChannelClicked == AllLeft(end)
-                        yPos=yPos+ (VerOffset);
-                        squareHeight = squareHeight-VerOffset;
+            if ~ECogArray
+                if ChannelRows == 1
+                    set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                                  'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
+                else
+                    if mod(ChannelClicked, 2) == 1 %odd - plot on the left
+                        AllLeft = 1:2:NrChannel*2;
+                        TempChannelClicked = find(ChannelClicked==AllLeft);
+                        if ChannelClicked == AllLeft(end)
+                            yPos=yPos+ (VerOffset);
+                            squareHeight = squareHeight-VerOffset;
+                        end
+    
+                        set(ChannelViewLeft((NrChannel-TempChannelClicked)+1), 'Position', [xPos, yPos, squareWidth, squareHeight+ (VerOffset)], ...
+                                                  'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
+     
+                    else % plot on the right
+                        AllRight = 2:2:NrChannel*2;
+                        TempChannelClicked = find(ChannelClicked==AllRight);
+                        if ChannelClicked == AllRight(end)
+                            yPos=yPos+ (VerOffset);
+                            squareHeight = squareHeight-VerOffset;
+                        end
+                        yPos = yPos+VerOffset;
+                        set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight+ (VerOffset)], ...
+                                                  'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
                     end
-
-                    set(ChannelViewLeft((NrChannel-TempChannelClicked)+1), 'Position', [xPos, yPos, squareWidth, squareHeight+ (VerOffset)], ...
-                                              'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
- 
-                else % plot on the right
-                    AllRight = 2:2:NrChannel*2;
-                    TempChannelClicked = find(ChannelClicked==AllRight);
-                    if ChannelClicked == AllRight(end)
-                        yPos=yPos+ (VerOffset);
-                        squareHeight = squareHeight-VerOffset;
-                    end
-                    yPos = yPos+VerOffset;
-                    set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight+ (VerOffset)], ...
-                                              'EdgeColor', 'r', 'FaceColor', 'y', 'Tag', 'ChannelViewLeft');
                 end
             end
 
@@ -461,7 +526,7 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
                 else
                     xPos = xdistances(1+1);
                 end
-            else
+            elseif ChannelRows == 2
                 if OffSetRows %%%%%%%%%%%%%% Left Right
                     if mod(FirstZoomChannel, 2) == 0
                         if RowClicked == 1   %1 = L1 2 = L2 3 = R1 
@@ -496,7 +561,7 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
         
             if ChannelRows == 1
                 yPos = ((ChannelClicked-1) * (ChannelSpacing)) ; % y-position of the square
-            else
+            elseif ChannelRows == 2
                 if sum(AllChannelLeft==ChannelClicked)
                     ChannelIndex = find(AllChannelLeft==ChannelClicked);
                 elseif sum(AllChannelRight==ChannelClicked)
@@ -504,31 +569,37 @@ elseif ChannelActivation && ~CreateProbeWindow %just change of channel: just upd
                 end
 
                 yPos = ((ChannelIndex-1) * (ChannelSpacing)); %+ VerOffset ; % y-position of the square
+            else %XXXX
+                ChannelIndex = ChannelClicked;
+                
+                yPos = ((ChannelIndex-1) * (ChannelSpacing)); %+ VerOffset ; % y-position of the square
             end
 
             yPos = ((NrChannel-1) * (ChannelSpacing))-yPos;
 
             [faceColor] = ProbeView_ProbeScheme_Color_Selection_Inactivated(ChannelClicked,FirstZoomChannel,ChannelRows,OffSetRows,NrChannel,AllChannelLeft,AllChannelRight);
             
-            if ChannelRows == 1
-                set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                                              'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
-            else
-                if mod(ChannelClicked, 2) == 1 %odd - plot on the left
-                    AllLeft = 1:2:NrChannel*2;
-                    TempChannelClicked = find(ChannelClicked==AllLeft);
-                    set(ChannelViewLeft((NrChannel-TempChannelClicked)+1), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
-                                              'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
-
-                else % plot on the right
-                    AllRight = 2:2:NrChannel*2;
-                    TempChannelClicked = find(ChannelClicked==AllRight);
-                    if ChannelClicked == AllRight(end)
-                        yPos=yPos+ (VerOffset);
-                        squareHeight = squareHeight-VerOffset;
+            if ~ECogArray
+                if ChannelRows == 1
+                    set(ChannelViewLeft((NrChannel+1)-ChannelClicked), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                                  'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+                else
+                    if mod(ChannelClicked, 2) == 1 %odd - plot on the left
+                        AllLeft = 1:2:NrChannel*2;
+                        TempChannelClicked = find(ChannelClicked==AllLeft);
+                        set(ChannelViewLeft((NrChannel-TempChannelClicked)+1), 'Position', [xPos, yPos, squareWidth, squareHeight], ...
+                                                  'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
+    
+                    else % plot on the right
+                        AllRight = 2:2:NrChannel*2;
+                        TempChannelClicked = find(ChannelClicked==AllRight);
+                        if ChannelClicked == AllRight(end)
+                            yPos=yPos+ (VerOffset);
+                            squareHeight = squareHeight-VerOffset;
+                        end
+                        set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight + (VerOffset)], ...
+                                                  'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                     end
-                    set(ChannelViewLeft((NrChannel*2+1) - (TempChannelClicked)), 'Position', [xPos, yPos, squareWidth, squareHeight + (VerOffset)], ...
-                                              'EdgeColor', 'r', 'FaceColor', faceColor, 'Tag', 'ChannelViewLeft');
                 end
             end
         end

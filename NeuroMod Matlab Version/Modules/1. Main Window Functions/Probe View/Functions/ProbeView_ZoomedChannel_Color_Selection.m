@@ -109,11 +109,11 @@ if ChannelRows == 1
 end
 
 %% 2 Rows
-if ChannelRows == 2
+if ChannelRows >= 2
 
     CurrentChannel = CurrentChannel+1;
     %% Currently in loop: Left Row
-    if nrows == 1
+    if mod(nrows, 2) == 1
         if mod(FirstZoomChannel, 2) == 1
             if mod(LoopIteration, 2) == 0
                 faceColor = [0.5 0.5 0.5]; 
@@ -151,7 +151,7 @@ if ChannelRows == 2
     end
 
     %% Determine the color based on the iteration index
-    if  nrows == 2 %% Right Row: even channel
+    if  mod(nrows, 2) == 0 %% Right Row: even channel
         RealChannel = ChannelRight(LoopIteration+1);
 
         if sum(RealChannel==ActiveChannel)==1

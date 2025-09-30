@@ -81,6 +81,7 @@ if strcmp(ProbeInfoOrFolder,"ProbeInfo")
     Load_Data_Window_Info.NrChannel = str2double(app.NrChannelEditField.Value);
     
     Load_Data_Window_Info.OffSetRows = app.CheckBox.Value;
+    Load_Data_Window_Info.ECoGArray = app.ECoGArrayCheckBox.Value;
 
     if ~isempty(app.VerticalOffsetumEditField_2.Value)
         Load_Data_Window_Info.OffSetRowsDistance = app.VerticalOffsetumEditField_2.Value;

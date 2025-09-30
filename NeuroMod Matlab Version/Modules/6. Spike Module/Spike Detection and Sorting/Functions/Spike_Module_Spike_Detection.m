@@ -467,7 +467,7 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
                 end
             elseif Uniquex == 1
                 Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1),zeros(length(SpikeTimes),1)+nchannel];
-            elseif Uniquex == 4
+            elseif Uniquex == 4 % if offset for every second row
                 NumChannel = size(Data.Preprocessed,1);
                 AllChannel1 = 1:4:NumChannel;
                 AllChannel2 = 3:4:NumChannel;
@@ -485,8 +485,28 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
                 end
 
                 Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;XPosition,zeros(length(SpikeTimes),1)+nchannel];
-            end
+            else % 3 channelrows and more
 
+                AllX = 0:str2double(Data.Info.ProbeInfo.HorOffset):str2double(Data.Info.ProbeInfo.HorOffset)*str2double(Data.Info.ProbeInfo.NrRows)-1;
+                AllChannelAllX = [];
+                if Data.Info.ProbeInfo.OffSetRows == 1
+                    for ii = 1:str2double(Data.Info.ProbeInfo.NrRows)
+                        if mod(ii,2)
+                            AllChannelAllX = [AllChannelAllX,AllX];
+                        else
+                            AllChannelAllX = [AllChannelAllX,AllX+str2double(Data.Info.ProbeInfo.OffSetRowsDistance)];
+                        end
+                    end
+                else
+                    for ii = 1:str2double(Data.Info.ProbeInfo.NrRows)
+                        AllChannelAllX = [AllChannelAllX,AllX];
+                    end
+                end
+    
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1)+AllChannelAllX(nchannel),zeros(length(SpikeTimes),1)+nchannel];
+
+            end
+        
         end
     end
     Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;

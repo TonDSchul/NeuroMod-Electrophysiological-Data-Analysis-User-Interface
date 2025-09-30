@@ -141,6 +141,53 @@ if str2double(ChannelRowsDropDown) == 2
 
 end
 
+%% 3 and more Channel Rows
+if str2double(ChannelRowsDropDown) > 2
+
+    chanMap = 1:NrChannel*str2double(ChannelRowsDropDown);
+    chanMap0ind = chanMap-1;
+
+    if isempty(ActiveChannelField{1})
+        connected = true(size(chanMap,1),size(chanMap,2));
+    else
+        if ischar(ActiveChannelField{1})
+            activeChannels = str2double(strsplit(ActiveChannelField{1},','));
+        else
+            activeChannels = ActiveChannelField{1};
+        end
+        connected = false(size(chanMap,1),size(chanMap,2));
+        connected(activeChannels) = true;
+    end
+    
+    kcoords = zeros(size(chanMap,1),size(chanMap,2))+1;
+
+    xcoords = zeros(size(chanMap,1),size(chanMap,2));
+    xcoordtemp = 0:HorOffset:HorOffset*str2double(ChannelRowsDropDown)-1;
+    Laufvariable = 1;
+    for tt = NrChannel:str2double(ChannelRowsDropDown):NrChannel*str2double(ChannelRowsDropDown)
+        if VerOffsetSecondRow == 1
+            if mod(Laufvariable,2) == 0
+                xcoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = xcoordtemp+VerOffsetDistanceSecondRow;
+            else
+                xcoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = xcoordtemp;
+            end
+        else
+            xcoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = xcoordtemp;
+        end
+        Laufvariable = Laufvariable + 1;
+    end
+    
+    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannel)-1)*str2double(ChannelSpacingumEditField);
+    ycoords = zeros(size(chanMap));
+    
+    Laufvariable = 1;
+    for tt = NrChannel:str2double(ChannelRowsDropDown):NrChannel*str2double(ChannelRowsDropDown)
+        ycoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = Alldepths(Laufvariable);
+        Laufvariable = Laufvariable + 1;
+    end
+end
+
+
 if SaveProbe
     % Prompt user for file save location and name
     if ~isfolder(PathToSave)

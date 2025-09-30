@@ -36,6 +36,69 @@ elseif strcmp(Window,"LiveSpikeRate")
     CopyColorBar = 0;
     CopyLegend = 0;
     CopySecondAxis = 0;
+elseif strcmp(Window,"ConStaticSpectrum Band Power Individual Channel")
+    CopyColorBar = 0;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+elseif strcmp(Window,"ConStaticSpectrum Band Power over Depth")
+    CopyColorBar = 1;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+elseif strcmp(Window,"ConStaticSpectrum2")
+    CopyColorBar = 0;
+    CopyLegend = 1;
+    CopySecondAxis = 0;
+    %% Con Spikes
+elseif contains(Window,"ConSpikes") && contains(Window,"Spike Map")
+    CopyColorBar = 1;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+elseif contains(Window,"ConSpikes") && contains(Window,"Spike Amplitude Density Along Depth")
+    CopyColorBar = 1;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+elseif contains(Window,"ConSpikes") && contains(Window,"Cumulative Spike Amplitude Density Along Depth")
+    CopyColorBar = 1;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+elseif contains(Window,"ConSpikes") && contains(Window,"Spike Triggered LFP")
+    CopyColorBar = 1;
+    CopyLegend = 1;
+    CopySecondAxis = 0;
+elseif contains(Window,"ConSpikes") && contains(Window,"Average Waveforms Across Channel")
+    CopyColorBar = 1;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+elseif contains(Window,"ConSpikes") && contains(Window,"Spike Waveforms")
+    CopyColorBar = 0;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+
+elseif contains(Window,"ConSpikes") && contains(Window,"SpikeRateTime")
+    CopyColorBar = 0;
+    CopyLegend = 0;
+    CopySecondAxis = 1;
+elseif contains(Window,"ConSpikes") && contains(Window,"SpikeRateChannel")
+    CopyColorBar = 0;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
+%% event spikes
+elseif contains(Window,"EventSpikes") && contains(Window,"Spike Map")
+    CopyColorBar = 1;
+    CopyLegend = 1;
+    CopySecondAxis = 0;
+elseif contains(Window,"EventSpikes") && contains(Window,"Heatmap")
+    CopyColorBar = 1;
+    CopyLegend = 1;
+    CopySecondAxis = 0;
+elseif contains(Window,"EventSpikes") && contains(Window,"Triggered Average")
+    CopyColorBar = 1;
+    CopyLegend = 1;
+    CopySecondAxis = 0;
+elseif strcmp(Window,"MainWindow")
+    CopyColorBar = 0;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
 elseif contains(Window,"EventStaticSpectrum")
     if contains(Window,"Depth")
         CopyColorBar = 1;
@@ -52,7 +115,7 @@ end
 f = figure;
 destAx = axes('Parent', f);
 
-if CopySecondAxis || strcmp(Window,"EventStaticSpectrum2")
+if CopySecondAxis || strcmp(Window,"EventStaticSpectrum2") || strcmp(Window,"ConStaticSpectrum2") || contains(Window,"SpikeRateTime")
     yyaxis(Figure,'left');
 end
 %% Copy Left Plot Axis

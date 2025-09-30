@@ -103,15 +103,33 @@ if ProbeViewWindow == 0
         end
     end
     
-    if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) == 2 %% X for 2 rows
+    if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >= 2 %% X for 2 rows
             %% Check if x pos. of squares was clicked
             x1 = 4;   % lower x-limit of squares
             x2 = 6;   % upper x-limit of squares
         
         if ~app.Mainapp.Data.Info.ProbeInfo.OffSetRows
+
             Tempxdistances= x1:(x2 - x1) / ((str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)*2)+1):x2;
-    
+            
             squareWidth = Tempxdistances(2)-Tempxdistances(1);
+
+            squareWidth = squareWidth*str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows);
+
+            if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)>2
+                Tempxdistances(:) = Tempxdistances(:) - 2;
+                PreviousDist = Tempxdistances(4)-Tempxdistances(3);
+                Tempxdistances(3) = Tempxdistances(3) + 1;
+                Tempxdistances(4) = Tempxdistances(3) + PreviousDist;
+                DistFirstTwo = Tempxdistances(3)-Tempxdistances(2);
+                
+                if length(Tempxdistances)>4
+                    for i = 5:2:length(Tempxdistances)
+                        Tempxdistances(i:i+1) = Tempxdistances(i-1)+DistFirstTwo;
+                        Tempxdistances(i+1) = Tempxdistances(i+1) + PreviousDist;
+                    end
+                end
+            end
             
             xdistanceRight(1) = Tempxdistances(2);
             xdistanceRight(2) = xdistanceRight(1) + squareWidth;
@@ -126,6 +144,22 @@ if ProbeViewWindow == 0
             % if click in xrange of squares
             if xClick >= xdistanceLeft(1) && xClick <= xdistanceLeft(2)
                 ClickedOnChannelXDirectionRight = 1;
+            end
+            % overwrite previos caluclation
+            if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)>2
+                XClickedOnRow = [];
+                Laufvariable = 1;
+                for t = 1:2:length(Tempxdistances)
+                    xdistance(1) = Tempxdistances(t+1);
+                    xdistance(2) = xdistance(1) + squareWidth;
+            
+                    % if click in xrange of squares
+                    if xClick >= xdistance(1) && xClick <= xdistance(2)
+                        ClickedOnChannelXDirectionLeft = 1;
+                        XClickedOnRow = Laufvariable;
+                    end
+                    Laufvariable = Laufvariable + 1;
+                end
             end
         else
             Tempxdistances = (x1:(x2 - x1) / ((str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)*2)+2):x2);
@@ -148,7 +182,7 @@ if ProbeViewWindow == 0
             Rxdistances2(1) = (Tempxdistances(str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+3)/2)+0.53; 
             Rxdistances2(1) = Rxdistances2(1)+1.9;
             Rxdistances2(2) = Rxdistances2(1)+squareWidth;
-
+            
             %%%%% Left Offset Row
             % if click in xrange of squares
             if xClick >= Lxdistances1(1) && xClick <= Lxdistances1(2)
@@ -178,10 +212,64 @@ if ProbeViewWindow == 0
                 ClickedRightSideR2 = 0;
             end
 
+            if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)>2
+                squareWidth = Tempxdistances(2)-Tempxdistances(1);
+                squareWidth = squareWidth*str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows);
+            
+                if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)>2
+                    Tempxdistances(:) = Tempxdistances(:) - 2;
+                    PreviousDist = Tempxdistances(4)-Tempxdistances(3);
+                    Tempxdistances(3) = Tempxdistances(3) + 1;
+                    Tempxdistances(4) = Tempxdistances(3) + PreviousDist;
+                    DistFirstTwo = Tempxdistances(3)-Tempxdistances(2);
+                    
+                    if length(Tempxdistances)>4
+                        for i = 5:2:length(Tempxdistances)
+                            Tempxdistances(i:i+1) = Tempxdistances(i-1)+DistFirstTwo;
+                            Tempxdistances(i+1) = Tempxdistances(i+1) + PreviousDist;
+                        end
+                    end
+                end
+            
+                XClickedOnRow1 = [];
+                Laufvariable = 1;
+                xdistance = [];
+                for t = 1:2:length(Tempxdistances)
+                    xdistance(1) = Tempxdistances(t+1);
+                    xdistance(2) = xdistance(1) + squareWidth;
+            
+                    % if click in xrange of squares
+                    if xClick >= xdistance(1) && xClick <= xdistance(2)
+                        ClickedOnChannelXDirectionLeft = 1;
+                        XClickedOnRow1 = Laufvariable;
+                    end
+                    Laufvariable = Laufvariable + 1;
+                end
+                %every seond row diff position
+                XClickedOnRow2 = [];
+                Laufvariable = 1;
+                xdistance = [];
+            
+                Tempxdistances = Tempxdistances + 0.72;
+
+                for t = 1:2:length(Tempxdistances)
+                    xdistance(1) = Tempxdistances(t+1);
+                    xdistance(2) = xdistance(1) + squareWidth;
+            
+                    % if click in xrange of squares
+                    if xClick >= xdistance(1) && xClick <= xdistance(2)
+                        ClickedOnChannelXDirectionLeft = 1;
+                        XClickedOnRow2 = Laufvariable;
+                    end
+                    Laufvariable = Laufvariable + 1;
+                end
+                
+            end
+
         end
     end
-
-    if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) == 1 || str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) == 2
+    
+    if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) == 1 || str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >= 2
         %% Check if y pos. of squares was clicked
         yLimits = [0 ((str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)-1)*app.Mainapp.Data.Info.ChannelSpacing)+(app.Mainapp.Data.Info.ChannelSpacing)*2];  % Get current y-axis limits to extend the lines
         yPoint = yLimits(1) - (yLimits(2) - yLimits(1)) / 10;  % y position below the minimum of the plotted lines
@@ -202,6 +290,10 @@ if ProbeViewWindow == 0
             lowylimits = yLimitBracktes(1);
 
             squareHeight = (highylimits-lowylimits)/numSquares;
+            
+            if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)>2
+                squareHeight = floor(squareHeight/3);
+            end
 
             if str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset) ~= 0
                 CorrectionFactor = app.Mainapp.Data.Info.ChannelSpacing/str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset);
@@ -219,6 +311,40 @@ if ProbeViewWindow == 0
                 
         if yClick >= lowylimits && yClick <= highylimits
             ClickedOnChannelYDirection = 1;
+        end
+
+        % get specific column if more than 2 channel
+
+        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)>2
+            if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) > 2
+                highylimits = highylimits+0.3*app.Mainapp.Data.Info.ChannelSpacing;
+                lowylimits = lowylimits+0.3*app.Mainapp.Data.Info.ChannelSpacing;
+            end
+            
+            yPos = NaN(1,numSquares);
+            for i = 0:((numSquares) - 1)  
+                yPos(i+1) = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2); % y-position of the square
+            end
+            
+            yPos = flip(yPos);
+            YClickedOnRow = [];
+            Laufvariable = 1;
+            for t = 1:length(yPos)
+                % if click in xrange of squares
+                if yClick >= yPos(t) && yClick <= yPos(t)+squareHeight
+                    YClickedOnRow = Laufvariable;
+                end
+                Laufvariable = Laufvariable + 1;
+            end
+        end
+    end
+    
+    %% if more than 2 rows and offset! determine if indented x position or normal x position required
+    if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) > 2 && app.Mainapp.Data.Info.ProbeInfo.OffSetRows
+        if mod(YClickedOnRow,2)
+            XClickedOnRow = XClickedOnRow1;
+        else
+            XClickedOnRow = XClickedOnRow2;
         end
     end
 
@@ -272,7 +398,7 @@ if ProbeViewWindow == 0
         end
 
         %% detect based on plotted channelnames
-        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2 && ClickedOnChannelXDirectionRight == 1 || str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2 && HitRight == 1
+        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >=2 && ClickedOnChannelXDirectionRight == 1 || str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >=2 && HitRight == 1
             
             yPos = NaN((numSquares) - 1,2);
             currentchannel = [];
@@ -295,8 +421,8 @@ if ProbeViewWindow == 0
                 end
             end
 
-        elseif str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2 && ClickedOnChannelXDirectionLeft == 1 || str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2 && HitLeft == 1
-            
+        elseif str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >=2 && ClickedOnChannelXDirectionLeft == 1 || str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >=2 && HitLeft == 1
+            %if more than 2 channel rows only here!!!
             yPos = NaN((numSquares) - 1,2);
             currentchannel = [];
 
@@ -355,11 +481,32 @@ if ProbeViewWindow == 0
         if isempty(Index)
             Index = 1;
         end
+        
+        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >2 %%% ARRAY
+            ChannelMatrix = NaN(str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)); 
+            Laufvariable = 1;
+            for n = 1:str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)
+                for m = 1:str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)
+                    ChannelMatrix(n,m) = Laufvariable;
+                    Laufvariable = Laufvariable + 1;
+                end
+            end
+            % if top bottom channel switched
+            if app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+                ChannelMatrix = flip(ChannelMatrix,1);
+            end
+            ChannelClicked = ChannelMatrix(YClickedOnRow,XClickedOnRow);
+            
+            if app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
+                AllChannel = str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)*str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows);
+                ChannelClicked = (AllChannel-ChannelClicked)+1;
+            end
+
+        end
 
         if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==1 
             ChannelClicked = currentchannel(Index);
-        else
-            
+        elseif str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) == 2 % keep = !
             if ClickedOnChannelXDirectionLeft || HitLeft == 1 
                 if currentchannel(Index) == 1
                     ChannelClicked = 1;
@@ -381,6 +528,10 @@ if ProbeViewWindow == 0
             else
                 ChannelClicked = ChannelClicked-1;
             end
+        end
+        
+        if isempty(ChannelClicked)
+            return
         end
 
         if sum(ChannelClicked == app.Mainapp.Data.Info.ProbeInfo.ActiveChannel)>0
@@ -431,7 +582,7 @@ if ProbeViewWindow == 0
         
             if strcmp(Window,'Main Window') || strcmp(Window,'All Windows Opened') || strcmp(Window,'Main Plot Current Source Density') || strcmp(Window,'Main Plot Power Estimate') || strcmp(Window,'Main Plot Spike Rate') || strcmp(Window,'Main Plot Phase Synchronization')
               
-                %Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
+                %Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray)
                 
                 app.Mainapp.ChannelChange = "ProbeView";
     
@@ -451,7 +602,7 @@ if ProbeViewWindow == 0
             if strcmp(Window,'Static Spectrum Window') || strcmp(Window,'All Windows Opened')
                 if ~isempty(app.Mainapp.ContStaticSpectrumWindow)
                     if isvalid(app.Mainapp.ContStaticSpectrumWindow)
-                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel) 
+                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray) 
                         if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
                             [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'All',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance);
                         else
@@ -477,14 +628,14 @@ if ProbeViewWindow == 0
             
             if strcmp(Window,'All Windows Opened') || strcmp(Window,'Cont. Spike Analysis')
                 if ~isempty(app.Mainapp.ConInternalSpikesWindow) || ~isempty(app.Mainapp.ConKilosortSpikesWindow)
-                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
+                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
                     [app] = Utility_ProbeChange_Plot_ContSpikes(app);
                 end
             end
 
             if strcmp(Window,'All Windows Opened') || strcmp(Window,'Event Spike Analysis')
                 if ~isempty(app.Mainapp.EventInternalSpikesWindow) || ~isempty(app.Mainapp.EventKilosortSpikesWindow)
-                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
+                    Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
                     [app] = Utility_ProbeChange_Plot_EventSpikes(app);
                 end
             end
@@ -492,7 +643,7 @@ if ProbeViewWindow == 0
             if strcmp(Window,'All Windows Opened') || strcmp(Window,'Delete Event Trigger Window')
                 if isprop(app.Mainapp,'EventIndiceRejectionWindow')
                     if ~isempty(app.Mainapp.EventIndiceRejectionWindow) && isvalid(app.Mainapp.EventIndiceRejectionWindow)
-                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
+                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
                         %% Extract and plot stim artefacts
                         if ~strcmp(app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value,"Mean over all Trigger")
                             EventToPlot = str2double(app.Mainapp.EventIndiceRejectionWindow.EventstoPlotDropDown.Value);
@@ -527,7 +678,7 @@ if ProbeViewWindow == 0
                 end
             end
 
-            Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel);
+            Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
 
             app.ChannelSelectionEditField.Value = '';
 
@@ -596,7 +747,7 @@ if ProbeViewWindow
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[],app.CheckBox.Value,[],app.ReverseTopandBottomChannelNumberCheckBox.Value,app.SwitchLeftandRightChannelNumberCheckBox.Value)
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[],app.CheckBox.Value,[],app.ReverseTopandBottomChannelNumberCheckBox.Value,app.SwitchLeftandRightChannelNumberCheckBox.Value,app.ECoGArrayCheckBox.Value)
 
 %% Main Window probe view_____if clicked on a line but not on a channel on the right side --> not to change channel selection
 elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDirection]) < 2 && ClickedOnChannelYDirection == 0 || ClickedOnChannelXDirection == 0 && sum([ClickedOnChannelYDirection,ClickedRightSide])<2 && sum([ClickedOnChannelYDirection,ClickedLeftSide])<2 && TwoRowOffsetDesignHit == 0 % no change when user clicked on a channel square in the right
@@ -647,6 +798,6 @@ elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDire
         AllActiveChannel = app.Mainapp.Data.Info.ProbeInfo.ActiveChannel;
         ActiveChannel = app.Mainapp.ActiveChannel;
        
-        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel)
+        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray)
     end
 end
