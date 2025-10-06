@@ -117,7 +117,7 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
         [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,~,PlotInfo,app.Mainapp.ConKilosortSpikesWindow.ChannelSelectionforPlottingEditField,app.Mainapp.ConKilosortSpikesWindow.WaveformSelectionforPlottingEditField,app.Mainapp.ConKilosortSpikesWindow.ClustertoshowDropDown,app.Mainapp.ConKilosortSpikesWindow.SpikeRateNumBinsEditField,app.Mainapp.ConKilosortSpikesWindow.TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.ChannelSelectionforPlottingEditField,app.Mainapp.ConKilosortSpikesWindow.WaveformSelectionforPlottingEditField,app.Mainapp.ConKilosortSpikesWindow.ClustertoshowDropDown,[],app.Mainapp.Data.Info.SpikeType,app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown,app.Mainapp.ConKilosortSpikesWindow.SpikeRateNumBinsEditField,app.Mainapp.ConKilosortSpikesWindow.TimeWindowSpiketriggredLFPEditField,1,app.Mainapp.ConKilosortSpikesWindow.EventstoshowDropDown.Value,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.Waveforms,app.Mainapp.ConKilosortSpikesWindow.Mainapp.ActiveChannel);
     end
 
-    [TempData,app.Mainapp.ConKilosortSpikesWindow.Mainapp.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,app.Mainapp.ConKilosortSpikesWindow.UIAxes,app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,app.Mainapp.ConKilosortSpikesWindow.TextArea,app.Mainapp.ConKilosortSpikesWindow.EventstoshowDropDown.Value,app.Mainapp.ConKilosortSpikesWindow.rgbMatrix,app.Mainapp.ConKilosortSpikesWindow.numCluster,app.Mainapp.ConKilosortSpikesWindow.ClustertoshowDropDown.Value,app.Mainapp.ConKilosortSpikesWindow.UIAxes_3,app.Mainapp.ConKilosortSpikesWindow.UIAxes_5,app.Mainapp.ConKilosortSpikesWindow.TwoORThreeD,app.Mainapp.ConKilosortSpikesWindow.Mainapp.CurrentPlotData,app.Mainapp.ConKilosortSpikesWindow.Mainapp.PlotAppearance,0);
+    [TempData,app.Mainapp.ConKilosortSpikesWindow.Mainapp.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,app.Mainapp.ConKilosortSpikesWindow.UIAxes,app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,app.Mainapp.ConKilosortSpikesWindow.TextArea,app.Mainapp.ConKilosortSpikesWindow.EventstoshowDropDown.Value,app.Mainapp.ConKilosortSpikesWindow.rgbMatrix,app.Mainapp.ConKilosortSpikesWindow.numCluster,app.Mainapp.ConKilosortSpikesWindow.ClustertoshowDropDown.Value,app.Mainapp.ConKilosortSpikesWindow.UIAxes_3,app.Mainapp.ConKilosortSpikesWindow.UIAxes_5,app.Mainapp.ConKilosortSpikesWindow.TwoORThreeD,app.Mainapp.ConKilosortSpikesWindow.Mainapp.CurrentPlotData,app.Mainapp.ConKilosortSpikesWindow.Mainapp.PlotAppearance,0,app.Mainapp.ActiveChannel);
    
     if strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Triggered LFP")
         if ~isempty(TempData)
@@ -171,7 +171,6 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
         end
     end
     
-    
     app.Mainapp.ConKilosortSpikesWindow.UIAxes.YColor = 'k';  
     app.Mainapp.ConKilosortSpikesWindow.UIAxes.YTickLabelMode = 'auto';
     app.Mainapp.ConKilosortSpikesWindow.UIAxes.XColor = 'k';  
@@ -185,6 +184,11 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
         app.Mainapp.ConKilosortSpikesWindow.UIAxes.XLabel.String = '';
         app.Mainapp.ConKilosortSpikesWindow.UIAxes.YColor = 'k';  
         app.Mainapp.ConKilosortSpikesWindow.UIAxes.YTickLabelMode = 'auto';
+    end
+
+    if strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Map") || strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Average Waveforms Across Channel") || strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Triggered LFP") || strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Cumulative Spike Amplitude Density Along Depth") || strcmp(app.Mainapp.ConKilosortSpikesWindow.TypeofAnalysisDropDown.Value,"Spike Amplitude Density Along Depth")
+        % Custome YLabel
+        Utility_Set_YAxis_Depth_Labels(app.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.UIAxes,[],app.Mainapp.ActiveChannel)
     end
 
 end

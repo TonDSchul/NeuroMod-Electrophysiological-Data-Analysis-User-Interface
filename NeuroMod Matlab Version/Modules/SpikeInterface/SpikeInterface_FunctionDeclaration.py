@@ -94,13 +94,42 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
         probe.set_device_channel_indices(ChannelIDS)
         probe.set_contact_ids(ChannelIDS)
         
-    else:
+    if NumberRows == 1:
         positions = np.zeros((num_elec, NumberRows))
         probe = generate_linear_probe(num_elec=num_elec, ypitch=ypitch, contact_shapes='circle', contact_shape_params={'radius': 6})
         # the probe has to be wired to the recording
         probe.set_device_channel_indices(np.arange(num_elec))
         probe.set_contact_ids(np.arange(num_elec))
+    
+    if NumberRows > 2:
+
+        numchannel = int(num_elec/NumberRows)
+
+        all_channels = num_elec
+        # Initialize coordinate array
+        positions = np.zeros((all_channels, 2))
         
+        # Generate coordinates
+        index = 0
+        for row in range(NumberRows):
+            for col in range(numchannel):
+                x = col * HorChannelOffset
+                y = row * ypitch
+                positions[index] = [x, y]
+                index += 1
+        
+        # create an empty probe object with coordinates in um
+        probe = Probe(ndim=2, si_units='um')
+        # set contacts
+        probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
+        # Create the first sequence: 0, 2, 4, ..., num_elec/2 - 2
+        
+        ChannelIDS = np.arange(0, num_elec )
+        
+        print(ChannelIDS)
+        probe.set_device_channel_indices(ChannelIDS)
+        probe.set_contact_ids(ChannelIDS)
+            
     if PlotTraces == 1:
         print("Plotting Traces...")
         plot_probe(probe, with_contact_id=True)

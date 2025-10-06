@@ -1,4 +1,4 @@
-function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD,CurrentPlotData,PlotAppearance,Autorun)
+function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD,CurrentPlotData,PlotAppearance,Autorun,ActiveChannel)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
@@ -46,6 +46,8 @@ function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,Pl
 % 18. PlotAppearance: structure holding plot style information like color
 % and linewidth
 % 19. Autorun: double 1 or 0 whether funtion is executed in autorun 
+% 20 ActiveChannel: vector with all channel being active in the probe view
+% window
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info
@@ -311,4 +313,9 @@ end
 if Autorun == 0
     % Resize Figures based on analysis and whether cbar is necessary
     Continous_Spikes_Resize_Figures(Figure,Figure2,Figure3,TypeofAnalysis,ClusterToShow)
+end
+
+if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
+    % Custome YLabel
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end

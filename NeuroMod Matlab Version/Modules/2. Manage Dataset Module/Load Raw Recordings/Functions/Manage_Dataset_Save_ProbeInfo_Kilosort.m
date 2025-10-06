@@ -28,9 +28,26 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(exec
 
 %________________________________________________________________________________________
 
-PathToSave = (strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
 
 NrChannel = str2double(NrChannelEditField);
+
+if isstring(ActiveChannelField{1})
+    if length(str2double(strsplit(ActiveChannelField{1},','))) > NrChannel*str2double(ChannelRowsDropDown)
+        msgbox("Number of active channel is bigger than speciefied number of channel in probe design.")
+        xcoords = [];
+        ycoords = [];
+        chanMap = [];
+        return;
+    end
+else
+    if length(ActiveChannelField{1}) > NrChannel*str2double(ChannelRowsDropDown)
+        msgbox("Number of active channel is bigger than speciefied number of channel in probe design.")
+        xcoords = [];
+        ycoords = [];
+        chanMap = [];
+        return;
+    end
+end
 
 % if ischar(ActiveChannelField{1})
 %     if isempty(ActiveChannelField{1})
@@ -46,7 +63,7 @@ NrChannel = str2double(NrChannelEditField);
 if str2double(ChannelRowsDropDown) == 1
     chanMap = 1:NrChannel;
     chanMap0ind = 0:NrChannel-1;
-
+    
     if isempty(ActiveChannelField{1})
         connected = true(size(chanMap,1),size(chanMap,2));
     else
@@ -81,7 +98,7 @@ if str2double(ChannelRowsDropDown) == 2
     % 
     % chanMap0ind = chanMap-1;
 
-    chanMap = 1:NrChannel*str2double(ChannelRowsDropDown);
+    chanMap = 1:NrChannel;
     chanMap0ind = chanMap-1;
 
     if isempty(ActiveChannelField{1})
@@ -143,6 +160,8 @@ end
 
 %% 3 and more Channel Rows
 if str2double(ChannelRowsDropDown) > 2
+    
+    NrChannel = round(NrChannel/str2double(ChannelRowsDropDown));
 
     chanMap = 1:NrChannel*str2double(ChannelRowsDropDown);
     chanMap0ind = chanMap-1;
@@ -189,6 +208,9 @@ end
 
 
 if SaveProbe
+    
+    PathToSave = (strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
+
     % Prompt user for file save location and name
     if ~isfolder(PathToSave)
         [file, path] = uiputfile('*.mat', 'Save as');

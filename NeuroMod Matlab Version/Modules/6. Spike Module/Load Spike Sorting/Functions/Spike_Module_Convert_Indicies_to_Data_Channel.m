@@ -62,7 +62,6 @@ else % 3 or more channel rows!
         
         YBasedChannel = AllChannel(ChannelIndex);
         
-
         RespectiveXPositions = Data.Spikes.ChannelPosition(ChannelIndex,1);
          
         HalfChannelDist = Data.Spikes.ChannelPosition(2,1)-Data.Spikes.ChannelPosition(1,1);

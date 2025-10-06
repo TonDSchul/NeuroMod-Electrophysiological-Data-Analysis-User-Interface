@@ -18,7 +18,7 @@ function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,Spik
 % 4. AnalysisTypeDropDown: string, specifies which analysis was selected by user,
 % Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR Channel Waveforms OR
 % "Average Waveforms Across Channel" OR "Cumulative Spike Amplitude Density
-% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
+% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered Average"
 % 5. SpikeRateNumBinsEditField: user input for number of bins of spike rate plots, char,
 % i.e. '100' for 100 bins
 % 6. TextArea: internal event spike app window textarea to show number of
@@ -160,4 +160,9 @@ end
 if Autorun == 0
     % Resize Figures based on analysis and whether cbar is necessary
     Event_Spikes_Resize_Figures(Figure,Figure2,Figure3,AnalysisTypeDropDown,ClustertoshowDropDown);
+end
+
+if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
+    % Custome YLabel
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end

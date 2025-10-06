@@ -420,6 +420,9 @@ if isempty(CSD)
         CurrentPlotData.ERPoverChannelType = strcat("Event Related Potential over Channel");
         CurrentPlotData.ERPoverChannelXTicks = Figure2.XTickLabel;
 
+        Utility_Set_YAxis_Depth_Labels(Data,Figure2,[],DataChannelSelected)
+        Figure2.YTickLabel = flip(Figure2.YTickLabel);
+
     end
 
 %% Plot CSD
@@ -579,5 +582,7 @@ else
     CurrentPlotData.CSDCData = csd';
     CurrentPlotData.CSDType = strcat("Current Source Density");
     CurrentPlotData.CSDXTicks = Figure.XTickLabel;
+    
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],DataChannelSelected)
 
 end

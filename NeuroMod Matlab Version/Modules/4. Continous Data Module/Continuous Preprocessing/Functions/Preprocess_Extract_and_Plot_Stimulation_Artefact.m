@@ -175,3 +175,9 @@ else
     % Add legend for the three specific lines
     legend(Figure,[eventline, Artefactline1, Artefactline2], {'Trigger', 'Artefact Start', 'Artefact End'}, 'Location', 'northeast');
 end
+
+% Custom YLabels
+
+Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+
+Figure.YTickLabel = flip(Figure.YTickLabel);

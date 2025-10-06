@@ -1,4 +1,4 @@
-function Spike_Module_Start_SpikeInterface_Sorting(Data,SpikeInterfaceParameter,executableFolder,SpikeSortinBinPath,SelectedSorter,ManualSelection)
+function Spike_Module_Start_SpikeInterface_Sorting(Data,SpikeInterfaceParameter,executableFolder,SpikeSortinBinPath,SelectedSorter,ManualSelection,ParameterStructure)
 
 [pythonPath] = Spike_Module_Check_Load_Conda_Python_exe(executableFolder);
 SpikeInterfaceScriptPath = strcat(executableFolder,'\Modules\SpikeInterface\SpikeInterface_Sorting.py');
@@ -43,7 +43,7 @@ NumberRows = str2double(Data.Info.ProbeInfo.NrRows);
 RowOffset = double(Data.Info.ProbeInfo.OffSetRows);
 RowOffsetDistance = str2double(Data.Info.ProbeInfo.OffSetRowsDistance);
 
-SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(Sorter,ParameterStructure);
+SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(SelectedSorter,ParameterStructure,file_path);
 
 command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d', ...
     pythonPath, SpikeInterfaceScriptPath, file_path, SpikeInterfaceParameter.MultipleRecordings, SelectedSorter, ...

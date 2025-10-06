@@ -128,3 +128,7 @@ CurrentPlotData.CData = 10*log10(BandPower.allPowerEst(:,dispF))';
 CurrentPlotData.Type = "Power Spectrum over Depth";
 CurrentPlotData.XTicks = Figure.XTickLabel';
 
+if ~strcmp(WhattoPlot,"Just Frequency Bands")
+    % Custom YLabels
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+end

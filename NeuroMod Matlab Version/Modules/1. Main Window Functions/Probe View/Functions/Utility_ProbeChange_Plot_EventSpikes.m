@@ -75,5 +75,9 @@ if ~isempty(app.Mainapp.EventKilosortSpikesWindow)
     app.Mainapp.EventKilosortSpikesWindow.UIAxes.YLabel.Color = 'k';
     app.Mainapp.EventKilosortSpikesWindow.UIAxes.YTickLabelMode = 'auto';
     
+    if strcmp(app.Mainapp.EventKilosortSpikesWindow.AnalysisTypeDropDown.Value,"Spike Map") || strcmp(app.Mainapp.EventKilosortSpikesWindow.AnalysisTypeDropDown.Value,"Spike Rate Heatmap") || strcmp(app.Mainapp.EventKilosortSpikesWindow.AnalysisTypeDropDown.Value,"Spike Triggered Average")
+        % Custome YLabel
+        Utility_Set_YAxis_Depth_Labels(app.Mainapp.Data,app.Mainapp.EventKilosortSpikesWindow.UIAxes,[],app.Mainapp.ActiveChannel)
+    end
 
 end

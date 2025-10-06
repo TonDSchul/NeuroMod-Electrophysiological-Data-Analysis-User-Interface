@@ -593,9 +593,9 @@ if ProbeViewWindow == 0
                     app.Mainapp.UIAxes.YTickLabelMode = 'auto';
                     ylabel(app.Mainapp.UIAxes,"Signal [mV]");
                 else
-                    app.Mainapp.UIAxes.YTick = [];         % Remove Y ticks
-                    app.Mainapp.UIAxes.YTickLabel = {};    % Remove Y tick labels
-                    ylabel(app.Mainapp.UIAxes,"");
+                    %app.Mainapp.UIAxes.YTick = [];         % Remove Y ticks
+                    %app.Mainapp.UIAxes.YTickLabel = {};    % Remove Y tick labels
+                    %ylabel(app.Mainapp.UIAxes,"");
                 end
             end
            

@@ -1,4 +1,4 @@
-function SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(Sorter,ParameterStructure)
+function SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(Sorter,ParameterStructure,file_path)
 
 if strcmp(Sorter,"Mountainsort 5")
     % Loop over all fields

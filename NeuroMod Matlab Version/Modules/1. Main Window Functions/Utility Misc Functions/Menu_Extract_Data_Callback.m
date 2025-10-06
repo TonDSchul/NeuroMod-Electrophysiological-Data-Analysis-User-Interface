@@ -164,6 +164,11 @@ if strcmp(Window,"ProbeLayout")
         app.VerticalOffsetumEditField.Value = "0";
     end
 
+    if str2double(app.ProbeInfoandPath.NumberChannelRows) > 2
+        app.VerticalOffsetumEditField.Enable = "off";
+        app.VerticalOffsetumEditField.Value = '0';
+    end
+
     %channel order
     if ~isempty(app.ProbeInfoandPath .Channelorder) && sum(isnan(app.ProbeInfoandPath .Channelorder))==0
         texttoshow = sprintf('%d, ', app.ProbeInfoandPath .Channelorder);

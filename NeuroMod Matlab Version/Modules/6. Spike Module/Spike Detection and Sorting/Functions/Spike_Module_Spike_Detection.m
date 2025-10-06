@@ -536,7 +536,7 @@ tempactchannel{1} = Data.Info.ProbeInfo.ActiveChannel;
 
 TempChannelPosition = zeros(str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows),2);
 % Create proper channelmap
-[TempChannelPosition(:,1),TempChannelPosition(:,2),Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,num2str(Data.Info.ProbeInfo.NrChannel),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+[TempChannelPosition(:,1),TempChannelPosition(:,2),Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,num2str(size(Data.Raw,1)),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
 
 Data.Spikes.ChannelPosition(:,1) = TempChannelPosition(1:length(Data.Info.ProbeInfo.ActiveChannel),1);
 Data.Spikes.ChannelPosition(:,2) = TempChannelPosition(1:length(Data.Info.ProbeInfo.ActiveChannel),2);
@@ -568,7 +568,12 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikePositions(SpikesWithWaveform==0,:) = [];
     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
     Data.Spikes.Waveforms(SpikesWithWaveform==0,:) = [];
-    Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1);
+    if str2double(Data.Info.ProbeInfo.NrRows)>2
+        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(2,SpikesWithWaveform==1)';
+    else
+        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1);
+    end
+
     if min(Data.Spikes.SpikeChannel)==0
         Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel+1;
     end

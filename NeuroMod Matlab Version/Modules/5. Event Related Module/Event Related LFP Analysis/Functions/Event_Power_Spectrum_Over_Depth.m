@@ -117,3 +117,7 @@ CurrentPlotData.EventSpectrumDepthYData = (0:nC-1)*Data.Info.ChannelSpacing;
 CurrentPlotData.EventSpectrumDepthCData = 10*log10(BandPower.allPowerEst(:,dispF))';
 CurrentPlotData.EventSpectrumDepthType = "Event Related Power Spectrum over Depth";
 CurrentPlotData.EventSpectrumDepthXTicks = Figure.XTickLabel';
+
+if ~strcmp(WhattoPlot,"Just Frequency Bands")
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+end
