@@ -206,6 +206,26 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
                 end
 
                 Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;XPosition,zeros(length(SpikeTimes),1)+nchannel];
+            else % 3 channelrows and more
+
+                AllX = 0:str2double(Data.Info.ProbeInfo.HorOffset):str2double(Data.Info.ProbeInfo.HorOffset)*str2double(Data.Info.ProbeInfo.NrRows)-1;
+                AllChannelAllX = [];
+                if Data.Info.ProbeInfo.OffSetRows == 1
+                    for ii = 1:str2double(Data.Info.ProbeInfo.NrRows)
+                        if mod(ii,2)
+                            AllChannelAllX = [AllChannelAllX,AllX];
+                        else
+                            AllChannelAllX = [AllChannelAllX,AllX+str2double(Data.Info.ProbeInfo.OffSetRowsDistance)];
+                        end
+                    end
+                else
+                    for ii = 1:str2double(Data.Info.ProbeInfo.NrRows)
+                        AllChannelAllX = [AllChannelAllX,AllX];
+                    end
+                end
+    
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1)+AllChannelAllX(nchannel),zeros(length(SpikeTimes),1)+nchannel];
+
             end
 
         end  
@@ -351,6 +371,26 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
                 end
 
                 Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;XPosition,zeros(length(SpikeTimes),1)+nchannel];
+            else % 3 channelrows and more
+
+                AllX = 0:str2double(Data.Info.ProbeInfo.HorOffset):str2double(Data.Info.ProbeInfo.HorOffset)*str2double(Data.Info.ProbeInfo.NrRows)-1;
+                AllChannelAllX = [];
+                if Data.Info.ProbeInfo.OffSetRows == 1
+                    for ii = 1:str2double(Data.Info.ProbeInfo.NrRows)
+                        if mod(ii,2)
+                            AllChannelAllX = [AllChannelAllX,AllX];
+                        else
+                            AllChannelAllX = [AllChannelAllX,AllX+str2double(Data.Info.ProbeInfo.OffSetRowsDistance)];
+                        end
+                    end
+                else
+                    for ii = 1:str2double(Data.Info.ProbeInfo.NrRows)
+                        AllChannelAllX = [AllChannelAllX,AllX];
+                    end
+                end
+    
+                Data.Spikes.SpikePositions = [Data.Spikes.SpikePositions;zeros(length(SpikeTimes),1)+AllChannelAllX(nchannel),zeros(length(SpikeTimes),1)+nchannel];
+
             end
         end
             
@@ -568,7 +608,7 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikePositions(SpikesWithWaveform==0,:) = [];
     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
     Data.Spikes.Waveforms(SpikesWithWaveform==0,:) = [];
-    if str2double(Data.Info.ProbeInfo.NrRows)>2
+    if str2double(Data.Info.ProbeInfo.NrRows)>2 && size(Data.Spikes.SpikeChannel,1)==2
         Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(2,SpikesWithWaveform==1)';
     else
         Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1);

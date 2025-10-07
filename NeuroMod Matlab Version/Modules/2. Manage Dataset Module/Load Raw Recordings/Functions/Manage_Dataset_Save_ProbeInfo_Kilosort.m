@@ -28,7 +28,6 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(exec
 
 %________________________________________________________________________________________
 
-
 NrChannel = str2double(NrChannelEditField);
 
 if isstring(ActiveChannelField{1})

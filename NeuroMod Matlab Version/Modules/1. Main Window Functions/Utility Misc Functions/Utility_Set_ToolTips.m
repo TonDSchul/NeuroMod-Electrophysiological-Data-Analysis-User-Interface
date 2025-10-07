@@ -107,8 +107,8 @@ if Activated
                     app.ExtractDataWindow.ProbeLayoutWindow.SetProbeInformationandContinueButton.Tooltip = "If you specified all aspects of your probe design press this button which adds probe info to the 'Extract Data' window to be able to start data extraction.";
                     app.ExtractDataWindow.ProbeLayoutWindow.ShowChannelSpacingCheckBox.Tooltip = "Click to show channel spacing on the zoomed channel on the right side."; 
                     
-                    app.ExtractDataWindow.ProbeLayoutWindow.ReverseTopandBottomChannelNumberCheckBox.Tooltip = "Enabling this will flip channel 1 from the top to the bottom of the probe. It only changes the channel names and position of active channel as well as channelorders as can be seen in the plot, not how data is displayed (starts with top channel).";
-                    app.ExtractDataWindow.ProbeLayoutWindow.ReverseTopandBottomChannelNumberCheckBox_2.Tooltip = "Enabling this will flip the extracted datset so that the first extracted channel becomes the last one and the last extracted channel becomes the first one. Note: Applied after the channelorder. Top channel in data analysis is always the top channel of the probe plot.";
+                    app.ExtractDataWindow.ProbeLayoutWindow.ReverseTopandBottomChannelNumberCheckBox.Tooltip = "Enabling this will flip channel 1 from the top to the bottom of the probe. It only changes the channel names in the plot for convenience, not how data is displayed (starts with top channel either defined in channel order or first channel extracted in the respective function.).";
+                    app.ExtractDataWindow.ProbeLayoutWindow.ReverseTopandBottomChannelNumberCheckBox_2.Tooltip = "Enabling this will flip the extracted dataset so that the first extracted channel becomes the last one and the last extracted channel becomes the first one. Note: Applied after the channelorder. Top channel in data analysis is always the top channel of the probe plot.";
 
                 end
             end

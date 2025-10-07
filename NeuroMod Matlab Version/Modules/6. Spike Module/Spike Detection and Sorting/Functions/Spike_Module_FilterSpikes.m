@@ -49,6 +49,8 @@ elseif length(UinquePos)==2
     TotalIters = 2;
 elseif length(UinquePos)==4
     TotalIters = 4;
+else
+    TotalIters = length(UinquePos);
 end
 
 % For multiple channel rows: treat each row individually --> loop through
@@ -179,6 +181,36 @@ for its = 1:TotalIters
         % Initialize logical index array to mark values to keep
         toKeep = true(size(SpikeTimes));
 
+    elseif TotalIters > 4 % Array with 3 or more rows
+        AllChannel = its:str2double(Data.Info.ProbeInfo.NrRows):its + (NrChannel-1);
+        CurrentChannel = zeros(size(Data.Spikes.SpikeTimes));
+
+        % Left Channel Row
+        for nchannel = 1:length(AllChannel)
+            CurrentChannel = CurrentChannel + double(Data.Spikes.SpikePositions(:,2) == AllChannel(nchannel));
+            CurrentChannel(CurrentChannel>1) = 1;
+        end
+
+        %% just select spike parameter from those channel
+        SpikeTimes = Data.Spikes.SpikeTimes(CurrentChannel==1);
+        OriginalSpikeXPositions = Data.Spikes.SpikePositions(CurrentChannel==1,1);
+        OriginalSpikePositions = Data.Spikes.SpikePositions(CurrentChannel==1,2);
+        SpikePositions = Data.Spikes.SpikePositions(CurrentChannel==1,2);
+
+        for nchannel = 1:length(AllChannel)
+            SpikePositions(SpikePositions== AllChannel(nchannel)) = nchannel;
+        end
+       
+        SpikeAmps = Data.Spikes.SpikeAmps(CurrentChannel==1);
+
+        if size(Data.Spikes.SpikeChannel,1)==2
+            SpikeChannel = Data.Spikes.SpikeChannel(2,CurrentChannel==1)';
+        else
+            SpikeChannel = Data.Spikes.SpikeChannel(CurrentChannel==1);
+        end
+
+        % Initialize logical index array to mark values to keep
+        toKeep = true(size(SpikeTimes));
     end
 
     %% Conduct Actual Filtering

@@ -52,8 +52,9 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sort
 def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording):
         
     print("Creating and attaching Probe")
-    
-    if NumberRows == 2:
+
+    if NumberRows == 2 or NumberRows == 1 and RowOffset == 1:
+ 
         # Validation
         if num_elec % 2 != 0:
             raise ValueError("num_elec must be divisible by 2.")
@@ -61,8 +62,11 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
         # Initialize positions array
         positions = np.zeros((num_elec, 2))
         
-        # Number of electrodes per row
-        num_elec_per_row = num_elec // 2
+        if NumberRows == 1 and RowOffset == 1:
+            num_elec_per_row = num_elec
+        else:
+            # Number of electrodes per row
+            num_elec_per_row = num_elec // 2
         
         # X Positions
         positions[:num_elec_per_row, 0] = 0  # First row
@@ -72,14 +76,18 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
         if RowOffset == 1:
             for row in range(1, num_elec, 2):  # Start from second row, step by 2
                 positions[row:row+1, 0] += RowOffsetDistance
-            
+        
+        if NumberRows == 1 and RowOffset == 1:
+            positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
+        else:
+            # Y Positions
+            positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
+            positions[num_elec_per_row:, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch) + VerChannelOffset  # Second row
+        
         print(positions)
-        # Y Positions
-        positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
-        positions[num_elec_per_row:, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch) + VerChannelOffset  # Second row
         
         # create an empty probe object with coordinates in um
-        probe = Probe(ndim=NumberRows, si_units='um')
+        probe = Probe(ndim=2, si_units='um')
         # set contacts
         probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
         # Create the first sequence: 0, 2, 4, ..., num_elec/2 - 2
@@ -94,7 +102,7 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
         probe.set_device_channel_indices(ChannelIDS)
         probe.set_contact_ids(ChannelIDS)
         
-    if NumberRows == 1:
+    if NumberRows == 1 and RowOffset == 0:
         positions = np.zeros((num_elec, NumberRows))
         probe = generate_linear_probe(num_elec=num_elec, ypitch=ypitch, contact_shapes='circle', contact_shape_params={'radius': 6})
         # the probe has to be wired to the recording

@@ -39,7 +39,7 @@ if str2double(Data.Info.ProbeInfo.NrRows) <=2
     
     for i = 1:size(Data.Spikes.SpikePositions,1)
     
-        ChannelIndex = Data.Spikes.SpikePositions(i,2) > Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
+        ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
         
         YBasedChannel = AllChannel(ChannelIndex);
     
@@ -58,19 +58,21 @@ else % 3 or more channel rows!
     
     for i = 1:size(Data.Spikes.SpikePositions,1)
     
-        ChannelIndex = Data.Spikes.SpikePositions(i,2) > Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
+        ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
         
         YBasedChannel = AllChannel(ChannelIndex);
         
         RespectiveXPositions = Data.Spikes.ChannelPosition(ChannelIndex,1);
-         
-        HalfChannelDist = Data.Spikes.ChannelPosition(2,1)-Data.Spikes.ChannelPosition(1,1);
+
+        HalfChannelDist = str2double(Data.Info.ProbeInfo.HorOffset)/2;
         
         RespectiveXChannel = [];
         for uu = 1:length(RespectiveXPositions)
-            if Data.Spikes.SpikePositions(i,1) > RespectiveXPositions(uu)-HalfChannelDist && Data.Spikes.SpikePositions(i,1) < RespectiveXPositions(uu)+HalfChannelDist
+            if Data.Spikes.SpikePositions(i,1) >= RespectiveXPositions(uu)-HalfChannelDist && Data.Spikes.SpikePositions(i,1) < RespectiveXPositions(uu)+HalfChannelDist
                RespectiveXChannel = [RespectiveXChannel,uu];
-               
+            end
+            if Data.Spikes.SpikePositions(i,1) > RespectiveXPositions(end)
+                RespectiveXChannel = [RespectiveXChannel,length(RespectiveXPositions)];
             end
         end
         % Can be within two channel ranges --> just take the one with
@@ -85,7 +87,7 @@ else % 3 or more channel rows!
         TargetDepth = (ChannelForCurrentSpike-1)*Data.Info.ChannelSpacing;
         Residual = Data.Spikes.SpikePositions(i,2)-Data.Spikes.ChannelPosition(YBasedChannel(RespectiveXChannel),2);
         
-        Data.Spikes.DataCorrectedSpikePositions(i,2) = TargetDepth - Residual;
+        Data.Spikes.DataCorrectedSpikePositions(i,2) = TargetDepth - double(Residual);
         
         FakeChannel(i) = YBasedChannel(RespectiveXChannel);
     end
@@ -102,7 +104,8 @@ end
 % ch 9 + 80 um
 % ch 10 + 100um .....
 
-if str2double(Data.Info.ProbeInfo.NrRows) <=2
+if str2double(Data.Info.ProbeInfo.NrRows) <=2 
+      
     %create that vector
     
     n = size(Data.Spikes.ChannelPosition,1); % Number of elements in the vector
@@ -112,9 +115,16 @@ if str2double(Data.Info.ProbeInfo.NrRows) <=2
     result = [0, repelem(step:step:step*(ceil((n-1)/2)), 2)];
     result = result(1:n); % Trim to exactly n elements
     
-    for nchannel = 1:n
-       SpikeCurrentChannel = FakeChannel == nchannel;
-       Data.Spikes.DataCorrectedSpikePositions(SpikeCurrentChannel,2) = Data.Spikes.SpikePositions(SpikeCurrentChannel,2) + result(nchannel);
+    if strcmp(Data.Info.Sorter,'External Kilosort GUI') && str2double(Data.Info.ProbeInfo.NrRows) == 1 && Data.Info.ProbeInfo.OffSetRows == 1 
+           for nchannel = 1:n
+               SpikeCurrentChannel = FakeChannel == nchannel;
+               Data.Spikes.DataCorrectedSpikePositions(SpikeCurrentChannel,2) = Data.Spikes.SpikePositions(SpikeCurrentChannel,2);
+            end
+    else
+        for nchannel = 1:n
+           SpikeCurrentChannel = FakeChannel == nchannel;
+           Data.Spikes.DataCorrectedSpikePositions(SpikeCurrentChannel,2) = Data.Spikes.SpikePositions(SpikeCurrentChannel,2) + result(nchannel);
+        end
     end
 end
 

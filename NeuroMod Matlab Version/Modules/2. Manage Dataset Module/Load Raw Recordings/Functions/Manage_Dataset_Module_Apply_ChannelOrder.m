@@ -31,11 +31,12 @@ if ~isempty(ChannelOrder) && length(ChannelOrder) == size(Data.Raw,1) && ~isnan(
     %% Create Channel Order
     %If the user selcted a costum channel order
     if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
-        InversedChannelOrder = zeros(size(ChannelOrder))+length(ChannelOrder);
-        InversedChannelOrder = (InversedChannelOrder - ChannelOrder)+1;
-        %% Reorder data according to loaded Channelorder
-
-        Data.Raw = Data.Raw(InversedChannelOrder, :); % reorder 
+        Data.Raw = Data.Raw(ChannelOrder, :); % reorder 
+        % InversedChannelOrder = zeros(size(ChannelOrder))+length(ChannelOrder);
+        % InversedChannelOrder = (InversedChannelOrder - ChannelOrder)+1;
+        % %% Reorder data according to loaded Channelorder
+        % 
+        % Data.Raw = Data.Raw(InversedChannelOrder, :); % reorder 
     else
         % Reorder data according to loaded Channelorder
 
