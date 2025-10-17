@@ -157,12 +157,14 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     end
 end  
 
-if Autorun == 0
-    % Resize Figures based on analysis and whether cbar is necessary
-    Event_Spikes_Resize_Figures(Figure,Figure2,Figure3,AnalysisTypeDropDown,ClustertoshowDropDown);
-end
+
 
 if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
     % Custome YLabel
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+end
+
+if Autorun == 0
+    % Resize Figures based on analysis and whether cbar is necessary
+    Event_Spikes_Resize_Figures(Figure,Figure2,Figure3,AnalysisTypeDropDown,ClustertoshowDropDown);
 end

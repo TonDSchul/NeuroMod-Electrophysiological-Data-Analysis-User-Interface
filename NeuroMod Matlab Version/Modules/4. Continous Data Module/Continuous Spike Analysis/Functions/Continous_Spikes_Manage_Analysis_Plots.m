@@ -316,12 +316,14 @@ if strcmp(TypeofAnalysis,"Spike Triggered LFP")
     TextArea.Value = texttoshow;
 end             
 
-if Autorun == 0
-    % Resize Figures based on analysis and whether cbar is necessary
-    Continous_Spikes_Resize_Figures(Figure,Figure2,Figure3,TypeofAnalysis,ClusterToShow)
-end
 
 if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     % Custome YLabel
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+end
+
+
+if Autorun == 0
+    % Resize Figures based on analysis and whether cbar is necessary
+    Continous_Spikes_Resize_Figures(Figure,Figure2,Figure3,TypeofAnalysis,ClusterToShow)
 end
