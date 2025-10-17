@@ -69,6 +69,8 @@ if strcmp(Type,"SpectrumPlot") || strcmp(Type,"All")
     PlotAppearance.SpectrumWindow.Data.TimeYLabel = "Power/Frequency [dB/Hz]";
     PlotAppearance.SpectrumWindow.Data.TimeFontSize = 11;
     
+    PlotAppearance.SpectrumWindowOverDepth.Data.YLabel = "Channel Position [Depth (Width)] in µm";
+
     % LineWidth
     PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth = 1.5; % blue
 
@@ -98,7 +100,7 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     % Multiple ERPs (for each channel)
     % Lables and Fontsize
     PlotAppearance.ERPWindow.MultipleERP.XLabel = "Time [s]";
-    PlotAppearance.ERPWindow.MultipleERP.YLabel = "Channel";
+    PlotAppearance.ERPWindow.MultipleERP.YLabel = "Channel Position [Depth (Width)] in µm";
     PlotAppearance.ERPWindow.MultipleERP.FontSize = 11;
     
     % LineWidth
@@ -114,7 +116,7 @@ end
 if strcmp(Type,"CSDPlot") || strcmp(Type,"All") 
     % Lables and Fontsize
     PlotAppearance.CSDWindow.XLabel = "Time [s]";
-    PlotAppearance.CSDWindow.YLabel = "Depth [µm]";
+    PlotAppearance.CSDWindow.YLabel = "Channel Position [Depth (Width)] in µm";
     PlotAppearance.CSDWindow.CLabel = "Signal [mV/mm^2]";
     PlotAppearance.CSDWindow.FontSize = 11;
     
@@ -148,7 +150,7 @@ end
 if strcmp(Type,"LiveCSDPlot") || strcmp(Type,"All") 
     % Lables and Fontsize
     PlotAppearance.LiveCSDWindow.XLabel = "Time [s]";
-    PlotAppearance.LiveCSDWindow.YLabel = "Depth [µm]";
+    PlotAppearance.LiveCSDWindow.YLabel = "Channel Position [Depth (Width)] in µm";
     PlotAppearance.LiveCSDWindow.CLabel = "Signal [mV/mm^2]";
     PlotAppearance.LiveCSDWindow.FontSize = 11;
 
@@ -182,7 +184,7 @@ if strcmp(Type,"InternalEventSpikePlot") || strcmp(Type,"All")
     % Main plot
     % Lables and Fontsize
     PlotAppearance.InternalEventSpikePlot.MainPlotXLabel = "";
-    PlotAppearance.InternalEventSpikePlot.MainPlotYLabel = "Depth [µm]";
+    PlotAppearance.InternalEventSpikePlot.MainPlotYLabel = "Channel Position [Depth (Width)] in µm";
     PlotAppearance.InternalEventSpikePlot.MainPlotFontSize = 11;
     % Color
     PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor = [1,1,1]; % grey

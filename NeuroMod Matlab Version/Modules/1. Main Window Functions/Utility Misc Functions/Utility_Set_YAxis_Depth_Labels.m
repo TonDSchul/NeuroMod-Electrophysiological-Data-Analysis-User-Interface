@@ -69,11 +69,11 @@ Ypositions = linspace(Figure.YLim(1), Figure.YLim(2), numel(CurrentActiveChannel
 %Ypositions = Ypositions(CurrentActiveChannel);
 
 % Apply to the y-axis of your app's UIAxes
-% if numel(CurrentActiveChannel)>10
-%     Figure.YTick = Ypositions(1:2:end);
-%     Figure.YTickLabel = newLabels(1:2:end);
-% else
+if numel(CurrentActiveChannel)>10
+    Figure.YTick = Ypositions(1:2:end);
+    Figure.YTickLabel = newLabels(1:2:end);
+else
     Figure.YTick = Ypositions;
     Figure.YTickLabel = newLabels;
-% end
+end
 

@@ -181,7 +181,7 @@ for its = 1:TotalIters
         % Initialize logical index array to mark values to keep
         toKeep = true(size(SpikeTimes));
 
-    elseif TotalIters > 4 % Array with 3 or more rows
+    elseif TotalIters > 4 || TotalIters == 3 % Array with 3 or more rows
         AllChannel = its:str2double(Data.Info.ProbeInfo.NrRows):its + (NrChannel-1);
         CurrentChannel = zeros(size(Data.Spikes.SpikeTimes));
 

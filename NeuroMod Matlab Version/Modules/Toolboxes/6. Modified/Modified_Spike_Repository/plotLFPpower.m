@@ -89,7 +89,7 @@ if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
     title(BandPowerFigure,'Power over Depth')
     xlabel(BandPowerFigure,'Frequency [Hz]');
     set(BandPowerFigure, 'YDir', 'reverse');
-    ylabel(BandPowerFigure,'Depth on Probe [µm]');
+    ylabel(BandPowerFigure,PlotAppearance.SpectrumWindowOverDepth.Data.YLabel);
 
     cbar_handle=colorbar('peer',BandPowerFigure,'location','EastOutside');
     cbar_handle.Label.String = "Power [dB]";

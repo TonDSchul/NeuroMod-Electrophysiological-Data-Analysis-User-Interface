@@ -395,7 +395,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             disp("Template plots not available for NeuroMod internal spike detection data.")
                             continue;
                         else
-                            [TempData,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1);
+                            [TempData,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1,Data.Info.ProbeInfo.ActiveChannel);
                         end
 
                         if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered Average")
@@ -407,7 +407,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         end
 
                         if ~strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")
-                            [~,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,"SpikeRateBinSizeChange",FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1);
+                            [~,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,"SpikeRateBinSizeChange",FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1,Data.Info.ProbeInfo.ActiveChannel);
                         end
 
                         if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")

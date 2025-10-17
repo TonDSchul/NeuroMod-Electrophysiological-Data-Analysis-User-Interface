@@ -153,6 +153,8 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     MeanWaveForm = MeanWaveForm(1,PlotInfo.ChannelSelection,:);
     
     CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),MeanWaveForm,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD,CurrentPlotData);
+    
+    Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
 end
 
 if strcmp(TypeofAnalysis,"Spike Waveforms")
@@ -208,6 +210,8 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
+    Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
+
     if ~strcmp(ClusterToShow,"Non") && ~strcmp(ClusterToShow,"All") % units
         depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
         ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
@@ -261,6 +265,8 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
+    Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
+
     if ~strcmp(ClusterToShow,"Non") && ~strcmp(ClusterToShow,"All") % units
         depthX = depthBins(1:end-1)+mean(diff(depthBins))/2;
         ampX = ampBins(1:end-1)+mean(diff(ampBins))/2;
