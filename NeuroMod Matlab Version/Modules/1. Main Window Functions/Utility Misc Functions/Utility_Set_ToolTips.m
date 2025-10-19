@@ -466,17 +466,26 @@ if Activated
     end
 
     %% Delete trigger indices
-    if strcmp(Window,"Deletetriggerindices") || strcmp(Window,"All")
+    if strcmp(Window,"DeleteEventIndices") || strcmp(Window,"All")
         if ~isempty(app.EventIndiceRejectionWindow) && isvalid(app.EventIndiceRejectionWindow)
-            %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
-            app.EventIndiceRejectionWindow.DataToExtractFromDropDown.Tooltip = "Select if event related data is extracted from raw or preprocessed data.";
-            app.EventIndiceRejectionWindow.EventChannelforStimulationDropDown.Tooltip = "Select the event channel for which event related data is extracted.";
             
-            app.EventIndiceRejectionWindow.EventstoPlotDropDown.Tooltip = "Specify trigger (trials) for which channel data is plotted below (Just for plotting purposes!).";
-            app.EventIndiceRejectionWindow.TriggerToRejectMatlabExpressionsEditField.Tooltip = "Specify trigger to be deleted. Format: Matlab expressions.";
-            app.EventIndiceRejectionWindow.DeleteSelectedEventButton.Tooltip = "Click to confirm deletion of trigger specified (window closes automatically).";
+            app.EventIndiceRejectionWindow.TextArea.Tooltip = "Trial indices for selected channel that exceed the specified threshold. Copy and paste into the 'Reject Trials' edit field to reject those trials from the selected channel. Note, that it is currently only possible to reject the specified trials from all channel at the same time!";
+            app.EventIndiceRejectionWindow.ThresholdEditField.Tooltip = "Select a threshold to automatically determine trials exceeding those limits. Must be positive!";
+            
+            app.EventIndiceRejectionWindow.CheckBox.Tooltip = "Activate to determine trials exceeding the postive threshold.";
+            app.EventIndiceRejectionWindow.CheckBox_2.Tooltip = "Activate to determine trials exceeding the negative threshold.";
+            app.EventIndiceRejectionWindow.PlotThresholdCheckBox.Tooltip = "Activate plot the threshold in the lower plot.";
 
-            app.EventIndiceRejectionWindow.Slider.Tooltip = "Specify spacing inbetween plotted channel.";
+            app.EventIndiceRejectionWindow.ClimfromtoEditField.Tooltip = "Change the clims in the upper plot. Example: [-1,1]";
+            app.EventIndiceRejectionWindow.RejectTrialsfromtoEditField.Tooltip = "Specify all trials to be rejected for the currently selected channel. Example: [1,2,3,4] or 1:10; Note, that it is currently only possible to reject the specified trials from all channel at the same time!";
+            app.EventIndiceRejectionWindow.PlotTrialsfromtoEditField.Tooltip = "Specify which trials are plotted in the upper and lower plot. Example: [1,2,3,4] or 1:10";
+            app.EventIndiceRejectionWindow.ChannelofInterestDropDown.Tooltip = "Specify the channel for which to visualize and reject trials. This is only for plotting. Note, that it is currently only possible to reject the specified trials from all channel at the same time!";
+            
+            app.EventIndiceRejectionWindow.SaveasnewDatasetButton.Tooltip = "Click to add the currently selected trials to reject to the preprocessed event related dataset. Note, that it is currently only possible to reject the specified trials from all channel at the same time!";
+
+
+            app.EventIndiceRejectionWindow.EventChannelSelectionDropDown.Tooltip = "Specify the event channel to take trigger times from.";
+            app.EventIndiceRejectionWindow.DataToExtractFromDropDown.Tooltip = "Specify whether plotted data is extracted from the raw - or preprocessed dataset.";
         end
     end
 

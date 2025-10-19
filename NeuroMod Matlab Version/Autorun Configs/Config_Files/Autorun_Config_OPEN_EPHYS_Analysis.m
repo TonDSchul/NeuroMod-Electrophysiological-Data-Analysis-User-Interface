@@ -192,7 +192,7 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'NEO IO Trigger Channel'; % When using Matlab to extract data: Record node of your recording like 'Record Node 104'; When using NEO: 'NEO IO Trigger Channel'
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 104'; % When using Matlab to extract data: Record node of your recording like 'Record Node 104'; When using NEO: 'NEO IO Trigger Channel'
 AutorunConfig.ExtractEventDataModule.TriggerType = ''; % state, eirther 1 or 0 for rising and falling edge
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % state, eirther 1 or 0 for rising and falling edge

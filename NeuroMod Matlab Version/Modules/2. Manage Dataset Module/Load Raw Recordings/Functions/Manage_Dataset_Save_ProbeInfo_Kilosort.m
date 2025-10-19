@@ -30,7 +30,12 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(exec
 
 NrChannel = str2double(NrChannelEditField);
 
+% force to char
 if isstring(ActiveChannelField{1})
+    ActiveChannelField{1} = convertStringsToChars(ActiveChannelField{1});
+end
+
+if ischar(ActiveChannelField{1})
     if length(str2double(strsplit(ActiveChannelField{1},','))) > NrChannel*str2double(ChannelRowsDropDown)
         msgbox("Number of active channel is bigger than speciefied number of channel in probe design.")
         xcoords = [];

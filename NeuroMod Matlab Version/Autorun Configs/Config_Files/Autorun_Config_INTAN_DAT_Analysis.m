@@ -35,7 +35,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Open_in_Phy'
 
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","PreproEventDataModule","Event_Analysis_ERP"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Internal_Spike_Detection","Extract_Events","Event_Spike_Analysis"];
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
@@ -225,7 +225,7 @@ AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expre
 
 %% 4.4 Analyse event related signal
 %______________________________________________________________________________________________________
-AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Preprocessed Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
+AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
 AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'DIN-04'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'

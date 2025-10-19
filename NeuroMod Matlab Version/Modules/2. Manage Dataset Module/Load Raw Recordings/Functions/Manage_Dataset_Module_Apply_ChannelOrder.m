@@ -21,7 +21,7 @@ function [Data] =  Manage_Dataset_Module_Apply_ChannelOrder (Data,ChannelOrder)
 
 %________________________________________________________________________________________
 
-if ~isempty(ChannelOrder) && length(ChannelOrder) == size(Data.Raw,1) && ~isnan(ChannelOrder(1))
+if ~isempty(ChannelOrder) && length(ChannelOrder) == length(Data.Info.ProbeInfo.ActiveChannel) && ~isnan(ChannelOrder(1))
     % If first channel is designated with a 0, we cant loop
     % over it. So we add +1 to every channel number
     if find(ChannelOrder == 0)

@@ -193,7 +193,7 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'NEO IO Trigger Channel'; % 'NEO IO Trigger Channel' when using NEO OR 'Neuralynx Trigger Channel'
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Neuralynx Trigger Channel'; % 'NEO IO Trigger Channel' when using NEO OR 'Neuralynx Trigger Channel'
 AutorunConfig.ExtractEventDataModule.TriggerType = ''; % not applicable
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1,2,3'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = ''; % Not applicable

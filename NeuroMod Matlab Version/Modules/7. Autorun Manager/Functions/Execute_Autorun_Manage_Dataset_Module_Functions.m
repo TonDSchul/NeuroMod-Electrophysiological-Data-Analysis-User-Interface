@@ -115,11 +115,14 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
             msgbox(stringtoshow);
             return;
         end
-
+        
+        [Data] = Manage_Dataset_Module_OnlyTake_Specified_Channel(Data);
+        
         if AutorunConfig.ExtractRawRecording.CostumChannelOrder == true
             %% Apply ChannelOrder
             [Data] = Manage_Dataset_Module_Apply_ChannelOrder (Data,Channelorder);
         end
+
         %% FLip Data
         if Data.Info.ProbeInfo.FlipLoadedData == 1
             [Data.Raw] = Manage_Dataset_Module_Apply_DataFlip(Data.Raw);
