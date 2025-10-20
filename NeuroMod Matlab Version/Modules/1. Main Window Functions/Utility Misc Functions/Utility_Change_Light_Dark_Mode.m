@@ -169,7 +169,8 @@ if strcmp(Window,"ExtractDataWindow")
 
     app.ExtractionOptionsPanel.BackgroundColor = WindowBackgroundColor;
     app.ExtractionOptionsPanel.ForegroundColor = WindowBackgroundColor;
-    
+    app.AdditionalAmplificationFactorEditField_2.BackgroundColor = ComponentsInWindowColor;
+
     app.RecordingSystemDropDown.BackgroundColor                = ComponentsInWindowColor;
     app.FileTypeDropDown.BackgroundColor                       = ComponentsInWindowColor;
     app.AdditionalAmplificationFactorEditField.BackgroundColor = ComponentsInWindowColor;

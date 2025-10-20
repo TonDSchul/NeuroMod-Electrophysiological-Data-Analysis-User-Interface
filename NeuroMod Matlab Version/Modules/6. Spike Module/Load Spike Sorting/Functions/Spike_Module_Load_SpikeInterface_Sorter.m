@@ -193,7 +193,6 @@ if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     Data.Spikes.SpikePositions(SpikeAboveTime==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
-    Data.Spikes.SpikeTemplates(SpikeAboveTime==1) = [];
 
     msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct output folder." )
 end

@@ -79,6 +79,8 @@ AutorunConfig.ExtractRawRecording.NEOFormat = "NEO Plexon"; % Either "Auto Detec
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "NEO Plexon"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = ".plx"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; 
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________

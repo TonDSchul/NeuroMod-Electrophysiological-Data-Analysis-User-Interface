@@ -79,6 +79,8 @@ AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; 
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made.
 AutorunConfig.ExtractRawRecording.FileType = "Intan .rhd"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________

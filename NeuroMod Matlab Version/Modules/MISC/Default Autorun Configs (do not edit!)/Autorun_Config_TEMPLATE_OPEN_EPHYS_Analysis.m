@@ -1,4 +1,5 @@
 function [AutorunConfig] = Autorun_Config_TEMPLATE_OPEN_EPHYS_Analysis(DisplayOrder)
+
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -78,6 +79,8 @@ AutorunConfig.ExtractRawRecording.NEOFormat = "NEO New Open Ephys Format"; % "NE
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Open Ephys"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "Record Node 104"; % "Record Node 104" or whatever node you want to extract!
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -192,7 +195,7 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'NEO IO Trigger Channel'; % When using Matlab to extract data: Record node of your recording like 'Record Node 104'; When using NEO: 'NEO IO Trigger Channel'
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 104'; % When using Matlab to extract data: Record node of your recording like 'Record Node 104'; When using NEO: 'NEO IO Trigger Channel'
 AutorunConfig.ExtractEventDataModule.TriggerType = ''; % state, eirther 1 or 0 for rising and falling edge
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % state, eirther 1 or 0 for rising and falling edge

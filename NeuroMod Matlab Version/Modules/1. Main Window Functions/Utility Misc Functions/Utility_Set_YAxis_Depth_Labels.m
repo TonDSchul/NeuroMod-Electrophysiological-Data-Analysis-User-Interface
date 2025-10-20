@@ -60,6 +60,16 @@ if Data.Info.ProbeInfo.OffSetRows==1
     end
 end
 
+%% Create Probe Layout with ALL Channel, also those that got deleted. This gives true probe positions
+DeletedChannel = 0;
+if isfield(Data.Info,'ChannelDeletion')
+    DeletedChannel = length(unique(Data.Info.ChannelDeletion));
+else
+    DeletedChannel = 0;
+end
+
+[x,y,Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,num2str(size(Data.Raw,1)+DeletedChannel),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+
 % Create combined labels
 newLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, xx), y, x, 'UniformOutput', false);
 

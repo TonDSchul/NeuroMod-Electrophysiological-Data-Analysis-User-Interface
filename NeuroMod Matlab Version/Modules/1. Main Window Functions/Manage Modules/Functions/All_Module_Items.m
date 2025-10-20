@@ -70,10 +70,6 @@ Module{5}.Title = 'Example Module - this could be yours!';
 Module{5}.Function = 'RUN_Example';
 Module{5}.Items{1} = 'Example App 1';
 
-%% Test1
-Module{6}.Title = 'Test1';
-Module{6}.Function = 'RUN_Example';
-Module{6}.Items{1} = 'Open Example';
 %% end of definition (do not edit this!)
 %%__________________________________________________________________________________________
 

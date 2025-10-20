@@ -1,4 +1,5 @@
 function [AutorunConfig] = Autorun_Config_OPEN_EPHYS_Analysis(DisplayOrder)
+
 %% Options What to Execute
 %______________________
 %--- Manage Dataset ---
@@ -78,6 +79,8 @@ AutorunConfig.ExtractRawRecording.NEOFormat = "NEO New Open Ephys Format"; % "NE
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Open Ephys"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "Record Node 104"; % "Record Node 104" or whatever node you want to extract!
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________

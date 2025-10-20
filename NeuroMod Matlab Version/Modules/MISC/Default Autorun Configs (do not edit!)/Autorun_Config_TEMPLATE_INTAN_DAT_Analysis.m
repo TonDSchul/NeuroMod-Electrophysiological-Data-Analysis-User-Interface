@@ -35,7 +35,7 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrd
 % 'Open_in_Phy'
 
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Save_for_SpikeSorting","Create_Spike_Sorting"];
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
@@ -79,6 +79,8 @@ AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; 
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "Intan .dat"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; 
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -196,7 +198,7 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'DIN Inputs'; % For Intan Recordings:'Analog Input' OR 'Digital Inputs' OR 'AUX Inputs' OR 'DIN Inputs' as char; 
 AutorunConfig.ExtractEventDataModule.TriggerType = 'Rising Edge'; % char, Either 'Rising Edge' or 'Falling Edge' to determine whether rising or falling edge should be detected
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
-AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.02'; % Threshold of event signal at which events are extracted as char
+AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % Threshold of event signal at which events are extracted as char
 % Event Related Data
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.3'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.6'; %Time in seconds extracted after events as char
@@ -227,7 +229,7 @@ AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expre
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
-AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Event TTL Nr.1'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'DIN-04'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
 AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
 % ERP Settings
@@ -279,13 +281,13 @@ AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform = true; % false f
 AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices = '0.001'; % in s
 
 %% Spike Sorting
-AutorunConfig.CreateSpikeSorting.Sorter = 'SpyKING CIRCUS 2'; % which Spike sorter was used to analyze your data? Options: 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
-AutorunConfig.CreateSpikeSorting.OpenSpikeInterface = '1';
+AutorunConfig.CreateSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
+AutorunConfig.CreateSpikeSorting.OpenSpikeInterface = '0';
 AutorunConfig.CreateSpikeSorting.Preprocess = '1';
 AutorunConfig.CreateSpikeSorting.PlotTraces = '0';
 AutorunConfig.CreateSpikeSorting.PlotSortingResults = '0';
 AutorunConfig.CreateSpikeSorting.LoadSorting = '0';
-AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = '1';
+AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = '0';
 %%%%%%%%%%%%%%%%%%%%%%%%%%% For Spike Sorting Settings see below!! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % JUST for WaveClus 3!!!!!
 AutorunConfig.InternalSpikeDetection.WaveClus3_SpikeSortingType = 'AllChannelTogether'; %% 'AllChannelTogether' OR IndividualChannel
@@ -310,18 +312,18 @@ end
 %% Spike Sorter Settings
 %% Mountainsort 5
 AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5 = struct('scheme', '2', ...
-                      'detect_threshold', 5, ...
+                      'detect_threshold', 6.5, ...
                       'detect_sign', -1, ...
                       'detect_time_radius_msec', 0.5, ...
                       'snippet_T1', 20, ...
                       'snippet_T2', 20, ...
                       'npca_per_channel', 3, ...
                       'npca_per_subdivision', 10, ...
-                      'snippet_mask_radius', 250, ...
-                      'scheme1_detect_channel_radius', 150, ...
-                      'scheme2_phase1_detect_channel_radius', 200, ...
-                      'scheme2_detect_channel_radius', 50, ...
-                      'scheme2_max_num_snippets_per_training_batch', 200, ...
+                      'snippet_mask_radius', 300, ...
+                      'scheme1_detect_channel_radius', 200, ...
+                      'scheme2_phase1_detect_channel_radius', 250, ...
+                      'scheme2_detect_channel_radius', 100, ...
+                      'scheme2_max_num_snippets_per_training_batch', 250, ...
                       'scheme2_training_duration_sec', 300, ...
                       'scheme2_training_recording_sampling_mode', 'uniform', ...
                       'scheme3_block_duration_sec', 1800, ...

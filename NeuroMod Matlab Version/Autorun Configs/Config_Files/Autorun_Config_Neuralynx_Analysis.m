@@ -79,6 +79,8 @@ AutorunConfig.ExtractRawRecording.NEOFormat = "NEO Neuralynx"; % Either "Auto De
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "NEO Neuralynx"; % "NEO Neuralynx" when using NEO OR "Neuralynx" when using Matlab!!!
 AutorunConfig.ExtractRawRecording.FileType = "neuralynx_ncs"; % "neuralynx_ncs"; 
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________

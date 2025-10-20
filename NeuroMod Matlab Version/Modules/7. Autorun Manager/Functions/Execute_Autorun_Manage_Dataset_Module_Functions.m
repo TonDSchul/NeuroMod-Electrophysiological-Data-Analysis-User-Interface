@@ -116,7 +116,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
             return;
         end
         
-        [Data] = Manage_Dataset_Module_OnlyTake_Specified_Channel(Data);
+        [Data] = Manage_Dataset_Module_OnlyTake_Specified_Channel(Data,AutorunConfig.ExtractRawRecording.ChannelToExtract);
         
         if AutorunConfig.ExtractRawRecording.CostumChannelOrder == true
             %% Apply ChannelOrder

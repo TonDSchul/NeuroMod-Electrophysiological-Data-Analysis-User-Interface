@@ -79,6 +79,8 @@ AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; 
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "TDT Tank Data"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "TDT .sev"; % "TDT .sev"
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
