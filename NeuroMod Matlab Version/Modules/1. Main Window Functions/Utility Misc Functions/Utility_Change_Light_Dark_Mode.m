@@ -493,9 +493,9 @@ if strcmp(Window,"LowPassSettings")
 end
 
 if strcmp(Window,"SpikeTrgAveragePrepro")   
-    set(findall(app.PreproSTAWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    set(findall(app.PreproSTLFPWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
     
-    app.PreproSTAWindowUIFigure.Color  = WindowBackgroundColor;
+    app.PreproSTLFPWindowUIFigure.Color  = WindowBackgroundColor;
 
     app.FilterOptionsPanel.BackgroundColor  = WindowBackgroundColor;
     app.FilterOptionsPanel.ForegroundColor  = WindowBackgroundColor;

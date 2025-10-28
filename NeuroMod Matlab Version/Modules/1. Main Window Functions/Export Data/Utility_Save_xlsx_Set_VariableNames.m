@@ -73,7 +73,7 @@ elseif strcmp(Analysis,"Heatmap")
 elseif contains(Analysis,"Waveform Analysis") && contains(Analysis,"Plot")
     T = table(XData', YData', XTick', 'VariableNames', {'Time (ms)','-','Time Labels (ms)'});
 elseif contains(Analysis,"ISI") && contains(Analysis,"Plot")
-    T = table(XData', YData', XTick', 'VariableNames', {'Time Bins','ISI (s)','Time Labels (s)'});
+    T = table(XData', YData', XTick', 'VariableNames', {'Time Bins','ISI Probability (%)','ISI (s)'});
 elseif contains(Analysis,"Auto") && contains(Analysis,"Plot")
     T = table(XData', YData', XTick', 'VariableNames', {'Time Lag (ms)','Spike Count','Time Lag Labels (ms)'});
 %% anything else

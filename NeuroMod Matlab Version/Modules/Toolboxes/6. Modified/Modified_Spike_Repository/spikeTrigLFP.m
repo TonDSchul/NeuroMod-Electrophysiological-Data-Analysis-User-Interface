@@ -170,8 +170,15 @@ if Plot
     
     cbar_handle=colorbar('peer',Figure,'location','WestOutside');
     cbar_handle.Label.String = "LFP [mV]";
+    cbar_handle.Label.Color = 'k';
+    cbar_handle.Color = 'k';
     set(Figure, 'YDir', 'reverse');
-    
+
+    Figure.XColor = 'k';         % tick color
+    Figure.XLabel.Color = 'k';   % label color
+
+    xlabel(Figure,'Time [s]')
+
     %Add xticks
     Execute_Autorun_Set_Up_Figure(Figure,1,"Non",Time,20,[],[],[],10);
 end

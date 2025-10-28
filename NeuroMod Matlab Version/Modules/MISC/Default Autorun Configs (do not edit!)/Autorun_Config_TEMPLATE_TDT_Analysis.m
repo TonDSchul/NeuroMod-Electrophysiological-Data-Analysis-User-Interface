@@ -253,7 +253,7 @@ AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonP
 %% 4.5 Analyse event related spikes
 %______________________________________________________________________________________________________
 % Standard Settings
-AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map","Spike Rate Heatmap","Spike Triggered Average"]; %"Spike Map" OR "Spike Rate Heatmap" OR "Spike Triggered Average"
+AutorunConfig.AnalyseEventSpikesModule.Plottype = ["Spike Map","Spike Rate Heatmap","Spike Triggered LFP"]; %"Spike Map" OR "Spike Rate Heatmap" OR "Spike Triggered LFP"
 
 AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.depth_bin_size = []; %if empty: channelspacing is taken
 AutorunConfig.AnalyseEventSpikesModule.SpikeBinSettings.time_bin_size = 0.006; % app.GeneralSettings.Time bin size in seconds; % false if you dont want this step to be executed

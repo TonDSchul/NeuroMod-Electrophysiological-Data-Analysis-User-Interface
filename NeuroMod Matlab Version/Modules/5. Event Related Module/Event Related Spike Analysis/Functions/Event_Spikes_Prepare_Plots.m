@@ -90,7 +90,7 @@ end
 
 [SpikeTriggeredAverageField] = Utility_SimpleCheckInputs(SpikeTriggeredAverageField,"Two",strcat('-0.005,0.2'),0,0);
 
-%% Time Range Spike Triggered Average
+%% Time Range Spike Triggered LFP
 
 commaindicie = find(SpikeTriggeredAverageField == ',');
 PlotInfo.TimeWindowSpiketriggredLFP(1) = str2double(SpikeTriggeredAverageField(1:commaindicie(1)-1));

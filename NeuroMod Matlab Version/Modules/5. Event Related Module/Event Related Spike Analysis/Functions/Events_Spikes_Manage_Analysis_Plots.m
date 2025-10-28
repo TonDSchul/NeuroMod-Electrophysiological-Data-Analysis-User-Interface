@@ -18,7 +18,7 @@ function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,Spik
 % 4. AnalysisTypeDropDown: string, specifies which analysis was selected by user,
 % Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR Channel Waveforms OR
 % "Average Waveforms Across Channel" OR "Cumulative Spike Amplitude Density
-% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered Average"
+% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
 % 5. SpikeRateNumBinsEditField: user input for number of bins of spike rate plots, char,
 % i.e. '100' for 100 bins
 % 6. TextArea: internal event spike app window textarea to show number of
@@ -70,7 +70,7 @@ function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,Spik
 TempData = [];
 
 %% Prepare Plots
-if strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
+if strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
 else
     [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,0,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
@@ -83,7 +83,7 @@ if strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") && PlotInfo.ChannelsToPlot(
 end
 
 % Check for errros
-if strcmp(AnalysisTypeDropDown,"Spike Triggered Average") && PlotInfo.ChannelsToPlot(1) == PlotInfo.ChannelsToPlot(2)
+if strcmp(AnalysisTypeDropDown,"Spike Triggered LFP") && PlotInfo.ChannelsToPlot(1) == PlotInfo.ChannelsToPlot(2)
     msgbox("Error: at least two channel necessary!")
     return;
 end
@@ -124,7 +124,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap")
         CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
     end
 
-elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
+elseif strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     
     if ~strcmp(ClustertoshowDropDown,"All") && ~strcmp(ClustertoshowDropDown,"Non")
         ClustertoShowIndicie = str2double(ClustertoshowDropDown);
@@ -158,8 +158,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
 end  
 
 
-
-if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered Average")
+if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     % Custome YLabel
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end

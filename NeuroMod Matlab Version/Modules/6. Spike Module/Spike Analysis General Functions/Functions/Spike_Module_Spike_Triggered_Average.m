@@ -75,7 +75,7 @@ if LowPass == 0 || Downsampled == 0
     LowPassFilterSettings = [];
     Spike_Extraction_LowPassWindow = SpikeTrgAvgAskPrepro(LowPassFilterSettings);
     
-    uiwait(Spike_Extraction_LowPassWindow.PreproSTAWindowUIFigure);
+    uiwait(Spike_Extraction_LowPassWindow.PreproSTLFPWindowUIFigure);
     
     if isvalid(Spike_Extraction_LowPassWindow)
         Cutoff = Spike_Extraction_LowPassWindow.LowPassFilterSettings.Cutoff;
@@ -83,10 +83,10 @@ if LowPass == 0 || Downsampled == 0
         SaveFilter = Spike_Extraction_LowPassWindow.LowPassFilterSettings.SaveFilter;
         delete(Spike_Extraction_LowPassWindow);
     else
-        disp("Low pass filter settings window closed before manual config was saved. Using standad high pass filter settings (220Hz cutoff, filterorder 6)")
-        Cutoff = "220";
-        FilterOrder = "6";
-        SaveFilter = "No";
+        msgbox("Preprocessing canceled. Spike triggered LFP not computed.")
+        mnLFP = [];
+        CurrentPlotData = [];
+        return;
     end
 
     PreproInfo = [];

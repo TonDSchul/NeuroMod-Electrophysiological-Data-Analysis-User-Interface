@@ -145,14 +145,10 @@ for nplots = 1:length(Units)
             CurrentPlotData.UnitAnalyisAutoXData{nplots,nUnit} = binEdges(1:end-1);
             CurrentPlotData.UnitAnalyisAutoYData{nplots,nUnit} = counts;
             CurrentPlotData.UnitAnalyisAutoCData{nplots,nUnit} = [];
-            
-            if strcmp(Data.Info.SpikeType,"Kilosort")
-                CurrentPlotData.UnitAnalyisAutoType{nplots,nUnit} = strcat("Continous Kilosort Unit ",num2str(Units{nplots}(nUnit))," Analyis: Autocorrelogram");
-            else
-                CurrentPlotData.UnitAnalyisAutoType{nplots,nUnit} = strcat("Continous Internal Unit ",num2str(Units{nplots}(nUnit))," Analyis: Autocorrelogram");
-            end
-            
-            CurrentPlotData.UnitAnalyisAutoXTicks{nplots,nUnit} = Figurename.XTickLabel;
+
+            CurrentPlotData.UnitAnalyisAutoType{nplots,nUnit} = strcat("Unit ",num2str(Units{nplots}(nUnit))," Analyis: Autocorrelogram");
+
+            CurrentPlotData.UnitAnalyisAutoXTicks{nplots,nUnit} = binEdges(1:end-1);
 
             
         end %~isempty(interspikeIntervals)

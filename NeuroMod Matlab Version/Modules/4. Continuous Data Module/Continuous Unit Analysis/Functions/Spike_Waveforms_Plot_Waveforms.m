@@ -135,11 +135,9 @@ for nplots = 1:length(Units)
             CurrentPlotData.UnitAnalyisWaveformsYData{nplots,nindividualunits} = TempWaves;
             CurrentPlotData.UnitAnalyisWaveformsCData{nplots,nindividualunits} = [];
             
-            if strcmp(Data.Info.SpikeType,"Kilosort")
-                CurrentPlotData.UnitAnalyisWaveformsType{nplots,nindividualunits} = strcat("Continous Kilosort Unit ",num2str(Units{nplots}(nindividualunits))," Analyis: Waveforms");
-            else
-                CurrentPlotData.UnitAnalyisWaveformsType{nplots,nindividualunits} = strcat("Continous Internal Unit ",num2str(Units{nplots}(nindividualunits))," Analyis: Waveforms");
-            end
+
+            CurrentPlotData.UnitAnalyisWaveformsType{nplots,nindividualunits} = strcat("Unit ",num2str(Units{nplots}(nindividualunits))," Analyis: Waveforms");
+           
 
             CurrentPlotData.UnitAnalyisWaveformsXTicks{nplots,nindividualunits} = Figurename.XTickLabel;
 

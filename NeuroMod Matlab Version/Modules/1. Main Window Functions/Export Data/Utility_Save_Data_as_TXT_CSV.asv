@@ -347,16 +347,10 @@ if contains(Analysis,"Plot")
                 fprintf(fid, '%s\n', TextInfosStart{i});
             end
         else
-            
             %% Write TextInfos to Excel (starting at row 1, column A)
             TextInfosStart{end+1} = '';
             TextInfosStart{end+1} = '****************************************************************************************************';
             TextInfosStart{end+1} = '';
-            
-            if ~contains(Analysis,"Waveform Analysis")
-                TextInfosStart = TextInfosStart(end-6:end);
-            end
-
             for i = 1:length(TextInfosStart)
                 fprintf(fid, '%s\n', TextInfosStart{i});
             end
@@ -394,21 +388,14 @@ if contains(Analysis,"Plot")
         end
 
         % Write table to Excel
-        if contains(Analysis,"Waveform Analysis")
-            fprintf(fid, '\n');
-            fprintf(fid, '****************************************************************************************************');
-            fprintf(fid, '\n');
-            fprintf(fid, strcat(T.Properties.VariableNames{1},',',T.Properties.VariableNames{2},',',T.Properties.VariableNames{3},'\n'));
-        end
-
+        fprintf(fid, '\n');
+        fprintf(fid, '****************************************************************************************************');
+        fprintf(fid, '\n');
+        fprintf(fid, strcat(T.Properties.VariableNames{1},',',T.Properties.VariableNames{2},',',T.Properties.VariableNames{3},'\n'));
+        
         if ~contains(Analysis,"Waveform Analysis")
-            % --- Write header
-            fprintf(fid, '%s , %s\n', T.Properties.VariableNames{2},T.Properties.VariableNames{3});
-            
-            % --- Write numeric data (no exponential, 6 decimals)
-            for i = 1:height(T)
-                fprintf(fid, '%.6f , %.6f\n', T{i,2},T{i,3});
-            end
+            fprintf(fid, '%s,%s,%s\n', T.Properties.VariableNames{2});
+            fprintf(fid, '%s\n', T{:,2});
         else
             writetable(T, Fullsavefile, 'Delimiter', ',', 'WriteMode', 'append');
         end

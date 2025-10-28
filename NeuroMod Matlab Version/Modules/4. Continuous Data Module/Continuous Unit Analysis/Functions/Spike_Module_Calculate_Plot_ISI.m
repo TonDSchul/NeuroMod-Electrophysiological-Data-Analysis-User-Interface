@@ -108,13 +108,13 @@ for nplots = 1:length(Units)
             % For waveform in ms
             if isempty(Barhandles)
                 Barplots = Barplots+1;
-                bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); % Adjust 'BinWidth' as needed
+                bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); 
             else
                 Barplots = Barplots+1;
                 if length(Barhandles)>=Barplots
-                    set(Barhandles(Barplots),'YData',InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); % Adjust 'BinWidth' as needed+
+                    set(Barhandles(Barplots),'YData',InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); %
                 else
-                    bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); % Adjust 'BinWidth' as needed
+                    bar(Figurename,InterspikeIntervals, 'FaceColor',colorMatrix(nUnit,:), 'EdgeColor',colorMatrix(nUnit,:),'FaceAlpha', 0.5,'EdgeAlpha', 0.5,'Tag','ISI'); 
                 end
             end      
 
@@ -123,11 +123,7 @@ for nplots = 1:length(Units)
             CurrentPlotData.UnitAnalyisISIYData{nplots,nUnit} = InterspikeIntervals;
             CurrentPlotData.UnitAnalyisISICData{nplots,nUnit} = [];
             
-            if strcmp(Data.Info.SpikeType,"Kilosort")
-                CurrentPlotData.UnitAnalyisISIType{nplots,nUnit} = strcat("Continous Kilosort Unit ",num2str(Units{nplots}(nUnit))," Analyis: ISI");
-            else
-                CurrentPlotData.UnitAnalyisISIType{nplots,nUnit} = strcat("Continous Internal Unit ",num2str(Units{nplots}(nUnit))," Analyis: ISI");
-            end
+            CurrentPlotData.UnitAnalyisISIType{nplots,nUnit} = strcat("Unit ",num2str(Units{nplots}(nUnit))," Analyis: ISI");
 
         end % if spike indicies found
     end%For nUnits
@@ -153,7 +149,7 @@ for nplots = 1:length(Units)
     Figurename.XTickLabel = string(Time(tickIndices));
 
     for i = 1:length(Units{nplots})
-        CurrentPlotData.UnitAnalyisISIXTicks{nplots,i} = Figurename.XTickLabel;
+        CurrentPlotData.UnitAnalyisISIXTicks{nplots,i} = Time;
     end
 
     drawnow;

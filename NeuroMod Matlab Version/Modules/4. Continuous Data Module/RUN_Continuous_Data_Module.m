@@ -1,4 +1,4 @@
-function RUN_Continous_Data_Module(app,ModuleFunctionName)
+function RUN_Continuous_Data_Module(app,ModuleFunctionName)
 
 %% This function is executed when the user pressed the RUN button of the Continous Data Module
 % It opens the windows of this module depending on the selection the user
@@ -74,7 +74,7 @@ elseif strcmp(ModuleFunctionName,"Spike Analysis")
     end
 
     % Open app window for Analysis of Kilosort Data
-    app.ConKilosortSpikesWindow = Continous_Spike_Window(app);
+    app.ConKilosortSpikesWindow = Continuous_Spike_Window(app);
 
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"ConSpikes");
         
@@ -85,11 +85,11 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
     else
         if strcmp(app.Data.Info.SpikeType,'Kilosort') || strcmp(app.Data.Info.SpikeType,'SpikeInterface')
             if isfield(app.Data.Spikes,"Waveforms")
-                app.UnitAnalysis = Continous_Unit_Analysis_Window(app,"ContinousWindow");
+                app.UnitAnalysis = Continuous_Unit_Analysis_Window(app,"ContinousWindow");
             end
         elseif strcmp(app.Data.Info.SpikeType,'Internal')
             if isfield(app.Data.Info,'SpikeSorting')
-                app.UnitAnalysis = Continous_Unit_Analysis_Window(app,"ContinousWindow");
+                app.UnitAnalysis = Continuous_Unit_Analysis_Window(app,"ContinousWindow");
             else
                 msgbox("No Spike Sorting Data found for Internal Spike Analysis.");
             end
