@@ -2,7 +2,7 @@ function Utility_Set_YAxis_Depth_Labels(Data,Figure,executableFolder,CurrentActi
 
 tempactchannel{1} = Data.Info.ProbeInfo.ActiveChannel;
 
-[x,y,Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,executableFolder,Data.Info.ProbeInfo.NrRows,num2str(size(Data.Raw,1)),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+[x,y,Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,num2str(size(Data.Raw,1)),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
 
 % Make custome y positions if second channel row offset. This is because
 % for Kilosort it needs to be reversed so that the first channel is on the
@@ -68,17 +68,16 @@ else
     DeletedChannel = 0;
 end
 
-[x,y,Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,executableFolder,Data.Info.ProbeInfo.NrRows,num2str(size(Data.Raw,1)+DeletedChannel),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+[x,y,Data.Spikes.ChannelMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,Data.Info.ProbeInfo.NrRows,num2str(size(Data.Raw,1)+DeletedChannel),num2str(Data.Info.ChannelSpacing),tempactchannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
 
 % Create combined labels
 newLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, xx), y, x, 'UniformOutput', false);
 
-% IndicesToTake = ismember(Data.Info.ProbeInfo.ActiveChannel,CurrentActiveChannel);
-% newLabels = newLabels(IndicesToTake);
-
-newLabels = newLabels(CurrentActiveChannel);
+IndicesToTake = Data.Info.ProbeInfo.ActiveChannel == CurrentActiveChannel;
+newLabels = newLabels(IndicesToTake);
 
 Ypositions = linspace(Figure.YLim(1), Figure.YLim(2), numel(CurrentActiveChannel));
+%Ypositions = Ypositions(CurrentActiveChannel);
 
 % Apply to the y-axis of your app's UIAxes
 if numel(CurrentActiveChannel)>10

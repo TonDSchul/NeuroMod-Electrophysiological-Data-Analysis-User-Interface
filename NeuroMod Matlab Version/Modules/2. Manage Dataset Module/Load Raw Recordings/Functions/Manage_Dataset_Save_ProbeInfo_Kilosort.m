@@ -1,4 +1,4 @@
-function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,VerOffsetSecondRow,VerOffsetDistanceSecondRow,VerOffsetRows,HorOffset,SaveProbe)
+function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,VerOffsetSecondRow,VerOffsetDistanceSecondRow,VerOffsetRows,HorOffset,SaveProbe)
 
 %________________________________________________________________________________________
 
@@ -28,7 +28,13 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(exec
 
 %________________________________________________________________________________________
 
-NrChannel = str2double(NrChannelEditField);
+if isfield(Data,'Raw') % When executed in probe view window
+    AllProbeChannel = str2double(Data.Info.ProbeInfo.NrChannel);
+else % when executed in GUI with already loaded dataset
+    AllProbeChannel = str2double(Data.NrChannel);
+end
+
+NrChannelPerRow = str2double(NrChannelEditField);
 
 % force to char
 if isstring(ActiveChannelField{1})
@@ -36,59 +42,64 @@ if isstring(ActiveChannelField{1})
 end
 
 if ischar(ActiveChannelField{1})
-    if length(str2double(strsplit(ActiveChannelField{1},','))) > NrChannel*str2double(ChannelRowsDropDown)
+    if length(str2double(strsplit(ActiveChannelField{1},','))) > AllProbeChannel
         msgbox("Number of active channel is bigger than speciefied number of channel in probe design.")
         xcoords = [];
         ycoords = [];
         chanMap = [];
         return;
     end
+    AllActiveChannel = str2double(strsplit(ActiveChannelField{1},','));
+elseif isa(ActiveChannelField{1}, 'double')
+    if length(ActiveChannelField{1}) > AllProbeChannel
+        msgbox("Number of active channel is bigger than speciefied number of channel in probe design.")
+        xcoords = [];
+        ycoords = [];
+        chanMap = [];
+        return;
+    end
+    AllActiveChannel = ActiveChannelField{1};
 else
-    if length(ActiveChannelField{1}) > NrChannel*str2double(ChannelRowsDropDown)
-        msgbox("Number of active channel is bigger than speciefied number of channel in probe design.")
-        xcoords = [];
-        ycoords = [];
-        chanMap = [];
-        return;
-    end
+    msgbox("No active channel defined! Returning.")
+    xcoords = [];
+    ycoords = [];
+    chanMap = [];
+    return;
 end
-
-% if ischar(ActiveChannelField{1})
-%     if isempty(ActiveChannelField{1})
-%         NrChannel = str2double(NrChannelEditField)*str2double(ChannelRowsDropDown);
-%     else
-%         NrChannel = length(str2double(strsplit(ActiveChannelField{1})));
-%     end
-% else
-%     NrChannel = length(ActiveChannelField{1});
-% end
 
 %% 1 Channel Row
 if str2double(ChannelRowsDropDown) == 1
-    chanMap = 1:NrChannel;
-    chanMap0ind = 0:NrChannel-1;
+
+    chanMap = 1:AllProbeChannel;
+    chanMap0ind = 0:AllProbeChannel-1;
     
+    % create active/inactive channel
     if isempty(ActiveChannelField{1})
-        connected = true(size(chanMap,1),size(chanMap,2));
+        connected = true(size(chanMap));
     else
-        if ischar(ActiveChannelField{1})
-            activeChannels = str2double(strsplit(ActiveChannelField{1},','));
-        else
-            activeChannels = ActiveChannelField{1};
-        end
-        connected = false(size(chanMap,1),size(chanMap,2));
-        connected(activeChannels) = true;
+        connected = false(size(chanMap));
+        connected(AllActiveChannel) = true;
     end
 
     kcoords = zeros(size(chanMap,1),size(chanMap,2))+1;
-
+    
     if ~VerOffsetSecondRow
         xcoords = zeros(size(chanMap,1),size(chanMap,2));
     else
         xcoords = zeros(size(chanMap,1),size(chanMap,2));
         xcoords(2:2:end) = 0 + VerOffsetDistanceSecondRow;
     end
-    ycoords = 0:str2double(ChannelSpacingumEditField):(NrChannel-1)*str2double(ChannelSpacingumEditField);
+
+    % Now there can be inactive channel inbetween. So depth has to be
+    % adjusted
+    ycoords = zeros(size(chanMap));
+    CurrentDepth = 0;
+    Laufvariable = 1;
+    for naF = 1:AllProbeChannel
+        ycoords(Laufvariable) = CurrentDepth;
+        Laufvariable = Laufvariable+1;
+        CurrentDepth = CurrentDepth + str2double(ChannelSpacingumEditField);
+    end
 end
 
 %% 2 Channel Rows
@@ -102,7 +113,7 @@ if str2double(ChannelRowsDropDown) == 2
     % 
     % chanMap0ind = chanMap-1;
 
-    chanMap = 1:NrChannel;
+    chanMap = 1:NrChannelPerRow;
     chanMap0ind = chanMap-1;
 
     if isempty(ActiveChannelField{1})
@@ -140,7 +151,7 @@ if str2double(ChannelRowsDropDown) == 2
         xcoords(ProperIndicies) = xcoords(ProperIndicies) + VerOffsetDistanceSecondRow;
     end
     
-    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannel)-1)*str2double(ChannelSpacingumEditField);
+    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannelPerRow)-1)*str2double(ChannelSpacingumEditField);
     ycoords = zeros(size(chanMap));
     
     vec = 1:length(chanMap);
@@ -165,9 +176,9 @@ end
 %% 3 and more Channel Rows
 if str2double(ChannelRowsDropDown) > 2
     
-    NrChannel = round(NrChannel/str2double(ChannelRowsDropDown));
+    NrChannelPerRow = round(NrChannelPerRow/str2double(ChannelRowsDropDown));
 
-    chanMap = 1:NrChannel*str2double(ChannelRowsDropDown);
+    chanMap = 1:NrChannelPerRow*str2double(ChannelRowsDropDown);
     chanMap0ind = chanMap-1;
 
     if isempty(ActiveChannelField{1})
@@ -187,7 +198,7 @@ if str2double(ChannelRowsDropDown) > 2
     xcoords = zeros(size(chanMap,1),size(chanMap,2));
     xcoordtemp = 0:HorOffset:HorOffset*str2double(ChannelRowsDropDown)-1;
     Laufvariable = 1;
-    for tt = NrChannel:str2double(ChannelRowsDropDown):NrChannel*str2double(ChannelRowsDropDown)
+    for tt = NrChannelPerRow:str2double(ChannelRowsDropDown):NrChannelPerRow*str2double(ChannelRowsDropDown)
         if VerOffsetSecondRow == 1
             if mod(Laufvariable,2) == 0
                 xcoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = xcoordtemp+VerOffsetDistanceSecondRow;
@@ -200,11 +211,11 @@ if str2double(ChannelRowsDropDown) > 2
         Laufvariable = Laufvariable + 1;
     end
     
-    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannel)-1)*str2double(ChannelSpacingumEditField);
+    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannelPerRow)-1)*str2double(ChannelSpacingumEditField);
     ycoords = zeros(size(chanMap));
     
     Laufvariable = 1;
-    for tt = NrChannel:str2double(ChannelRowsDropDown):NrChannel*str2double(ChannelRowsDropDown)
+    for tt = NrChannelPerRow:str2double(ChannelRowsDropDown):NrChannelPerRow*str2double(ChannelRowsDropDown)
         ycoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = Alldepths(Laufvariable);
         Laufvariable = Laufvariable + 1;
     end

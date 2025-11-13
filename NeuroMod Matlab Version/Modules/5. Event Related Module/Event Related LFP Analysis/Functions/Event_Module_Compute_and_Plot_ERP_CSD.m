@@ -65,6 +65,7 @@ Eventplot = [];
 CSDClim = [];
 
 % Extract Cell with eventindicies of selected event channel
+OriginalDataChannelSelected = DataChannelSelected;
 
 NumEvents = size(EventRelatedData,2);
 %% For all Channel ERP
@@ -420,7 +421,7 @@ if isempty(CSD)
         CurrentPlotData.ERPoverChannelType = strcat("Event Related Potential over Channel");
         CurrentPlotData.ERPoverChannelXTicks = Figure2.XTickLabel;
 
-        Utility_Set_YAxis_Depth_Labels(Data,Figure2,[],DataChannelSelected)
+        Utility_Set_YAxis_Depth_Labels(Data,Figure2,[],OriginalDataChannelSelected)
         Figure2.YTickLabel = flip(Figure2.YTickLabel);
 
     end
@@ -583,6 +584,6 @@ else
     CurrentPlotData.CSDType = strcat("Current Source Density");
     CurrentPlotData.CSDXTicks = Figure.XTickLabel;
     
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],DataChannelSelected)
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalDataChannelSelected)
 
 end

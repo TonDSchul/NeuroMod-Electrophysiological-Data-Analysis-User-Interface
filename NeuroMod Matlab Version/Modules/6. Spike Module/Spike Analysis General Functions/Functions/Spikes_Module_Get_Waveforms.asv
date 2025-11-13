@@ -103,15 +103,22 @@ else
                 ActiveChannel = 1:length(Data.Info.ProbeInfo.ActiveChannel(:));
             end
             
-            % Find logical array of which spikes are in ActiveChannel
-            DataChannelSpikePositions = ismember(SpikePositions(nwaves), ActiveChannel);
-            
-            if DataChannelSpikePositions==1
-                Waveforms(nwaves, :) = Data.(DataField)(SpikePositions(nwaves), startIdx:endIdx);
-            else
-                Waveforms(nwaves, :) = NaN;
-            end
+            if strcmp(Data.Info.SpikeType,'Internal')
+                % Find logical array of which spikes are in ActiveChannel
+                DataChannelSpikePositions = ismember(SpikePositions(nwaves), ActiveChannel);
+                
+                if DataChannelSpikePositions==1
+                    Waveforms(nwaves, :) = Data.(DataField)(SpikePositions(nwaves), startIdx:endIdx);
+                else
+                    Waveforms(nwaves, :) = NaN;
+                end
 
+            else
+                % Find logical array of which spikes are in ActiveChannel
+                DataChannelSpikePositions = ismember(SpikePositions, ActiveChannel);
+                
+                Waveforms(nwaves, :) = Data.(DataField)(DataChannelSpikePositions(nwaves), startIdx:endIdx);
+            end
             BiggestSpikeIndicies(nwaves) = 1;
         else
             Waveforms(nwaves, :) = NaN;

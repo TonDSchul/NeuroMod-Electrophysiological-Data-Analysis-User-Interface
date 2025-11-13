@@ -275,7 +275,7 @@ if strcmp(Type,"Static")
         if strcmp(SpikePlotType,"Points")
             if ~isempty(SpikeData.Indicie)
 
-                [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
+                [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
                 
                 % INdex of SpikeData.Position in Info.ProbeInfo.ActiveChannel
 
@@ -314,7 +314,7 @@ if strcmp(Type,"Static")
             end
         elseif strcmp(SpikePlotType,"Waveforms") && strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
             
-            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
+            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
     
             SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
             numspikesplotted = 0;
@@ -379,23 +379,23 @@ if strcmp(Type,"Static")
     elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort") || strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"SpikeInterface")
         if ~isempty(SpikeData.Indicie)
             
-            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
+            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
 
             SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
-
+            
             if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
                 %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
                 %range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
-               
-                range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
                 
-                %% Scale and Plot Kilosort Spike Positions
+                range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
+
+                %% Scale and Plot Spike Positions
                 for j = 1:numel(SpikeData.Indicie) 
                     %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
                     % Calculate the range of both vectors
                     range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
                     % Compute the scaling factor
-                    SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
+                    SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);                    
                 end
 
             else%imagsc plot
@@ -416,10 +416,6 @@ if strcmp(Type,"Static")
                     delete(SpikeHandles(numel(SpikeData.Indicie)+1:end));
                 elseif length(SpikeHandles) < numel(SpikeData.Indicie)
                     set(SpikeHandles, 'XData', Time(SpikeData.Indicie(1:length(SpikeHandles))), 'YData', SpikeData.Position(1:length(SpikeHandles)), 'Tag', 'Spikes');
-                    % plot(UIAxis, Time(SpikeData.Indicie(length(SpikeHandles)+1:end)), SpikeData.Position(length(SpikeHandles)+1:end), 'ko', ...
-                    % 'MarkerFaceColor', PlotAppearance.MainWindow.Data.Color.MainSpikes, ...
-                    % 'MarkerSize', PlotAppearance.MainWindow.Data.LineWidth.MainSpikes + 1.5, ...
-                    % 'Tag', 'Spikes');
 
                     line(UIAxis, Time(SpikeData.Indicie(length(SpikeHandles)+1:end)), SpikeData.Position(length(SpikeHandles)+1:end), ...
                      'LineStyle', 'none', ...  % No connecting lines between markers
@@ -560,7 +556,7 @@ if strcmp(Type,"Movie")
         if strcmp(SpikePlotType,"Points")
             if ~isempty(SpikeData.Indicie)
 
-                [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
+                [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
                 
                 % INdex of SpikeData.Position in Info.ProbeInfo.ActiveChannel
 
@@ -599,7 +595,7 @@ if strcmp(Type,"Movie")
             end
         elseif strcmp(SpikePlotType,"Waveforms") && strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
             
-            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
+            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
     
             SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
             numspikesplotted = 0;
@@ -664,23 +660,23 @@ if strcmp(Type,"Movie")
     elseif strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort") || strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"SpikeInterface")
         if ~isempty(SpikeData.Indicie)
             
-            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
+            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
 
             SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
-
+            
             if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
                 %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
                 %range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
-               
-                range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
                 
-                %% Scale and Plot Kilosort Spike Positions
+                range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
+
+                %% Scale and Plot Spike Positions
                 for j = 1:numel(SpikeData.Indicie) 
                     %To Plot Kilosort Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
                     % Calculate the range of both vectors
                     range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
                     % Compute the scaling factor
-                    SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);
+                    SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);                    
                 end
 
             else%imagsc plot
@@ -701,10 +697,6 @@ if strcmp(Type,"Movie")
                     delete(SpikeHandles(numel(SpikeData.Indicie)+1:end));
                 elseif length(SpikeHandles) < numel(SpikeData.Indicie)
                     set(SpikeHandles, 'XData', Time(SpikeData.Indicie(1:length(SpikeHandles))), 'YData', SpikeData.Position(1:length(SpikeHandles)), 'Tag', 'Spikes');
-                    % plot(UIAxis, Time(SpikeData.Indicie(length(SpikeHandles)+1:end)), SpikeData.Position(length(SpikeHandles)+1:end), 'ko', ...
-                    % 'MarkerFaceColor', PlotAppearance.MainWindow.Data.Color.MainSpikes, ...
-                    % 'MarkerSize', PlotAppearance.MainWindow.Data.LineWidth.MainSpikes + 1.5, ...
-                    % 'Tag', 'Spikes');
 
                     line(UIAxis, Time(SpikeData.Indicie(length(SpikeHandles)+1:end)), SpikeData.Position(length(SpikeHandles)+1:end), ...
                      'LineStyle', 'none', ...  % No connecting lines between markers

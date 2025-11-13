@@ -292,6 +292,13 @@ elseif strcmp(Type,"VariableDefinition")
         app.Data.Info.ProbeInfo.ShortAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort;
         app.Data.Info.ProbeInfo.AreaDistanceFromTip = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance;
     end
+
+    % get x and y coordinates
+    activechannel{1} = app.Data.Info.ProbeInfo.ActiveChannel;
+    DummyStruc.Raw = [];
+    DummyStruc.Info.ProbeInfo.NrChannel = app.Data.Info.ProbeInfo.NrChannel;
+
+    [app.Data.Info.ProbeInfo.xcoords,app.Data.Info.ProbeInfo.ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),0);
     
     if app.Data.Time(end)<3
         if app.Data.Time(end)<1

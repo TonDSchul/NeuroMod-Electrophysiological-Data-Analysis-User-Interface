@@ -112,6 +112,7 @@ Figure_2.NextPlot = "add";
 Figure_2.FontSize = 10;
 Figure.FontSize = 10;
 
+OriginalActiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
 BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
@@ -130,5 +131,5 @@ CurrentPlotData.XTicks = Figure.XTickLabel';
 
 if ~strcmp(WhattoPlot,"Just Frequency Bands")
     % Custom YLabels
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalActiveChannel)
 end

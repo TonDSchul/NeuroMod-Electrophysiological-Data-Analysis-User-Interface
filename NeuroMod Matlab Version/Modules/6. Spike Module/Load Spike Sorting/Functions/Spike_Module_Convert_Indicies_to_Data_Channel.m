@@ -30,6 +30,10 @@ function [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data)
 
 %% First assign a unique channel from 1 to 64 to each channel based on x and y coordinate
 
+if ischar(Data.Info.ProbeInfo.HorOffset)
+    HorOffset = str2double(Data.Info.ProbeInfo.HorOffset);
+end
+
 if str2double(Data.Info.ProbeInfo.NrRows) <=2
     Data.Spikes.DataCorrectedSpikePositions = Data.Spikes.SpikePositions;
     
@@ -42,13 +46,28 @@ if str2double(Data.Info.ProbeInfo.NrRows) <=2
         ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
         
         YBasedChannel = AllChannel(ChannelIndex);
-    
-        if Data.Spikes.SpikePositions(i,1) < Data.Info.ProbeInfo.HorOffset/2 % left
-            FakeChannel(i) = YBasedChannel(1);
-        else % right
-            FakeChannel(i) = YBasedChannel(2);
+        
+        % if no active channel after the current one: take more
+        % channelspacing in case its right outside the border (>channelspaing/2)
+        if isempty(YBasedChannel)
+            ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing; 
+            YBasedChannel = AllChannel(ChannelIndex);
         end
+        
+        if str2double(Data.Info.ProbeInfo.NrRows) == 2
+            if Data.Spikes.SpikePositions(i,1) <= HorOffset/2 % left
+                FakeChannel(i) = YBasedChannel(1);
+            else % right
+                FakeChannel(i) = YBasedChannel(2);
+            end
+        elseif str2double(Data.Info.ProbeInfo.NrRows) == 1
+            FakeChannel(i) = YBasedChannel(1);
+        end
+        
     end
+
+    [~, FakeChannel] = ismember(FakeChannel, Data.Info.ProbeInfo.ActiveChannel);
+
 else % 3 or more channel rows!
     Data.Spikes.DataCorrectedSpikePositions = Data.Spikes.SpikePositions;
     
@@ -64,7 +83,7 @@ else % 3 or more channel rows!
         
         RespectiveXPositions = Data.Spikes.ChannelPosition(ChannelIndex,1);
 
-        HalfChannelDist = str2double(Data.Info.ProbeInfo.HorOffset)/2;
+        HalfChannelDist = HorOffset/2;
         
         RespectiveXChannel = [];
         for uu = 1:length(RespectiveXPositions)

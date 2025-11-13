@@ -132,8 +132,8 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
                 end
             end
 
-            if strcmp(Window,"Con_Spikes") || strcmp(Window,"Event_Spikes")
-                GapsNumberWithinBelow = 0;
+            if strcmp(Window,"Con_Spikes") strcmp(Window,"Event_Spikes")
+
             end
 
             if GapsNumberWithinBelow == 0 % before gap
@@ -145,23 +145,21 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
             SpikePositions(i) = SpikePositions(i) - Correction;
 
         else % if no active channel deactivated
-            
-            if ~strcmp(Window,"Con_Spikes") && ~strcmp(Window,"Event_Spikes")
-                GapsNumberWithinBelow = 0;
-                for nGaps = 1:length(GapsDiffs)
-                    if SpikePositions(i) > Info.ProbeInfo.ycoords(Info.ProbeInfo.ActiveChannel(GapsDiffs(nGaps))+1)
-                       GapsNumberWithinBelow = GapsNumberWithinBelow + (GapsDiffs(nGaps)*ChannelSpacing);
-                    end
+
+            GapsNumberWithinBelow = 0;
+            for nGaps = 1:length(GapsDiffs)
+                if SpikePositions(i) > Info.ProbeInfo.ycoords(Info.ProbeInfo.ActiveChannel(GapsDiffs(nGaps))+1)
+                   GapsNumberWithinBelow = GapsNumberWithinBelow + (GapsDiffs(nGaps)*ChannelSpacing);
                 end
-    
-                if GapsNumberWithinBelow > 0 % before gap
-                    Correction = GapsNumberWithinBelow; % + gap zwischen channel inseln wenn vorhhanden
-                else
-                    Correction = 0;
-                end
-                
-                SpikePositions(i) = SpikePositions(i) - Correction;
             end
+
+            if GapsNumberWithinBelow > 0 % before gap
+                Correction = GapsNumberWithinBelow; % + gap zwischen channel inseln wenn vorhhanden
+            else
+                Correction = 0;
+            end
+            
+            SpikePositions(i) = SpikePositions(i) - Correction;
         end
     end
 end

@@ -115,12 +115,12 @@ if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
     UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
 
     if numel(UinquePos)>=2
-        [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.DataCorrectedSpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.DataCorrectedSpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
     else
-        [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
     end
 else
-    [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Internal",Data.Info.ProbeInfo.ActiveChannel);
+    [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Internal",Data.Info.ProbeInfo.ActiveChannel);
 end
 
 if ~isempty(SelectedChannelIndicies)

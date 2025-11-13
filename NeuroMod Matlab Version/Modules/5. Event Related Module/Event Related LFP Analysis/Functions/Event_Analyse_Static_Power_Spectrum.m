@@ -111,7 +111,6 @@ if ~isempty(PWelch_handles)
     set(PWelch_handles(1), 'XData', Freq(DispIndicies), 'YData', 10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
 else
     line(Figure,Freq(DispIndicies),10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
-
 end
 
 xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);

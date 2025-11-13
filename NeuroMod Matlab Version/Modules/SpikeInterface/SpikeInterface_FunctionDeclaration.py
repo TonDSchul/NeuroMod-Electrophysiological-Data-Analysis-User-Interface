@@ -14,6 +14,7 @@ from probeinterface import generate_linear_probe
 from probeinterface import Probe
 from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 #from kilosort import io
 import time
 import inspect
@@ -49,33 +50,43 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sort
     return recording 
 
 """ ################################################################ Generate Probe Desing ####### """
-def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording):
+def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel):
         
     print("Creating and attaching Probe")
-
+    
+    ############################################################################################
+    # -------------------------------------- 2 rows or 1 row and every second row offset --------------------------------------
+    ############################################################################################
     if NumberRows == 2 or NumberRows == 1 and RowOffset == 1:
- 
+        
+        # -------------------------------------- Check --------------------------------------
+        ############################################################################################
         # Validation
         if num_elec % 2 != 0:
             raise ValueError("num_elec must be divisible by 2.")
         
         # Initialize positions array
-        positions = np.zeros((num_elec, 2))
+        positions = np.zeros((AllChannel, 2))
         
         if NumberRows == 1 and RowOffset == 1:
-            num_elec_per_row = num_elec
+            num_elec_per_row = AllChannel
         else:
-            # Number of electrodes per row
+            # Number of electrodes per row if two rows
             num_elec_per_row = num_elec // 2
         
-        # X Positions
+        # -------------------------------------- X Positions --------------------------------------
+        ############################################################################################
+        
         positions[:num_elec_per_row, 0] = 0  # First row
         positions[num_elec_per_row:, 0] = HorChannelOffset  # Second row
         
         # Apply RowOffset if enabled
         if RowOffset == 1:
-            for row in range(1, num_elec, 2):  # Start from second row, step by 2
+            for row in range(1, AllChannel, 2):  # Start from second row, step by 2
                 positions[row:row+1, 0] += RowOffsetDistance
+        
+        # -------------------------------------- Y Positions --------------------------------------
+        ############################################################################################
         
         if NumberRows == 1 and RowOffset == 1:
             positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
@@ -84,31 +95,19 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
             positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
             positions[num_elec_per_row:, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch) + VerChannelOffset  # Second row
         
-        print(positions)
-        
-        # create an empty probe object with coordinates in um
-        probe = Probe(ndim=2, si_units='um')
-        # set contacts
-        probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
-        # Create the first sequence: 0, 2, 4, ..., num_elec/2 - 2
-        first_half = np.arange(0, num_elec, step=2)
-        # Create the second sequence: 2, 4, ..., num_elec
-        second_half = np.arange(1, num_elec + 1, step=2)
-        
-        # Combine both sequences
-        ChannelIDS = np.concatenate((first_half, second_half))
 
-        print(ChannelIDS)
-        probe.set_device_channel_indices(ChannelIDS)
-        probe.set_contact_ids(ChannelIDS)
-        
+    ############################################################################################
+    # -------------------------------------- 1 row without every second row offset --------------------------------------
+    ############################################################################################
     if NumberRows == 1 and RowOffset == 0:
-        positions = np.zeros((num_elec, NumberRows))
-        probe = generate_linear_probe(num_elec=num_elec, ypitch=ypitch, contact_shapes='circle', contact_shape_params={'radius': 6})
-        # the probe has to be wired to the recording
-        probe.set_device_channel_indices(np.arange(num_elec))
-        probe.set_contact_ids(np.arange(num_elec))
-    
+        
+        positions = np.zeros((AllChannel, 2))  # 2 columns: x and y
+        positions[:, 0] = 0                    # all x = 0 (single column for first row)
+        positions[:, 1] = np.arange(AllChannel) * ypitch  # y positions
+               
+    ############################################################################################
+    # -------------------------------------- 3 or more rows (considered array) --------------------------------------
+    ############################################################################################
     if NumberRows > 2:
 
         numchannel = int(num_elec/NumberRows)
@@ -125,23 +124,55 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
                 y = row * ypitch
                 positions[index] = [x, y]
                 index += 1
+                
+        device_mapping = np.arange(0, num_elec )
+    
+    print("Probe Channel Locations (x and y in um):")
+    print(positions)
+    
+    ############################################################################################
+    # -------------------------------------- Define Channel IDs --------------------------------------
+    ############################################################################################
+    # all nan except of active channel from 0 to length active channel at correct vector position corresponding to active channel
+    device_mapping = np.full(AllChannel, np.nan, dtype=float)
+    #create active channel vector with ints from comma separate string
+    ActiveChannelVec = np.fromstring(ActiveChannel, sep=',', dtype=int)
+    # set active channel to not nan
+    for i, ch in enumerate(ActiveChannelVec):
+        device_mapping[ch] = i
         
-        # create an empty probe object with coordinates in um
-        probe = Probe(ndim=2, si_units='um')
-        # set contacts
-        probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
-        # Create the first sequence: 0, 2, 4, ..., num_elec/2 - 2
-        
-        ChannelIDS = np.arange(0, num_elec )
-        
-        print(ChannelIDS)
-        probe.set_device_channel_indices(ChannelIDS)
-        probe.set_contact_ids(ChannelIDS)
-            
+    ############################################################################################
+    # -------------------------------------- Create Probe, Add Channel IDs --------------------------------------
+    ############################################################################################
+    
+    # create an empty probe object with coordinates in um
+    probe = Probe(ndim=2, si_units='um')
+    # set contacts
+    probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
+    
+    probe.set_device_channel_indices(device_mapping)
+    probe.set_contact_ids(np.arange(AllChannel))  # ← must match positions length
+    
+    ############################################################################################
+    # -------------------------------------- Plot Probe --------------------------------------
+    ############################################################################################
     if PlotTraces == 1:
         print("Plotting Traces...")
-        plot_probe(probe, with_contact_id=True)
-    
+        
+        # Create a color list: red for active, blue for inactive
+        colors = ['red' if not np.isnan(ch) else 'blue' for ch in device_mapping]
+        
+        # Plot probe with custom colors
+        plot_probe(probe, with_contact_id=True, contacts_colors=colors)
+        
+        # Create legend handles
+        active_patch = mpatches.Patch(color='red', label='Active Channel')
+        inactive_patch = mpatches.Patch(color='blue', label='Inactive Channel')
+        
+        # Add legend
+        plt.legend(handles=[active_patch, inactive_patch], loc='upper right')
+        plt.show()
+        
     probe.to_dataframe(complete=True).loc[:, ["shank_ids", "device_channel_indices"]]
     
     Recording = Recording.set_probe(probe)

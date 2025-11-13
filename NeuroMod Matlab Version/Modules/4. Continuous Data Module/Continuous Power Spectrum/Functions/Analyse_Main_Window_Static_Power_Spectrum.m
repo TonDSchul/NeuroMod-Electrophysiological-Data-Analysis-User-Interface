@@ -90,6 +90,8 @@ dispRange(1) = str2double(FrequencyRangeHzEditField(1:commaindicie(1)-1)); % Hz
 dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % Hz
 DispIndicies = Freq>dispRange(1) & Freq<dispRange(2);
 
+title(Figure,titlestring);
+
 %Welch Method
 if ~isempty(PWelch_handles)
     set(PWelch_handles(1), 'XData', Freq(DispIndicies), 'YData', 10*log10(Welchpowspect(DispIndicies)),'LineWidth',PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth,'Tag','Pwelch','Color',PlotAppearance.SpectrumWindow.Data.SpectrumColor);
@@ -99,8 +101,7 @@ else
     xlabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeXLabel);
     ylabel(Figure, PlotAppearance.SpectrumWindow.Data.TimeYLabel);
     Figure.FontSize = PlotAppearance.SpectrumWindow.Data.TimeFontSize;
-    title(Figure,titlestring);
-
+ 
     Figure.Color = PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor;
 
     Figure.XLabel.Color = [0 0 0];

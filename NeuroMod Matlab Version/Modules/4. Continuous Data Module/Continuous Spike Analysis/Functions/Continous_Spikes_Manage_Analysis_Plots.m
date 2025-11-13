@@ -319,6 +319,7 @@ end
 
 if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     % Custome YLabel
+    Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end
 

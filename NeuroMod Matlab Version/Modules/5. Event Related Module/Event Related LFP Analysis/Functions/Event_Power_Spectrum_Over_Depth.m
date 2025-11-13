@@ -96,6 +96,7 @@ commaindicie = find(FrequencyRangeHzEditField == ',');
 dispRange(1) = str2double(FrequencyRangeHzEditField(1:commaindicie(1)-1)); % Hz
 dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % Hz
 
+OriginalactiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
 BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
@@ -119,5 +120,5 @@ CurrentPlotData.EventSpectrumDepthType = "Event Related Power Spectrum over Dept
 CurrentPlotData.EventSpectrumDepthXTicks = Figure.XTickLabel';
 
 if ~strcmp(WhattoPlot,"Just Frequency Bands")
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalactiveChannel);
 end

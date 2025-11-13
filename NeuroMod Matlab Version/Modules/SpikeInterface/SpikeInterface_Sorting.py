@@ -73,6 +73,9 @@ def main(subfolders,file_path):
     RowOffset = sys.argv[17]  
     RowOffsetDistance = sys.argv[18]  
     
+    AllChannel = sys.argv[19]  # Second argument
+    ActiveChannel = sys.argv[20]  # Second argument
+    
     # Read the JSON file
     #json_file_path = sys.argv[12]  # Assume it's the last argument
     JsonFilename = file_path+"/sorting_parameters.json"
@@ -95,6 +98,7 @@ def main(subfolders,file_path):
     
     num_elec = int(num_elec)
     ypitch = int(ypitch)
+    AllChannel = int(AllChannel)  # Second argument
     
     print(f"Received arguments: {file_path}, {MultipleRecordings}, {Sorter}, {Apply_Preprocessing}, {LoadSpikeSorting}, {OpenSpikeInterface_GUI}, {Plot_Results}, {JustOpenSpikeInterfaceGUI} , {SampleRate}")
     
@@ -162,7 +166,7 @@ def main(subfolders,file_path):
             
         Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter,CompletePath)
                 
-        Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording)
+        Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel)
         
         Recording = Recording.set_probe(Probe)
         
@@ -291,7 +295,7 @@ if __name__ == "__main__":
             Plot_Results = sys.argv[7] # First argument
             JustOpenSpikeInterfaceGUI = sys.argv[8]  # Second argument
             SampleRate = sys.argv[9]  # Second argument
-            
+                        
             MultipleRecordings = int(MultipleRecordings);
             
             if not pyuac.isUserAdmin():

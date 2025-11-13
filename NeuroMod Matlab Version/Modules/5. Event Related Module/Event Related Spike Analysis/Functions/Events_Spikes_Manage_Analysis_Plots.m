@@ -160,6 +160,7 @@ end
 
 if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     % Custome YLabel
+    Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end
 

@@ -91,7 +91,7 @@ end
 
 %% Only select Spikes in selected Channelrange
 
-[SpikeTimes,~,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange(SpikeTimes,SpikePositions,Data.Info.ChannelSpacing,Channelselection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+[SpikeTimes,~,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("SpikeRate",Data.Info,SpikeTimes,SpikePositions,Data.Info.ChannelSpacing,Channelselection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
 
 %% Caluclate Spike Rate in Hz over all Channel
 numbins = round(BinRange); 

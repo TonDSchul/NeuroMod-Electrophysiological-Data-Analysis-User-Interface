@@ -105,7 +105,7 @@ waitbar(50, h, msg);
 %% ---------------------------- PROBE INFO GENERATION ----------------------------
 tempactivechannel = strjoin(string(Data.Info.ProbeInfo.ActiveChannel), ',');
 activechannel{1} = convertStringsToChars(tempactivechannel);
-[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort("",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
             
 num_channels = str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
 channel_labels = arrayfun(@(x) sprintf('Ch%d', x), 1:num_channels, 'UniformOutput', false);

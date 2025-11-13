@@ -103,6 +103,13 @@ for i = 1:length(fileNames)
     end
 end
 
+%% ChannelPosition have to be full (not only active channel)
+activechannel{1} = Data.Info.ProbeInfo.ActiveChannel;
+[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+Data.Spikes.ChannelPosition = zeros(length(xcoords),2);
+Data.Spikes.ChannelPosition(:,1) = xcoords';
+Data.Spikes.ChannelPosition(:,2) = ycoords';
+
 if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
     msgbox("Error: Loaded spike data contains more channel than current probe design does. This can be due to channel deletion conducted after sorting or loading the wrong sorting data.")
     [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
@@ -228,8 +235,24 @@ end
 
 SpikePositions = Data.Spikes.SpikePositions(:,2);
 SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
-SpikePositions = round(SpikePositions)+1;
-Data.Spikes.SpikeChannel = SpikePositions;
+Data.Spikes.SpikeChannel = round(SpikePositions)+1;
+% now some channel can be wrongly assigned when right at the border between
+% two channel --> spiek channel can be NOT part of active channel (if there
+% is a gap in active channel) but is shifted by one
+NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
+% Get the spikes that are NOT in ActiveChannel
+ZeroIndex = find(NonExistent==0);
+
+for i = 1:length(ZeroIndex)
+    CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
+    
+    % take nearest channel. If two nearest, take the smaller one (bc round() was used)
+    [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
+    
+    % Handle ties: if multiple channels have same distance, pick the lower one
+    nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
+    Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
+end
 
 %% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
 % Detect high pass filter
