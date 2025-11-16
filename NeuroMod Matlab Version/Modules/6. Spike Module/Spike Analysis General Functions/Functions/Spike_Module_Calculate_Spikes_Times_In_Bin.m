@@ -1,4 +1,4 @@
-function [SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,NumBins,BinSize,Samplingrate,SpikeRateType)
+function [SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,NumBins,BinSize,Samplingrate,SpikeRateType,MinEdge,MaxEdge)
 
 %________________________________________________________________________________________
 %% Function calculate the amount of spikes within a bin of time
@@ -45,9 +45,7 @@ if strcmp(SpikeRateType,"SpikeRateoverTime")
 elseif strcmp(SpikeRateType,"SpikeRateoverChannel")
 
     % Calculate the bin edges based on the desired bin size and number of bins
-    minEdge = 0; % Minimum value of SpikePositions
-    maxEdge = NumBins*BinSize; % Define the range of bins
-    binEdges = minEdge:BinSize:maxEdge;  % Create bin edges
+    binEdges = MinEdge:BinSize:MaxEdge;  % Create bin edges
 
     % Count the number of SpikePositions in each bin
     [SpikesPerBin, ~] = histcounts(SpikePositions, binEdges);
@@ -55,7 +53,7 @@ end
 
 %% Convert to Frequeny
 if Samplingrate ~= 1
-    SpikesPerBin = SpikesPerBin./(BinSize/Samplingrate);
+    SpikesPerBin = double(SpikesPerBin)./(BinSize/Samplingrate);
 else
     SpikesPerBin = SpikesPerBin;
 end

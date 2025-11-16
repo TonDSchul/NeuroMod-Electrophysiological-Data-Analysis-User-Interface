@@ -279,7 +279,9 @@ elseif strcmp(SpikeType,"Internal")
 
     end
     
-    SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+
+    SpikePositions = Data.Info.ProbeInfo.ActiveChannel(SpikePositions)
+    SpikePositions = (SpikePositions-1)*Data.Info.ChannelSpacing;
 
     if ~isempty(SelectedChannelIndicies)
         SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==0);

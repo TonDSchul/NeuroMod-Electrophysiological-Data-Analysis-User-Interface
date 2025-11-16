@@ -98,7 +98,7 @@ numbins = round(BinRange);
 binsize = floor(numel(TimeRangetoPlot)/numbins); % in samples
 Timerangebin = binsize/Samplingrate;
 
-[SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,[],numbins,binsize,Samplingrate,"SpikeRateoverTime");
+[SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,[],numbins,binsize,Samplingrate,"SpikeRateoverTime",[],[]);
 
 %% Divide by Channel Number 
 SpikesPerBin = SpikesPerBin./length(Channelselection);

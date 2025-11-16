@@ -115,16 +115,27 @@ Figure.FontSize = 10;
 OriginalActiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
-BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
+ydata = Data.Info.ProbeInfo.ycoords(min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))):Data.Info.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)));
 
-plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance);
+ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
+
+BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
+
+for i = 1:length(ydata)
+    CurrentChannel = ChannelRange(i);
+    if sum(CurrentChannel==OriginalActiveChannel)>0
+        BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
+    end
+end
+
+plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance,ydata);
 
 %% save plotted data in case user wants to save 
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);
 nC = size(BandPower.allPowerEst,1); 
 
 CurrentPlotData.XData = BandPower.F(dispF)';
-CurrentPlotData.YData = (0:nC-1)*Data.Info.ChannelSpacing;
+CurrentPlotData.YData = ydata;
 CurrentPlotData.CData = 10*log10(BandPower.allPowerEst(:,dispF))';
 CurrentPlotData.Type = "Power Spectrum over Depth";
 CurrentPlotData.XTicks = Figure.XTickLabel';

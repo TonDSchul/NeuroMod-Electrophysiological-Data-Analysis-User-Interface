@@ -119,13 +119,13 @@ h = waitbar(0, 'Saving data...', 'Name','Saving data...');
 %Set chunk size
 dN = size(SaveDataRaw,2);
 if dN >2000
-    stepSize = round(dN/500);   % <-- whatever you want
+    stepSize = round(dN/500);   
 else
-    stepSize = round(dN/100);   % <-- whatever you want
+    stepSize = round(dN/100);  
 end
 dataIdx = [1:stepSize:dN, dN+1];   % always end at dN+1
 
-nChunks = numel(dataIdx) - 1;  % number of chunks
+nChunks = numel(dataIdx) - 1;  
 
 % Save the data in chunks 
 if strcmp(Format,'int16') || strcmp(Format,'int32') 
@@ -134,6 +134,7 @@ else
     fidRaw = fopen(folderPath, 'wb'); 
 end
 
+Lengthcount = 0;
 for chunkIdx = 1:nChunks
     % progress bar
     fraction = chunkIdx/nChunks;
@@ -142,6 +143,7 @@ for chunkIdx = 1:nChunks
 
     % chunk
     chunkData = SaveDataRaw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1);
+    Lengthcount = Lengthcount + length(chunkData);
 
     if strcmp(Format,'int32')
         fwrite(fidRaw,chunkData,'*int32');

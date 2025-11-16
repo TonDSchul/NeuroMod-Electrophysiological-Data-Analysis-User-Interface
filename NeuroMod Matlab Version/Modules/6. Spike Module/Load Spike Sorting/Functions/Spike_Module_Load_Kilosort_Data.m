@@ -169,6 +169,13 @@ for i = 1:length(fileNames)
     end
 end
 
+%% ChannelPosition have to be full (not only active channel)
+activechannel{1} = Data.Info.ProbeInfo.ActiveChannel;
+[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+Data.Spikes.ChannelPosition = zeros(length(xcoords),2);
+Data.Spikes.ChannelPosition(:,1) = xcoords';
+Data.Spikes.ChannelPosition(:,2) = ycoords';
+
 % Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
 if Data.Spikes.ChannelPosition(1,2) ~= 0
     disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m by commenting the lines after this message prompt.")

@@ -336,10 +336,8 @@ if isempty(CSD)
         
         if DataChannelSelected(1) == DataChannelSelected(end) 
             DataToPlot = squeeze(mean(EventRelatedData(DataChannelSelected(1),:,:),2))';
-            %ylim(Figure,[min(DataToPlot,[],'all') max(DataToPlot,[],'all')]);   
         else
-            DataToPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),2,'omitnan'));
-            %ylim(Figure,[min(squeeze(mean(DataToPlot,1)),[],'all') max(squeeze(mean(DataToPlot,1)),[],'all')]);    
+            DataToPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),2,'omitnan')); 
         end
 
         [nc,ntr,nti] = size(DataToPlot);
@@ -421,7 +419,7 @@ if isempty(CSD)
         CurrentPlotData.ERPoverChannelType = strcat("Event Related Potential over Channel");
         CurrentPlotData.ERPoverChannelXTicks = Figure2.XTickLabel;
 
-        Utility_Set_YAxis_Depth_Labels(Data,Figure2,[],OriginalDataChannelSelected)
+        %Utility_Set_YAxis_Depth_Labels(Data,Figure2,[],OriginalDataChannelSelected)
         Figure2.YTickLabel = flip(Figure2.YTickLabel);
 
     end
@@ -445,11 +443,9 @@ else
     
     DatatoPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),2,'omitnan'));
     
-    [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow,Data,DataType);
+    [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow,Data,DataType);  
 
-    nChan = size(csd,2);
-    
-    ds = (0:nChan-1)*CSD.ChannelSpacing; %depth in micrometers given 50 µm spacing
+    ds = Data.Info.ProbeInfo.ycoords(min(OriginalDataChannelSelected)):CSD.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(OriginalDataChannelSelected));
     
     DepthDiff = (ds(2) - ds(1))/2;
 

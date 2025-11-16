@@ -1,4 +1,4 @@
-function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(DatatoPlot,Time,hamwidth,ChannelSpacing,CSDClim,Figure,LockCLim,TwoORThreeD,CurrentPlotData,PlotAppearance,Data,EventData,Samplefrequency,SelectedEventIndice,PlotEvent,DataType)
+function [currentClim,CurrentPlotData] = Analyse_Main_Window_CSD(DatatoPlot,Time,hamwidth,ChannelSpacing,CSDClim,Figure,LockCLim,TwoORThreeD,CurrentPlotData,PlotAppearance,Data,EventData,Samplefrequency,SelectedEventIndice,PlotEvent,DataType,CurrentActiveChannel)
 
 %________________________________________________________________________________________
 
@@ -64,8 +64,8 @@ if size(DatatoPlot,1)<3
 end
 
 % Distinguish between downsampled data and normal data
-nChan = size(DatatoPlot,1);
-ds = (0:nChan)*ChannelSpacing; %depth in micrometers given 50 µm spacing
+
+ds = Data.Info.ProbeInfo.ycoords(min(CurrentActiveChannel)):ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(CurrentActiveChannel));
 
 [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth,Data,DataType);
 
@@ -83,7 +83,7 @@ if strcmp(TwoORThreeD,"TwoD")
     end
     % 2D Plot
     if isempty(PowerDepth_handles)
-        imagesc(Figure,Time, ds(1:size(csd,2)),csd','Tag','PowerDepth');
+        imagesc(Figure,Time, ds,csd','Tag','PowerDepth');
         cbar_handle=colorbar('peer',Figure,'location','EastOutside');
         cbar_handle.Label.String = PlotAppearance.LiveCSDWindow.CLabel;
         cbar_handle.Label.Rotation = 270;

@@ -284,7 +284,9 @@ end
 %% ----------------------Phase Angle Differences Polar Plot--------------------------------------------------------
 
 if strcmp(WhatToDo,"All") || strcmp(WhatToDo,"ChannelChange") || strcmp(WhatToDo,"Startup") || strcmp(WhatToDo,"AllToAllDifferences")
-    
+
+    [ChannelToCompare] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ChannelToCompare,'MainPlot'); 
+
     if isempty(SelectedChannel)
         [Channel1Data,~] = Analyse_Main_Window_Hilbert_Echt_Wavelet(DataToCompute(:,:),Method,ChannelToCompare(1),Samplefrequency,Cutoff,str2double(ECHTFilterorder),Data.Info.ProbeInfo.ActiveChannel);
     else
@@ -307,7 +309,7 @@ if strcmp(WhatToDo,"All") || strcmp(WhatToDo,"ChannelChange") || strcmp(WhatToDo
         end
     end
 
-    CurrentPlotData = Analyse_Main_Window_Phase_Angle_Differences_Polar(Channel1Data,Channel2Data,Figure1,Time,ChannelToCompare,PlotAppearance,CurrentPlotData);
+    CurrentPlotData = Analyse_Main_Window_Phase_Angle_Differences_Polar(Data,Channel1Data,Channel2Data,Figure1,Time,ChannelToCompare,PlotAppearance,CurrentPlotData);
 end
 
 %% ----------------------Phase Angle Time Series Plot--------------------------------------------------------

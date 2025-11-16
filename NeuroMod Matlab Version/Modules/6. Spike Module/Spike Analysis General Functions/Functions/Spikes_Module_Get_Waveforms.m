@@ -97,23 +97,20 @@ else
         % Extract data of time points, mark non-NaN waveform with 1 in BiggestSpikeIndicies
         if startIdx > 0 && endIdx <= size(Data.(DataField), 2)
            
-            if strcmp(Data.Info.SpikeType,'Internal')
-                ActiveChannel = Data.Info.ProbeInfo.ActiveChannel(:);
-            else
-                ActiveChannel = 1:length(Data.Info.ProbeInfo.ActiveChannel(:));
-            end
-            
             % Find logical array of which spikes are in ActiveChannel
-            DataChannelSpikePositions = ismember(SpikePositions(nwaves), ActiveChannel);
+            DataChannelSpikePositions = ismember(SpikePositions(nwaves), Data.Info.ProbeInfo.ActiveChannel);
             
             if DataChannelSpikePositions==1
-                Waveforms(nwaves, :) = Data.(DataField)(SpikePositions(nwaves), startIdx:endIdx);
+                DataIndex = ismember(Data.Info.ProbeInfo.ActiveChannel,SpikePositions(nwaves));
+                Waveforms(nwaves, :) = Data.(DataField)(DataIndex, startIdx:endIdx);
             else
+                disp("yes")
                 Waveforms(nwaves, :) = NaN;
             end
 
             BiggestSpikeIndicies(nwaves) = 1;
         else
+            
             Waveforms(nwaves, :) = NaN;
         end
     

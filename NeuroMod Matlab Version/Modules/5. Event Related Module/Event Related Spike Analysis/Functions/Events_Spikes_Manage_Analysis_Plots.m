@@ -95,6 +95,7 @@ if strcmp(AnalysisTypeDropDown,"Spike Map")
     else
         if strcmp(Data.Info.Sorter,'Mountainsort5') || strcmp(Data.Info.Sorter,'SpykingCircus2')
             SpikeAmplitude(SpikeAmplitude<0)=abs(SpikeAmplitude(SpikeAmplitude<0));
+            CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
         end
     end
 
@@ -131,6 +132,11 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
         SpikesinCluster = SpikeCluster == ClustertoShowIndicie;
         SpikeTimes = SpikeTimes(SpikesinCluster==1);
         SpikePositions = SpikePositions(SpikesinCluster==1);
+    end
+    
+    if isempty(SpikeTimes)
+        disp("No spikes for selected unit within selected channel range found!");
+        return;
     end
 
     [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Events",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoshowDropDown,CurrentPlotData,PlotAppearance);

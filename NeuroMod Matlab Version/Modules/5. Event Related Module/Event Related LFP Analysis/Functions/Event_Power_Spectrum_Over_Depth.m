@@ -99,12 +99,24 @@ dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % H
 OriginalactiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
-BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
+ydata = Data.Info.ProbeInfo.ycoords(min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))):Data.Info.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)));
+
+ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
+
+BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
+
+for i = 1:length(ydata)
+    CurrentChannel = ChannelRange(i);
+    if sum(CurrentChannel==OriginalactiveChannel)>0
+        BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
+    end
+end
 
 Figure_2.NextPlot = "add";
 Figure_2.FontSize = 10;
 Figure.FontSize = 10;
-plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance);
+
+plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance,ydata);
 
 lgd = findobj(Figure_2.Parent, 'Type', 'Legend');
 set(lgd, 'Position', [ 0.8971    0.8856    0.0980    0.1009]);
@@ -114,7 +126,7 @@ dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);
 nC = size(BandPower.allPowerEst,1); 
 
 CurrentPlotData.EventSpectrumDepthXData = BandPower.F(dispF)';
-CurrentPlotData.EventSpectrumDepthYData = (0:nC-1)*Data.Info.ChannelSpacing;
+CurrentPlotData.EventSpectrumDepthYData = ydata;
 CurrentPlotData.EventSpectrumDepthCData = 10*log10(BandPower.allPowerEst(:,dispF))';
 CurrentPlotData.EventSpectrumDepthType = "Event Related Power Spectrum over Depth";
 CurrentPlotData.EventSpectrumDepthXTicks = Figure.XTickLabel';

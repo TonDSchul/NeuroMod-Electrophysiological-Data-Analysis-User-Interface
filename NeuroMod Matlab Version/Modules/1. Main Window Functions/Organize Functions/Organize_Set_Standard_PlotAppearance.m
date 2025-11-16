@@ -100,7 +100,7 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     % Multiple ERPs (for each channel)
     % Lables and Fontsize
     PlotAppearance.ERPWindow.MultipleERP.XLabel = "Time [s]";
-    PlotAppearance.ERPWindow.MultipleERP.YLabel = "Channel Position [Depth (Width)] in µm";
+    PlotAppearance.ERPWindow.MultipleERP.YLabel = "All active channel";
     PlotAppearance.ERPWindow.MultipleERP.FontSize = 11;
     
     % LineWidth

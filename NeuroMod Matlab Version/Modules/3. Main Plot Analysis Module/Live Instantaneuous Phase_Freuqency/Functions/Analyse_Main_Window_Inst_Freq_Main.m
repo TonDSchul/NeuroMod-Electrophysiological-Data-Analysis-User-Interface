@@ -261,7 +261,7 @@ if strcmp(WhatToDo,"All") || strcmp(WhatToDo,"ChannelChange") || strcmp(WhatToDo
         end
     end
 
-    CurrentPlotData = Analyse_Main_Window_Phase_Angle_Differences_Polar(Channel1Data,Channel2Data,Figure1,Time,ChannelToCompare,PlotAppearance,CurrentPlotData);
+    CurrentPlotData = Analyse_Main_Window_Phase_Angle_Differences_Polar(Data,Channel1Data,Channel2Data,Figure1,Time,ChannelToCompare,PlotAppearance,CurrentPlotData);
 end
 
 %% ----------------------Phase Angle Time Series Plot--------------------------------------------------------

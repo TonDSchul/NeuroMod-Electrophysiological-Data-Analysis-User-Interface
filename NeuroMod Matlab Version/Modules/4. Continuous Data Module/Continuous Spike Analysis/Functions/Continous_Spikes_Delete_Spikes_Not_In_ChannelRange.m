@@ -65,10 +65,12 @@ if strcmp(SpikeType,'Internal')
     % Now correct spike positions based on channel deleted --> account for
     % channel deleted before by substracting number of channels delted
     % above spikes
-    for i = 1:length(SpikePositions)
-        % Spikes below deletions
-        if sum(SpikePositions(i) > DeleteIndicies)
-            SpikePositions(i) = SpikePositions(i) - length(DeleteIndicies(SpikePositions(i) > DeleteIndicies));
+    if strcmp(Window,"MainWindow")
+        for i = 1:length(SpikePositions)
+            % Spikes below deletions
+            if sum(SpikePositions(i) > DeleteIndicies)
+                SpikePositions(i) = SpikePositions(i) - length(DeleteIndicies(SpikePositions(i) > DeleteIndicies));
+            end
         end
     end
 end
@@ -106,16 +108,17 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
         end
     end
 
+    if strcmp(Window,"Con_Spikes") || strcmp(Window,"Event_Spikes")
+        return;
+    end
+    
+    % Now correct spike positions based on channel deleted --> account for
+    % channel deleted before by substracting number of channels delted
+    % above spikes
     % Convert back in channel
     [~,a] = ismember(DeleteIndicies,Info.ProbeInfo.ycoords);
     [~,DeleteIndicies] = ismember(a,Info.ProbeInfo.ActiveChannel);
     DeleteIndicies = Info.ProbeInfo.ycoords(Info.ProbeInfo.ActiveChannel(DeleteIndicies));
-
-    %DeleteIndicies = (DeleteIndicies/ChannelSpacing)+1;
-
-    % Now correct spike positions based on channel deleted --> account for
-    % channel deleted before by substracting number of channels delted
-    % above spikes
 
     % if active channels have islands of consecutive numbers apart by a gap
     % --> adjust for that gap
@@ -132,10 +135,7 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
                 end
             end
 
-            if strcmp(Window,"Con_Spikes") || strcmp(Window,"Event_Spikes")
-                GapsNumberWithinBelow = 0;
-            end
-
+     
             if GapsNumberWithinBelow == 0 % before gap
                 Correction = sum(SpikePositions(i) > DeleteIndicies) * ChannelSpacing; % 
             else % after gap -- affected

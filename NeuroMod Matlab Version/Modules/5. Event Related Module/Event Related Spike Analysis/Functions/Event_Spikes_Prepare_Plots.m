@@ -176,7 +176,7 @@ SpikeTimes = TempSpikeTimes(EventIndicies==1);
 SpikePositions = TempSpikePositions(EventIndicies==1);
 
 if strcmp(SpikeType,"Internal")
-    SpikePositions = (SpikePositions-1)*Data.Info.ChannelSpacing;
+    SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
 end
 
 SpikeAmplitude = TempSpikeAmplitude(EventIndicies==1);
@@ -192,13 +192,15 @@ end
 
 %% Initialize Plot Info for heatmap
 % Define bin sizes
-numchannel = length(PlotInfo.ChannelsToPlot);
 
 PlotInfo.depth_bin_size = SpikeBinSettings.depth_bin_size; %20; % Depth bin size
 PlotInfo.time_bin_size = SpikeBinSettings.time_bin_size; % app.GeneralSettings.Time bin size in seconds
 
+StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+
 % Define bin edges
-PlotInfo.depth_edges = 0:PlotInfo.depth_bin_size:numchannel*Data.Info.ChannelSpacing;
+PlotInfo.depth_edges = StartDepth:PlotInfo.depth_bin_size:StopDepth;
 PlotInfo.time_edges = -PlotInfo.TimearoundEvent(1):PlotInfo.time_bin_size:PlotInfo.TimearoundEvent(2);
 
 commaindicie = strfind(BaselineWindowField.Value,",");

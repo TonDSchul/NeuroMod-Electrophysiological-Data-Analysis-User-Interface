@@ -299,7 +299,7 @@ if isprop(app.CSDApp,'ExistflagCSD')
 
         [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,StartIndex,StopIndex,"CSD");
         
-        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(TempDatatoPlot,TempTime,hamwidth,ChannelSpacing,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData,app.PlotAppearance,app.Data,EventData,TempSamplefrequency,app.CurrentEventChannel,EventPlot,app.CSDApp.DataTypeDropDown.Value);
+        [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(TempDatatoPlot,TempTime,hamwidth,ChannelSpacing,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData,app.PlotAppearance,app.Data,EventData,TempSamplefrequency,app.CurrentEventChannel,EventPlot,app.CSDApp.DataTypeDropDown.Value,app.ActiveChannel);
         
         % Custom YLabels
         Utility_Set_YAxis_Depth_Labels(app.Data,app.CSDApp.UIAxes,[],app.ActiveChannel)
@@ -365,7 +365,7 @@ end
 
 if isprop(app.LiveECHTWindow,'ExistflagECHT')
     if app.LiveECHTWindow.Startup == 1 || ECHTPlot
-
+        
         [TempStartIndex,TempStopIndex,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,StartIndex,StopIndex,"PhaseSync");
         
         [app.LiveECHTWindow.GlobalYlim,texttoshow,app.CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(TempDatatoPlot,TempTime,TempSamplefrequency,app.LiveECHTWindow.PolarPlot,app.LiveECHTWindow.UIAxes_3,app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,app.Data,app.LiveECHTWindow.ChannelToCompare,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,app.ActiveChannel,app.LiveECHTWindow.DataTypeDropDown.Value,app.PlotAppearance,app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value,TempStartIndex,TempStopIndex,app.LiveECHTWindow.WhatToDo,app.LiveECHTWindow.Ccolormap,app.LiveECHTWindow.CalculationMethodDropDown.Value,app.LiveECHTWindow.ForceFilterOFFCheckBox.Value,app.LiveECHTWindow.ECHTFilterorderEditField.Value,app.CurrentPlotData,EventData,app.CurrentEventChannel,EventPlot,app.LiveECHTWindow.ShowAnayzedData,app.LiveECHTWindow.LowPassSettings,app.LiveECHTWindow.FilterType);      

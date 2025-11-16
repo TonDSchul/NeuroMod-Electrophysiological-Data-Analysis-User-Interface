@@ -158,7 +158,7 @@ else
     end
 end
 
-%% If no KilosortData found: Spike Field is emptyx but has to be deleted
+%% If no sorting Data found: Spike Field is emptyx but has to be deleted
 if isempty(Data.Spikes)
     [Data,~] = Organize_Delete_Dataset_Components(Data,"EventRelatedData");
     msgbox("No sorting data could be loaded.");
@@ -236,8 +236,9 @@ end
 SpikePositions = Data.Spikes.SpikePositions(:,2);
 SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
 Data.Spikes.SpikeChannel = round(SpikePositions)+1;
+
 % now some channel can be wrongly assigned when right at the border between
-% two channel --> spiek channel can be NOT part of active channel (if there
+% two channel --> spike channel can be NOT part of active channel (if there
 % is a gap in active channel) but is shifted by one
 NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
 % Get the spikes that are NOT in ActiveChannel

@@ -63,7 +63,7 @@ if strcmp(Type,"Initial") && ~strcmp(Type,"NewCluster") || strcmp(Type,"BinsizeC
     BinSizeSamples = floor(dN/cN);
     BinSizeTime = BinSizeSamples*(1/Data.Info.NativeSamplingRate);
     
-    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime",[],[]);
     
     %% Calculate mean over all channel and convert to frequency
     ChanneRange = ChannelSelection;
@@ -71,9 +71,8 @@ if strcmp(Type,"Initial") && ~strcmp(Type,"NewCluster") || strcmp(Type,"BinsizeC
     
     %% Plot
    
-    %if strcmp(Data.Info.SpikeType,"Kilosort")
-        yyaxis(TimeSpikeFigure, 'left');
-    %end
+    yyaxis(TimeSpikeFigure, 'left');
+    
     if length(SpikesInBins)+0.5 ~= 0.5
         xlim(TimeSpikeFigure,[0.5,length(SpikesInBins)+0.5])
     end
@@ -127,7 +126,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
 
     if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
         cN = numBins;  % number of steps/chunks
-        dN = (length(ChannelSelection)-1)*Data.Info.ChannelSpacing;
+        dN = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))) - min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
         BinSize = dN/cN;
     else
         cN = length(ChannelSelection);  % number of steps/chunks
@@ -137,7 +136,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     end
     % Divide the data into chunks (last chunk is smaller than the rest)
 
-    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel");
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel",min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))),max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
     
     % Get Frequency
     SpikesInBins = SpikesInBins/Data.Time(end);
@@ -147,6 +146,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     if max(SpikesInBins) ~= 0
         xlim(ChannelSpikeFigure,[0 max(SpikesInBins)]);
     end
+
     barh(ChannelSpikeFigure,SpikesInBins','FaceColor',PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor,'EdgeColor',PlotAppearance.InternalEventSpikePlot.SRChannelPlotBarColor);
    
     xlabel(ChannelSpikeFigure,strcat(PlotAppearance.InternalEventSpikePlot.SRChannelPlotXLabel," per ",num2str(BinSize),"µm"))
@@ -174,7 +174,7 @@ if strcmp(Type,"BinsizeChangeInitial")
     return;
 end
 
-%% Plot Unit spike Rate
+%% Plot Unit spike Rate (over time)
 if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
 
     cN = numBins;  % number of steps/chunks
@@ -184,7 +184,7 @@ if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
     BinSizeSamples = floor(dN/cN);
     BinSizeTime = BinSizeSamples*(1/Data.Info.NativeSamplingRate);
     
-    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(ClusterSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime");
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(ClusterSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime",[],[]);
 
     % Normalize spike rate over all channel in which spikes where found
     if strcmp(Data.Info.SpikeType,"Internal")

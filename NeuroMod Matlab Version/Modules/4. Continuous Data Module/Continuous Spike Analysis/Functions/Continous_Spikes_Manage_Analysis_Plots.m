@@ -62,12 +62,12 @@ function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,Pl
 % When an error occured before plotting, spike times will be a string
 % saying "Error"
 if isstring(SpikeTimes)
-    msgbox("No Spikes found with selected parameter and channel. Nothing is plotted.")
+    msgbox("No Spikes found with selected parameter and channel! Nothing is plotted.")
     return;
 end
 
 if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
-    if sum(CluterPositions== PlotInfo.Units)==0
+    if sum(CluterPositions == PlotInfo.Units)==0
         msgbox("No Spikes found for selected parameter and channel! Nothing is plotted.");
         return;
     end
@@ -112,9 +112,9 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     if ~isnan(PlotInfo.Units)
         ClustertoShow = PlotInfo.Units;
         WavesinCluster = CluterPositions == ClustertoShow;
-        ClusterWaveforms = Waveforms(:,WavesinCluster==1,:);
+        ClusterWaveforms = Waveforms(PlotInfo.ChannelSelection,WavesinCluster==1,:);
     else
-        ClusterWaveforms = Waveforms;
+        ClusterWaveforms = Waveforms(PlotInfo.ChannelSelection,:,:);
     end
     
     % Find n number of biggest waveforms
@@ -127,7 +127,9 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     %% Get max waveforms 
     for nwaves = 1:size(ClusterWaveforms,2)
         ChannelSelection = double(Data.Spikes.SpikeChannel(nwaves));
-        Waveformstoplot(nwaves,:) = squeeze(ClusterWaveforms(ChannelSelection,nwaves,:));       
+        if sum(ChannelSelection == Data.Info.ProbeInfo.ActiveChannel)>0 % only for selected channel!
+            Waveformstoplot(nwaves,:) = squeeze(ClusterWaveforms(ismember(ChannelSelection,Data.Info.ProbeInfo.ActiveChannel),nwaves,:)); 
+        end
     end
 
     [MaxValue,~] = max(Waveformstoplot,[],2);
@@ -140,18 +142,30 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     
     WaveFormSelection = ClusterWaveforms(:,MaxIndex,:);
     
-    MeanWaveForm = NaN(1,size(WaveFormSelection,1),size(WaveFormSelection,3));
+   % Data.Info.ProbeInfo.ActiveChannel(min(PlotInfo.ChannelSelection))
+
+
+    ChannelRange = Data.Info.ProbeInfo.ActiveChannel(1):Data.Info.ProbeInfo.ActiveChannel(end);
+
+    MeanWaveForm = zeros(1,length(ChannelRange),size(WaveFormSelection,3));
     
     % If only one wave, dimensions change
     if size(WaveFormSelection,2)>1
-        MeanWaveForm(1,:,:) = squeeze(mean(WaveFormSelection,2));
+        MeanWaveForm(1,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection),:) = squeeze(mean(WaveFormSelection,2));
     else
-        MeanWaveForm(1,:,:) = squeeze(WaveFormSelection);
+        MeanWaveForm(1,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection),:) = squeeze(WaveFormSelection);
     end
     
-    %% Just Some Channel Selected
-    MeanWaveForm = MeanWaveForm(1,PlotInfo.ChannelSelection,:);
+    SelectedChannelRange = Data.Info.ProbeInfo.ActiveChannel(min(PlotInfo.ChannelSelection)):Data.Info.ProbeInfo.ActiveChannel(max(PlotInfo.ChannelSelection));
+    MeanWaveForm = MeanWaveForm(:,SelectedChannelRange,:);
+
+    % ChannelToDelete = ~ismember(ChannelRange,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection));
+    % %ChannelIndiciesToDelete = Data.Info.ProbeInfo.ActiveChannel(ChannelToDelete==1);
+    % MeanWaveForm(:,ChannelIndiciesToDelete,:) = [];
     
+    %MeanWaveForm = MeanWaveForm(1,:);
+
+    %% Just Some Channel Selected
     CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),MeanWaveForm,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD,CurrentPlotData);
     
     Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
@@ -200,8 +214,11 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     if strcmp(Data.Info.Sorter,'External Kilosort GUI')
         SpikeAmps = abs(SpikeAmps);
     end
-
-    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange))*Data.Info.ChannelSpacing;
+    
+    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    
+    depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
     
@@ -256,11 +273,12 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     
     %% basic quantification of spiking plot
     ChannelRange = PlotInfo.ChannelSelection;
-    depthBins = 0:length(ChannelRange)*Data.Info.ChannelSpacing/150:(length(ChannelRange))*Data.Info.ChannelSpacing;
+    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    
+    depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
-
-    %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
@@ -319,7 +337,6 @@ end
 
 if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     % Custome YLabel
-    Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end
 

@@ -29,8 +29,6 @@ function [Phases,PhasesUnwrapped] = Analyse_Main_Window_Hilbert_Echt_Wavelet(Dat
 
 %________________________________________________________________________________________
 
-[ChannelToCompare] = Organize_Convert_ActiveChannel_to_DataChannel(AllActiveChannel,ChannelToCompare,'MainPlot');
-
 if strcmp(Method,"Endpoint Corrected Hilbert Transform")
     Phases = zeros(size(Data,1),size(Data,2));
     PhasesUnwrapped = zeros(size(Data,1),size(Data,2)-1);

@@ -1,5 +1,5 @@
 
-function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands, BandPowerFigure, FrequencyBandsFigure,WhattoPlot, ChannelSpacing, TwoORThreeD, PlotAppearance)
+function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands, BandPowerFigure, FrequencyBandsFigure,WhattoPlot, ChannelSpacing, TwoORThreeD, PlotAppearance, ydata)
 % function plotLFPpower(F, allPowerEst, dispRange, marginalChans, freqBands)
 %
 % Plots LFP power across the probe, depth by frequency, as colormap
@@ -26,9 +26,9 @@ if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
         end
         % 2D Plot
         if isempty(PowerDepth_handles)
-            imagesc(BandPowerFigure,F(dispF), (0:nC-1)*ChannelSpacing, 10*log10(allPowerEst(:,dispF)),'Tag','PowerDepth');
+            imagesc(BandPowerFigure,F(dispF), ydata, 10*log10(allPowerEst(:,dispF)),'Tag','PowerDepth');
         else
-            set(PowerDepth_handles(1),'XData', F(dispF), 'YData', (0:nC-1)*ChannelSpacing, ...
+            set(PowerDepth_handles(1),'XData', F(dispF), 'YData', ydata, ...
             'CData', 10*log10(allPowerEst(:,dispF)),'Tag','PowerDepth');
         end
 
@@ -54,14 +54,14 @@ if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
 
         if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
             % 3D Plot
-            surf(BandPowerFigure,F(dispF),(0:nC-1)*ChannelSpacing,10*log10(allPowerEst(:,dispF)),'EdgeColor', 'none','Tag','PowerDepth3D')
+            surf(BandPowerFigure,F(dispF),ydata,10*log10(allPowerEst(:,dispF)),'EdgeColor', 'none','Tag','PowerDepth3D')
             % % 2D Plot
             % min_z = min(10*log10(allPowerEst(:,dispF)),[],'all');
             % surface(BandPowerFigure,F(dispF), (0:nC-1)*ChannelSpacing, min_z * ones(size(10*log10(allPowerEst(:,dispF)))), ...
             % 'CData', 10*log10(allPowerEst(:,dispF)), 'FaceColor', 'texturemap', 'EdgeColor', 'none','Tag','PowerDepth2D');
         else
             % 3D Plot
-            set(PowerDepth3D_handles(1),'XData', F(dispF),'YData', (0:nC-1)*ChannelSpacing,'CData',10*log10(allPowerEst(:,dispF)),'ZData',10*log10(allPowerEst(:,dispF)),'EdgeColor', 'none','Tag','PowerDepth3D')
+            set(PowerDepth3D_handles(1),'XData', F(dispF),'YData', ydata,'CData',10*log10(allPowerEst(:,dispF)),'ZData',10*log10(allPowerEst(:,dispF)),'EdgeColor', 'none','Tag','PowerDepth3D')
             % % 2D Plot
             % min_z = min(10*log10(allPowerEst(:,dispF)),[],'all');
             % set(PowerDepth2D_handles(1),'XData',F(dispF),'YData', (0:nC-1)*ChannelSpacing, 'ZData', min_z * ones(size(10*log10(allPowerEst(:,dispF)))), ...

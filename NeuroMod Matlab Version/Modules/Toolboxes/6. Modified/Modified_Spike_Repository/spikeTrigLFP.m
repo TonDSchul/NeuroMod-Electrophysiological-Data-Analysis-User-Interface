@@ -12,23 +12,37 @@ function [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, tLFP, lfpdat, theseST, Spi
 % include
 % the time points to sample LFP at
 
+NumChannel = min(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)) : max(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot));
+
 Time = winAroundSpike;
 
 sampTimes = bsxfun(@plus, theseST, winAroundSpike);
     
-mnLFP = zeros(size(lfpdat,1), numel(winAroundSpike));
+mnLFP = zeros(length(NumChannel), numel(winAroundSpike));
+
 lfpdat = double(lfpdat);
 % compute the spike-trig LFP chunk-by-chunk (this one seems faster)
 h = waitbar(0, 'Extracting Spike Triggered LFP...', 'Name','Extracting Spike Triggered LFP...');
 
 % compute the spike-trig LFP channel-by-channel
-for ch = 1:size(lfpdat,1)
+for ch = 1:length(NumChannel)
+   
+    CurrentChannel = NumChannel(ch);
+
+    %print progress
     if mod(ch,10)==0
-        fprintf(1, 'ch %d/%d...\n', ch, size(lfpdat,1));
+        fprintf(1, 'ch %d/%d...\n', ch, length(NumChannel));
     end
-    mnLFP(ch,:) = mean(interp1(tLFP, lfpdat(ch,:)', sampTimes),1,'omitnan');
+
+    % get average
+    if sum(CurrentChannel==Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot))>0
+        mnLFP(ch,:) = mean(interp1(tLFP, lfpdat(CurrentChannel==Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot),:)', sampTimes),1,'omitnan');
+    else
+        mnLFP(ch,:) = 0;
+    end
+    
     % Update the progress bar
-    fraction = ch/size(lfpdat,1);
+    fraction = ch/length(NumChannel);
     msg = sprintf('Extracting Spike Triggered LFP... (%d%% done)', round(100*fraction));
     waitbar(fraction, h, msg);
 end
@@ -57,8 +71,12 @@ if Plot
  
     Time = Time*1000; % convert to ms
 
-    ydata = 0:ChannelSpacing:(size(mnLFP,1)-1)*ChannelSpacing;
+    %ydata = 0:ChannelSpacing:(size(mnLFP,1)-1)*ChannelSpacing;
+    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
+    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
     
+    ydata = StartDepth:ChannelSpacing:StopDepth;
+
     if strcmp(TwoORThreeD,"ThreeD")
         PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');
         PowerDepth3D_handles = findobj(Figure, 'Tag', 'PowerDepth3D');

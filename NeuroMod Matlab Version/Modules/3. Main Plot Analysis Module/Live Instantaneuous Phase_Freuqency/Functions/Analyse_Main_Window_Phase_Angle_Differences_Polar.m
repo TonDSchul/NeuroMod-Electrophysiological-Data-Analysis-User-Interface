@@ -1,4 +1,4 @@
-function CurrentPlotData = Analyse_Main_Window_Phase_Angle_Differences_Polar(Channel1Data,Channel2Data,Figure1,Time,ChannelToCompare,PlotAppearance,CurrentPlotData)
+function CurrentPlotData = Analyse_Main_Window_Phase_Angle_Differences_Polar(Data,Channel1Data,Channel2Data,Figure1,Time,ChannelToCompare,PlotAppearance,CurrentPlotData)
 
 %________________________________________________________________________________________
 
@@ -84,7 +84,6 @@ if isempty(PhaseDiffs_handle)
     Figure1.GridColor  = 'k';            % Grid lines
     Figure1.Title.Color = 'k';           % Title color
     Figure1.FontSize = PlotAppearance.PhaseSyncPlots.AngleDiffFontSize;
-
 else
     for i = 1:length(PhaseDiffs_handle)
         Figure1.NextPlot = "add";
@@ -99,10 +98,10 @@ else
     uistack(MeanVector_handle(1), 'top');
 end
 
-title(Figure1, strcat(PlotAppearance.PhaseSyncPlots.AngleDiffTitle," Ch ",num2str(ChannelToCompare(1))," vs Ch ",num2str(ChannelToCompare(2))));
+title(Figure1, strcat(PlotAppearance.PhaseSyncPlots.AngleDiffTitle," Ch ",num2str(Data.Info.ProbeInfo.ActiveChannel(ChannelToCompare(1)))," vs Ch ",num2str(Data.Info.ProbeInfo.ActiveChannel(ChannelToCompare(2)))));
 
 CurrentPlotData.PhaseDiffsXData = theta;
 CurrentPlotData.PhaseDiffsYData = radii;
 CurrentPlotData.PhaseDiffsCData = [];
-CurrentPlotData.PhaseDiffsType = strcat("Theta (X) and Radii (Y) of Phase Angle Differences ","Ch ",num2str(ChannelToCompare(1))," vs Ch ",num2str(ChannelToCompare(2)));
+CurrentPlotData.PhaseDiffsType = strcat("Theta (X) and Radii (Y) of Phase Angle Differences ","Ch ",num2str(Data.Info.ProbeInfo.ActiveChannel(ChannelToCompare(1)))," vs Ch ",num2str(Data.Info.ProbeInfo.ActiveChannel(ChannelToCompare(2))));
 %CurrentPlotData.PhaseDiffsXTicks = Figure1.XTickLabel;
