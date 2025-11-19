@@ -71,7 +71,7 @@ end
 
 %% if no low pass and/or not downsampled open window to ask user to do it automatically
 
-if LowPass == 0 || Downsampled == 0
+if LowPass == 0 && Downsampled == 0
     LowPassFilterSettings = [];
     Spike_Extraction_LowPassWindow = SpikeTrgAvgAskPrepro(LowPassFilterSettings);
     

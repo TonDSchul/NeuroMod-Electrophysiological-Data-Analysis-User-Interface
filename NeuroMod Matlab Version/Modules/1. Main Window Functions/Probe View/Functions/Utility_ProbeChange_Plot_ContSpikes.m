@@ -81,9 +81,7 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
                 %% Now extract Waveforms
                 % For Kilosort we dont have channel information to extract from raw or
                 % preprocessed data --> Therefor we take channel closest to position
-                SpikePositions = (TempData.Spikes.SpikePositions(:,2)./TempData.Info.ChannelSpacing)+1;
-                SpikePositions = round(SpikePositions);
-                [app.Mainapp.ConKilosortSpikesWindow.AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+                [app.Mainapp.ConKilosortSpikesWindow.AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,TempData.Spikes.SpikeChannel,"AverageWaveforms");
                 clear TempData;
             else
                 [app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,PreproInfo,PlaceholderTextArea] = Preprocess_Module_Delete_Old_Settings(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,PreproInfo,PreprocessingSteps,ChannelDeletion,PlaceholderTextArea);
@@ -92,9 +90,7 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
                 %% Now extract Waveforms
                 % For Kilosort we dont have channel information to extract from raw or
                 % preprocessed data --> Therefor we take channel closest to position
-                SpikePositions = (app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikePositions(:,2)./app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Info.ChannelSpacing)+1;
-                SpikePositions = round(SpikePositions);
-                [app.Mainapp.ConKilosortSpikesWindow.AverageWaveforms,~] = Spikes_Module_Get_Waveforms(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+                [app.Mainapp.ConKilosortSpikesWindow.AverageWaveforms,~] = Spikes_Module_Get_Waveforms(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikeTimes,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikeChannel,"AverageWaveforms");
 
                 Utility_Show_Info_Loaded_Data(app.Mainapp.ConKilosortSpikesWindow.Mainapp);
     
@@ -105,9 +101,7 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
                 Organize_Prepare_Plot_and_Extract_GUI_Info(app.Mainapp.ConKilosortSpikesWindow.Mainapp,1,"Initial","Static",app.Mainapp.ConKilosortSpikesWindow.Mainapp.PlotEvents,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Plotspikes);
             end
         else % If high pass was already applied
-            SpikePositions = (app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikePositions(:,2)./app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Info.ChannelSpacing)+1;
-            SpikePositions = round(SpikePositions);
-            [app.Mainapp.ConKilosortSpikesWindow.AverageWaveforms,~] = Spikes_Module_Get_Waveforms(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+            [app.Mainapp.ConKilosortSpikesWindow.AverageWaveforms,~] = Spikes_Module_Get_Waveforms(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikeTimes,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Spikes.SpikeChannel,"AverageWaveforms");
         end
     end
     

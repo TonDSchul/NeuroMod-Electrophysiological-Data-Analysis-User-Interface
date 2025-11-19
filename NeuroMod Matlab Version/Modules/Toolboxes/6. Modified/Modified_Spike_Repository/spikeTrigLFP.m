@@ -70,11 +70,16 @@ close(h); % waitbar
 if Plot
  
     Time = Time*1000; % convert to ms
-
-    %ydata = 0:ChannelSpacing:(size(mnLFP,1)-1)*ChannelSpacing;
-    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
-    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
     
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
+        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
+    else
+        FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
+        StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
+    end
+
     ydata = StartDepth:ChannelSpacing:StopDepth;
 
     if strcmp(TwoORThreeD,"ThreeD")
@@ -182,6 +187,7 @@ if Plot
     xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel)
     ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel)
     xlim(Figure,[min(Time) max(Time)]);
+
     if ydata(1)~=ydata(end)
         ylim(Figure,[ydata(1),ydata(end)])
     end

@@ -47,12 +47,15 @@ ActiveChannel = sprintf('%d,', Data.Info.ProbeInfo.ActiveChannel - 1);
 ActiveChannel(end) = [];  % remove final comma
 AllChannel = str2double(Data.Info.ProbeInfo.NrChannel);
 
+yCoords = sprintf('%d,', Data.Info.ProbeInfo.ycoords);
+xCoords = sprintf('%d,', Data.Info.ProbeInfo.xcoords);
+
 SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(SelectedSorter,ParameterStructure,file_path);
 
-command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s', ...
+command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %s %s', ...
     pythonPath, SpikeInterfaceScriptPath, file_path, SpikeInterfaceParameter.MultipleRecordings, SelectedSorter, ...
     SpikeInterfaceParameter.Preprocess, SpikeInterfaceParameter.LoadSorting, SpikeInterfaceParameter.OpenSpikeInterface, ...
-    SpikeInterfaceParameter.PlotSortingResults, SpikeInterfaceParameter.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, SpikeInterfaceParameter.KeepConsoleOpen, SpikeInterfaceParameter.PlotTraces,VerChannelOffset,HorChannelOffset,NumberRows,RowOffset,RowOffsetDistance,AllChannel,ActiveChannel);
+    SpikeInterfaceParameter.PlotSortingResults, SpikeInterfaceParameter.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, SpikeInterfaceParameter.KeepConsoleOpen, SpikeInterfaceParameter.PlotTraces,VerChannelOffset,HorChannelOffset,NumberRows,RowOffset,RowOffsetDistance,AllChannel,ActiveChannel,xCoords,yCoords);
 
 % Execute the Python script
 [status, cmdout] = system(command);

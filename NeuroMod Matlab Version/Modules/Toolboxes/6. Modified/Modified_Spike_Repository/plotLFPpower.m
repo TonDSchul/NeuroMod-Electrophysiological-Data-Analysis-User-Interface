@@ -96,7 +96,7 @@ if strcmp(WhattoPlot,"Just Bandpower") || strcmp(WhattoPlot,"All")
     cbar_handle.Label.Rotation = 270;
     cbar_handle.Color = 'k';  
     cbar_handle.Label.Color = 'k';        % Sets the color of the label text
-    ylim(BandPowerFigure,[0,(nC-1)*ChannelSpacing]);
+    ylim(BandPowerFigure,[ydata(1),ydata(end)]);
     
 end
 

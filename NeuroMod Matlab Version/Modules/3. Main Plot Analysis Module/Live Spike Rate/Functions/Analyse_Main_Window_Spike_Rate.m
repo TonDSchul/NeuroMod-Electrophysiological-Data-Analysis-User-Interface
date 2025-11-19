@@ -58,18 +58,22 @@ function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,CurrentTimePoin
 % When kilosort: take kilosort spike times instead of spikes plotted in
 % main window (Kilosort spikes cant ne fully displayed in the main window overlaying the channel data since they are in between channels. For plotting they are just assigned to the nearest channel)
 
+if str2double(Data.Info.ProbeInfo.NrRows)>=2
+    SpikePositions = Data.Spikes.DataCorrectedSpikePositions(:,2); 
+else
+    SpikePositions = Data.Spikes.SpikePositions(:,2);
+end
+
 if PreprocDataPlotCheckBox == 1 && isfield(Data.Info,'DownsampleFactor')  
     TimeDuration = str2double(TimeRangeViewBox(1:end-1));
     StartIndex = uint64(CurrentTimePoints);
     StopIndex = StartIndex+uint64(round(TimeDuration*Data.Info.DownsampledSampleRate));
     SpikeTimes = Data.Spikes.SpikeTimes./Data.Info.DownsampleFactor;
-    SpikePositions = Data.Spikes.SpikePositions(:,2);
 else
     TimeDuration = str2double(TimeRangeViewBox(1:end-1));
     StartIndex = uint64(CurrentTimePoints);
     StopIndex = StartIndex+uint64(round(TimeDuration*Samplingrate));
     SpikeTimes = Data.Spikes.SpikeTimes;
-    SpikePositions = Data.Spikes.SpikePositions(:,2);
 end
 
 if PreprocDataPlotCheckBox == 1 && isfield(Data.Info,'DownsampleFactor') 

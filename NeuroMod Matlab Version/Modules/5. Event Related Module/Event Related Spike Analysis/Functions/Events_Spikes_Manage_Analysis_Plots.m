@@ -142,31 +142,44 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Events",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoshowDropDown,CurrentPlotData,PlotAppearance);
     
     %% No again normalized to event time for spike rate
-
-    [Data,Error] = Event_Spikes_Extract_Event_Related_Spikes(Data,'Kilosort',0,EventDataType,EventChannelName);
-   
-    if Error == 1
-        return;
+    if ~isempty(TempData) % if not preprocessed
+        Data = TempData; % if preprocessed
     end
     
-    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,"Kilosort",0,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
+    %% -------------------- Extract Event Related Spike Data --------------------
+    if strcmp(Data.Info.SpikeType,"Internal")
+        [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Internal",0,EventDataType,EventChannelName);
+    else
+        [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0,EventDataType,EventChannelName);
+    end
+    
+    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
 
     CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"BinsizeChangeInitial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
-
-    %% Prepare Plots
-    [PlotInfo,SpikeTimes,SpikePositions,~,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,"Kilosort",0,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
-
-    CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"BinsizeChangeInitial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),"Non",SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
     
     if ~strcmp(ClustertoshowDropDown,'Non') && ~strcmp(ClustertoshowDropDown,'All')
         CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
+    end
+
+    if strcmp(Data.Info.SpikeType,"Internal")
+        yyaxis(Figure2, 'right');
+        ylabel(Figure2,'Spike Rate [Hz]');
     end
 end  
 
 
 if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     % Custome YLabel
-    Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
+    else
+        FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+        StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+        
+        Figure.YLim = [StartDepth ,StopDepth];
+    end
+
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end
 

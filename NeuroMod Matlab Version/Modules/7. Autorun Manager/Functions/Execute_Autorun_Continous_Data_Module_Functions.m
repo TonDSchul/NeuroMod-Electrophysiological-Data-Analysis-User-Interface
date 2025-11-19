@@ -358,9 +358,8 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                     %% Now extract Waveforms
                                     % For Kilosort we dont have channel information to extract from raw or
                                     % preprocessed data --> Therefor we take channel closest to position
-                                    SpikePositions = (TempData.Spikes.SpikePositions(:,2)./TempData.Info.ChannelSpacing)+1;
-                                    SpikePositions = round(SpikePositions);
-                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+                                    
+                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,TempData.Spikes.SpikeChannel,"AverageWaveforms");
                                     clear TempData;
                                 else
                                     [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
@@ -368,17 +367,15 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                     %% Now extract Waveforms
                                     % For Kilosort we dont have channel information to extract from raw or
                                     % preprocessed data --> Therefor we take channel closest to position
-                                    SpikePositions = (Data.Spikes.SpikePositions(:,2)./Data.Info.ChannelSpacing)+1;
-                                    SpikePositions = round(SpikePositions);
-                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+                                    
+                                    [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"AverageWaveforms");
                                 end
                                 
                             else % If high pass was already applied
                                 % For Kilosort we dont have channel information to extract from raw or
                                 % preprocessed data --> Therefor we take channel closest to position
-                                SpikePositions = (Data.Spikes.SpikePositions(:,2)./Data.Info.ChannelSpacing)+1;
-                                SpikePositions = round(SpikePositions);
-                                [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,SpikePositions,"AverageWaveforms");
+                                
+                                [AverageWaveforms,~] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"AverageWaveforms");
                             end
                         end
     

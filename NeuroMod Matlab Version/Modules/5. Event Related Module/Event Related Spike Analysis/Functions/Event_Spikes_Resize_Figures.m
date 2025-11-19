@@ -1,6 +1,6 @@
 function Event_Spikes_Resize_Figures(MainFigure,SpikeRateTimeFig,SpikeRateChannelFig,AnalysisMethod,Cluster)
 
-if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSizeChange")
+if ~strcmp(AnalysisMethod,"Spike Tirggered Average")
     if ~strcmp(Cluster,"All")
         MainFigure.Position = [347,115,1043,729]; % x y width height
         MainFigure.PlotBoxAspectRatio = [1,0.539678284182306,0.539678284182306];

@@ -29,7 +29,7 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data
 %________________________________________________________________________________________
 
 if isfield(Data,'Raw') % When executed in probe view window
-    AllProbeChannel = str2double(Data.Info.ProbeInfo.NrChannel);
+    AllProbeChannel = str2double(Data.Info.ProbeInfo.NrChannel)*str2double(ChannelRowsDropDown);
 else % when executed in GUI with already loaded dataset
     AllProbeChannel = str2double(Data.NrChannel);
 end
@@ -105,15 +105,7 @@ end
 %% 2 Channel Rows
 if str2double(ChannelRowsDropDown) == 2
 
-    % vec = 1:NrChannel; % Create a vector from 1 to ChannelNr
-    % reorderedVec = reshape(vec, 2, [])'; % Group numbers in pairs
-    % reorderedVec = reorderedVec(:, [2, 1]); % Swap the columns to get the desired order
-    % reorderedVec = reorderedVec'; % Transpose for column-wise flattening
-    % chanMap = reorderedVec(:)'; % Flatten into a single row
-    % 
-    % chanMap0ind = chanMap-1;
-
-    chanMap = 1:NrChannelPerRow;
+    chanMap = 1:NrChannelPerRow*str2double(ChannelRowsDropDown);
     chanMap0ind = chanMap-1;
 
     if isempty(ActiveChannelField{1})
@@ -135,7 +127,7 @@ if str2double(ChannelRowsDropDown) == 2
         xcoords(2:2:end) = 0 + HorOffset;
     else
         xcoords = zeros(size(chanMap,1),size(chanMap,2));
-        xcoords(1:2:end) = 0 + HorOffset;
+        xcoords(2:2:end) = 0 + HorOffset;
         
         vec = 1:length(chanMap);
         %% Select 2 indicies, leave next two alone
@@ -151,7 +143,7 @@ if str2double(ChannelRowsDropDown) == 2
         xcoords(ProperIndicies) = xcoords(ProperIndicies) + VerOffsetDistanceSecondRow;
     end
     
-    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannelPerRow)-1)*str2double(ChannelSpacingumEditField);
+    Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannelPerRow*str2double(ChannelRowsDropDown))-1)*str2double(ChannelSpacingumEditField);
     ycoords = zeros(size(chanMap));
     
     vec = 1:length(chanMap);
@@ -168,8 +160,12 @@ if str2double(ChannelRowsDropDown) == 2
         ycoords(ProperIndicies(i):ProperIndicies(i+1)) = Alldepths(i);
         ycoords(ProperIndicies(i)+2:ProperIndicies(i)+3) = Alldepths(i+1);
     end
-
-    ycoords(1:2:end)=ycoords(1:2:end)+VerOffsetRows;
+    
+    if VerOffsetRows > 0
+        ycoords(1:2:end)=ycoords(2:2:end)+VerOffsetRows;
+    else
+        ycoords(2:2:end)=ycoords(2:2:end)-VerOffsetRows;
+    end
 
 end
 

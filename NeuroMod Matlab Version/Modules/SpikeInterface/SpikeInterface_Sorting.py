@@ -76,6 +76,9 @@ def main(subfolders,file_path):
     AllChannel = sys.argv[19]  # Second argument
     ActiveChannel = sys.argv[20]  # Second argument
     
+    Xcoords = sys.argv[21]  # Second argument
+    Ycoords = sys.argv[22]  # Second argument
+    
     # Read the JSON file
     #json_file_path = sys.argv[12]  # Assume it's the last argument
     JsonFilename = file_path+"/sorting_parameters.json"
@@ -166,7 +169,7 @@ def main(subfolders,file_path):
             
         Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter,CompletePath)
                 
-        Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel)
+        Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel,Xcoords,Ycoords)
         
         Recording = Recording.set_probe(Probe)
         

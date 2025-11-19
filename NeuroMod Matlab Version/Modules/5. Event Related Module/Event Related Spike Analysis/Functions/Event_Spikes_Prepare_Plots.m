@@ -176,7 +176,16 @@ SpikeTimes = TempSpikeTimes(EventIndicies==1);
 SpikePositions = TempSpikePositions(EventIndicies==1);
 
 if strcmp(SpikeType,"Internal")
-    SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+    if str2double(Data.Info.ProbeInfo.NrRows)==1
+        SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+    else
+        FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+        SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+    end
+end
+
+if size(SpikePositions,1) ~= size(SpikeTimes,1)
+    SpikePositions = SpikePositions';
 end
 
 SpikeAmplitude = TempSpikeAmplitude(EventIndicies==1);
@@ -196,8 +205,17 @@ end
 PlotInfo.depth_bin_size = SpikeBinSettings.depth_bin_size; %20; % Depth bin size
 PlotInfo.time_bin_size = SpikeBinSettings.time_bin_size; % app.GeneralSettings.Time bin size in seconds
 
-StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+if str2double(Data.Info.ProbeInfo.NrRows) == 1
+    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+else
+    FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+    StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+    StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+end
+
+% StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+% StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
 
 % Define bin edges
 PlotInfo.depth_edges = StartDepth:PlotInfo.depth_bin_size:StopDepth;

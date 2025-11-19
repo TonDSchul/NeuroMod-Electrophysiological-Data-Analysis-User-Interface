@@ -23,9 +23,8 @@ Probe = [];
 NrChannels = str2double(Data.Info.ProbeInfo.NrChannel);
 Radius = 10;
 
-tempactivechannel = strjoin(string(Data.Info.ProbeInfo.ActiveChannel), ',');
-activechannel{1} = convertStringsToChars(tempactivechannel);
-[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+xcoords = Data.Info.ProbeInfo.xcoords;
+ycoords = Data.Info.ProbeInfo.ycoords;
 
 if size(xcoords,1)<size(xcoords,2)
     contact_positions = [xcoords', ycoords'];

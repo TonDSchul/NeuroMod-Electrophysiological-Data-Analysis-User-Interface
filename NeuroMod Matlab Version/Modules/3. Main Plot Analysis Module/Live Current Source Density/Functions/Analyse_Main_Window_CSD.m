@@ -65,7 +65,11 @@ end
 
 % Distinguish between downsampled data and normal data
 
-ds = Data.Info.ProbeInfo.ycoords(min(CurrentActiveChannel)):ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(CurrentActiveChannel));
+if str2double(Data.Info.ProbeInfo.NrRows) == 1
+    ds = Data.Info.ProbeInfo.ycoords(min(CurrentActiveChannel)):ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(CurrentActiveChannel));
+else
+    ds = (min(CurrentActiveChannel)-1)*ChannelSpacing:ChannelSpacing:(max(CurrentActiveChannel)-1)*ChannelSpacing;
+end
 
 [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth,Data,DataType);
 

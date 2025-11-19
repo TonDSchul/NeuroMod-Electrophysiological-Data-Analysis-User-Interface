@@ -142,9 +142,6 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     
     WaveFormSelection = ClusterWaveforms(:,MaxIndex,:);
     
-   % Data.Info.ProbeInfo.ActiveChannel(min(PlotInfo.ChannelSelection))
-
-
     ChannelRange = Data.Info.ProbeInfo.ActiveChannel(1):Data.Info.ProbeInfo.ActiveChannel(end);
 
     MeanWaveForm = zeros(1,length(ChannelRange),size(WaveFormSelection,3));
@@ -215,17 +212,21 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
         SpikeAmps = abs(SpikeAmps);
     end
     
-    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    else
+        FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+        StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    end
     
     depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
     
-    %SpikePositions = SpikePositions-Data.Info.ChannelSpacing;
-
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,StopDepth,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
     Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
 
@@ -273,15 +274,22 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     
     %% basic quantification of spiking plot
     ChannelRange = PlotInfo.ChannelSelection;
-    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    else
+        FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+        StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
+    end
     
     depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
 
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,(length(ChannelRange)-1)*Data.Info.ChannelSpacing,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
+    plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,StopDepth,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
     Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
 
@@ -336,6 +344,16 @@ end
 
 
 if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
+    else
+        FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection)));
+        StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection)));
+        
+        Figure.YLim = [StartDepth ,StopDepth];
+    end
+
     % Custome YLabel
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
 end

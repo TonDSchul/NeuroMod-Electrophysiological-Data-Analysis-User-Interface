@@ -444,9 +444,13 @@ else
     DatatoPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),2,'omitnan'));
     
     [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow,Data,DataType);  
-
-    ds = Data.Info.ProbeInfo.ycoords(min(OriginalDataChannelSelected)):CSD.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(OriginalDataChannelSelected));
     
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        ds = Data.Info.ProbeInfo.ycoords(min(OriginalDataChannelSelected)):CSD.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(OriginalDataChannelSelected));
+    else
+        ds = (min(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing;
+    end
+
     DepthDiff = (ds(2) - ds(1))/2;
 
     %% Plot 
@@ -566,7 +570,6 @@ else
     Figure.XLabel.Color = [0 0 0];
     Figure.YLabel.Color = [0 0 0];       
     Figure.YColor = 'k';  
-    %UIAxes.XTickLabelMode = 'auto';
     Figure.XColor = 'k';  
     Figure.Title.Color = 'k';  
     Figure.Box ="off";

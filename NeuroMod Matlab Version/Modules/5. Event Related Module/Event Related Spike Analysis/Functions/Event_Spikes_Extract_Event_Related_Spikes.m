@@ -142,7 +142,7 @@ for i = 1:length(AllTrialIdentities)
                 end
             end
         end
-
+        
         if strcmp(SpikeType,"Kilosort") || isfield(Data.Info,'SpikeSorting')
             Data.EventRelatedSpikes.SpikeCluster = [Data.EventRelatedSpikes.SpikeCluster;Data.Spikes.SpikeCluster(SpikeIndicieWithinCurrentEvent==1)];
         elseif strcmp(SpikeType,"Internal")

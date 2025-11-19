@@ -150,20 +150,34 @@ end
 
 if strcmp(Window,"ProbeLayout")
     
+    if str2double(app.ProbeInfoandPath.NumberChannelRows) > 2
+        app.ECoGArrayCheckBox.Value = 1;
+        app.VerticalOffsetumEditField.Value = '0';
+        
+    else
+        app.ECoGArrayCheckBox.Value = 0;
+        app.VerticalOffsetumEditField.Enable = "on";
+    end
+
     if str2double(app.ProbeInfoandPath.NumberChannelRows) >= 2
         app.SwitchLeftandRightChannelNumberCheckBox.Enable = "on";
         app.HorizontalOffsetumEditField.Enable = "on";
         app.VerticalOffsetumEditField.Enable = "on";
+        app.CheckBox.Enable = "on";
+        app.VerticalOffsetumEditField_2.Enable = "on";
     else
         app.SwitchLeftandRightChannelNumberCheckBox.Enable = "off";
         app.HorizontalOffsetumEditField.Enable = "off";
         app.VerticalOffsetumEditField.Enable = "off";
+        app.CheckBox.Value = 0;
+        app.CheckBox.Enable = "off";
+        app.VerticalOffsetumEditField_2.Enable = "off";
 
         app.SwitchLeftandRightChannelNumberCheckBox.Value = 0;
         app.HorizontalOffsetumEditField.Value = "0";
         app.VerticalOffsetumEditField.Value = "0";
     end
-
+    
     if str2double(app.ProbeInfoandPath.NumberChannelRows) > 2
         app.VerticalOffsetumEditField.Enable = "off";
         app.VerticalOffsetumEditField.Value = '0';

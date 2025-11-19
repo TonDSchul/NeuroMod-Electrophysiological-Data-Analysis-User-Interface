@@ -260,13 +260,13 @@ elseif strcmp(Type,"VariableDefinition")
     else
         app.Data.Info.startTimestamp = 0;
     end
-
+    
     app.Data.Info.num_data_points = size(app.Data.Raw,2);
     app.Data.Info.NrChannel = size(app.Data.Raw,1);
     app.Data.Info.Data_Path = SelectedFolder;
     app.Data.Info.NativeSamplingRate = SampleRate;
     app.Data.Info.RecordingType = RecordingType;
-
+    
     if ischar(Load_Data_Window_Info.ChannelSpacing) || isstring(Load_Data_Window_Info.ChannelSpacing)
         app.Data.Info.ChannelSpacing = str2double(Load_Data_Window_Info.ChannelSpacing);
     else
@@ -286,18 +286,18 @@ elseif strcmp(Type,"VariableDefinition")
     
     app.Data.Info.ProbeInfo.OffSetRows = double(Load_Data_Window_Info.OffSetRows);
     app.Data.Info.ProbeInfo.OffSetRowsDistance = Load_Data_Window_Info.OffSetRowsDistance;
-
+    
     if isfield(Load_Data_Window_Info,'ProbeTrajectoryInfo')
         app.Data.Info.ProbeInfo.CompleteAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesLong;
         app.Data.Info.ProbeInfo.ShortAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort;
         app.Data.Info.ProbeInfo.AreaDistanceFromTip = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance;
     end
-
+    
     % get x and y coordinates
     activechannel{1} = app.Data.Info.ProbeInfo.ActiveChannel;
     DummyStruc.Raw = [];
     DummyStruc.Info.ProbeInfo.NrChannel = app.Data.Info.ProbeInfo.NrChannel;
-
+    
     [app.Data.Info.ProbeInfo.xcoords,app.Data.Info.ProbeInfo.ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),0);
     
     if app.Data.Time(end)<3

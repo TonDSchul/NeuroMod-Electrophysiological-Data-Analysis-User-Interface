@@ -50,91 +50,25 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sort
     return recording 
 
 """ ################################################################ Generate Probe Desing ####### """
-def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel):
+def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel,Xcoords,Ycoords):
         
     print("Creating and attaching Probe")
+        
+    positions = np.zeros((AllChannel * NumberRows, 2))
     
-    ############################################################################################
-    # -------------------------------------- 2 rows or 1 row and every second row offset --------------------------------------
-    ############################################################################################
-    if NumberRows == 2 or NumberRows == 1 and RowOffset == 1:
-        
-        # -------------------------------------- Check --------------------------------------
-        ############################################################################################
-        # Validation
-        if num_elec % 2 != 0:
-            raise ValueError("num_elec must be divisible by 2.")
-        
-        # Initialize positions array
-        positions = np.zeros((AllChannel, 2))
-        
-        if NumberRows == 1 and RowOffset == 1:
-            num_elec_per_row = AllChannel
-        else:
-            # Number of electrodes per row if two rows
-            num_elec_per_row = num_elec // 2
-        
-        # -------------------------------------- X Positions --------------------------------------
-        ############################################################################################
-        
-        positions[:num_elec_per_row, 0] = 0  # First row
-        positions[num_elec_per_row:, 0] = HorChannelOffset  # Second row
-        
-        # Apply RowOffset if enabled
-        if RowOffset == 1:
-            for row in range(1, AllChannel, 2):  # Start from second row, step by 2
-                positions[row:row+1, 0] += RowOffsetDistance
-        
-        # -------------------------------------- Y Positions --------------------------------------
-        ############################################################################################
-        
-        if NumberRows == 1 and RowOffset == 1:
-            positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
-        else:
-            # Y Positions
-            positions[:num_elec_per_row, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch)  # First row
-            positions[num_elec_per_row:, 1] = np.arange(0, num_elec_per_row * ypitch, ypitch) + VerChannelOffset  # Second row
-        
-
-    ############################################################################################
-    # -------------------------------------- 1 row without every second row offset --------------------------------------
-    ############################################################################################
-    if NumberRows == 1 and RowOffset == 0:
-        
-        positions = np.zeros((AllChannel, 2))  # 2 columns: x and y
-        positions[:, 0] = 0                    # all x = 0 (single column for first row)
-        positions[:, 1] = np.arange(AllChannel) * ypitch  # y positions
-               
-    ############################################################################################
-    # -------------------------------------- 3 or more rows (considered array) --------------------------------------
-    ############################################################################################
-    if NumberRows > 2:
-
-        numchannel = int(num_elec/NumberRows)
-
-        all_channels = num_elec
-        # Initialize coordinate array
-        positions = np.zeros((all_channels, 2))
-        
-        # Generate coordinates
-        index = 0
-        for row in range(NumberRows):
-            for col in range(numchannel):
-                x = col * HorChannelOffset
-                y = row * ypitch
-                positions[index] = [x, y]
-                index += 1
-                
-        device_mapping = np.arange(0, num_elec )
+    xcoordsvec = np.fromstring(Xcoords, sep=',', dtype=int)
+    ycoordsvec = np.fromstring(Ycoords, sep=',', dtype=int)
+    
+    positions[:len(ycoordsvec), 0] = xcoordsvec
+    positions[:len(ycoordsvec), 1] = ycoordsvec
     
     print("Probe Channel Locations (x and y in um):")
     print(positions)
-    
     ############################################################################################
     # -------------------------------------- Define Channel IDs --------------------------------------
     ############################################################################################
     # all nan except of active channel from 0 to length active channel at correct vector position corresponding to active channel
-    device_mapping = np.full(AllChannel, np.nan, dtype=float)
+    device_mapping = np.full(AllChannel * NumberRows, np.nan, dtype=float)
     #create active channel vector with ints from comma separate string
     ActiveChannelVec = np.fromstring(ActiveChannel, sep=',', dtype=int)
     # set active channel to not nan
@@ -151,7 +85,7 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
     probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
     
     probe.set_device_channel_indices(device_mapping)
-    probe.set_contact_ids(np.arange(AllChannel))  # ← must match positions length
+    probe.set_contact_ids(np.arange(AllChannel * NumberRows))  # ← must match positions length
     
     ############################################################################################
     # -------------------------------------- Plot Probe --------------------------------------

@@ -129,17 +129,26 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     
     if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
         cN = str2double(NumBins);  % number of steps/chunks
-        dN = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot))) - min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
-        TempSpikePos = SpikePositions;
+        if str2double(Data.Info.ProbeInfo.NrRows) == 1
+            StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
+            StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
+        else
+            FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
+            StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
+        end
+        dN = (StopDepth-StartDepth);
         BinSize = dN/cN;
     else
         cN = length(ChannelToPlot);  % number of steps/chunks
         dN = length(ChannelToPlot);
-        TempSpikePos = SpikePositions;
+        StartDepth = (min(ChannelToPlot))*Data.Info.ChannelSpacing;
+        StopDepth = (max(ChannelToPlot))*Data.Info.ChannelSpacing;
+        %TempSpikePos = SpikePositions/Data.Info.ChannelSpacing;
         BinSize = Data.Info.ChannelSpacing;
-    end  
+    end
     
-    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(TempSpikePos,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel",min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot))),max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot))));
+    [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel",StartDepth,StopDepth);
 
     % Get Frequency
     SpikesInBins = (SpikesInBins./(abs(Time(1))+Time(end)))./NumEvents;

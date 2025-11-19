@@ -170,8 +170,9 @@ for i = 1:length(fileNames)
 end
 
 %% ChannelPosition have to be full (not only active channel)
-activechannel{1} = Data.Info.ProbeInfo.ActiveChannel;
-[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+xcoords = Data.Info.ProbeInfo.xcoords;
+ycoords = Data.Info.ProbeInfo.ycoords;
+
 Data.Spikes.ChannelPosition = zeros(length(xcoords),2);
 Data.Spikes.ChannelPosition(:,1) = xcoords';
 Data.Spikes.ChannelPosition(:,2) = ycoords';

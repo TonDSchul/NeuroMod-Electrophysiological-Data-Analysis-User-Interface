@@ -15,9 +15,8 @@ CurrentPlotData = [];
 %% ------------------------- Set Basic Parameter -------------------------
 NrChannels = str2double(Data.Info.ProbeInfo.NrChannel);
 
-tempactivechannel = strjoin(string(Data.Info.ProbeInfo.ActiveChannel), ',');
-activechannel{1} = tempactivechannel;
-[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+xcoords = Data.Info.ProbeInfo.xcoords;
+ycoords = Data.Info.ProbeInfo.ycoords;
 
 elec = [];
 elec.label    = arrayfun(@(x) sprintf('chan%d', x), 1:NrChannels, 'UniformOutput', false);
