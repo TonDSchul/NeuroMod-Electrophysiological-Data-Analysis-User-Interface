@@ -27,125 +27,101 @@ function [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data)
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
+FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+
+FakeDepths = NaN(size(Data.Spikes.SpikeTimes));
+
+for i = 1:length(Data.Spikes.SpikeChannel)
+    CurrentIntegerY = Data.Info.ProbeInfo.ycoords(Data.Spikes.SpikeChannel(i));
+    RestaroundInteger = Data.Spikes.SpikePositions(i,2)-CurrentIntegerY;
+    FakeDepths(i) = FakeYpositions(Data.Spikes.SpikeChannel(i)) + RestaroundInteger;
+end
+
+Data.Spikes.DataCorrectedSpikePositions = zeros(size(Data.Spikes.SpikePositions));
+Data.Spikes.DataCorrectedSpikePositions(:,2) = FakeDepths;
+Data.Spikes.DataCorrectedSpikePositions(:,1) = Data.Spikes.SpikePositions(:,1);
 
 %% First assign a unique channel from 1 to 64 to each channel based on x and y coordinate
+ 
+% else % 3 or more channel rows!
+%     Data.Spikes.DataCorrectedSpikePositions = Data.Spikes.SpikePositions;
+% 
+%     FakeChannel = NaN(size(Data.Spikes.SpikeTimes));
+% 
+%     AllChannel = 1:size(Data.Spikes.ChannelPosition,1);
+% 
+%     for i = 1:size(Data.Spikes.SpikePositions,1)
+% 
+%         ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
+% 
+%         YBasedChannel = AllChannel(ChannelIndex);
+% 
+%         RespectiveXPositions = Data.Spikes.ChannelPosition(ChannelIndex,1);
+% 
+%         HalfChannelDist = HorOffset/2;
+% 
+%         RespectiveXChannel = [];
+%         for uu = 1:length(RespectiveXPositions)
+%             if Data.Spikes.SpikePositions(i,1) >= RespectiveXPositions(uu)-HalfChannelDist && Data.Spikes.SpikePositions(i,1) < RespectiveXPositions(uu)+HalfChannelDist
+%                RespectiveXChannel = [RespectiveXChannel,uu];
+%             end
+%             if Data.Spikes.SpikePositions(i,1) > RespectiveXPositions(end)
+%                 RespectiveXChannel = [RespectiveXChannel,length(RespectiveXPositions)];
+%             end
+%         end
+%         % Can be within two channel ranges --> just take the one with
+%         % smallest distance to actual channel location
+%         if length(RespectiveXChannel)>1
+%             Xtocheck = RespectiveXPositions(RespectiveXChannel);
+%             [a,SmallestDistanceIndex] = min(abs(Xtocheck-Data.Spikes.SpikePositions(i,1)));
+%             RespectiveXChannel = RespectiveXChannel(SmallestDistanceIndex);
+%         end
+% 
+%         ChannelForCurrentSpike = YBasedChannel(RespectiveXChannel);
+%         TargetDepth = (ChannelForCurrentSpike-1)*Data.Info.ChannelSpacing;
+%         Residual = Data.Spikes.SpikePositions(i,2)-Data.Spikes.ChannelPosition(YBasedChannel(RespectiveXChannel),2);
+% 
+%         Data.Spikes.DataCorrectedSpikePositions(i,2) = TargetDepth - double(Residual);
+% 
+%         FakeChannel(i) = YBasedChannel(RespectiveXChannel);
+%     end
+% end
+% %% Now create fake spikepositions field with adjusted positions spanning from 0 to NrChannel * 2 
+% % ch 1 + 0 um
+% % ch 2 + 20um
+% % ch 3 + 20 um
+% % ch 4 + 40um
+% % ch 5 + 40 um
+% % ch 6 + 60 um
+% % ch 7 + 60 um
+% % ch 8 + 80 um
+% % ch 9 + 80 um
+% % ch 10 + 100um .....
+% 
+% if str2double(Data.Info.ProbeInfo.NrRows) <=2 
+% 
+%     %create that vector
+% 
+%     n = size(Data.Spikes.ChannelPosition,1); % Number of elements in the vector
+%     step = Data.Info.ChannelSpacing; % Step size
+% 
+%     % Generate the vector
+%     result = [0, repelem(step:step:step*(ceil((n-1)/2)), 2)];
+%     result = result(1:n); % Trim to exactly n elements
+% 
+%     if strcmp(Data.Info.Sorter,'External Kilosort GUI') && str2double(Data.Info.ProbeInfo.NrRows) == 1 && Data.Info.ProbeInfo.OffSetRows == 1 
+%            for nchannel = 1:n
+%                SpikeCurrentChannel = FakeChannel == nchannel;
+%                Data.Spikes.DataCorrectedSpikePositions(SpikeCurrentChannel,2) = Data.Spikes.SpikePositions(SpikeCurrentChannel,2);
+%             end
+%     else
+%         for nchannel = 1:n
+%            SpikeCurrentChannel = FakeChannel == nchannel;
+%            Data.Spikes.DataCorrectedSpikePositions(SpikeCurrentChannel,2) = Data.Spikes.SpikePositions(SpikeCurrentChannel,2) + result(nchannel);
+%         end
+%     end
+% end
 
-if ischar(Data.Info.ProbeInfo.HorOffset)
-    HorOffset = str2double(Data.Info.ProbeInfo.HorOffset);
-end
 
-if str2double(Data.Info.ProbeInfo.NrRows) <=2
-    Data.Spikes.DataCorrectedSpikePositions = Data.Spikes.SpikePositions;
-    
-    FakeChannel = NaN(size(Data.Spikes.SpikeTimes));
-    
-    AllChannel = 1:size(Data.Spikes.ChannelPosition,1);
-    
-    for i = 1:size(Data.Spikes.SpikePositions,1)
-    
-        ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
-        
-        YBasedChannel = AllChannel(ChannelIndex);
-        
-        % if no active channel after the current one: take more
-        % channelspacing in case its right outside the border (>channelspaing/2)
-        if isempty(YBasedChannel)
-            ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing; 
-            YBasedChannel = AllChannel(ChannelIndex);
-        end
-        
-        if str2double(Data.Info.ProbeInfo.NrRows) == 2
-            if Data.Spikes.SpikePositions(i,1) <= HorOffset/2 % left
-                FakeChannel(i) = YBasedChannel(1);
-            else % right
-                FakeChannel(i) = YBasedChannel(2);
-            end
-        elseif str2double(Data.Info.ProbeInfo.NrRows) == 1
-            FakeChannel(i) = YBasedChannel(1);
-        end
-        
-    end
-
-    [~, FakeChannel] = ismember(FakeChannel, Data.Info.ProbeInfo.ActiveChannel);
-
-else % 3 or more channel rows!
-    Data.Spikes.DataCorrectedSpikePositions = Data.Spikes.SpikePositions;
-    
-    FakeChannel = NaN(size(Data.Spikes.SpikeTimes));
-    
-    AllChannel = 1:size(Data.Spikes.ChannelPosition,1);
-    
-    for i = 1:size(Data.Spikes.SpikePositions,1)
-    
-        ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ChannelSpacing/2; 
-        
-        YBasedChannel = AllChannel(ChannelIndex);
-        
-        RespectiveXPositions = Data.Spikes.ChannelPosition(ChannelIndex,1);
-
-        HalfChannelDist = HorOffset/2;
-        
-        RespectiveXChannel = [];
-        for uu = 1:length(RespectiveXPositions)
-            if Data.Spikes.SpikePositions(i,1) >= RespectiveXPositions(uu)-HalfChannelDist && Data.Spikes.SpikePositions(i,1) < RespectiveXPositions(uu)+HalfChannelDist
-               RespectiveXChannel = [RespectiveXChannel,uu];
-            end
-            if Data.Spikes.SpikePositions(i,1) > RespectiveXPositions(end)
-                RespectiveXChannel = [RespectiveXChannel,length(RespectiveXPositions)];
-            end
-        end
-        % Can be within two channel ranges --> just take the one with
-        % smallest distance to actual channel location
-        if length(RespectiveXChannel)>1
-            Xtocheck = RespectiveXPositions(RespectiveXChannel);
-            [a,SmallestDistanceIndex] = min(abs(Xtocheck-Data.Spikes.SpikePositions(i,1)));
-            RespectiveXChannel = RespectiveXChannel(SmallestDistanceIndex);
-        end
-        
-        ChannelForCurrentSpike = YBasedChannel(RespectiveXChannel);
-        TargetDepth = (ChannelForCurrentSpike-1)*Data.Info.ChannelSpacing;
-        Residual = Data.Spikes.SpikePositions(i,2)-Data.Spikes.ChannelPosition(YBasedChannel(RespectiveXChannel),2);
-        
-        Data.Spikes.DataCorrectedSpikePositions(i,2) = TargetDepth - double(Residual);
-        
-        FakeChannel(i) = YBasedChannel(RespectiveXChannel);
-    end
-end
-%% Now create fake spikepositions field with adjusted positions spanning from 0 to NrChannel * 2 
-% ch 1 + 0 um
-% ch 2 + 20um
-% ch 3 + 20 um
-% ch 4 + 40um
-% ch 5 + 40 um
-% ch 6 + 60 um
-% ch 7 + 60 um
-% ch 8 + 80 um
-% ch 9 + 80 um
-% ch 10 + 100um .....
-
-if str2double(Data.Info.ProbeInfo.NrRows) <=2 
-      
-    %create that vector
-    
-    n = size(Data.Spikes.ChannelPosition,1); % Number of elements in the vector
-    step = Data.Info.ChannelSpacing; % Step size
-    
-    % Generate the vector
-    result = [0, repelem(step:step:step*(ceil((n-1)/2)), 2)];
-    result = result(1:n); % Trim to exactly n elements
-    
-    if strcmp(Data.Info.Sorter,'External Kilosort GUI') && str2double(Data.Info.ProbeInfo.NrRows) == 1 && Data.Info.ProbeInfo.OffSetRows == 1 
-           for nchannel = 1:n
-               SpikeCurrentChannel = FakeChannel == nchannel;
-               Data.Spikes.DataCorrectedSpikePositions(SpikeCurrentChannel,2) = Data.Spikes.SpikePositions(SpikeCurrentChannel,2);
-            end
-    else
-        for nchannel = 1:n
-           SpikeCurrentChannel = FakeChannel == nchannel;
-           Data.Spikes.DataCorrectedSpikePositions(SpikeCurrentChannel,2) = Data.Spikes.SpikePositions(SpikeCurrentChannel,2) + result(nchannel);
-        end
-    end
-end
-
-Data.Spikes.SpikeChannel = FakeChannel;
 

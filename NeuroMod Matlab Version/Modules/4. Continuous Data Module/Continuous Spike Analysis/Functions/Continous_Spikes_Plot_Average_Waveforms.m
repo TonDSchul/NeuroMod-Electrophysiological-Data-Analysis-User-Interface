@@ -51,9 +51,10 @@ if str2double(Data.Info.ProbeInfo.NrRows) == 1
     StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
     StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
 else
-    FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+    FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
     StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-    StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
+    StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
 end
 
 ydata = StartDepth:ChannelSpacing:StopDepth;

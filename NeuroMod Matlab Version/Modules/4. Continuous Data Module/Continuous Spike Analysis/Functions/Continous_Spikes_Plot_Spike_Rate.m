@@ -130,18 +130,19 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
             StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
             StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
         else
-            FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
             StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-            StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
+            StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
         end
         dN = (StopDepth-StartDepth);
         BinSize = dN/cN;
     else
         cN = length(ChannelSelection);  % number of steps/chunks
-        dN = length(ChannelSelection);
-        StartDepth = (min(ChannelSelection))*Data.Info.ChannelSpacing;
-        StopDepth = (max(ChannelSelection))*Data.Info.ChannelSpacing;
-        %TempSpikePos = SpikePositions/Data.Info.ChannelSpacing;
+        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
+        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
         BinSize = Data.Info.ChannelSpacing;
     end
     % Divide the data into chunks (last chunk is smaller than the rest)

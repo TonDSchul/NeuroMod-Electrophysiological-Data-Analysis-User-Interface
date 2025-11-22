@@ -129,22 +129,24 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     
     if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
         cN = str2double(NumBins);  % number of steps/chunks
+        
         if str2double(Data.Info.ProbeInfo.NrRows) == 1
             StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
             StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
         else
-            FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+            FakeYpositions = ((FakeChannelRange-1)*Data.Info.ChannelSpacing);
             StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
-            StopDepth = max(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
+            StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot))));
         end
         dN = (StopDepth-StartDepth);
         BinSize = dN/cN;
     else
         cN = length(ChannelToPlot);  % number of steps/chunks
-        dN = length(ChannelToPlot);
-        StartDepth = (min(ChannelToPlot))*Data.Info.ChannelSpacing;
-        StopDepth = (max(ChannelToPlot))*Data.Info.ChannelSpacing;
-        %TempSpikePos = SpikePositions/Data.Info.ChannelSpacing;
+        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot)));
+        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelToPlot))));
         BinSize = Data.Info.ChannelSpacing;
     end
     

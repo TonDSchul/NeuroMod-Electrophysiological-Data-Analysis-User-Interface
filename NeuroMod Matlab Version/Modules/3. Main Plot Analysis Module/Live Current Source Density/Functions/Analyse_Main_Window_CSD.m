@@ -109,7 +109,7 @@ if strcmp(TwoORThreeD,"TwoD")
         Figure.Box ="off";
 
     else
-        set(PowerDepth_handles(1),'XData', Time, 'YData', ds(1:size(csd,2)), ...
+        set(PowerDepth_handles(1),'XData', Time, 'YData', ds, ...
         'CData', csd','Tag','PowerDepth');
     end
 

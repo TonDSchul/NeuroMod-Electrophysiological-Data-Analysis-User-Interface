@@ -206,11 +206,14 @@ if strcmp(Type,"Eventrelated")
         delete(Event_handles(2:end));
         Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
     end
+    
+    FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
 
     if isempty(Event_handles)
-        eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,((size(ChannelPositions,1)-1)*ChannelSpacing)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure, 'Tag', 'Event');
+        eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,FakeYpositions(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure, 'Tag', 'Event');
     else
-        set(Event_handles(1), 'XData', [Time(Time==0),Time(Time==0)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'YData', [0,((size(ChannelPositions,1)-1)*ChannelSpacing)], 'Parent', Figure, 'Tag', 'Event');
+        set(Event_handles(1), 'XData', [Time(Time==0),Time(Time==0)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'YData', [0,FakeYpositions(end)], 'Parent', Figure, 'Tag', 'Event');
         eventLine = Event_handles(1);
     end
     
@@ -227,12 +230,15 @@ if strcmp(Type,"Eventrelated")
 % Continous spikes windows    
 elseif strcmp(Type,"Continous")
     if PlotEvents
+        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+
         legend(Figure, 'on');
         Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
         delete(Event_handles(:));
 
         for i = 1:length(EventIndicies)
-            line(Figure,[EventIndicies(i),EventIndicies(i)],[0,((size(ChannelPositions,1)-1)*ChannelSpacing)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Tag', 'Event');
+            line(Figure,[EventIndicies(i),EventIndicies(i)],[0,FakeYpositions(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Tag', 'Event');
             Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
             eventLine = Event_handles(1);
         end

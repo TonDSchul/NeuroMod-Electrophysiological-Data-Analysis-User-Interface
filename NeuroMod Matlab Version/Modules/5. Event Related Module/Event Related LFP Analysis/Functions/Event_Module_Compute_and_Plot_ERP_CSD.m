@@ -481,12 +481,12 @@ else
     
         if isempty(PowerDepth2D_handles) || isempty(PowerDepth3D_handles)
             %3D
-            surf(Figure,EventTime,ds,csd','EdgeColor', 'none', 'Tag','PowerDepth3D')
+            surf(Figure,EventTime,ds(1:size(csd,2)),csd','EdgeColor', 'none', 'Tag','PowerDepth3D')
             %2D
             % % 2D Plot
         else
             %3D
-            set(PowerDepth3D_handles(1),'XData',EventTime,'YData',ds,'CData',csd','ZData',csd','EdgeColor', 'none', 'Tag', 'PowerDepth3D')
+            set(PowerDepth3D_handles(1),'XData',EventTime,'YData',ds(1:size(csd,2)),'CData',csd','ZData',csd','EdgeColor', 'none', 'Tag', 'PowerDepth3D')
             %2D
             % 2D Plot
         end

@@ -50,6 +50,7 @@ h = waitbar(0, 'Extracting Spike Waveforms...', 'Name', 'Extracting Spike Wavefo
 DataField = 'Preprocessed';
 % end
 
+%% Avgerage Waveforms
 if strcmp(WaveFormType,"AverageWaveforms")
     % Extract Waveforms over all channel from each spike indice
     % for average waveform over depth. For normal waveform plots, only the
@@ -79,6 +80,7 @@ if strcmp(WaveFormType,"AverageWaveforms")
         end
     end
 
+%% Normal Waveforms
 else
     % Otherwise just extract waveform from the corresponding Channel it was
     % found in
@@ -97,15 +99,18 @@ else
         % Extract data of time points, mark non-NaN waveform with 1 in BiggestSpikeIndicies
         if startIdx > 0 && endIdx <= size(Data.(DataField), 2)
            
-            % Find logical array of which spikes are in ActiveChannel
-            DataChannelSpikePositions = ismember(SpikePositions(nwaves), Data.Info.ProbeInfo.ActiveChannel);
-            
-            if DataChannelSpikePositions==1
-                DataIndex = ismember(Data.Info.ProbeInfo.ActiveChannel,SpikePositions(nwaves));
-                Waveforms(nwaves, :) = Data.(DataField)(DataIndex, startIdx:endIdx);
-            else
-                disp("yes")
-                Waveforms(nwaves, :) = NaN;
+            if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
+                % Find logical array of which spikes are in ActiveChannel
+                DataChannelSpikePositions = ismember(SpikePositions(nwaves), Data.Info.ProbeInfo.ActiveChannel);
+                
+                if DataChannelSpikePositions==1
+                    DataIndex = ismember(Data.Info.ProbeInfo.ActiveChannel,SpikePositions(nwaves));
+                    Waveforms(nwaves, :) = Data.(DataField)(DataIndex, startIdx:endIdx);
+                else
+                    Waveforms(nwaves, :) = NaN;
+                end
+            else % Internal Spike sorting
+                Waveforms(nwaves, :) = Data.(DataField)(SpikePositions(nwaves), startIdx:endIdx);
             end
 
             BiggestSpikeIndicies(nwaves) = 1;

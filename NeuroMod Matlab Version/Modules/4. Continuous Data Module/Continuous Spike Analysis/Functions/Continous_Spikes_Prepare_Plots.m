@@ -281,7 +281,8 @@ elseif strcmp(SpikeType,"Internal")
     if str2double(Data.Info.ProbeInfo.NrRows)==1
         SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
     else
-        FakeYpositions = (min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing;
+        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
     end
 
@@ -296,7 +297,6 @@ elseif strcmp(SpikeType,"Internal")
     else
         SpikeAmps = Data.Spikes.SpikeAmps;
         ChannelPosition = Data.Spikes.ChannelPosition;
-        Waveforms = Waveforms;
     end
     
 end

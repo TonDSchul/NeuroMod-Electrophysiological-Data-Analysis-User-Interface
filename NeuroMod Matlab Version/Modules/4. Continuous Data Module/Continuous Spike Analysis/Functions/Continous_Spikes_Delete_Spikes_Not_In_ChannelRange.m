@@ -195,6 +195,7 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
     %--> just too many, namely twice as much per depth
     
     if str2double(Info.ProbeInfo.NrRows) >= 2
+        
         %% Delte Channel not in range
         % What channels where deleted?
         DeleteIndicies = [];
@@ -205,8 +206,11 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
         end
         
         % Convert in um
-        DeleteIndicies = (DeleteIndicies-1)*ChannelSpacing;
-        
+        %DeleteIndicies = (DeleteIndicies-1)*ChannelSpacing;
+        FakeChannelRange = 1:str2double(Info.ProbeInfo.NrChannel)*str2double(Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange-1)*Info.ChannelSpacing;
+        DeleteIndicies = FakeYpositions(Info.ProbeInfo.ActiveChannel(DeleteIndicies));
+
         % Find spikes with channels that were deleted
         % save in a array and delete after loop
         DeleteSpikePositions = [];
@@ -228,6 +232,13 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
         if strcmp(Window,"Con_Spikes") || strcmp(Window,"Event_Spikes")
             return;
         end
+
+        ChannelBeforeActive = min(Info.ProbeInfo.ActiveChannel)-1;
+        if ChannelBeforeActive<0
+            ChannelBeforeActive = 0;
+        else
+            ChannelBeforeActive = (ChannelBeforeActive)*ChannelSpacing;
+        end
         
         % Convert back in channel
         %
@@ -241,13 +252,16 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
         % --> adjust for that gap        
         GapsDiffsOrig = diff(Info.ProbeInfo.ActiveChannel);
         GapsDurations = (GapsDiffsOrig(GapsDiffsOrig > 1) - 1);
-        
+
+        Gaplocations = Info.ProbeInfo.ActiveChannel(GapsDiffsOrig>1)+1;
+        Gaplocations = Gaplocations + (GapsDurations-1);
+
         for i = 1:length(SpikePositions)
             % if active cahnnel deactivated
             if sum(SpikePositions(i) > DeleteIndicies + (ChannelSpacing/2)) > 0
                 GapsNumberWithinBelow = 0;
                 for nGaps = 1:length(GapsDurations)
-                    if SpikePositions(i) > Info.ProbeInfo.ycoords(Info.ProbeInfo.ActiveChannel(GapsDurations(nGaps))+1)
+                    if SpikePositions(i) > Gaplocations(nGaps) * ChannelSpacing
                        GapsNumberWithinBelow = GapsNumberWithinBelow + (GapsDurations(nGaps)*ChannelSpacing);
                     end
                 end
@@ -258,15 +272,15 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
                     Correction = (sum(SpikePositions(i) > DeleteIndicies) * ChannelSpacing) + GapsNumberWithinBelow; % + gap zwischen channel inseln wenn vorhhanden
                 end
 
-                SpikePositions(i) = SpikePositions(i) - Correction;
+                SpikePositions(i) = (SpikePositions(i) - Correction) - ChannelBeforeActive;
 
             else % if no active channel deactivated
 
                 if ~strcmp(Window,"Con_Spikes") && ~strcmp(Window,"Event_Spikes")
                     GapsNumberWithinBelow = 0;
                     for nGaps = 1:length(GapsDurations)
-                        if SpikePositions(i) > ((GapsDurations(nGaps))) * ChannelSpacing + ChannelSpacing
-                           GapsNumberWithinBelow = GapsNumberWithinBelow + (((GapsDurations(nGaps))/str2double(Info.ProbeInfo.NrRows))*ChannelSpacing);
+                        if SpikePositions(i) > Gaplocations(nGaps) * ChannelSpacing
+                           GapsNumberWithinBelow = GapsNumberWithinBelow + (GapsDurations(nGaps)*ChannelSpacing);
                         end
                     end
 
@@ -276,7 +290,7 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
                         Correction = 0;
                     end
 
-                    SpikePositions(i) = SpikePositions(i) - Correction;
+                    SpikePositions(i) = (SpikePositions(i) - Correction) - ChannelBeforeActive;
                 end
             end
         end
