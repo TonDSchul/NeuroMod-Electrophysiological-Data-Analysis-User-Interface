@@ -58,11 +58,7 @@ end
 
 squareHeight = (highylimits-lowylimits)/numSquares;
 
-if ShowChannelSpacing
-    PlottedSquareHeight = floor(squareHeight/2);
-else
-    PlottedSquareHeight = squareHeight;
-end
+PlottedSquareHeight = squareHeight;
 
 % Different spacing if wider
 if ChannelRows>2
@@ -142,7 +138,6 @@ else
 
         CurrentChannelLeft = AllChannelLeft(FirstZoomChannel);
     end
-
 end
 
 Squareplots = 0;

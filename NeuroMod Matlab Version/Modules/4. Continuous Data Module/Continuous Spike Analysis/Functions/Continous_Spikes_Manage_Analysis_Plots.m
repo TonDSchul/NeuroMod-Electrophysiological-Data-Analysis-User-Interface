@@ -1,4 +1,4 @@
-function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD,CurrentPlotData,PlotAppearance,Autorun,ActiveChannel)
+function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,Figure,TypeofAnalysis,TextArea,Eventstoshow,rgbMatrix,numCluster,ClusterToShow,Figure2,Figure3,TwoORThreeD,CurrentPlotData,PlotAppearance,Autorun,ActiveChannel,PreservePlotChannelLocations)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for continous internal spikes based on user input
@@ -48,6 +48,8 @@ function [Data,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,Pl
 % 19. Autorun: double 1 or 0 whether funtion is executed in autorun 
 % 20 ActiveChannel: vector with all channel being active in the probe view
 % window
+% 21.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info
@@ -75,15 +77,16 @@ end
 
 if strcmp(TypeofAnalysis,"Spike Map")
     set(Figure, 'YDir','reverse');
-
-    if strcmp(ClusterToShow,"All")
-        CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",rgbMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
-    else
-        if strcmp(Data.Info.Sorter,'Mountainsort5') || strcmp(Data.Info.Sorter,'SpykingCircus2')
-            SpikeAmps(SpikeAmps<0)=abs(SpikeAmps(SpikeAmps<0));
-        end
-        CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",rgbMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Data.Spikes.ChannelPosition,Figure,numCluster,ClusterToShow,PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    
+    if strcmp(Data.Info.Sorter,'Mountainsort5') || strcmp(Data.Info.Sorter,'SpykingCircus2')
+        SpikeAmps(SpikeAmps<0)=abs(SpikeAmps(SpikeAmps<0));
     end
+
+    if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
+        CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",rgbMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    end
+
+    CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Continous",rgbMatrix,Data.Time,SpikeTimes,SpikePositions,CluterPositions,SpikeAmps,Data.Spikes.ChannelPosition,Figure,numCluster,ClusterToShow,PlotInfo.Plotevents,PlotInfo.EventData,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
     
     if strcmp(Data.Info.SpikeType,"Internal")
         yyaxis(Figure2, 'right');
@@ -96,7 +99,7 @@ end
 if length(find(mod(SpikeTimes(:), 1) == 0)) == length(SpikePositions)
     SpikeTimes = SpikeTimes/Data.Info.NativeSamplingRate;
 end
-CurrentPlotData = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,"Initial",rgbMatrix,ClusterToShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+CurrentPlotData = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,Figure2,Figure3,"Initial",rgbMatrix,ClusterToShow,PlotInfo.SpikeRateNumBins,PlotInfo.ChannelSelection,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations);
 
 if strcmp(Data.Info.SpikeType,"Internal")
     yyaxis(Figure2, 'right');
@@ -138,22 +141,34 @@ if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     
     WaveFormSelection = ClusterWaveforms(:,MaxIndex,:);
     
-    ChannelRange = Data.Info.ProbeInfo.ActiveChannel(1):Data.Info.ProbeInfo.ActiveChannel(end);
-
-    MeanWaveForm = zeros(1,length(ChannelRange),size(WaveFormSelection,3));
+    if PreservePlotChannelLocations
+        ChannelRange = Data.Info.ProbeInfo.ActiveChannel(1):Data.Info.ProbeInfo.ActiveChannel(end);
     
-    % If only one wave, dimensions change
-    if size(WaveFormSelection,2)>1
-        MeanWaveForm(1,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection),:) = squeeze(mean(WaveFormSelection,2));
+        MeanWaveForm = zeros(1,length(ChannelRange),size(WaveFormSelection,3));
+        
+        % If only one wave, dimensions change
+        if size(WaveFormSelection,2)>1
+            MeanWaveForm(1,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection),:) = squeeze(mean(WaveFormSelection,2));
+        else
+            MeanWaveForm(1,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection),:) = squeeze(WaveFormSelection);
+        end
+        SelectedChannelRange = Data.Info.ProbeInfo.ActiveChannel(min(PlotInfo.ChannelSelection)):Data.Info.ProbeInfo.ActiveChannel(max(PlotInfo.ChannelSelection));
+        MeanWaveForm = MeanWaveForm(:,SelectedChannelRange,:);
     else
-        MeanWaveForm(1,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection),:) = squeeze(WaveFormSelection);
-    end
+        ChannelRange = PlotInfo.ChannelSelection;
     
-    SelectedChannelRange = Data.Info.ProbeInfo.ActiveChannel(min(PlotInfo.ChannelSelection)):Data.Info.ProbeInfo.ActiveChannel(max(PlotInfo.ChannelSelection));
-    MeanWaveForm = MeanWaveForm(:,SelectedChannelRange,:);
+        MeanWaveForm = zeros(1,length(ChannelRange),size(WaveFormSelection,3));
+        
+        % If only one wave, dimensions change
+        if size(WaveFormSelection,2)>1
+            MeanWaveForm(1,:,:) = squeeze(mean(WaveFormSelection,2));
+        else
+            MeanWaveForm(1,:,:) = squeeze(WaveFormSelection);
+        end
+    end
 
     %% Just Some Channel Selected
-    CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),MeanWaveForm,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD,CurrentPlotData);
+    CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,PlotInfo.ChannelSelection,PlotInfo.Units(1),MeanWaveForm,Data.Info.ChannelSpacing,"Kilosort",PlotInfo.Waveforms,TwoORThreeD,CurrentPlotData,PreservePlotChannelLocations);
     
     Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
 end
@@ -202,16 +217,18 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
         SpikeAmps = abs(SpikeAmps);
     end
     
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-    else
+    if PreservePlotChannelLocations
         FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
         FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
         StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelRange))));
+    else
+        FakeChannelRange = 1:length(ChannelRange);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions);
+        StopDepth = max(FakeYpositions);
     end
-    
+        
     depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
@@ -265,17 +282,19 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     
     %% basic quantification of spiking plot
     ChannelRange = PlotInfo.ChannelSelection;
-    
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-    else
+
+    if PreservePlotChannelLocations
         FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
         FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
         StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelRange))));
+    else
+        FakeChannelRange = 1:length(PlotInfo.ChannelSelection);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions);
+        StopDepth = max(FakeYpositions);
     end
-    
+        
     depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
@@ -322,7 +341,7 @@ if strcmp(TypeofAnalysis,"Spike Triggered LFP")
         SpikePositions = SpikePositions(SpikesinCluster==1);
     end
 
-    [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Continous",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClusterToShow,CurrentPlotData,PlotAppearance);
+    [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelSelection,"Continous",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClusterToShow,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations);
     
     if ~isempty(TempData) % if not preprocessed
         Data = TempData; % if preprocessed
@@ -336,21 +355,23 @@ end
 
 
 if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
-    else
+
+    if PreservePlotChannelLocations
         FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
         FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection)));
         StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection))));
-        
-        Figure.YLim = [StartDepth ,StopDepth];
+    else
+        FakeChannelRange = 1:length(ActiveChannel);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions);
+        StopDepth = max(FakeYpositions);
     end
 
-    % Custome YLabel
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
-end
+    Figure.YLim = [StartDepth ,StopDepth];
 
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel,PreservePlotChannelLocations)
+end
 
 if Autorun == 0
     % Resize Figures based on analysis and whether cbar is necessary

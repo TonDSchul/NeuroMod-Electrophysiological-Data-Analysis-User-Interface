@@ -1,4 +1,4 @@
-function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,ClustertoshowDropDown,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,ClustertoshowDropDown,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow,Waveforms,ActiveChannel,Analysis)
+function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelPosition,PlotInfo,ChannelEditField,WaveformEditField,ClustertoshowDropDown,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,WaveformChannel] = Continous_Spikes_Prepare_Plots(Data,ChannelEditField,WaveformEditField,ClustertoshowDropDown,DifferentInput,SpikeType,SpikeAnalysisType,SpikeRateNumBinsEditField,TimeWindowSpiketriggredLFPEditField,ExecuteInGUI,Eventstoshow,Waveforms,ActiveChannel,Analysis,PreservePlotChannelLocations)
 
 %________________________________________________________________________________________
 %% Function to prepare plots for internal and kilosort continous spike analysis
@@ -72,6 +72,8 @@ function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelP
 % this has to be capture in the channel for each waveform too. Unchanged,
 % channel info comes from Data.Spikes.SpikePositions. Not necessary yet but
 % usefull to have ready.
+% 13.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -208,14 +210,25 @@ else
 end
 
 if strcmp(Data.Info.SpikeType,'Internal')
-    [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Con_Spikes",Data.Info,SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
-
+    if PreservePlotChannelLocations
+        [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Con_Spikes",Data.Info,SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+    else
+        [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Data.Info,SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+    end
 elseif strcmp(Data.Info.SpikeType,'Kilosort') || strcmp(Data.Info.SpikeType,"SpikeInterface")
     UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
     if numel(UinquePos)>=2
-        [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Con_Spikes",Data.Info,SpikeTimes,Data.Spikes.DataCorrectedSpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+        if PreservePlotChannelLocations
+            [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Con_Spikes",Data.Info,SpikeTimes,Data.Spikes.DataCorrectedSpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+        else
+            [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Fake_Spikes",Data.Info,SpikeTimes,Data.Spikes.DataCorrectedSpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+        end
     else
-        [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Con_Spikes",Data.Info,SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+        if PreservePlotChannelLocations
+            [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Con_Spikes",Data.Info,SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+        else
+            [SpikeTimes,SpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Fake_Spikes",Data.Info,SpikeTimes,Data.Spikes.SpikePositions(:,2),Data.Info.ChannelSpacing,PlotInfo.ChannelSelection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+        end
     end
 end
 
@@ -278,14 +291,10 @@ elseif strcmp(SpikeType,"Internal")
         end
     end
     
-    if str2double(Data.Info.ProbeInfo.NrRows)==1
-        SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
-    else
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
-    end
-
+    FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+    SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+    
     if ~isempty(SelectedChannelIndicies)
         SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==0);
         ChannelPosition = Data.Spikes.ChannelPosition;

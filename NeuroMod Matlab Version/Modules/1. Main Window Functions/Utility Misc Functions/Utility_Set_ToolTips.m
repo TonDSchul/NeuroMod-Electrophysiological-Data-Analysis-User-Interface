@@ -121,7 +121,7 @@ if Activated
             if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
                 app.ProbeViewWindowHandle.ChangeforWindowDropDown.Tooltip = "Select window for which channel changes are applied. Applying for multiple windows can decrease performance significantly.";
                 app.ProbeViewWindowHandle.ChannelSelectionEditField.Tooltip = "Enter channel range to activate. Format: matlab expressions like 1:10 for channel 1 to 10 or [3,5] for channel 3 and 5.";
-                app.ProbeViewWindowHandle.ShowChannelSpacingCheckBox.Tooltip = "Click to show channel spacing on the zoomed channel on the right side (just aesthetic reasons).";
+                app.ProbeViewWindowHandle.ShowChannelSpacingCheckBox.Tooltip = "Activate to preserve probe distances between channel in analysis plots (when active channnel are divided into individualy 'islands' delimited by inactive channel inbetween).";
             end
         end
     end

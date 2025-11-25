@@ -20,9 +20,9 @@ if strcmp(Window,"ERP")
     EventNr = eval(app.Mainapp.EventLFPERP.EventNumberSelectionEditField.Value);
             
     if strcmp(app.Mainapp.EventLFPERP.DataTypeDropDown.Value,'Raw Event Related Data')
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value);
+        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value,EventNr,app.Mainapp.PreservePlotChannelLocations);
     else
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value);
+        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value,EventNr,app.Mainapp.PreservePlotChannelLocations);
     end
 end
 
@@ -37,9 +37,9 @@ if strcmp(Window,"CSD")
 
     %% Plot CSD
     if strcmp(app.Mainapp.EventLFPCSD.DataTypeDropDown.Value,'Raw Event Related Data') 
-        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[],app.Mainapp.EventLFPCSD.DataTypeDropDown.Value);
+        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[],app.Mainapp.EventLFPCSD.DataTypeDropDown.Value,[],EventNr,app.Mainapp.PreservePlotChannelLocations);
     else
-        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[],app.Mainapp.EventLFPCSD.DataTypeDropDown.Value);
+        [app.Mainapp.EventLFPCSD.climCSD,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPCSD.UIAxes,[],app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],app.Mainapp.EventLFPCSD.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,[],app.Mainapp.EventLFPCSD.DataTypeDropDown.Value,[],EventNr,app.Mainapp.PreservePlotChannelLocations);
     end
 
     cb = colorbar(app.Mainapp.EventLFPCSD.UIAxes);
@@ -62,7 +62,7 @@ if strcmp(Window,"EventSpectrum")
             delete(cb);                  % Delete the colorbar
         end
 
-        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'Just Frequency Bands',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.EventLFPSSP.SelectedEvents,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPSSP.DataToExtractFromDropDown.Value);
+        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'Just Frequency Bands',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.EventLFPSSP.SelectedEvents,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPSSP.DataToExtractFromDropDown.Value,app.Mainapp.PreservePlotChannelLocations);
 
     elseif strcmp(app.Mainapp.EventLFPSSP.AnalysisDropDown.Value,"Band Power over Depth")
         app.Mainapp.EventLFPSSP.ChannelDropDown.Enable = "off";
@@ -71,7 +71,7 @@ if strcmp(Window,"EventSpectrum")
 
         app.Mainapp.EventLFPSSP.UIAxes.YScale = 'linear';
         
-        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'All',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.EventLFPSSP.SelectedEvents,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPSSP.DataToExtractFromDropDown.Value);
+        [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'All',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.EventLFPSSP.SelectedEvents,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPSSP.DataToExtractFromDropDown.Value,app.Mainapp.PreservePlotChannelLocations);
 
         cb = colorbar(app.Mainapp.EventLFPSSP.UIAxes);
         cb.Color = 'k';              % Sets tick mark and label color to black

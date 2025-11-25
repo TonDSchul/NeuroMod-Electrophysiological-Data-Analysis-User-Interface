@@ -1,4 +1,4 @@
-function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance,ERPChannel,DataType,SingleChannelPlotType,EventNr)
+function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance,ERPChannel,DataType,SingleChannelPlotType,EventNr,PreservePlotChannelLocations)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot ERP and CSD for event analysis windows
@@ -42,7 +42,8 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % every trial and ERP overlayed
 % 17. EventNr: double, nr of trigger shown. So that in imagsc plot y axis labels
 % can be spaced farther if there are many trigger
-
+% 18.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Outputs:
 % 1. CSDClim
@@ -445,11 +446,12 @@ else
     
     [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow,Data,DataType);  
     
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        ds = Data.Info.ProbeInfo.ycoords(min(OriginalDataChannelSelected)):CSD.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(OriginalDataChannelSelected));
-    else
-        ds = (min(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing;
-    end
+    % if str2double(Data.Info.ProbeInfo.NrRows) == 1
+    %     ds = Data.Info.ProbeInfo.ycoords(min(OriginalDataChannelSelected)):CSD.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(OriginalDataChannelSelected));
+    % else
+    ds = 0:CSD.ChannelSpacing:(length(OriginalDataChannelSelected)-1)*CSD.ChannelSpacing;
+        %ds = (min(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing;
+    % end
 
     DepthDiff = (ds(2) - ds(1))/2;
 
@@ -583,6 +585,6 @@ else
     CurrentPlotData.CSDType = strcat("Current Source Density");
     CurrentPlotData.CSDXTicks = Figure.XTickLabel;
     
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalDataChannelSelected)
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalDataChannelSelected,0)
 
 end

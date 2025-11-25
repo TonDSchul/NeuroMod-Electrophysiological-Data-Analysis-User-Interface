@@ -604,9 +604,9 @@ if ProbeViewWindow == 0
                     if isvalid(app.Mainapp.ContStaticSpectrumWindow)
                         Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray) 
                         if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
-                            [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'All',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance);
+                            [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'All',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.PreservePlotChannelLocations);
                         else
-                            [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'Just Frequency Bands',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance);
+                            [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'Just Frequency Bands',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.PreservePlotChannelLocations);
                         end
                         if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
                             cb = colorbar(app.Mainapp.ContStaticSpectrumWindow.UIAxes);
@@ -639,40 +639,7 @@ if ProbeViewWindow == 0
                     [app] = Utility_ProbeChange_Plot_EventSpikes(app);
                 end
             end
-            
-            % if strcmp(Window,'All Windows Opened') || strcmp(Window,'Delete Event Trigger Window')
-            %     if isprop(app.Mainapp,'EventIndiceRejectionWindow')
-            %         if ~isempty(app.Mainapp.EventIndiceRejectionWindow) && isvalid(app.Mainapp.EventIndiceRejectionWindow)
-            %             Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
-            % 
-            %             %% -------------------- PLOT -------------------- 
-            %             if isfield(app.Mainapp.Data.Info,'EventRelatedPreprocessing')
-            %                 [~,~,~,ThreshTrials,app.Mainapp.EventIndiceRejectionWindow.AllYLabels] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(app.Mainapp.EventIndiceRejectionWindow.Mainapp.Data,app.Mainapp.EventIndiceRejectionWindow.Mainapp.Data.PreprocessedEventRelatedData,app.Mainapp.EventIndiceRejectionWindow.Mainapp.Data.Info.EventRelatedTime,'Plot',app.Mainapp.EventIndiceRejectionWindow.UIAxes,app.Mainapp.EventIndiceRejectionWindow.UIAxes_2,app.Mainapp.EventIndiceRejectionWindow.ChannelofInterestDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.RejectTrialsfromtoEditField.Value,app.Mainapp.EventIndiceRejectionWindow.PlotTrialsfromtoEditField.Value,app.Mainapp.EventIndiceRejectionWindow.PlotThresholdCheckBox.Value,app.Mainapp.EventIndiceRejectionWindow.ThresholdEditField.Value,app.Mainapp.EventIndiceRejectionWindow.EventChannelSelectionDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.ThresholdSign);
-            %             else
-            %                 [~,~,~,ThreshTrials,app.Mainapp.EventIndiceRejectionWindow.AllYLabels] = Preprocessing_Events_Plot_and_Apply_Trial_Rejection(app.Mainapp.EventIndiceRejectionWindow.Mainapp.Data,app.Mainapp.EventIndiceRejectionWindow.Mainapp.Data.EventRelatedData,app.Mainapp.EventIndiceRejectionWindow.Mainapp.Data.Info.EventRelatedTime,'Plot',app.Mainapp.EventIndiceRejectionWindow.UIAxes,app.Mainapp.EventIndiceRejectionWindow.UIAxes_2,app.Mainapp.EventIndiceRejectionWindow.ChannelofInterestDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.RejectTrialsfromtoEditField.Value,app.Mainapp.EventIndiceRejectionWindow.PlotTrialsfromtoEditField.Value,app.Mainapp.EventIndiceRejectionWindow.PlotThresholdCheckBox.Value,app.Mainapp.EventIndiceRejectionWindow.ThresholdEditField.Value,app.Mainapp.EventIndiceRejectionWindow.EventChannelSelectionDropDown.Value,app.Mainapp.EventIndiceRejectionWindow.ThresholdSign);
-            %             end
-            % 
-            %             if ~isempty(ThreshTrials)
-            %              % Convert to comma-separated string
-            %                 texttoshow = strjoin(string(ThreshTrials), ',');
-            %             else
-            %                 texttoshow = '';
-            %             end
-            % 
-            %             app.Mainapp.EventIndiceRejectionWindow.LineHandles2 = findall(app.Mainapp.EventIndiceRejectionWindow.UIAxes_2,'Type','Line','Tag','Trials');
-            %             app.Mainapp.EventIndiceRejectionWindow.LineHandles = findall(app.Mainapp.EventIndiceRejectionWindow.UIAxes,'Tag','TrialsImageSC');
-            % 
-            %             for k = 1:numel(app.Mainapp.EventIndiceRejectionWindow.LineHandles2)
-            %                 app.Mainapp.EventIndiceRejectionWindow.LineHandles2(k).PickableParts = 'none';  % clicks pass through to axes
-            %             end
-            %             app.Mainapp.EventIndiceRejectionWindow.UIAxes_2.ButtonDownFcn = @(src,event) Utility_Trial_Rejection_ButtonDownFunction(app.Mainapp.EventIndiceRejectionWindow,src,event);
-            % 
-            %             app.Mainapp.EventIndiceRejectionWindow.TextArea.Value = texttoshow;
-            % 
-            %         end
-            %     end
-            % end
-
+           
             if strcmp(Window,'Event CSD Window') && ~isempty(app.Mainapp.EventLFPCSD) || strcmp(Window,'All Windows Opened') && ~isempty(app.Mainapp.EventLFPCSD)
                 [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,'CSD');
             end

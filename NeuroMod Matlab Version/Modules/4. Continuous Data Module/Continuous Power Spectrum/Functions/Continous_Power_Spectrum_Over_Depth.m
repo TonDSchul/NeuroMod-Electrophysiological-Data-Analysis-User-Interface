@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,DataSource,PowerSpecResults,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,ActiveChannel,PlotAppearance)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,DataSource,PowerSpecResults,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,ActiveChannel,PlotAppearance,PreservePlotChannelLocations)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth
@@ -42,6 +42,8 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Continous_Power_Spectrum
 % view window
 % 13. PlotAppearance: structure holding current default of plot appearances
 % like linewidths
+% 14.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed
@@ -115,28 +117,38 @@ Figure.FontSize = 10;
 OriginalActiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
-if str2double(Data.Info.ProbeInfo.NrRows) == 1
-    ydata = Data.Info.ProbeInfo.ycoords(min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))):Data.Info.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)));
-else
+if PreservePlotChannelLocations
+    % if str2double(Data.Info.ProbeInfo.NrRows) == 1
+    %     ydata = Data.Info.ProbeInfo.ycoords(min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))):Data.Info.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)));
+    % else
     ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing;
-end
+    % end    
+    ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
+    
+    BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
 
-ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
-
-BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
-
-for i = 1:length(ydata)
-    CurrentChannel = ChannelRange(i);
-    if sum(CurrentChannel==OriginalActiveChannel)>0
-        BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
+    for i = 1:length(ydata)
+        CurrentChannel = ChannelRange(i);
+        if sum(CurrentChannel==OriginalActiveChannel)>0
+            BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
+        end
     end
+
+else
+    FakeChannelRange = 1:length(ActiveChannel);
+    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+    StartDepth = min(FakeYpositions);
+    StopDepth = max(FakeYpositions);
+    ydata = StartDepth:Data.Info.ChannelSpacing:StopDepth;
+
+    BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
+  
 end
 
 plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance,ydata);
 
 %% save plotted data in case user wants to save 
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);
-nC = size(BandPower.allPowerEst,1); 
 
 CurrentPlotData.XData = BandPower.F(dispF)';
 CurrentPlotData.YData = ydata;
@@ -146,5 +158,5 @@ CurrentPlotData.XTicks = Figure.XTickLabel';
 
 if ~strcmp(WhattoPlot,"Just Frequency Bands")
     % Custom YLabels
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalActiveChannel)
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalActiveChannel,PreservePlotChannelLocations)
 end

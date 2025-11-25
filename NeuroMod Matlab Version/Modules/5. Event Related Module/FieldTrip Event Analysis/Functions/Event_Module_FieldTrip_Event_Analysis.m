@@ -20,7 +20,7 @@ ycoords = Data.Info.ProbeInfo.ycoords;
 
 elec = [];
 elec.label    = arrayfun(@(x) sprintf('chan%d', x), 1:NrChannels, 'UniformOutput', false);
-elec.elecpos  = [xcoords', ycoords', zeros(NrChannels,1)];  
+elec.elecpos  = [xcoords(Data.Info.ProbeInfo.ActiveChannel)', ycoords(Data.Info.ProbeInfo.ActiveChannel)', zeros(NrChannels,1)];  
 elec.chanpos  = elec.elecpos;
 elec.unit     = 'um';
 elec.type     = 'other';

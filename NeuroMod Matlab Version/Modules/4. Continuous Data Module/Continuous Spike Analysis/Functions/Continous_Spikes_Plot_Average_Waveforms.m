@@ -1,4 +1,4 @@
-function CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,ChannelSelection,UnitstoPlot,MeanWaveform,ChannelSpacing,SpikeType,WaveformsToPlot,TwoORThreeD,CurrentPlotData)
+function CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,ChannelSelection,UnitstoPlot,MeanWaveform,ChannelSpacing,SpikeType,WaveformsToPlot,TwoORThreeD,CurrentPlotData,PreservePlotChannelLocations)
 
 %________________________________________________________________________________________
 %% Function to plot average waveforms over each channel for a single unit
@@ -24,6 +24,8 @@ function CurrentPlotData = Continous_Spikes_Plot_Average_Waveforms(Figure,Data,C
 % 9. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 10. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 11.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -47,22 +49,25 @@ elseif ndims(MeanWaveform)==2
     Time = Time*1000; % Convert to ms
 end
 
-if str2double(Data.Info.ProbeInfo.NrRows) == 1
-    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-else
+% if str2double(Data.Info.ProbeInfo.NrRows) == 1
+%     StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
+%     StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
+% else
+if PreservePlotChannelLocations
     FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
     FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
     StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
     StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
+else
+    FakeChannelRange = 1:length(ChannelSelection);
+    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+    StartDepth = min(FakeYpositions);
+    StopDepth = max(FakeYpositions);
 end
 
+% end
+
 ydata = StartDepth:ChannelSpacing:StopDepth;
-
-%ydata = linspace(0,(NumChannel-1)*ChannelSpacing,NumChannel);
-
-%ydata = linspace(0,(NumChannel)*ChannelSpacing,NumChannel);
-%ydata = ChannelSpacing:ChannelSpacing:(NumChannel)*ChannelSpacing;
 
 if strcmp(TwoORThreeD,"TwoD")
     PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');

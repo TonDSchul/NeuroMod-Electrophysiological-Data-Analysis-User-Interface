@@ -278,7 +278,7 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.ProbeInfo.VertOffset = num2str(Load_Data_Window_Info.VerticalOffsetum);
     app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
     app.Data.Info.ProbeInfo.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
-    
+        
     app.Data.Info.ProbeInfo.ECoGArray = Load_Data_Window_Info.ECoGArray;
     app.Data.Info.ProbeInfo.SwitchTopBottomChannel = Load_Data_Window_Info.SwitchTopBottomChannel;
     app.Data.Info.ProbeInfo.SwitchLeftRightChannel = Load_Data_Window_Info.SwitchLeftRightChannel;
@@ -299,6 +299,9 @@ elseif strcmp(Type,"VariableDefinition")
     DummyStruc.Info.ProbeInfo.NrChannel = app.Data.Info.ProbeInfo.NrChannel;
     
     [app.Data.Info.ProbeInfo.xcoords,app.Data.Info.ProbeInfo.ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),0);
+    
+    % Set up y labels with proper y and x coordinate
+    app.Data.Info.ProbeInfo.YLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, xx), app.Data.Info.ProbeInfo.ycoords, app.Data.Info.ProbeInfo.xcoords, 'UniformOutput', false);
     
     if app.Data.Time(end)<3
         if app.Data.Time(end)<1

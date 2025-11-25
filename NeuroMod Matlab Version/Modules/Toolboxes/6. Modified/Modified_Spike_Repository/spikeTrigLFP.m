@@ -1,4 +1,4 @@
-function [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance)
+function [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, tLFP, lfpdat, theseST, SpikePositions, ChanneltoPlot, winAroundSpike, Figure,SR,Textarea,ChannelSpacing,AppWidnow,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations)
 % function mnLFP = spikeTrigLFP(tLFP, lfpdat, theseST, winAroundSpike)
 %
 % returns nChannels x nTimePoints mean spike-triggered LFP. 
@@ -12,7 +12,11 @@ function [mnLFP,CurrentPlotData] = spikeTrigLFP(Data, tLFP, lfpdat, theseST, Spi
 % include
 % the time points to sample LFP at
 
-NumChannel = min(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)) : max(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot));
+if PreservePlotChannelLocations
+    NumChannel = min(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)) : max(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot));
+else
+    NumChannel = Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot);
+end
 
 Time = winAroundSpike;
 
@@ -71,14 +75,22 @@ if Plot
  
     Time = Time*1000; % convert to ms
     
+    
     if str2double(Data.Info.ProbeInfo.NrRows) == 1
         StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
         StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
     else
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
-        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot))));
+        if PreservePlotChannelLocations
+            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot)));
+            StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChanneltoPlot))));
+        else
+            FakeChannelRange = 1:length(ChanneltoPlot);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions);
+            StopDepth = max(FakeYpositions);
+        end
     end
 
     ydata = StartDepth:ChannelSpacing:StopDepth;

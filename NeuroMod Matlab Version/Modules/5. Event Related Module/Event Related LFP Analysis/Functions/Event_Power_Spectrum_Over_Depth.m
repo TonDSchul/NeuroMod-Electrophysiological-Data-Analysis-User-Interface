@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel,PlotAppearance,EventDataToExtractFrom)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel,PlotAppearance,EventDataToExtractFrom,PreservePlotChannelLocations)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth for event related data
@@ -38,6 +38,8 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Ove
 % for events 1 to 10 
 % 13. EventDataToExtractFrom: char, name of the event channel, event related
 % data is extracted (to set time which depends on downsampling, which depends on whether the user selected raw or preprocessed data)
+% 14.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Outputs:
 % 1. PowerSpecResults: always empty here
@@ -99,21 +101,31 @@ dispRange(2) = str2double(FrequencyRangeHzEditField(commaindicie(1)+1:end)); % H
 OriginalactiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
-if str2double(Data.Info.ProbeInfo.NrRows) == 1
-    ydata = Data.Info.ProbeInfo.ycoords(min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))):Data.Info.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)));
-else
-    ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing;
-end
-
-ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
-
-BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
-
-for i = 1:length(ydata)
-    CurrentChannel = ChannelRange(i);
-    if sum(CurrentChannel==OriginalactiveChannel)>0
-        BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
+if PreservePlotChannelLocations
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        ydata = Data.Info.ProbeInfo.ycoords(min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))):Data.Info.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)));
+    else
+        ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing;
     end
+    
+    ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
+    
+    BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
+    
+    for i = 1:length(ydata)
+        CurrentChannel = ChannelRange(i);
+        if sum(CurrentChannel==OriginalactiveChannel)>0
+            BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
+        end
+    end
+else
+    FakeChannelRange = 1:length(ActiveChannel);
+    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+    StartDepth = min(FakeYpositions);
+    StopDepth = max(FakeYpositions);
+    ydata = StartDepth:Data.Info.ChannelSpacing:StopDepth;
+
+    BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
 end
 
 Figure_2.NextPlot = "add";
@@ -136,5 +148,5 @@ CurrentPlotData.EventSpectrumDepthType = "Event Related Power Spectrum over Dept
 CurrentPlotData.EventSpectrumDepthXTicks = Figure.XTickLabel';
 
 if ~strcmp(WhattoPlot,"Just Frequency Bands")
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalactiveChannel);
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],OriginalactiveChannel,PreservePlotChannelLocations);
 end

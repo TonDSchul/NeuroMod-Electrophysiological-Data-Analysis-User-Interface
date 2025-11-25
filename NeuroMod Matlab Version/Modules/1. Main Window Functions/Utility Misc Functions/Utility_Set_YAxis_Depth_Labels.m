@@ -1,10 +1,4 @@
-function Utility_Set_YAxis_Depth_Labels(Data,Figure,executableFolder,CurrentActiveChannel)
-
-if ~contains(Figure.Title.String,"Event Related Potential")
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        Figure.YLim = [min(Data.Info.ProbeInfo.ycoords(CurrentActiveChannel)) max(Data.Info.ProbeInfo.ycoords(CurrentActiveChannel))];
-    end
-end
+function Utility_Set_YAxis_Depth_Labels(Data,Figure,executableFolder,CurrentActiveChannel,PreservePlotChannelLocations)
 
 %% Create Probe Layout with ALL Channel, also those that got deleted. This gives true probe positions
 DeletedChannel = 0;
@@ -14,15 +8,36 @@ else
     DeletedChannel = 0;
 end
 
-% Create combined labels
-newLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, xx), Data.Info.ProbeInfo.ycoords, Data.Info.ProbeInfo.xcoords, 'UniformOutput', false);
-
-newLabels = newLabels(min(CurrentActiveChannel):max(CurrentActiveChannel));
-
-if ~contains(Figure.Title.String,"Event Related Current")
-    Ypositions = Figure.YLim(1):Data.Info.ChannelSpacing:Figure.YLim(2);
+if PreservePlotChannelLocations
+    % Create combined labels
+    newLabels = Data.Info.ProbeInfo.YLabels(min(CurrentActiveChannel):max(CurrentActiveChannel));
 else
-    Ypositions = Figure.YLim(1)+(Data.Info.ChannelSpacing/2):Data.Info.ChannelSpacing:Figure.YLim(2)-(Data.Info.ChannelSpacing/2);
+    % Create combined labels
+    newLabels = Data.Info.ProbeInfo.YLabels(CurrentActiveChannel);
+end
+
+if PreservePlotChannelLocations
+    if ~contains(Figure.Title.String,"Event Related Current")
+        Ypositions = Figure.YLim(1):Data.Info.ChannelSpacing:Figure.YLim(2);
+    else
+        Ypositions = Figure.YLim(1)+(Data.Info.ChannelSpacing/2):Data.Info.ChannelSpacing:Figure.YLim(2)-(Data.Info.ChannelSpacing/2);
+    end
+else
+    if ~contains(Figure.Title.String,"Event Related Current")
+        FakeChannelRange = 1:length(CurrentActiveChannel);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions);
+        StopDepth = max(FakeYpositions);
+    
+        Ypositions = StartDepth:Data.Info.ChannelSpacing:StopDepth;
+    else
+        FakeChannelRange = 1:length(CurrentActiveChannel);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions);
+        StopDepth = max(FakeYpositions);
+    
+        Ypositions = StartDepth+(Data.Info.ChannelSpacing/2):Data.Info.ChannelSpacing:StopDepth-(Data.Info.ChannelSpacing/2);
+    end
 end
 
 % Apply to the Data.Info.ProbeInfo.ycoords-axis of your app's UIAxes

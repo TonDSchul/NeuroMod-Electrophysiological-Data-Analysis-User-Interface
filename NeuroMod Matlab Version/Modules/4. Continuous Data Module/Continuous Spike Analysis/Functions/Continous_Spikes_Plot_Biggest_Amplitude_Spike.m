@@ -37,8 +37,6 @@ title(Figure,strcat("Biggest Waveform of Unit ", num2str(units)," Across Channel
 
 SpikeWaveform_handles = findobj(Figure,'Type', 'line', 'Tag', 'MaxWaveform');
 
-SpikeWaveform_handles = findobj(Figure,'Type', 'line', 'Tag', 'MaxWaveform');
-
 if isempty(SpikeWaveform_handles)
     line(Figure,Time,Data.Spikes.BiggestAmplWaveform(units,:),'Tag', 'MaxWaveform', 'Color', rgbMatrix(units,:), 'LineWidth', 2);
 elseif ~isempty(SpikeWaveform_handles) 

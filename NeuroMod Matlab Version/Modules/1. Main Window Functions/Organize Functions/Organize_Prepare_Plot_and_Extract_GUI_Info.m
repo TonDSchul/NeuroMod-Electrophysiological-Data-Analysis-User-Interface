@@ -196,10 +196,6 @@ if MainPlot
         SpikeDataType = app.Data.Info.SpikeType;
         Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
     end
-    
-    % Utility_Set_YAxis_Depth_Labels(app.Data,app.UIAxes,[],app.ActiveChannel)
-    % 
-    % app.UIAxes.YTickLabel = flip(app.UIAxes.YTickLabel);
 
     %% Plot Time
    
@@ -302,7 +298,7 @@ if isprop(app.CSDApp,'ExistflagCSD')
         [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(TempDatatoPlot,TempTime,hamwidth,ChannelSpacing,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData,app.PlotAppearance,app.Data,EventData,TempSamplefrequency,app.CurrentEventChannel,EventPlot,app.CSDApp.DataTypeDropDown.Value,app.ActiveChannel);
         
         % Custom YLabels
-        Utility_Set_YAxis_Depth_Labels(app.Data,app.CSDApp.UIAxes,[],app.ActiveChannel)
+        Utility_Set_YAxis_Depth_Labels(app.Data,app.CSDApp.UIAxes,[],app.ActiveChannel,0)
 
         clear TempDatatoPlot TempTime TempSamplefrequency
     end

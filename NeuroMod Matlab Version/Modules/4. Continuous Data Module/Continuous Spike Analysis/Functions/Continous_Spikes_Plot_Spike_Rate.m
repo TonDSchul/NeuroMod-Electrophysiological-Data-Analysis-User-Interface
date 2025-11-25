@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,TimeSpikeFigure,ChannelSpikeFigure,Type,rgb_matrix,ClustertoShow,numBins,ChannelSelection,ChannelSpacing,CurrentPlotData,PlotAppearance)
+function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,SpikePositions,CluterPositions,TimeSpikeFigure,ChannelSpikeFigure,Type,rgb_matrix,ClustertoShow,numBins,ChannelSelection,ChannelSpacing,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations)
 
 %________________________________________________________________________________________
 
@@ -28,6 +28,8 @@ function [CurrentPlotData] = Continous_Spikes_Plot_Spike_Rate(Data,SpikeTimes,Sp
 % case user wants to export them
 % 15. PlotAppearance: structure holding plot style information like color
 % and linewidth
+% 16.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -70,7 +72,6 @@ if strcmp(Type,"Initial") && ~strcmp(Type,"NewCluster") || strcmp(Type,"BinsizeC
     SpikesInBins = (SpikesInBins./BinSizeTime)./length(ChanneRange);
     
     %% Plot
-   
     yyaxis(TimeSpikeFigure, 'left');
     
     if length(SpikesInBins)+0.5 ~= 0.5
@@ -123,28 +124,43 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     SpikesInBins = [];
     
     yyaxis(TimeSpikeFigure, 'left');
-
-    if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
-        cN = numBins;  % number of steps/chunks
-        if str2double(Data.Info.ProbeInfo.NrRows) == 1
-            StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-            StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-        else
+    
+    if PreservePlotChannelLocations
+        if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
+            cN = numBins;  % number of steps/chunks
             FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
             FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
             StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
             StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
+            dN = (StopDepth-StartDepth);
+            BinSize = dN/cN;
+        else
+            cN = length(ChannelSelection);  % number of steps/chunks
+            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+            FakeYpositions = (FakeChannelRange)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
+            StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
+            BinSize = Data.Info.ChannelSpacing;
         end
-        dN = (StopDepth-StartDepth);
-        BinSize = dN/cN;
-    else
-        cN = length(ChannelSelection);  % number of steps/chunks
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
-        BinSize = Data.Info.ChannelSpacing;
+    else % If no original channel positions preserved (active channel islands with active channel gaps inbetween)
+        if strcmp(Data.Info.SpikeType,"Kilosort") || strcmp(Data.Info.SpikeType,"SpikeInterface")
+            cN = numBins;  % number of steps/chunks
+            FakeChannelRange = 1:length(ChannelSelection);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions);
+            StopDepth = max(FakeYpositions);
+            dN = (StopDepth-StartDepth);
+            BinSize = dN/cN;
+        else
+            cN = length(ChannelSelection);  % number of steps/chunks
+            FakeChannelRange = 1:length(ChannelSelection);
+            FakeYpositions = (FakeChannelRange)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions);
+            StopDepth = max(FakeYpositions);
+            BinSize = Data.Info.ChannelSpacing;
+        end
     end
+
     % Divide the data into chunks (last chunk is smaller than the rest)
 
     [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,SpikePositions,cN,BinSize,1,"SpikeRateoverChannel",StartDepth,StopDepth);
@@ -187,7 +203,7 @@ end
 
 %% Plot Unit spike Rate (over time)
 if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
-
+    
     cN = numBins;  % number of steps/chunks
     % Divide the data into chunks (last chunk is smaller than the rest)
     dN = length(Data.Time);
@@ -196,7 +212,7 @@ if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
     BinSizeTime = BinSizeSamples*(1/Data.Info.NativeSamplingRate);
     
     [SpikesInBins] = Spike_Module_Calculate_Spikes_Times_In_Bin(ClusterSpikeTimes,SpikePositions,cN,BinSizeTime,1,"SpikeRateoverTime",[],[]);
-
+    
     % Normalize spike rate over all channel in which spikes where found
     if strcmp(Data.Info.SpikeType,"Internal")
         SpikesInBins = SpikesInBins./length(unique(SpikePositions(CluterPositions == ClusterNr)));
@@ -208,14 +224,14 @@ if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
         xlim(TimeSpikeFigure,[0.5,length(SpikesInBins)+0.5])
     end
     Cluster_handles = findobj(TimeSpikeFigure, 'Tag', 'ClusterRateRight');
-
+    
     if length(Cluster_handles)>1
         delete(Cluster_handles(2:end));
     end
-
+    
     UniqueCluster = unique(CluterPositions);
     clusIndice = find(UniqueCluster==ClusterNr);
-
+    
     if strcmp(Type,"NewCluster")
         %xlim(TimeSpikeFigure,[0 1000]);
         if isempty(Cluster_handles)
@@ -228,7 +244,7 @@ if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
         Cluster_handles = findobj(TimeSpikeFigure, 'Tag', 'ClusterRateRight');
         bar(TimeSpikeFigure,SpikesInBins, 'FaceColor', rgb_matrix(clusIndice,:),'Tag','ClusterRateRight'); 
     end
- 
+    
 end
 
 if strcmp(ClustertoShow,"All") || strcmp(ClustertoShow,"Non")

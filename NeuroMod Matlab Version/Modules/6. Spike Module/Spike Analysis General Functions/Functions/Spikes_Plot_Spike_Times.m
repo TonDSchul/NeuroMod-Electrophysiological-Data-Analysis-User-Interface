@@ -55,7 +55,7 @@ NumChannel = length(ChannelSelection);
 
 %% Plot Spikes
 xlim(Figure,[Time(1),Time(end)]);
-ylim(Figure,[0,((NumChannel-1)*ChannelSpacing)]);
+%ylim(Figure,[0,((NumChannel-1)*ChannelSpacing)]);
 ylabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotYLabel)
 xlabel(Figure,PlotAppearance.InternalEventSpikePlot.MainPlotXLabel)
 
@@ -209,7 +209,7 @@ if strcmp(Type,"Eventrelated")
     
     FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
     FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-
+    
     if isempty(Event_handles)
         eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,FakeYpositions(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure, 'Tag', 'Event');
     else
@@ -217,16 +217,13 @@ if strcmp(Type,"Eventrelated")
         eventLine = Event_handles(1);
     end
     
-    % Bring the event line to the front
-    uistack(eventLine, 'top');
-    
     % Add legend only once
-    if isempty(findobj(Figure, 'Type', 'legend'))
+    if ~isempty(eventLine)
         % Create legend with imagesc and event line
         legendHandle = legend(eventLine, {'Trigger'});
         set(legendHandle, 'HandleVisibility', 'off');
     end
-
+    
 % Continous spikes windows    
 elseif strcmp(Type,"Continous")
     if PlotEvents

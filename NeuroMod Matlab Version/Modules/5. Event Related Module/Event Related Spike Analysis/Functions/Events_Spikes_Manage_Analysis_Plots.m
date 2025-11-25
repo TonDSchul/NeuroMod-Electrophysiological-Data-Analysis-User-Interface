@@ -1,4 +1,4 @@
-function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance,ActiveChannel,EventDataType,EventChannelName,Autorun)
+function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField,CurrentPlotData] = Events_Spikes_Manage_Analysis_Plots(Data,EventRangeEditField,Figure,AnalysisTypeDropDown,SpikeRateNumBinsEditField,TextArea,rgbMatrix,numCluster,ClustertoshowDropDown,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,BaselineNormalizeCheckBox,TimeWindowSpiketriggredLFPEditField,Figure2,Figure3,TwoORThreeD,CurrentPlotData,SpikeBinSettings,PlotAppearance,ActiveChannel,EventDataType,EventChannelName,Autorun,PreservePlotChannelLocations)
 
 %________________________________________________________________________________________
 %% Function to organize and select analysis and plot functions for event kilosort spikes based on user input
@@ -51,6 +51,8 @@ function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,Spik
 % related spiokes are extracted
 % 21. Autorun: double, 1 or 0 whether fucntion is executed in autorun
 % functions
+% 22.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Outputs:
 % 1. Data: main app data structure 
@@ -71,9 +73,9 @@ TempData = [];
 
 %% Prepare Plots
 if strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
-    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
+    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel,PreservePlotChannelLocations);
 else
-    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,0,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
+    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,0,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel,PreservePlotChannelLocations);
 end
 
 % Check for errros
@@ -89,34 +91,25 @@ if strcmp(AnalysisTypeDropDown,"Spike Triggered LFP") && PlotInfo.ChannelsToPlot
 end
 
 if strcmp(AnalysisTypeDropDown,"Spike Map")
+    
     % plot spike times
-    if strcmp(ClustertoshowDropDown,"All")
-        CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
-    else
-        if strcmp(Data.Info.Sorter,'Mountainsort5') || strcmp(Data.Info.Sorter,'SpykingCircus2')
-            SpikeAmplitude(SpikeAmplitude<0)=abs(SpikeAmplitude(SpikeAmplitude<0));
-        end
-        CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,ClustertoshowDropDown,[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    if strcmp(Data.Info.Sorter,'Mountainsort5') || strcmp(Data.Info.Sorter,'SpykingCircus2')
+        SpikeAmplitude(SpikeAmplitude<0)=abs(SpikeAmplitude(SpikeAmplitude<0));
     end
-        
+    
+    if ~strcmp(ClustertoshowDropDown,"All") && ~strcmp(ClustertoshowDropDown,"Non")
+        CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,"Non",[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    end
+    CurrentPlotData = Spikes_Plot_Spike_Times(Data,"Eventrelated",rgbMatrix,PlotInfo.Time,SpikeTimes,SpikePositions,SpikeCluster,SpikeAmplitude,Data.Spikes.ChannelPosition,Figure,numCluster,ClustertoshowDropDown,[],[],PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,CurrentPlotData,PlotAppearance);
+    
     % Set properties
     Figure.YLabel.Color = [0 0 0];
     Figure.YColor = [0 0 0];
-    if strcmp(Data.Info.SpikeType,"Internal")
-        yyaxis(Figure2, 'right');
-        ylabel(Figure2,'Spike Rate [Hz]');
-    end
-
+    
 elseif strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap")
     
     CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(Data,SpikeTimes,SpikePositions,Figure,Data.Info.NativeSamplingRate,PlotInfo.time_bin_size,PlotInfo.depth_edges,PlotInfo.time_edges,length(PlotInfo.EventNr),0,BaselineNormalizeCheckBox,PlotInfo.NormWindow,ClustertoshowDropDown,SpikeCluster,rgbMatrix,PlotInfo.ChannelsToPlot,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,CurrentPlotData,PlotAppearance);
     
-    CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"BinsizeChangeInitial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
-    
-    if ~strcmp(ClustertoshowDropDown,'Non') && ~strcmp(ClustertoshowDropDown,'All')
-        CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
-    end
-
 elseif strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     
     if ~strcmp(ClustertoshowDropDown,"All") && ~strcmp(ClustertoshowDropDown,"Non")
@@ -131,7 +124,7 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
         return;
     end
 
-    [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Events",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoshowDropDown,CurrentPlotData,PlotAppearance);
+    [TempData,~,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,PlotInfo.ChannelsToPlot,"Events",TextArea,PlotInfo.TimeWindowSpiketriggredLFP,1,TwoORThreeD,ClustertoshowDropDown,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations);
     
     %% No again normalized to event time for spike rate
     if ~isempty(TempData) % if not preprocessed
@@ -145,44 +138,40 @@ elseif strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
         [Data,~] = Event_Spikes_Extract_Event_Related_Spikes(Data,"Kilosort",0,EventDataType,EventChannelName);
     end
     
-    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel);
+    [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel,PreservePlotChannelLocations);
 
-    CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"BinsizeChangeInitial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
-    
-    if ~strcmp(ClustertoshowDropDown,'Non') && ~strcmp(ClustertoshowDropDown,'All')
-        CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
-    end
-
-    if strcmp(Data.Info.SpikeType,"Internal")
-        yyaxis(Figure2, 'right');
-        ylabel(Figure2,'Spike Rate [Hz]');
-    end
 end  
 
-% Spike Rate
-% if ~strcmp(ClustertoshowDropDown,'Non') && ~strcmp(ClustertoshowDropDown,'All')
-% 
-% else
-%     CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"BinsizeChangeInitial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
-% end
-
-CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"Initial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance);
+CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"Initial",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations);
+if ~strcmp(ClustertoshowDropDown,'Non') && ~strcmp(ClustertoshowDropDown,'All')
+    CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,PlotInfo.Time,"NewCluster",rgbMatrix,SpikeTimes,SpikePositions,SpikeCluster,length(PlotInfo.EventNr),ClustertoshowDropDown,SpikeRateNumBinsEditField,Figure2,Figure3,Data.Spikes.ChannelPosition,Data.Info.NativeSamplingRate,PlotInfo.ChannelsToPlot,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations);
+end
+if strcmp(Data.Info.SpikeType,"Internal")
+    yyaxis(Figure2, 'right');
+    ylabel(Figure2,'Spike Rate [Hz]');
+end
 
 if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     % Custome YLabel
     if str2double(Data.Info.ProbeInfo.NrRows) == 1
         Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
     else
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot))));
-        
-        Figure.YLim = [StartDepth ,StopDepth];
+        if PreservePlotChannelLocations
+            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+            StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot))));
+        else
+            FakeChannelRange = 1:length(ActiveChannel);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+            StartDepth = min(FakeYpositions);
+            StopDepth = max(FakeYpositions);
+        end
+        if sum(ismember(Figure.YLim,[StartDepth ,StopDepth]))<2
+            Figure.YLim = [StartDepth ,StopDepth];
+        end
     end
-    tic
-    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
-    toc
+    Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel,PreservePlotChannelLocations)
 end
 
 if Autorun == 0

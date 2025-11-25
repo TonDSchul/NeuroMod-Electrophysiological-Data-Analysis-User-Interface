@@ -1,4 +1,4 @@
-function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,BaselineWindowField,ChannelSelectionField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionField,BaselineWindowField,SpikeRateNumBinsEditField,SpikeType,SpikeTriggereAverage,SpikeTriggeredAverageField,SpikeBinSettings,ActiveChannel)
+function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,BaselineWindowField,ChannelSelectionField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionField,BaselineWindowField,SpikeRateNumBinsEditField,SpikeType,SpikeTriggereAverage,SpikeTriggeredAverageField,SpikeBinSettings,ActiveChannel,PreservePlotChannelLocations)
 %________________________________________________________________________________________
 %% Function to prepare plots for internal and kilosort event spike analysis
 
@@ -31,6 +31,8 @@ function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEv
 % 9. SpikeBinSettings: structure, save numbins in time and depth domain for spike
 % rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
 % standard. 
+% 20.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 %Outputs:
 
@@ -115,9 +117,17 @@ if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
     UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
 
     if numel(UinquePos)>=2
-        [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.DataCorrectedSpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        if PreservePlotChannelLocations
+            [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.DataCorrectedSpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        else
+            [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Fake_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.DataCorrectedSpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        end
     else
-        [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        if PreservePlotChannelLocations
+            [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        else
+            [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Fake_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Kilosort",Data.Info.ProbeInfo.ActiveChannel);
+        end
     end
 else
     [TempSpikeTimes,TempSpikePositions,SelectedChannelIndicies] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("Event_Spikes",Data.Info,Data.EventRelatedSpikes.SpikeTimes,Data.EventRelatedSpikes.SpikePositions,Data.Info.ChannelSpacing,PlotInfo.ChannelsToPlot,"Internal",Data.Info.ProbeInfo.ActiveChannel);
@@ -179,9 +189,15 @@ if strcmp(SpikeType,"Internal")
     if str2double(Data.Info.ProbeInfo.NrRows)==1
         SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
     else
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+        if PreservePlotChannelLocations
+            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+            SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+        else
+            FakeChannelRange = 1:length(Data.Info.ProbeInfo.ActiveChannel);
+            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+            SpikePositions = FakeYpositions(SpikePositions);
+        end
     end
 end
 
@@ -206,14 +222,26 @@ end
 PlotInfo.depth_bin_size = SpikeBinSettings.depth_bin_size; %20; % Depth bin size
 PlotInfo.time_bin_size = SpikeBinSettings.time_bin_size; % app.GeneralSettings.Time bin size in seconds
 
-if str2double(Data.Info.ProbeInfo.NrRows) == 1
-    StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-    StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+if PreservePlotChannelLocations
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+    else
+        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot))));
+    end
 else
-    FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-    StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-    StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot))));
+    if str2double(Data.Info.ProbeInfo.NrRows) == 1
+        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
+    else
+        FakeChannelRange = 1:length(ActiveChannel);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        StartDepth = min(FakeYpositions);
+        StopDepth = max(FakeYpositions);
+    end
 end
 
 % Define bin edges

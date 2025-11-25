@@ -65,11 +65,7 @@ end
 
 % Distinguish between downsampled data and normal data
 
-if str2double(Data.Info.ProbeInfo.NrRows) == 1
-    ds = Data.Info.ProbeInfo.ycoords(min(CurrentActiveChannel)):ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(CurrentActiveChannel));
-else
-    ds = (min(CurrentActiveChannel)-1)*ChannelSpacing:ChannelSpacing:(max(CurrentActiveChannel)-1)*ChannelSpacing;
-end
+ds = 0:ChannelSpacing:(length(CurrentActiveChannel)-1)*ChannelSpacing;
 
 [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth,Data,DataType);
 
@@ -169,7 +165,7 @@ elseif strcmp(TwoORThreeD,"ThreeD")
 
 end
 
-ylim(Figure,[ds(1)-DepthDiff,ds(end-1)+DepthDiff]);
+ylim(Figure,[ds(1)-DepthDiff,ds(end)+DepthDiff]);
 
 %% --------------- Handle Events ---------------
 if strcmp(PlotEvent,'Events')
