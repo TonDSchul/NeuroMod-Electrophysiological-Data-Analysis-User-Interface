@@ -168,7 +168,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
     % Get Frequency
     SpikesInBins = SpikesInBins/Data.Time(end);
     if ~isempty(SpikesInBins)
-        ylim(ChannelSpikeFigure,[0,length(SpikesInBins)])
+        ylim(ChannelSpikeFigure,[0.5,length(SpikesInBins)])
     end
     if max(SpikesInBins) ~= 0
         xlim(ChannelSpikeFigure,[0 max(SpikesInBins)]);

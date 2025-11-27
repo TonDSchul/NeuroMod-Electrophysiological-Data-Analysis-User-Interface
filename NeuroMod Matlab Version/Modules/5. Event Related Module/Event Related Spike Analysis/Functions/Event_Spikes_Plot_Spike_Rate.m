@@ -188,7 +188,7 @@ if strcmp(Type,"Initial") || strcmp(Type,"BinsizeChangeInitial")
         SpikesInBins = Analyse_Main_Window_LowPassFilter_SpikeRate(SpikesInBins, [], Samplefrequency, 1, cN);
     end
     if ~isempty(SpikesInBins)
-        ylim(SpikeRateChannelFigure,[0,length(SpikesInBins)])
+        ylim(SpikeRateChannelFigure,[0.5,length(SpikesInBins)])
     end
     if max(SpikesInBins)~= 0
         xlim(SpikeRateChannelFigure,[0 max(SpikesInBins)]);
@@ -250,8 +250,8 @@ if ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,"
     end
 
     %% For RGB Map Indice
-    UniqueCluster = unique(SpikeCluster);
-    clusIndice = find(UniqueCluster==ClusterNr);
+    %UniqueCluster = unique(SpikeCluster);
+    clusIndice = ClusterNr;
 
     if isempty(clusIndice)
         disp("No spikes for unit found.")

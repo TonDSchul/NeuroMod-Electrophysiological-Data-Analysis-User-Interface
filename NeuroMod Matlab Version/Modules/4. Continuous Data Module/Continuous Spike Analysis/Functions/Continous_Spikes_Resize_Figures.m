@@ -2,13 +2,8 @@ function Continous_Spikes_Resize_Figures(MainFigure,SpikeRateTimeFig,SpikeRateCh
 
 
 if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSizeChange")
-    if ~strcmp(Cluster,"All")
-        MainFigure.Position = [320,112,1017,715]; % x y width height
-        MainFigure.PlotBoxAspectRatio = [1,0.51678284182306,0.511678284182306];
-    else
-        MainFigure.Position = [282,135,1057,690]; % x y width height
-        MainFigure.PlotBoxAspectRatio = [1,0.480678284182306,0.480678284182306];
-    end
+    MainFigure.Position = [320,112,1017,715]; % x y width height
+    MainFigure.PlotBoxAspectRatio = [1,0.51678284182306,0.511678284182306];
 elseif strcmp(AnalysisMethod,"Average Waveforms Across Channel") || strcmp(AnalysisMethod,"Spike Amplitude Density Along Depth") || strcmp(AnalysisMethod,"Cumulative Spike Amplitude Density Along Depth") || strcmp(AnalysisMethod,"Spike Triggered LFP")
     MainFigure.Position = [335,111,1000,785]; % x y width height
     MainFigure.PlotBoxAspectRatio = [1,0.475678284182306,0.475678284182306];
@@ -75,9 +70,9 @@ if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSize
     inner3(1) = inner1(1) + inner1(3);   % left edge = right edge of main plot
     
     % Vertical alignment → same vertical span as main plot
-    inner3(2) = inner1(2)+inner2(4)/1.6;               % same bottom edge
+    inner3(2) = inner1(2)+inner2(4)/1.65;               % same bottom edge
     inner3(3) = 300;               % WIDTH
-    inner3(4) = 475;               % HEIGHT
+    inner3(4) = 481;               % HEIGHT
     
     inner3(2) = inner3(2) - 3.5;
 
@@ -101,7 +96,7 @@ else
         % Vertical alignment → same vertical span as main plot
         inner3(2) = inner1(2)+inner2(4)/1.15;               % same bottom edge
         inner3(3) = 300;               % WIDTH
-        inner3(4) = 440;               % HEIGHT
+        inner3(4) = 438;               % HEIGHT
     else
         % Vertical alignment → same vertical span as main plot
         inner3(2) = inner1(2)+inner2(4)/1.2;               % same bottom edge

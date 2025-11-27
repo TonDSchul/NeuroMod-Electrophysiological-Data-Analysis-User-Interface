@@ -102,25 +102,12 @@ if sum(contains(stringArray,".npy")) == 0
 end
 %% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
 
-[Data.Spikes.SpikeTimes, Data.Spikes.SpikeAmps, SpikePositions, Data.Spikes.SpikeChannel ,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
-
-Data.Spikes.SpikeChannel = double(Data.Spikes.SpikeChannel);
-
-if KSversion == 3
-    if size(SpikePositions,2)==1
-        %load(stringArray(foundrez),'rez');
-        Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
-        Data.Spikes.SpikePositions(:,2) = SpikePositions;
-    else
-        Data.Spikes.SpikePositions = SpikePositions;
-    end
-end
-
+%
 %% Apply ScalingFactor if available (Kilosort works with int format and saves results as such 
 %% Scalingfactor is saved automatically by the GUI when the user saves data for kilosort.)
-if ~isempty(ScalingFactor)
-    Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps./ScalingFactor;
-end
+% if ~isempty(ScalingFactor)
+%     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps./ScalingFactor;
+% end
 
 %% Take folder from above, get folder contents, loop through them and load the npy file
 % Get a list of all files in the folder
@@ -146,16 +133,27 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i},'channel_map.npy')
         Data.Spikes.ChannelMap = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i},'channel_positions.npy')
-        Data.Spikes.ChannelPosition = readNPY(fullfile(folderPath,fileNames{i}));
+        Data.Spikes.OrigChannelPosition = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i},'spike_positions.npy')
         if KSversion == 4
             Data.Spikes.SpikePositions = readNPY(fullfile(folderPath,fileNames{i}));
+        else
+            [~, ~ , Data.Spikes.SpikePositions, ~ ,~, ~] = ksDriftmap(folderPath,KSversion);
         end
+        Data.Spikes.SpikePositions = double(Data.Spikes.SpikePositions);
+        SpikePositions = Data.Spikes.SpikePositions(:,2);
+    elseif strcmp(fileNames{i},'spike_times.npy')
+        Data.Spikes.SpikeTimes = readNPY(fullfile(folderPath,fileNames{i}));
+        Data.Spikes.SpikeTimes = double(Data.Spikes.SpikeTimes);
     elseif strcmp(fileNames{i},'templates_ind.npy')
         Data.Spikes.templates_ind = readNPY(fullfile(folderPath,fileNames{i}));
-    % elseif strcmp(fileNames{i},'amplitudes.npy')
-    %     Data.Spikes.SpikeAmps = readNPY(fullfile(folderPath,fileNames{i}));
-    %     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps/ScalingFactor;
+    elseif strcmp(fileNames{i},'amplitudes.npy')
+         Data.Spikes.SpikeAmps = readNPY(fullfile(folderPath,fileNames{i}));
+         Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
+         %[~, Data.Spikes.SpikeAmps , ~, ~ ,~, ~] = ksDriftmap(folderPath,KSversion);
+         if ~isempty(ScalingFactor)
+            Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps./ScalingFactor;
+         end
     elseif strcmp(fileNames{i},'templates.npy')
         Data.Spikes.templates = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i},'spike_detection_templates.npy')
@@ -169,6 +167,81 @@ for i = 1:length(fileNames)
     end
 end
 
+%% Get Channel number corresponding to depth in um
+if str2double(Data.Info.ProbeInfo.NrRows) == 1
+    SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
+    Data.Spikes.SpikeChannel = round(SpikePositions)+1;
+    
+    % now some channel can be wrongly assigned when right at the border between
+    % two channel --> spike channel can be NOT part of active channel (if there
+    % is a gap in active channel) but is shifted by one
+    NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
+    % Get the spikes that are NOT in ActiveChannel
+    ZeroIndex = find(NonExistent==0);
+    
+    for i = 1:length(ZeroIndex)
+        CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
+        
+        % take nearest channel. If two nearest, take the smaller one (bc round() was used)
+        [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
+        
+        % Handle ties: if multiple channels have same distance, pick the lower one
+        nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
+        Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
+    end
+else %% Two channel rows
+    %% Depth can be the same. Therefore we need the x position as well
+    SpikePositionsX = Data.Spikes.SpikePositions(:,1);
+    for i = 1:length(SpikePositions)
+        % find closes y values (multiple)
+        distances = abs(Data.Info.ProbeInfo.ycoords - SpikePositions(i));
+        minDist = min(distances);
+        % indice of all channel matching depth -- two if same channel
+        % depths for both rows
+        Yidx = find(distances == minDist);
+        
+        % find closest x value (only one)
+        [~, Xidx] = min(abs(Data.Info.ProbeInfo.xcoords(Yidx) - SpikePositionsX(i))); 
+        
+        Data.Spikes.SpikeChannel(i) = Yidx(Xidx);
+
+    end
+
+    % now some channel can be wrongly assigned when right at the border between
+    % two channel --> spike channel can be NOT part of active channel (if there
+    % is a gap in active channel) but is shifted by one
+    NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
+    % Get the spikes that are NOT in ActiveChannel
+    ZeroIndex = find(NonExistent==0);
+    
+    for i = 1:length(ZeroIndex)
+        CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
+        
+        % take nearest channel. If two nearest, take the smaller one (bc round() was used)
+        [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
+        
+        % Handle ties: if multiple channels have same distance, pick the lower one
+        nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
+        Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
+    end 
+
+end
+
+if size(Data.Spikes.SpikeChannel,1)<size(Data.Spikes.SpikeChannel,2)
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
+end
+
+if KSversion == 3
+    if size(SpikePositions,2)==1
+        %load(stringArray(foundrez),'rez');
+        Data.Spikes.SpikePositions = zeros(length(Data.Spikes.SpikeTimes),2);
+        Data.Spikes.SpikePositions(:,2) = SpikePositions;
+    else
+        Data.Spikes.SpikePositions = SpikePositions;
+    end
+end
+
+
 %% ChannelPosition have to be full (not only active channel)
 xcoords = Data.Info.ProbeInfo.xcoords;
 ycoords = Data.Info.ProbeInfo.ycoords;
@@ -178,13 +251,13 @@ Data.Spikes.ChannelPosition(:,1) = xcoords';
 Data.Spikes.ChannelPosition(:,2) = ycoords';
 
 % Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
-if Data.Spikes.ChannelPosition(1,2) ~= 0
-    disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m by commenting the lines after this message prompt.")
-    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
-    Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing;
-end
+% if Data.Spikes.ChannelPosition(1,2) ~= 0
+%     disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m by commenting the lines after this message prompt.")
+%     Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
+%     Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2) - Data.Info.ChannelSpacing;
+% end
 
-UinquePos = unique(Data.Spikes.ChannelPosition(:,2));
+UinquePos = unique(Data.Spikes.OrigChannelPosition(:,2));
 PosDiff = UinquePos(2)-UinquePos(1);
 
 if PosDiff ~= Data.Info.ChannelSpacing

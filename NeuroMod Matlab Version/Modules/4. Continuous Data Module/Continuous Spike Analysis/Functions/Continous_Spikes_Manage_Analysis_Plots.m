@@ -106,6 +106,8 @@ if strcmp(Data.Info.SpikeType,"Internal")
     ylabel(Figure2,'Spike Rate [Hz]');
 end
 
+[StartDepth,StopDepth] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,PlotInfo.ChannelSelection);
+
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     % Select Cluster spike infos
     if ~isnan(PlotInfo.Units)
@@ -195,7 +197,7 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     if ~strcmp(ClusterToShow,"All") && ~strcmp(ClusterToShow,"Non")
         % Select Units
         ClusterToPlot = CluterPositions== PlotInfo.Units;
-        if strcmp(Data.Info.SpikeType,"SpikeInterface")
+        if strcmp(Data.Info.SpikeType,"SpikeInterface") || strcmp(Data.Info.SpikeType,"Kilosort")
             SpikeAmps = abs(SpikeAmps(ClusterToPlot==1));
         else
             SpikeAmps = SpikeAmps(ClusterToPlot==1);
@@ -203,37 +205,20 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
 
         SpikePositions = SpikePositions(ClusterToPlot==1);
     else
-        if strcmp(Data.Info.SpikeType,"SpikeInterface")
+        if strcmp(Data.Info.SpikeType,"SpikeInterface") || strcmp(Data.Info.SpikeType,"Kilosort")
             SpikeAmps = abs(SpikeAmps);
         end
     end
 
     set(Figure, 'YDir', 'reverse');
 
-    ChannelRange = PlotInfo.ChannelSelection;
-
-    %% basic quantification of spiking plot
-    if strcmp(Data.Info.Sorter,'External Kilosort GUI')
-        SpikeAmps = abs(SpikeAmps);
-    end
-    
-    if PreservePlotChannelLocations
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelRange))));
-    else
-        FakeChannelRange = 1:length(ChannelRange);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions);
-        StopDepth = max(FakeYpositions);
-    end
-        
+    %% basic quantification of spiking plot        
     depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
     
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
+    
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,StopDepth,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
     Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;
@@ -281,20 +266,7 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     set(Figure, 'YDir', 'reverse');
     
     %% basic quantification of spiking plot
-    ChannelRange = PlotInfo.ChannelSelection;
-
-    if PreservePlotChannelLocations
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelRange)));
-        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelRange))));
-    else
-        FakeChannelRange = 1:length(PlotInfo.ChannelSelection);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions);
-        StopDepth = max(FakeYpositions);
-    end
-        
+ 
     depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
@@ -355,19 +327,7 @@ end
 
 
 if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
-
-    if PreservePlotChannelLocations
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection)));
-        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection))));
-    else
-        FakeChannelRange = 1:length(ActiveChannel);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions);
-        StopDepth = max(FakeYpositions);
-    end
-
+ 
     Figure.YLim = [StartDepth ,StopDepth];
 
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel,PreservePlotChannelLocations)

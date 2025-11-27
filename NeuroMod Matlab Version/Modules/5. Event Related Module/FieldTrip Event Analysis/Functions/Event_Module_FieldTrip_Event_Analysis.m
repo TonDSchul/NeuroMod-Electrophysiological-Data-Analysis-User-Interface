@@ -13,18 +13,18 @@ CurrentPlotData = [];
 %% -------------------------------------------------------------------------------------------------
 
 %% ------------------------- Set Basic Parameter -------------------------
-NrChannels = str2double(Data.Info.ProbeInfo.NrChannel);
+% Only active recording channel!
 
 xcoords = Data.Info.ProbeInfo.xcoords;
 ycoords = Data.Info.ProbeInfo.ycoords;
 
 elec = [];
-elec.label    = arrayfun(@(x) sprintf('chan%d', x), 1:NrChannels, 'UniformOutput', false);
-elec.elecpos  = [xcoords(Data.Info.ProbeInfo.ActiveChannel)', ycoords(Data.Info.ProbeInfo.ActiveChannel)', zeros(NrChannels,1)];  
+elec.label    = arrayfun(@(x) sprintf('chan%d', x), 1:length(Data.Info.ProbeInfo.ActiveChannel), 'UniformOutput', false);
+elec.elecpos  = [xcoords(Data.Info.ProbeInfo.ActiveChannel)', ycoords(Data.Info.ProbeInfo.ActiveChannel)', zeros(length(Data.Info.ProbeInfo.ActiveChannel),1)];  
 elec.chanpos  = elec.elecpos;
 elec.unit     = 'um';
 elec.type     = 'other';
-elec.chanunit = repmat({'um'}, NrChannels, 1);   % <-- must be CELL array of strings
+elec.chanunit = repmat({'um'}, length(Data.Info.ProbeInfo.ActiveChannel), 1);   % <-- must be CELL array of strings
 
 % Create a layout
 cfg_layout = [];
@@ -39,6 +39,10 @@ layout = ft_prepare_layout(cfg_layout, eventdata);   % creates proper 2D layout 
 
 if strcmp(AnalysisType,"SingleERP") || strcmp(AnalysisType,"MultipleERP")
     
+    OriginalChannel = SingleERPChannel;
+    [SingleERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,str2double(SingleERPChannel),'MainPlot');
+    SingleERPChannel = num2str(SingleERPChannel);
+
     if strcmp(AnalysisType,"MultipleERP")
         cfg = [];
         cfg.layout = layout;

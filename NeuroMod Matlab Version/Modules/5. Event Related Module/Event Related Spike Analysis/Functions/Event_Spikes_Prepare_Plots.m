@@ -186,18 +186,14 @@ SpikeTimes = TempSpikeTimes(EventIndicies==1);
 SpikePositions = TempSpikePositions(EventIndicies==1);
 
 if strcmp(SpikeType,"Internal")
-    if str2double(Data.Info.ProbeInfo.NrRows)==1
-        SpikePositions = Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+    if PreservePlotChannelLocations
+        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
     else
-        if PreservePlotChannelLocations
-            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-            SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
-        else
-            FakeChannelRange = 1:length(Data.Info.ProbeInfo.ActiveChannel);
-            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-            SpikePositions = FakeYpositions(SpikePositions);
-        end
+        FakeChannelRange = 1:length(Data.Info.ProbeInfo.ActiveChannel);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        SpikePositions = FakeYpositions(SpikePositions);
     end
 end
 
@@ -222,27 +218,7 @@ end
 PlotInfo.depth_bin_size = SpikeBinSettings.depth_bin_size; %20; % Depth bin size
 PlotInfo.time_bin_size = SpikeBinSettings.time_bin_size; % app.GeneralSettings.Time bin size in seconds
 
-if PreservePlotChannelLocations
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-    else
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-        StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot))));
-    end
-else
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-        StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-    else
-        FakeChannelRange = 1:length(ActiveChannel);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions);
-        StopDepth = max(FakeYpositions);
-    end
-end
+[StartDepth,StopDepth] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,PlotInfo.ChannelsToPlot);
 
 % Define bin edges
 PlotInfo.depth_edges = StartDepth:PlotInfo.depth_bin_size:StopDepth;

@@ -28,9 +28,9 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data
 
 %________________________________________________________________________________________
 
-if isfield(Data,'Raw') % When executed in probe view window
+if isfield(Data,'Raw') % when executed in GUI with already loaded dataset
     AllProbeChannel = str2double(Data.Info.ProbeInfo.NrChannel)*str2double(ChannelRowsDropDown);
-else % when executed in GUI with already loaded dataset
+else % when in probe view window
     AllProbeChannel = str2double(Data.NrChannel);
 end
 
@@ -228,11 +228,20 @@ if SaveProbe
     else
         [file, path] = uiputfile(fullfile(PathToSave, '*.mat'), 'Save as');
     end
-   
+    
     if isequal(file,0) || isequal(path,0)
         disp('User canceled the operation.');
         return;
     end
+    
+    % Reconfigure for kilosort. Dont do inactive/dissconnected channel
+    xcoords = xcoords(AllActiveChannel);
+    ycoords = ycoords(AllActiveChannel);
+
+    chanMap = 1:length(xcoords);
+    chanMap0ind = (1:length(xcoords))-1;
+    connected = true(1,length(xcoords));
+    kcoords = zeros(1,length(xcoords))+1;
     
     % Construct the full file path
     filepath = fullfile(path, file);

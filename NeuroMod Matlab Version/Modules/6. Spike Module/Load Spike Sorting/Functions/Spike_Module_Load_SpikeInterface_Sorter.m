@@ -83,7 +83,7 @@ for i = 1:length(fileNames)
         Data.Spikes.ChannelMap = readNPY(fullfile(SelectedFolder,fileNames{i}));
         Data.Spikes.ChannelMap = double(Data.Spikes.ChannelMap);
     elseif strcmp(fileNames{i}(1:end-4),'channel_positions')
-        Data.Spikes.ChannelPosition = readNPY(fullfile(SelectedFolder,fileNames{i}));
+        Data.Spikes.OrigChannelPosition = readNPY(fullfile(SelectedFolder,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'spike_times')
         Data.Spikes.SpikeTimes = readNPY(fullfile(SelectedFolder,fileNames{i}));
         Data.Spikes.SpikeTimes = double(Data.Spikes.SpikeTimes);
@@ -167,13 +167,12 @@ if isempty(Data.Spikes)
 end
 
 % Normalize to 0 um as first channel (if channelmap starts with 20um)
-if Data.Spikes.ChannelPosition(1,2) ~= 0
-    disp("Warning: Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_SpikeInterface_Sorter.m or check whether the correct output folder was selected.m by commenting the lines after this message prompt.")
-    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
-    Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2)-Data.Info.ChannelSpacing;
-end
+% if Data.Spikes.ChannelPosition(1,2) ~= 0
+%     disp("Warning: Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_SpikeInterface_Sorter.m or check whether the correct output folder was selected.m by commenting the lines after this message prompt.")
+%     Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
+% end
 
-UinquePos = unique(Data.Spikes.ChannelPosition(:,2));
+UinquePos = unique(Data.Spikes.OrigChannelPosition(:,2));
 PosDiff = UinquePos(2)-UinquePos(1);
 
 if PosDiff ~= Data.Info.ChannelSpacing

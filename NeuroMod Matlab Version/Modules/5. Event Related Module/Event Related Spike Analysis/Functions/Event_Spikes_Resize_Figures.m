@@ -42,9 +42,9 @@ inner3 = ax3.InnerPosition;
 inner3(1) = inner1(1) + inner1(3);   % left edge = right edge of main plot
 
 % Vertical alignment → same vertical span as main plot
-inner3(2) = inner1(2)+inner2(4)/1.60;               % same bottom edge
+inner3(2) = inner1(2)+inner2(4)/1.62;               % same bottom edge
 inner3(3) = 300;               % WIDTH
-inner3(4) = 516;               % HEIGHT
+inner3(4) = 517;               % HEIGHT
 
 % Apply new position
 ax3.InnerPosition = inner3;

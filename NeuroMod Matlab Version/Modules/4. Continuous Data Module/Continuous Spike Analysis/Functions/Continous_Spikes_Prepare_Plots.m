@@ -291,10 +291,16 @@ elseif strcmp(SpikeType,"Internal")
         end
     end
     
-    FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-    SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
-    
+    if PreservePlotChannelLocations
+        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
+    else
+        FakeChannelRange = 1:length(Data.Info.ProbeInfo.ActiveChannel);
+        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        SpikePositions = FakeYpositions(SpikePositions);
+    end
+
     if ~isempty(SelectedChannelIndicies)
         SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==0);
         ChannelPosition = Data.Spikes.ChannelPosition;

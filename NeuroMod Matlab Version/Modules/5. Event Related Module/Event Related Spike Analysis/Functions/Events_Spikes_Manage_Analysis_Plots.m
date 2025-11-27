@@ -152,24 +152,12 @@ if strcmp(Data.Info.SpikeType,"Internal")
 end
 
 if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
+    
     % Custome YLabel
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        Figure.YLim = [(min(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing ,(max(Data.Info.ProbeInfo.ActiveChannel)-1)*Data.Info.ChannelSpacing];
-    else
-        if PreservePlotChannelLocations
-            FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-            StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot)));
-            StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot))));
-        else
-            FakeChannelRange = 1:length(ActiveChannel);
-            FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-            StartDepth = min(FakeYpositions);
-            StopDepth = max(FakeYpositions);
-        end
-        if sum(ismember(Figure.YLim,[StartDepth ,StopDepth]))<2
-            Figure.YLim = [StartDepth ,StopDepth];
-        end
+    [StartDepth,StopDepth] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,PlotInfo.ChannelsToPlot);
+
+    if sum(ismember(Figure.YLim,[StartDepth ,StopDepth]))<2
+        Figure.YLim = [StartDepth ,StopDepth];
     end
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel,PreservePlotChannelLocations)
 end

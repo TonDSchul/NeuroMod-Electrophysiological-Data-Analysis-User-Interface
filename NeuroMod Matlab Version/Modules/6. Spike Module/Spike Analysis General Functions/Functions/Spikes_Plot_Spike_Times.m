@@ -186,8 +186,9 @@ else %% If specific spike SpikeCluster selected
     end
     
     IndiciesCurrentCluster = SpikeCluster == str2double(Clustertoshow);
-    UniqueCluster = unique(SpikeCluster);
-    clusIndice = find(UniqueCluster==str2double(Clustertoshow));
+    %UniqueCluster = unique(SpikeCluster);
+    %clusIndice = find(UniqueCluster==str2double(Clustertoshow));
+    clusIndice = str2double(Clustertoshow);
 
     if sum(IndiciesCurrentCluster) > 0
         if strcmp(Type,"Continous")
