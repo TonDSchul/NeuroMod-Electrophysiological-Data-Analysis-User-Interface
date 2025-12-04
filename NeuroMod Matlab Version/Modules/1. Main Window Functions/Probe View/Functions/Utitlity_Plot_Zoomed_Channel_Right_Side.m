@@ -230,11 +230,19 @@ for nrows = 1:ChannelRows
                 end
             end
         end
-
-        if nrows == 1
-            yPos = lowylimits+ ((i * (squareHeight))) ; % y-position of the square
+        
+        if VerOffset > 0
+            if nrows == 1
+                yPos = lowylimits+ ((i * squareHeight) - CorrrectedVerOffset) + (CorrrectedVerOffset/2); % y-position of the square
+            else
+                yPos = lowylimits+ ((i * (squareHeight))); % y-position of the square
+            end
         else
-            yPos = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2); % y-position of the square
+            if nrows == 1
+                yPos = lowylimits+ ((i * (squareHeight))) ; % y-position of the square
+            else
+                yPos = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2); % y-position of the square
+            end
         end
         
         AllYPositions = [AllYPositions,yPos];

@@ -102,12 +102,8 @@ OriginalactiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
 if PreservePlotChannelLocations
-    if str2double(Data.Info.ProbeInfo.NrRows) == 1
-        ydata = Data.Info.ProbeInfo.ycoords(min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))):Data.Info.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)));
-    else
-        ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing;
-    end
-    
+    ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ProbeInfo.FakeSpacing:Data.Info.ProbeInfo.FakeSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ProbeInfo.FakeSpacing;
+      
     ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
     
     BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
@@ -119,11 +115,12 @@ if PreservePlotChannelLocations
         end
     end
 else
-    FakeChannelRange = 1:length(ActiveChannel);
-    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-    StartDepth = min(FakeYpositions);
-    StopDepth = max(FakeYpositions);
-    ydata = StartDepth:Data.Info.ChannelSpacing:StopDepth;
+    % FakeChannelRange = 1:length(ActiveChannel);
+    % FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+    % StartDepth = min(FakeYpositions);
+    % StopDepth = max(FakeYpositions);
+    [StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,ActiveChannel);
+    ydata = StartDepth:Data.Info.ProbeInfo.FakeSpacing:StopDepth;
 
     BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
 end
@@ -132,7 +129,7 @@ Figure_2.NextPlot = "add";
 Figure_2.FontSize = 10;
 Figure.FontSize = 10;
 
-plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance,ydata);
+plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ProbeInfo.FakeSpacing,TwoORThreeD,PlotAppearance,ydata);
 
 lgd = findobj(Figure_2.Parent, 'Type', 'Legend');
 set(lgd, 'Position', [ 0.8971    0.8856    0.0980    0.1009]);

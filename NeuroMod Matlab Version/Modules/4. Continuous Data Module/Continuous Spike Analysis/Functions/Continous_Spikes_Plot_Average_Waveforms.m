@@ -49,25 +49,9 @@ elseif ndims(MeanWaveform)==2
     Time = Time*1000; % Convert to ms
 end
 
-% if str2double(Data.Info.ProbeInfo.NrRows) == 1
-%     StartDepth = min(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-%     StopDepth = max(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-% else
-if PreservePlotChannelLocations
-    FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-    StartDepth = min(FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(ChannelSelection)));
-    StopDepth = max(FakeYpositions((Data.Info.ProbeInfo.ActiveChannel(ChannelSelection))));
-else
-    FakeChannelRange = 1:length(ChannelSelection);
-    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-    StartDepth = min(FakeYpositions);
-    StopDepth = max(FakeYpositions);
-end
+[StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,Data.Info.ProbeInfo.ActiveChannel(ChannelSelection));
 
-% end
-
-ydata = StartDepth:ChannelSpacing:StopDepth;
+ydata = StartDepth:Data.Info.ProbeInfo.FakeSpacing:StopDepth;
 
 if strcmp(TwoORThreeD,"TwoD")
     PowerDepth2D_handles = findobj(Figure, 'Tag', 'PowerDepth2D');

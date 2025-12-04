@@ -27,8 +27,10 @@ function [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data)
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
-FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+[StartDepth,StopDepth,FakeChannelRange,FakeYpositions] = Spike_Module_Analysis_Determine_Depths(Data,1,Data.Info.ProbeInfo.ActiveChannel);
+        
+% FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+% FakeYpositions = (FakeChannelRange-1)*Data.Info.ProbeInfo.FakeSpacing;
 
 FakeDepths = NaN(size(Data.Spikes.SpikeTimes));
 
@@ -41,6 +43,60 @@ end
 Data.Spikes.DataCorrectedSpikePositions = zeros(size(Data.Spikes.SpikePositions));
 Data.Spikes.DataCorrectedSpikePositions(:,2) = FakeDepths;
 Data.Spikes.DataCorrectedSpikePositions(:,1) = Data.Spikes.SpikePositions(:,1);
+
+
+% FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+% FakeYpositions = (FakeChannelRange-1)*Data.Info.ProbeInfo.FakeSpacing;
+% 
+% FakeDepths = NaN(size(Data.Spikes.SpikeTimes));
+% Data.Spikes.DataCorrectedSpikePositions = zeros(size(Data.Spikes.SpikePositions));
+% 
+% for i = 1:size(Data.Spikes.SpikePositions,1)
+%     ChannelIndex = Data.Spikes.SpikePositions(i,2) >= Data.Spikes.ChannelPosition(:,2)-Data.Info.ProbeInfo.FakeSpacing/2 & Data.Spikes.SpikePositions(i,2) < Data.Spikes.ChannelPosition(:,2) + Data.Info.ProbeInfo.FakeSpacing/2; 
+% 
+%     YBasedChannel = FakeChannelRange(ChannelIndex);
+%     if sum(ChannelIndex)>1
+%         disp("aha")
+%     end
+% 
+%     ChannelForCurrentSpike = YBasedChannel;
+%     TargetDepth = (ChannelForCurrentSpike-1)*Data.Info.ProbeInfo.FakeSpacing;
+%     Residual = Data.Spikes.SpikePositions(i,2)-Data.Spikes.ChannelPosition(YBasedChannel,2);
+% 
+%     Data.Spikes.DataCorrectedSpikePositions(i,2) = TargetDepth - double(Residual);
+% 
+%     FakeDepths(i) = YBasedChannel;
+% end
+% Data.Spikes.DataCorrectedSpikePositions(:,1) = Data.Spikes.SpikePositions(:,1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% First assign a unique channel from 1 to 64 to each channel based on x and y coordinate
  

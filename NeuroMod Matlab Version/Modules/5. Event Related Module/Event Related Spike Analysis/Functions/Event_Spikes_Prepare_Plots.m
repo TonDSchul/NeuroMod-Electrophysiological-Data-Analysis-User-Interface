@@ -186,13 +186,11 @@ SpikeTimes = TempSpikeTimes(EventIndicies==1);
 SpikePositions = TempSpikePositions(EventIndicies==1);
 
 if strcmp(SpikeType,"Internal")
+    [StartDepth,StopDepth,FakeChannelRange,FakeYpositions] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,Data.Info.ProbeInfo.ActiveChannel);
+      
     if PreservePlotChannelLocations
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
     else
-        FakeChannelRange = 1:length(Data.Info.ProbeInfo.ActiveChannel);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         SpikePositions = FakeYpositions(SpikePositions);
     end
 end
@@ -218,11 +216,14 @@ end
 PlotInfo.depth_bin_size = SpikeBinSettings.depth_bin_size; %20; % Depth bin size
 PlotInfo.time_bin_size = SpikeBinSettings.time_bin_size; % app.GeneralSettings.Time bin size in seconds
 
-[StartDepth,StopDepth] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,PlotInfo.ChannelsToPlot);
+[StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot));
 
 % Define bin edges
-PlotInfo.depth_edges = StartDepth:PlotInfo.depth_bin_size:StopDepth;
-PlotInfo.time_edges = -PlotInfo.TimearoundEvent(1):PlotInfo.time_bin_size:PlotInfo.TimearoundEvent(2);
+edges = [StartDepth:PlotInfo.depth_bin_size:StopDepth, StopDepth];
+PlotInfo.depth_edges = unique(edges);  % avoid duplicates if already exact
+
+edges = [-PlotInfo.TimearoundEvent(1):PlotInfo.time_bin_size:PlotInfo.TimearoundEvent(2), PlotInfo.TimearoundEvent(2)];
+PlotInfo.time_edges = unique(edges);
 
 commaindicie = strfind(BaselineWindowField.Value,",");
 PlotInfo.NormWindow(1) = str2double(BaselineWindowField.Value(1:commaindicie-1));

@@ -300,6 +300,15 @@ elseif strcmp(Type,"VariableDefinition")
     
     [app.Data.Info.ProbeInfo.xcoords,app.Data.Info.ProbeInfo.ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),0);
     
+    if str2double(app.Data.Info.ProbeInfo.VertOffset) ~= 0
+        app.Data.Info.ProbeInfo.FakeSpacing = unique(diff(app.Data.Info.ProbeInfo.ycoords));
+        if length(app.Data.Info.ProbeInfo.FakeSpacing)>1 && str2double(app.Data.Info.ProbeInfo.VertOffset) > 0 % just take first distance, other distances are 'skipped'
+            app.Data.Info.ProbeInfo.FakeSpacing = abs(app.Data.Info.ProbeInfo.FakeSpacing(1));
+        end
+    else
+        app.Data.Info.ProbeInfo.FakeSpacing = app.Data.Info.ChannelSpacing;
+    end
+
     % Set up y labels with proper y and x coordinate
     app.Data.Info.ProbeInfo.YLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, xx), app.Data.Info.ProbeInfo.ycoords, app.Data.Info.ProbeInfo.xcoords, 'UniformOutput', false);
     
@@ -328,6 +337,8 @@ elseif strcmp(Type,"VariableDefinition")
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
         app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
     end
+
+    app.PreservePlotChannelLocations = 1;
 
     % % Get Channel Selection when new app.Data loadaed
     % ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));

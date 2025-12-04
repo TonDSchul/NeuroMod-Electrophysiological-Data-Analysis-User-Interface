@@ -203,10 +203,20 @@ if ChannelActivation && CreateProbeWindow
             end
             
             % Current Depth
-            if nrows == 1
-                yPos = (i * (ChannelSpacing)) ; % y-position of the square
+            % if 2 rows and vertical offset, second row can become 0um -->
+            % re-adjust other channel
+            if VerOffset>0
+                if nrows == 1
+                    yPos = (i * (ChannelSpacing)) - VerOffset; % y-position of the square
+                else
+                    yPos = (i * (ChannelSpacing)) ; % y-position of the square
+                end
             else
-                yPos = (i * (ChannelSpacing)) + VerOffset ; % y-position of the square
+                if nrows == 1
+                    yPos = (i * (ChannelSpacing)) ; % y-position of the square
+                else
+                    yPos = (i * (ChannelSpacing)) + VerOffset ; % y-position of the square
+                end
             end
             %% Just one row
             if ChannelRows == 1  %%%%%%%%%%%%%%%%%%%%%%%%
@@ -305,7 +315,7 @@ if ChannelActivation && CreateProbeWindow
                     if mod(i+1, 2) == 0
                         faceColor = 'k'; %
                     else
-                        faceColor = 'w'; 
+                        faceColor = 'w';
                     end
                 else
                     if mod(i+1, 2) == 0

@@ -12,8 +12,8 @@ function [SpikeTimes,SpikePositions,DeleteSpikePositions] = Continous_Spikes_Del
 % 1. SpikeTimes: nspikes x 1 double in seconds
 % 2. SpikePositions: nspikes x 1 double with position of spike in um (for internal spikes: nchannel * ChannelSpacing)
 % 3: ChannelSpacing: as double in um (from Data.Info.ChannelSpacing)
-% 4: Channel_Selection: 1 x 2 double with channelselction of user, i.e.
-% [1,10] for channel 1 to 10
+% 4: Channel_Selection: double vector with channelselction of user, i.e.
+% [1,2,3,4,5] for channel 1 to 5
 % 5: SpikeType: type of spike data as char, either 'Internal' OR 'Kilosort'
 % 6. ALLActiveChannel: double vector, all activ channel defined when
 % extracting the dataset
@@ -89,10 +89,15 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
         end
     end
     
+    % Custome YLabel
+    FakeData = [];
+    FakeData.Info = Info;
+    [StartDepth,StopDepth,FakeChannelRange,FakeYpositions] = Spike_Module_Analysis_Determine_Depths(FakeData,1,Info.ProbeInfo.ActiveChannel(Channel_Selection));
+    
     % Convert in um
-    %DeleteIndicies = (DeleteIndicies-1)*ChannelSpacing;
-    FakeChannelRange = 1:str2double(Info.ProbeInfo.NrChannel)*str2double(Info.ProbeInfo.NrRows);
-    FakeYpositions = (FakeChannelRange-1)*Info.ChannelSpacing;
+    %DeleteIndicies = (DeleteIndicies-1)*Info.ProbeInfo.FakeSpacing;
+    %FakeChannelRange = 1:str2double(Info.ProbeInfo.NrChannel)*str2double(Info.ProbeInfo.NrRows);
+    %FakeYpositions = (FakeChannelRange-1)*Info.ProbeInfo.FakeSpacing;
     DeleteIndicies = FakeYpositions(Info.ProbeInfo.ActiveChannel(DeleteIndicies));
 
     % Find spikes with channels that were deleted
@@ -101,7 +106,7 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
     if ~isempty(DeleteIndicies)
         DeleteSpikePositions = zeros(length(SpikePositions),1);
         for Idelete= 1:length(DeleteIndicies)
-            TempDeleteSpikePositions = SpikePositions >= (DeleteIndicies(Idelete))-(ChannelSpacing/2) & SpikePositions <= DeleteIndicies(Idelete)+(ChannelSpacing/2);
+            TempDeleteSpikePositions = SpikePositions >= (DeleteIndicies(Idelete))-(Info.ProbeInfo.FakeSpacing/2) & SpikePositions <= DeleteIndicies(Idelete)+(Info.ProbeInfo.FakeSpacing/2);
             DeleteSpikePositions = DeleteSpikePositions + double(TempDeleteSpikePositions);
         end
         % delete Spike Indicies not in range
@@ -118,10 +123,10 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
     end
 
     ChannelBeforeActive = min(Info.ProbeInfo.ActiveChannel)-1;
-    if ChannelBeforeActive<0
+    if ChannelBeforeActive<=0
         ChannelBeforeActive = 0;
     else
-        ChannelBeforeActive = (ChannelBeforeActive)*ChannelSpacing;
+        ChannelBeforeActive = (ChannelBeforeActive)*Info.ProbeInfo.FakeSpacing;
     end
     
     % Convert back in channel
@@ -142,40 +147,52 @@ if strcmp(SpikeType,'Kilosort') || strcmp(SpikeType,'SpikeInterface')
 
     for i = 1:length(SpikePositions)
         % if active cahnnel deactivated
-        if sum(SpikePositions(i) > DeleteIndicies + (ChannelSpacing/2)) > 0
+        if sum(SpikePositions(i) > DeleteIndicies + (Info.ProbeInfo.FakeSpacing/2)) > 0
             GapsNumberWithinBelow = 0;
             for nGaps = 1:length(GapsDurations)
-                if SpikePositions(i) > Gaplocations(nGaps) * ChannelSpacing
-                   GapsNumberWithinBelow = GapsNumberWithinBelow + (GapsDurations(nGaps)*ChannelSpacing);
+                if SpikePositions(i) > Gaplocations(nGaps) * Info.ProbeInfo.FakeSpacing
+                   if nGaps == 1
+                        GapsNumberWithinBelow = GapsNumberWithinBelow + ((GapsDurations(nGaps)+2)*Info.ProbeInfo.FakeSpacing) + Info.ProbeInfo.FakeSpacing;
+                   else
+                        GapsNumberWithinBelow = GapsNumberWithinBelow + ((GapsDurations(nGaps))*Info.ProbeInfo.FakeSpacing) - Info.ProbeInfo.FakeSpacing;
+                   end
+                   %GapsNumberWithinBelow = GapsNumberWithinBelow + ((GapsDurations(nGaps)+(length(GapsDurations)+1-nGaps))*Info.ProbeInfo.FakeSpacing);
                 end
             end
-
+            
             if GapsNumberWithinBelow == 0 % before gap
-                Correction = sum(SpikePositions(i) > DeleteIndicies) * ChannelSpacing; % 
+                Correction = sum(SpikePositions(i) > DeleteIndicies) * Info.ProbeInfo.FakeSpacing; % 
             else % after gap -- affected
-                Correction = (sum(SpikePositions(i) > DeleteIndicies) * ChannelSpacing) + GapsNumberWithinBelow; % + gap zwischen channel inseln wenn vorhhanden
+                Extra = (nGaps)*Info.ProbeInfo.FakeSpacing;
+                GapsNumberWithinBelow = GapsNumberWithinBelow - Extra;
+                Correction = (sum(SpikePositions(i) > DeleteIndicies) * Info.ProbeInfo.FakeSpacing) + GapsNumberWithinBelow; % + gap zwischen channel inseln wenn vorhhanden
             end
 
             SpikePositions(i) = (SpikePositions(i) - Correction) - ChannelBeforeActive;
 
         else % if no active channel deactivated
-
-            if ~strcmp(Window,"Con_Spikes") && ~strcmp(Window,"Event_Spikes")
-                GapsNumberWithinBelow = 0;
-                for nGaps = 1:length(GapsDurations)
-                    if SpikePositions(i) > Gaplocations(nGaps) * ChannelSpacing
-                       GapsNumberWithinBelow = GapsNumberWithinBelow + (GapsDurations(nGaps)*ChannelSpacing);
+            GapsNumberWithinBelow = 0;
+            for nGaps = 1:length(GapsDurations)
+                if SpikePositions(i) > Gaplocations(nGaps) * Info.ProbeInfo.FakeSpacing
+                    if nGaps == 1
+                        GapsNumberWithinBelow = GapsNumberWithinBelow + ((GapsDurations(nGaps)+2)*Info.ProbeInfo.FakeSpacing) + Info.ProbeInfo.FakeSpacing ;
+                    else
+                        GapsNumberWithinBelow = GapsNumberWithinBelow + ((GapsDurations(nGaps))*Info.ProbeInfo.FakeSpacing) - Info.ProbeInfo.FakeSpacing;
                     end
+                    %GapsNumberWithinBelow = GapsNumberWithinBelow + ((GapsDurations(nGaps)+(length(GapsDurations)+1-nGaps))*Info.ProbeInfo.FakeSpacing);
                 end
-
-                if GapsNumberWithinBelow > 0 % before gap
-                    Correction = GapsNumberWithinBelow; % + gap zwischen channel inseln wenn vorhhanden
-                else
-                    Correction = 0;
-                end
-
-                SpikePositions(i) = (SpikePositions(i) - Correction) - ChannelBeforeActive;
             end
+
+            if GapsNumberWithinBelow > 0 % before gap
+                Extra = (nGaps)*Info.ProbeInfo.FakeSpacing;
+                GapsNumberWithinBelow = GapsNumberWithinBelow - Extra;
+                Correction = GapsNumberWithinBelow; % + gap zwischen channel inseln wenn vorhhanden
+            else
+                Correction = 0;
+            end
+
+            SpikePositions(i) = (SpikePositions(i) - Correction) - ChannelBeforeActive;
         end
+        
     end
 end

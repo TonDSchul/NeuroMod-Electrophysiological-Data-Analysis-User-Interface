@@ -118,9 +118,7 @@ OriginalActiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
 if PreservePlotChannelLocations
-    ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ChannelSpacing;
-      
-    ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
+    [StartDepth,StopDepth,ChannelRange,ydata] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,ActiveChannel);
     
     BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
 
@@ -130,19 +128,14 @@ if PreservePlotChannelLocations
             BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
         end
     end
-
 else
-    FakeChannelRange = 1:length(ActiveChannel);
-    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-    StartDepth = min(FakeYpositions);
-    StopDepth = max(FakeYpositions);
-    ydata = StartDepth:Data.Info.ChannelSpacing:StopDepth;
+    [StartDepth,StopDepth,ChannelRange,ydata] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,ActiveChannel);
 
     BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
   
 end
 
-plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ChannelSpacing,TwoORThreeD,PlotAppearance,ydata);
+plotLFPpower(BandPower.F, BPEstimate, dispRange, BandPower.marginalChans, BandPower.freqBands, Figure, Figure_2, WhattoPlot,Data.Info.ProbeInfo.FakeSpacing,TwoORThreeD,PlotAppearance,ydata);
 
 %% save plotted data in case user wants to save 
 dispF = BandPower.F>dispRange(1) & BandPower.F<=dispRange(2);

@@ -79,13 +79,13 @@ else
 end
 
 % Check for errros
-if strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") && PlotInfo.ChannelsToPlot(1) == PlotInfo.ChannelsToPlot(2)
+if strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") && PlotInfo.ChannelsToPlot(1) == PlotInfo.ChannelsToPlot(end)
     msgbox("Error: at least two channel necessary!")
     return;
 end
 
 % Check for errros
-if strcmp(AnalysisTypeDropDown,"Spike Triggered LFP") && PlotInfo.ChannelsToPlot(1) == PlotInfo.ChannelsToPlot(2)
+if strcmp(AnalysisTypeDropDown,"Spike Triggered LFP") && PlotInfo.ChannelsToPlot(1) == PlotInfo.ChannelsToPlot(end)
     msgbox("Error: at least two channel necessary!")
     return;
 end
@@ -154,7 +154,7 @@ end
 if strcmp(AnalysisTypeDropDown,"Spike Map") || strcmp(AnalysisTypeDropDown,"Spike Rate Heatmap") || strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     
     % Custome YLabel
-    [StartDepth,StopDepth] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,PlotInfo.ChannelsToPlot);
+    [StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelsToPlot));
 
     if sum(ismember(Figure.YLim,[StartDepth ,StopDepth]))<2
         Figure.YLim = [StartDepth ,StopDepth];

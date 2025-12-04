@@ -49,6 +49,12 @@ AllChannel = str2double(Data.Info.ProbeInfo.NrChannel);
 
 yCoords = sprintf('%d,', Data.Info.ProbeInfo.ycoords);
 xCoords = sprintf('%d,', Data.Info.ProbeInfo.xcoords);
+if yCoords(end)==','
+    yCoords(end) = [];
+end
+if xCoords(end)==','
+    xCoords(end) = [];
+end
 
 SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(SelectedSorter,ParameterStructure,file_path);
 

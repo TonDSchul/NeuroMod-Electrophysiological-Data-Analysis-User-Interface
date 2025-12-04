@@ -16,34 +16,40 @@ else
     newLabels = Data.Info.ProbeInfo.YLabels(CurrentActiveChannel);
 end
 
+[DataCurrentActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,CurrentActiveChannel,'MainPlot');
+
 if PreservePlotChannelLocations
     if ~contains(Figure.Title.String,"Event Related Current")
-        Ypositions = Figure.YLim(1):Data.Info.ChannelSpacing:Figure.YLim(2);
+        edges = [Figure.YLim(1):Data.Info.ProbeInfo.FakeSpacing:Figure.YLim(2), Figure.YLim(2)];
+        Ypositions = unique(edges); 
     else
-        Ypositions = Figure.YLim(1)+(Data.Info.ChannelSpacing/2):Data.Info.ChannelSpacing:Figure.YLim(2)-(Data.Info.ChannelSpacing/2);
+        edges = [Figure.YLim(1)+(Data.Info.ProbeInfo.FakeSpacing/2):Data.Info.ProbeInfo.FakeSpacing:Figure.YLim(2)-(Data.Info.ProbeInfo.FakeSpacing/2), Figure.YLim(2)-(Data.Info.ProbeInfo.FakeSpacing/2)];
+        Ypositions = unique(edges);  
     end
 else
     if ~contains(Figure.Title.String,"Event Related Current")
-        FakeChannelRange = 1:length(CurrentActiveChannel);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions);
-        StopDepth = max(FakeYpositions);
-    
-        Ypositions = StartDepth:Data.Info.ChannelSpacing:StopDepth;
+       
+        [StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,CurrentActiveChannel);
+        
+        edges = [StartDepth:Data.Info.ProbeInfo.FakeSpacing:StopDepth, StopDepth];
+        Ypositions = unique(edges);  
     else
-        FakeChannelRange = 1:length(CurrentActiveChannel);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
-        StartDepth = min(FakeYpositions);
-        StopDepth = max(FakeYpositions);
-    
-        Ypositions = StartDepth+(Data.Info.ChannelSpacing/2):Data.Info.ChannelSpacing:StopDepth-(Data.Info.ChannelSpacing/2);
+        [StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,CurrentActiveChannel);
+        
+        edges = [StartDepth+(Data.Info.ProbeInfo.FakeSpacing/2):Data.Info.ProbeInfo.FakeSpacing:StopDepth-(Data.Info.ProbeInfo.FakeSpacing/2), StopDepth-(Data.Info.ProbeInfo.FakeSpacing/2)];
+        Ypositions = unique(edges); 
     end
 end
 
 % Apply to the Data.Info.ProbeInfo.ycoords-axis of your app's UIAxes
 if numel(CurrentActiveChannel)>10
-    Figure.YTick = Ypositions(1:2:end);
-    Figure.YTickLabel = newLabels(1:2:end);
+    if mod(length(Ypositions),2)
+        Figure.YTick = Ypositions(1:2:end);
+        Figure.YTickLabel = newLabels(1:2:end);
+    else
+        Figure.YTick = Ypositions(1:3:end);
+        Figure.YTickLabel = newLabels(1:3:end);
+    end
 else
     Figure.YTick = Ypositions;
     Figure.YTickLabel = newLabels;

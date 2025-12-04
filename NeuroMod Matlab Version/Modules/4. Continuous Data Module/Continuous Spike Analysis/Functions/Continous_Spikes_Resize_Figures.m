@@ -2,7 +2,7 @@ function Continous_Spikes_Resize_Figures(MainFigure,SpikeRateTimeFig,SpikeRateCh
 
 
 if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSizeChange")
-    MainFigure.Position = [320,112,1017,715]; % x y width height
+    MainFigure.Position = [320,122,1017,715]; % x y width height
     MainFigure.PlotBoxAspectRatio = [1,0.51678284182306,0.511678284182306];
 elseif strcmp(AnalysisMethod,"Average Waveforms Across Channel") || strcmp(AnalysisMethod,"Spike Amplitude Density Along Depth") || strcmp(AnalysisMethod,"Cumulative Spike Amplitude Density Along Depth") || strcmp(AnalysisMethod,"Spike Triggered LFP")
     MainFigure.Position = [335,111,1000,785]; % x y width height
@@ -27,7 +27,7 @@ if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSize
     inner2(3) = inner1(3);
     
     % Vertical alignment (stack directly under top plot)
-    inner2(2) = inner1(2) - inner2(4)/2.5;  % place bottom plot directly below top
+    inner2(2) = inner1(2) - inner2(4)/2.38;  % place bottom plot directly below top
     
     % Apply new position
     ax2.InnerPosition = inner2;
@@ -46,7 +46,7 @@ else
     inner2(3) = inner1(3);
     
     % Vertical alignment (stack directly under top plot)
-    inner2(2) = inner1(2) - inner2(4)/2.5;  % place bottom plot directly below top
+    inner2(2) = inner1(2) - inner2(4)/2.38;  % place bottom plot directly below top
     
     inner2(2) = inner2(2)+15; % yposition
 
@@ -72,7 +72,7 @@ if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSize
     % Vertical alignment → same vertical span as main plot
     inner3(2) = inner1(2)+inner2(4)/1.65;               % same bottom edge
     inner3(3) = 300;               % WIDTH
-    inner3(4) = 481;               % HEIGHT
+    inner3(4) = 484;               % HEIGHT
     
     inner3(2) = inner3(2) - 3.5;
 

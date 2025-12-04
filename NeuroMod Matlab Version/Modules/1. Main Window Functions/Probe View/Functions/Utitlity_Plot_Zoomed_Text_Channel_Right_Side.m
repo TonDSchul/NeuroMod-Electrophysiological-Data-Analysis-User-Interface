@@ -39,18 +39,34 @@ if ~ChannelActivation || CreateProbeWindow
         % loop over probe channel rows
         for nrows = 1:ChannelRows   
             for i = 0:((numSquares) - 1)    
-        
-                if mod(i, 2) == 0            
-                    if nrows == 1
-                        yPos = lowylimits+ ((i * (squareHeight))) ; % y-position of the square
+                
+                if CorrrectedVerOffset > 0
+                    if mod(i, 2) == 0            
+                        if nrows == 1
+                            yPos = lowylimits+ ((i * squareHeight) - CorrrectedVerOffset) + (CorrrectedVerOffset/2) ; % y-position of the square
+                        else
+                            yPos = lowylimits+ ((i * (squareHeight))) ; % y-position of the square
+                        end
                     else
-                        yPos = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2) ; % y-position of the square
+                        if nrows == 1
+                            yPos = lowylimits+(i * (squareHeight) - CorrrectedVerOffset) + (CorrrectedVerOffset/2) ; % y-position of the square
+                        else
+                            yPos = lowylimits+((i * (squareHeight))) ; % y-position of the square
+                        end
                     end
                 else
-                    if nrows == 1
-                        yPos = lowylimits+((i * (squareHeight))) ; % y-position of the square
+                    if mod(i, 2) == 0            
+                        if nrows == 1
+                            yPos = lowylimits+ ((i * (squareHeight))) ; % y-position of the square
+                        else
+                            yPos = lowylimits+ ((i * squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2) ; % y-position of the square
+                        end
                     else
-                        yPos = lowylimits+(i * (squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2) ; % y-position of the square
+                        if nrows == 1
+                            yPos = lowylimits+((i * (squareHeight))) ; % y-position of the square
+                        else
+                            yPos = lowylimits+(i * (squareHeight) + CorrrectedVerOffset) - (CorrrectedVerOffset/2) ; % y-position of the square
+                        end
                     end
                 end
         
@@ -61,11 +77,7 @@ if ~ChannelActivation || CreateProbeWindow
                     
                     x = 6;       % X-coordinate
                     
-                    if PlotChannelSpacing
-                        y = yPos+(squareHeight/4);       % Y-coordinate
-                    else
-                        y = yPos+(squareHeight/2);       % Y-coordinate
-                    end
+                    y = yPos+(squareHeight/2);       % Y-coordinate
         
                     if SwitchTopBottom % If top and bottom channel swicthed
                         if ChannelRows == 1
@@ -114,11 +126,9 @@ if ~ChannelActivation || CreateProbeWindow
                         x = 3.2;       % X-coordinate
                     end
         
-                    if PlotChannelSpacing
-                        y = yPos+(squareHeight/4);       % Y-coordinate
-                    else
-                        y = yPos+(squareHeight/2);       % Y-coordinate
-                    end
+                    
+                    y = yPos+(squareHeight/2);       % Y-coordinate
+                    
     
                     if SwitchTopBottom % If top and bottom channel swicthed
                         if ChannelRows == 1
@@ -187,12 +197,9 @@ if ~ChannelActivation || CreateProbeWindow
             
             AllYPos = SquareYPos;
 
-            if PlotChannelSpacing
-                AllYPos = AllYPos+(squareHeight/4);       % Y-coordinate
-            else
-                AllYPos = AllYPos+(squareHeight/2);       % Y-coordinate
-            end
-
+            
+            AllYPos = AllYPos+(squareHeight/2);       % Y-coordinate
+            
             for nrows = 1:NrChannel
                 
                 if OffSetRows % every second row shifted in position to the right

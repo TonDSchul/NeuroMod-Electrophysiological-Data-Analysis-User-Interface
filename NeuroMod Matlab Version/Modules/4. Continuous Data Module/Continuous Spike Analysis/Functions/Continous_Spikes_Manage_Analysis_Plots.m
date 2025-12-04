@@ -106,7 +106,7 @@ if strcmp(Data.Info.SpikeType,"Internal")
     ylabel(Figure2,'Spike Rate [Hz]');
 end
 
-[StartDepth,StopDepth] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,PlotInfo.ChannelSelection);
+[StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,Data.Info.ProbeInfo.ActiveChannel(PlotInfo.ChannelSelection));
 
 if strcmp(TypeofAnalysis,"Average Waveforms Across Channel")
     % Select Cluster spike infos
@@ -328,7 +328,7 @@ end
 
 if strcmp(TypeofAnalysis,"Spike Map") || strcmp(TypeofAnalysis,"Average Waveforms Across Channel") || strcmp(TypeofAnalysis,"Spike Triggered LFP") || strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth") || strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
  
-    Figure.YLim = [StartDepth ,StopDepth];
+    Figure.YLim = [StartDepth,StopDepth];
 
     Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel,PreservePlotChannelLocations)
 end

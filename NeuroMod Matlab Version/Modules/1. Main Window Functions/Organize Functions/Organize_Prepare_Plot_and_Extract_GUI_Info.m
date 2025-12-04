@@ -124,15 +124,8 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
         else
             SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
         end
-
-        if app.Data.Spikes.ChannelPosition(1,2) ~= 0 && numel(UinquePos)<2
-            %disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are therefore substracted by the channelspacing to rescale to 0um.")
-            SpikeData.Position = SpikeData.Position - app.Data.Info.ChannelSpacing;
-        end
     else
-   
        SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
-
     end
 end
 
@@ -176,7 +169,7 @@ else
 end
 
 if MainPlot
-
+    
     frameTime = str2double(app.TimeRangeViewBox.Value(1:end-1))/app.MovieFramesPerSecond;
 
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
@@ -184,17 +177,17 @@ if MainPlot
         if isfield(app.Data.Info,'DownsampleFactor') 
             app.LastPlot = "Preprocessed";  
             SpikeDataType = app.Data.Info.SpikeType;
-            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
+            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
         % If Raw data has to be plotted
         else
             app.LastPlot = "Preprocessed";
             SpikeDataType = app.Data.Info.SpikeType;
-            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
+            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
         end
     elseif strcmp(app.DropDown.Value,'Raw Data')
         app.LastPlot = "Raw";
         SpikeDataType = app.Data.Info.SpikeType;
-        Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ChannelSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
+        Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
     end
 
     %% Plot Time
@@ -291,7 +284,7 @@ if isprop(app.CSDApp,'ExistflagCSD')
     if app.CSDApp.Startup == 1 || CSDPlot
     
         hamwidth = str2double(app.CSDApp.HammWindowEditField.Value);
-        ChannelSpacing = app.Data.Info.ChannelSpacing;
+        ChannelSpacing = app.Data.Info.ProbeInfo.FakeSpacing;
 
         [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,StartIndex,StopIndex,"CSD");
         

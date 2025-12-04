@@ -61,10 +61,6 @@ if isfield(Data.Info,'EventRelatedActiveChannel')
     Data.Info.EventRelatedActiveChannel(ChannelDeletion) = [];
 end
 
-Data.Info.Channelorder(ChannelDeletion) = [];
-
-Data.Info.ProbeInfo.ActiveChannel(ChannelDeletion) = [];
-
 msg = sprintf('Deleting Channel... (%d%% done)', round(100*(2/4)));
 waitbar(2/4, h, msg);
 
@@ -77,8 +73,10 @@ end
 msg = sprintf('Deleting Channel... (%d%% done)', round(100*(3/4)));
 waitbar(3/4, h, msg);
 
-% NOTE: Nothing has to be done for EventRelatedSpikes, since evewnt related spikes are computed
-% everytime, a spike analysis is selcted
+% Adjust probe Information accordingly
+Data.Info.Channelorder(ChannelDeletion) = [];
+
+Data.Info.ProbeInfo.ActiveChannel(ChannelDeletion) = [];
 
 % Adjust Info file
 Data.Info.NrChannel = size(Data.Raw,1);

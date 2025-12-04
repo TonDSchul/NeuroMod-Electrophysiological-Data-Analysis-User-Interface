@@ -100,14 +100,73 @@ if sum(contains(stringArray,".npy")) == 0
     msgbox("Error: Kilosort output directory doesnt contain expected .npy files.")
     return;
 end
-%% Use the spike-master toolbox to extract most important spike anaysis parameter from kilosort .npy files
 
-%
-%% Apply ScalingFactor if available (Kilosort works with int format and saves results as such 
-%% Scalingfactor is saved automatically by the GUI when the user saves data for kilosort.)
-% if ~isempty(ScalingFactor)
-%     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps./ScalingFactor;
-% end
+%% Specify SpikeType
+Data.Info.SpikeType = 'Kilosort';
+Data.Info.Sorter = 'External Kilosort GUI';
+Data.Info.SorterPath = SelectedFolder;
+
+%% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
+% Detect high pass filter
+HigPassFiltered = 1;
+TempData = [];
+if isfield(Data,'Preprocessed') 
+    if isfield(Data.Info,'FilterMethod') 
+        if ~strcmp(Data.Info.FilterMethod,'High-Pass')
+            %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+            HigPassFiltered = 0;
+        end
+    else
+        %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+        HigPassFiltered = 0;
+    end
+else
+    %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
+    HigPassFiltered = 0;
+end
+
+%%% if it has to be high pass filtered --> save as TempData, extract
+%%% waveforms and delete temp variable
+if HigPassFiltered == 0
+    HighPassFilterSettings = [];
+    Spike_Extraction_HighPassWindow = Spike_Extraction_AskforHighPass(HighPassFilterSettings);
+    
+    uiwait(Spike_Extraction_HighPassWindow.PreproSTAWindowUIFigure);
+    
+    if isvalid(Spike_Extraction_HighPassWindow)
+        Cutoff = Spike_Extraction_HighPassWindow.HighPassFilterSettings.Cutoff;
+        FilterOrder = Spike_Extraction_HighPassWindow.HighPassFilterSettings.FilterOrder;
+        SaveFilter = Spike_Extraction_HighPassWindow.HighPassFilterSettings.SaveFilter;
+        delete(Spike_Extraction_HighPassWindow);
+    else
+        disp("High pass filter settings window closed before manual config was saved. Using standard high pass filter settings (300Hz cutoff, filterorder 6)")
+        Cutoff = "300";
+        FilterOrder = "6";
+        SaveFilter = "No";
+    end
+
+    PreproInfo = [];
+    PreprocessingSteps = [];
+
+    Methods = ["Filter"];
+    [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR",Cutoff,"Zero-phase forward and reverse",FilterOrder,[],Data.Info.NativeSamplingRate);
+        
+    if isfield(PreproInfo,'ChannelDeletion')
+        ChannelDeletion = PreproInfo.ChannelDeletion;
+    else
+        ChannelDeletion = [];
+    end
+    
+    TextArea = [];
+    
+    if strcmp(SaveFilter,"No")
+        [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+        [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+    else
+        [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
+        [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+    end
+end
 
 %% Take folder from above, get folder contents, loop through them and load the npy file
 % Get a list of all files in the folder
@@ -166,6 +225,8 @@ for i = 1:length(fileNames)
         Data.Spikes.kept_spikes = readNPY(fullfile(folderPath,fileNames{i}));
     end
 end
+
+[~, ~ , ~, ~ ,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
 
 %% Get Channel number corresponding to depth in um
 if str2double(Data.Info.ProbeInfo.NrRows) == 1
@@ -250,19 +311,13 @@ Data.Spikes.ChannelPosition = zeros(length(xcoords),2);
 Data.Spikes.ChannelPosition(:,1) = xcoords';
 Data.Spikes.ChannelPosition(:,2) = ycoords';
 
-% Normalize to 0 um as first channel (if kilosort channelmap starts with 20um)
-% if Data.Spikes.ChannelPosition(1,2) ~= 0
-%     disp("Warning: Kilosort Channelmap does not start with 0um. SpikePositions are substracted by the channelspacing to rescale to 0um! If thats not a wanted behavior, change this in Spike_Module_Load_Kilosort_Data.m by commenting the lines after this message prompt.")
-%     Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Data.Info.ChannelSpacing;
-%     Data.Spikes.ChannelPosition(:,2) = Data.Spikes.ChannelPosition(:,2) - Data.Info.ChannelSpacing;
-% end
-
 UinquePos = unique(Data.Spikes.OrigChannelPosition(:,2));
 PosDiff = UinquePos(2)-UinquePos(1);
-
-if PosDiff ~= Data.Info.ChannelSpacing
-    msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
-    warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
+if str2double(Data.Info.ProbeInfo.VertOffset) == 0
+    if PosDiff ~= Data.Info.ChannelSpacing
+        msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
+        warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
+    end
 end
 
 if KSversion == 4
@@ -281,6 +336,10 @@ end
 if isempty(Data.Spikes)
     [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
     msgbox("No sorting data could be loaded.");
+    if isfield(Data.Info,'Sorter')
+        Data.Info = rmfield(Data.Info, {'Sorter','SorterPath'});
+    end
+    Data.Info.SpikeType = 'Non';
     return;
 end
 
@@ -313,91 +372,20 @@ end
 if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
     msgbox("Error: Loaded spike data contains more channel than current probe design does. This can be due to channel deletion conducted after sorting or loading the wrong sorting data.")
     [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
+    if isfield(Data.Info,'Sorter')
+        Data.Info = rmfield(Data.Info, {'Sorter','SorterPath'});
+    end
+    Data.Info.SpikeType = 'Non';
     return;
 end
 
-%% Specify SpikeType
-Data.Info.SpikeType = 'Kilosort';
-Data.Info.Sorter = 'External Kilosort GUI';
-Data.Info.SorterPath = SelectedFolder;
-
-%% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
-% Detect high pass filter
-HigPassFiltered = 1;
-
-if isfield(Data,'Preprocessed') 
-    if isfield(Data.Info,'FilterMethod') 
-        if ~strcmp(Data.Info.FilterMethod,'High-Pass')
-            %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
-            HigPassFiltered = 0;
-        end
-    else
-        %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
-        HigPassFiltered = 0;
-    end
+%% Now extract Waveforms
+Data = Spike_Module_Get_Kilosort_Amplitude(Data);
+if isempty(TempData)
+    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms"); 
 else
-    %msgbox("Warning: No High Pass filtered data found. This will screw with scale and amplitude of waveforms. Data is temporarily high pass filtered for waveform extraction!");
-    HigPassFiltered = 0;
-end
-
-%%% if it has to be high pass filtered --> save as TempData, extract
-%%% waveforms and delete temp variable
-if HigPassFiltered == 0
-    HighPassFilterSettings = [];
-    Spike_Extraction_HighPassWindow = Spike_Extraction_AskforHighPass(HighPassFilterSettings);
-    
-    uiwait(Spike_Extraction_HighPassWindow.PreproSTAWindowUIFigure);
-    
-    if isvalid(Spike_Extraction_HighPassWindow)
-        Cutoff = Spike_Extraction_HighPassWindow.HighPassFilterSettings.Cutoff;
-        FilterOrder = Spike_Extraction_HighPassWindow.HighPassFilterSettings.FilterOrder;
-        SaveFilter = Spike_Extraction_HighPassWindow.HighPassFilterSettings.SaveFilter;
-        delete(Spike_Extraction_HighPassWindow);
-    else
-        disp("High pass filter settings window closed before manual config was saved. Using standard high pass filter settings (300Hz cutoff, filterorder 6)")
-        Cutoff = "300";
-        FilterOrder = "6";
-        SaveFilter = "No";
-    end
-
-    PreproInfo = [];
-    PreprocessingSteps = [];
-
-    Methods = ["Filter"];
-    [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(Methods,PreproInfo,PreprocessingSteps,0,"High-Pass","Butterworth IR",Cutoff,"Zero-phase forward and reverse",FilterOrder,[],Data.Info.NativeSamplingRate);
-        
-    if isfield(PreproInfo,'ChannelDeletion')
-        ChannelDeletion = PreproInfo.ChannelDeletion;
-    else
-        ChannelDeletion = [];
-    end
-    
-    TextArea = [];
-    
-    if strcmp(SaveFilter,"No")
-        [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-        [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
-        % Get Waveform Amplitudes
-        Data = Spike_Module_Get_Kilosort_Amplitude(Data);
-        %% Now extract Waveforms
-        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,TempData.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
-        
-        TempData = [];
-        
-    else
-        [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-        [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
-        % Get Waveform Amplitudes
-        Data = Spike_Module_Get_Kilosort_Amplitude(Data);
-        %% Now extract Waveforms
-        [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
-    end
-    
-else % If high pass was already applied
-    % Get Waveform Amplitudes
-    Data = Spike_Module_Get_Kilosort_Amplitude(Data);
-    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
-    
+    [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");  
+    TempData = [];
 end
 
 % Remove NaN from Waveforms

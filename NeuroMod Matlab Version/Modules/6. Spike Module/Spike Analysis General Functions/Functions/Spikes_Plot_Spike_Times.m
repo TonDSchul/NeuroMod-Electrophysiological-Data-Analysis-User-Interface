@@ -198,6 +198,7 @@ else %% If specific spike SpikeCluster selected
         end
     end
 end
+
 %% Plot Event lines
 % Event related windows
 if strcmp(Type,"Eventrelated")
@@ -208,8 +209,10 @@ if strcmp(Type,"Eventrelated")
         Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');
     end
     
-    FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-    FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+    [StartDepth,StopDepth,FakeChannelRange,FakeYpositions] = Spike_Module_Analysis_Determine_Depths(Data,1,Data.Info.ProbeInfo.ActiveChannel(ChannelSelection));
+
+    % FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
+    % FakeYpositions = (FakeChannelRange-1)*Data.Info.ProbeInfo.FakeSpacing;
     
     if isempty(Event_handles)
         eventLine = line(Figure,[Time(Time==0),Time(Time==0)],[0,FakeYpositions(end)],'Color',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerColor,'LineWidth',PlotAppearance.InternalEventSpikePlot.MainPlotTriggerWidth, 'Parent', Figure, 'Tag', 'Event');
@@ -228,8 +231,8 @@ if strcmp(Type,"Eventrelated")
 % Continous spikes windows    
 elseif strcmp(Type,"Continous")
     if PlotEvents
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
+        [StartDepth,StopDepth,FakeChannelRange,FakeYpositions] = Spike_Module_Analysis_Determine_Depths(Data,1,Data.Info.ProbeInfo.ActiveChannel(ChannelSelection));
+
 
         legend(Figure, 'on');
         Event_handles = findobj(Figure,'Type', 'line', 'Tag', 'Event');

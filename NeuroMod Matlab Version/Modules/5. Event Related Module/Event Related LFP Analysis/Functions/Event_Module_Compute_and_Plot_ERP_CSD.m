@@ -446,13 +446,14 @@ else
     
     [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow,Data,DataType);  
     
-    % if str2double(Data.Info.ProbeInfo.NrRows) == 1
-    %     ds = Data.Info.ProbeInfo.ycoords(min(OriginalDataChannelSelected)):CSD.ChannelSpacing:Data.Info.ProbeInfo.ycoords(max(OriginalDataChannelSelected));
-    % else
-    ds = 0:CSD.ChannelSpacing:(length(OriginalDataChannelSelected)-1)*CSD.ChannelSpacing;
-        %ds = (min(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing:Data.Info.ChannelSpacing:(max(OriginalDataChannelSelected)-1)*Data.Info.ChannelSpacing;
-    % end
+    if str2double(Data.Info.ProbeInfo.VertOffset) ~= 0
+        CSD.ChannelSpacing = unique(diff(Data.Info.ProbeInfo.ycoords));
+    else
+        CSD.ChannelSpacing = CSD.ChannelSpacing;
+    end
 
+    ds = 0:CSD.ChannelSpacing:(length(OriginalDataChannelSelected)-1)*CSD.ChannelSpacing;
+    
     DepthDiff = (ds(2) - ds(1))/2;
 
     %% Plot 

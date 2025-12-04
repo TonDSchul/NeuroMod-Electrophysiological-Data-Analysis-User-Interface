@@ -290,14 +290,12 @@ elseif strcmp(SpikeType,"Internal")
             CluterPositions = CluterPositions+1;
         end
     end
-    
+
+    [StartDepth,StopDepth,FakeChannelRange,FakeYpositions] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,Data.Info.ProbeInfo.ActiveChannel);
+        
     if PreservePlotChannelLocations
-        FakeChannelRange = 1:str2double(Data.Info.ProbeInfo.NrChannel)*str2double(Data.Info.ProbeInfo.NrRows);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         SpikePositions = FakeYpositions(Data.Info.ProbeInfo.ActiveChannel(SpikePositions));
     else
-        FakeChannelRange = 1:length(Data.Info.ProbeInfo.ActiveChannel);
-        FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
         SpikePositions = FakeYpositions(SpikePositions);
     end
 

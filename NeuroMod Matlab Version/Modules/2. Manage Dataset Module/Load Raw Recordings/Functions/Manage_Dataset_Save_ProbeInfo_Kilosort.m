@@ -172,7 +172,7 @@ end
 %% 3 and more Channel Rows
 if str2double(ChannelRowsDropDown) > 2
     
-    NrChannelPerRow = round(NrChannelPerRow/str2double(ChannelRowsDropDown));
+    %NrChannelPerRow = round(NrChannelPerRow/str2double(ChannelRowsDropDown));
 
     chanMap = 1:NrChannelPerRow*str2double(ChannelRowsDropDown);
     chanMap0ind = chanMap-1;

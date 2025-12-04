@@ -63,11 +63,9 @@ if size(DatatoPlot,1)<3
     return;
 end
 
-% Distinguish between downsampled data and normal data
+ds = 0:Data.Info.ProbeInfo.FakeSpacing:(length(CurrentActiveChannel)-1)*Data.Info.ProbeInfo.FakeSpacing;
 
-ds = 0:ChannelSpacing:(length(CurrentActiveChannel)-1)*ChannelSpacing;
-
-[csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',ChannelSpacing,hamwidth,Data,DataType);
+[csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',Data.Info.ProbeInfo.FakeSpacing,hamwidth,Data,DataType);
 
 %% Plot 
 
