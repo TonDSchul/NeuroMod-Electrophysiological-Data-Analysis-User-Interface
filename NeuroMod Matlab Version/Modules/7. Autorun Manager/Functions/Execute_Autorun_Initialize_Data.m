@@ -63,3 +63,25 @@ if isfield(AutorunConfig.ProbeInfo,'ProbeTrajectoryInfo')
     Data.Info.ProbeInfo.ShortAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesShort;
     Data.Info.ProbeInfo.AreaDistanceFromTip = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaTipDistance;
 end
+
+% get x and y coordinates
+activechannel{1} = Data.Info.ProbeInfo.ActiveChannel;
+DummyStruc.Raw = [];
+DummyStruc.Info.ProbeInfo.NrChannel = Data.Info.ProbeInfo.NrChannel;
+
+[Data.Info.ProbeInfo.xcoords,Data.Info.ProbeInfo.ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+
+if str2double(Data.Info.ProbeInfo.VertOffset) ~= 0
+    Data.Info.ProbeInfo.FakeSpacing = unique(diff(Data.Info.ProbeInfo.ycoords));
+    if length(Data.Info.ProbeInfo.FakeSpacing)>1 && str2double(Data.Info.ProbeInfo.VertOffset) > 0 % just take first distance, other distances are 'skipped'
+        Data.Info.ProbeInfo.FakeSpacing = abs(Data.Info.ProbeInfo.FakeSpacing(1));
+    end
+else
+    Data.Info.ProbeInfo.FakeSpacing = Data.Info.ChannelSpacing;
+end
+
+
+% Set up y labels with proper y and x coordinate
+Data.Info.ProbeInfo.YLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, xx), Data.Info.ProbeInfo.ycoords, Data.Info.ProbeInfo.xcoords, 'UniformOutput', false);
+    
+Data.Info.SpikeType = "Non";

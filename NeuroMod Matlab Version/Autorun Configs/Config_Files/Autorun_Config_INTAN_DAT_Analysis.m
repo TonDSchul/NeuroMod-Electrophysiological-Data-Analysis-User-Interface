@@ -34,8 +34,14 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Save_for_SpikeSorting'
 % 'Open_in_Phy'
 
+%% Note: Those header infos HAVE to be present! Othwerwise Aurorun Managher wont work properly
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Save_for_SpikeSorting","Create_Spike_Sorting"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_from_SpikeSorting"];
+
+% Whether true relations between active channel are display in analysis
+% plots. This becomes relevant when you have inactive channel islands
+% inbetween active channel or disable certain channel from for analysis (next variable)
+AutorunConfig.PreservePlotChannelLocations = 1;
 
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
@@ -299,7 +305,7 @@ AutorunConfig.SaveforSpikeSorting.SaveFormat = 'double'; % 'int32' or 'int16' fo
 AutorunConfig.SaveforSpikeSorting.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data' to determine which part of the dataset is saved
 %% 5.2 Load from SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
+AutorunConfig.LoadfromSpikeSorting.Sorter = 'Kilosort 4 external GUI'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
 AutorunConfig.LoadfromSpikeSorting.ScalingFactor = []; % ONLY FOR KILOSORT: char, This is the 'int16' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and applied when you saved data for kilosort before.

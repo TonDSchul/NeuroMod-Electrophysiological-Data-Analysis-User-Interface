@@ -98,7 +98,8 @@ if strcmp(Clustertoshow,"All")
         end
     end
     
-    uniqueClus = unique(SpikeCluster);
+    uniqueClus = unique(Data.Spikes.SpikeCluster);
+
     for i = 1:numCluster
         CurrentCluster = uniqueClus(i);
         IndiciesCurrentCluster = SpikeCluster == CurrentCluster; %% 
@@ -186,15 +187,15 @@ else %% If specific spike SpikeCluster selected
     end
     
     IndiciesCurrentCluster = SpikeCluster == str2double(Clustertoshow);
-    %UniqueCluster = unique(SpikeCluster);
-    %clusIndice = find(UniqueCluster==str2double(Clustertoshow));
-    clusIndice = str2double(Clustertoshow);
+    
+    rgbIndicie = unique(Data.Spikes.SpikeCluster);
+    rgbIndicie = ismember(rgbIndicie,str2double(Clustertoshow));
 
     if sum(IndiciesCurrentCluster) > 0
         if strcmp(Type,"Continous")
-            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(clusIndice,:),'MarkerEdgeColor',rgb_matrix(clusIndice,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'ClusterSpikes');
+            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(rgbIndicie,:),'MarkerEdgeColor',rgb_matrix(rgbIndicie,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'ClusterSpikes');
         elseif strcmp(Type,"Eventrelated")
-            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(clusIndice,:),'MarkerEdgeColor',rgb_matrix(clusIndice,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'ClusterSpikes');
+            line(Figure,SpikeTimes(IndiciesCurrentCluster),SpikePositions(IndiciesCurrentCluster),'LineStyle', 'none', 'Marker', 'o','MarkerFaceColor', rgb_matrix(rgbIndicie,:),'MarkerEdgeColor',rgb_matrix(rgbIndicie,:),'MarkerSize',PlotAppearance.InternalEventSpikePlot.MainPlotSpikeWidth, 'Parent', Figure, 'Tag', 'ClusterSpikes');
         end
     end
 end

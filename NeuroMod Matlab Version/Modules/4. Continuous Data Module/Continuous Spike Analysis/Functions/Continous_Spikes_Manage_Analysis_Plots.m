@@ -212,13 +212,15 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
 
     set(Figure, 'YDir', 'reverse');
 
-    %% basic quantification of spiking plot        
-    depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
-    ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
+    %% basic quantification of spiking plot    
+
+    depthBins = linspace(StartDepth, StopDepth, 151);   % 150 intervals → 151 points
+    ampBins   = linspace(0, max(SpikeAmps), 101);       % 100 intervals → 101 points
+    
     recordingDur = Data.Time(end);
     
     [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
-    
+
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,StopDepth,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
     Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;

@@ -37,6 +37,11 @@ function [AutorunConfig] = Autorun_Config_INTAN_RHD_Analysis(DisplayOrder)
 % What to execute
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","Preprocess_Continous_Data","Create_Spike_Sorting","Load_from_SpikeSorting","Continous_Spike_Analysis","Extract_Events","Extract_Event_Related_Data","Event_Spike_Analysis","Preprocess_Continous_Data","Extract_Event_Related_Data","Event_Analysis_ERP","Event_Analysis_CSD"];
 
+% Whether true relations between active channel are display in analysis
+% plots. This becomes relevant when you have inactive channel islands
+% inbetween active channel or disable certain channel from for analysis (next variable)
+AutorunConfig.PreservePlotChannelLocations = 1;
+
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
 

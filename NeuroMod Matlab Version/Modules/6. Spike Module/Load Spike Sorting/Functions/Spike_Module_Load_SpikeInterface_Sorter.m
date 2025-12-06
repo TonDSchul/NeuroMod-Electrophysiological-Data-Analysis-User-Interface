@@ -381,7 +381,6 @@ else
     [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
 end
 
-
 %% remove spikes if waveform length exceeds time limits
 if sum(SpikesWithWaveform)>0
     NumSpikeRemoved = length(find(SpikesWithWaveform==0));

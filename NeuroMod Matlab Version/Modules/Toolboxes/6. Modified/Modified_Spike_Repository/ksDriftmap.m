@@ -71,6 +71,8 @@ end
 % threshold and exclude the low-amp noisy ones, and so we can color the
 % points by the amplitude
 
+
+
 [spikeAmps, ~, templateYpos, tempAmps, tempsUnW, ~, BiggestAmplWaveform] = ...
   templatePositionsAmplitudes(temps, winv, ycoords, spikeTemps, tempScalingAmps);
 

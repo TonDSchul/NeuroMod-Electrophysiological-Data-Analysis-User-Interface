@@ -37,6 +37,11 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_INTAN_DAT_Analysis(DisplayOrd
 % What to execute
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Save_for_SpikeSorting","Create_Spike_Sorting"];
 
+% Whether true relations between active channel are display in analysis
+% plots. This becomes relevant when you have inactive channel islands
+% inbetween active channel or disable certain channel from for analysis (next variable)
+AutorunConfig.PreservePlotChannelLocations = 1;
+
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
 

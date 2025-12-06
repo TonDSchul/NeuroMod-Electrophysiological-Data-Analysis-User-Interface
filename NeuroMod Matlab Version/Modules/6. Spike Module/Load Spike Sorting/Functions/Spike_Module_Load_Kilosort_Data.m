@@ -209,7 +209,7 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i},'amplitudes.npy')
          Data.Spikes.SpikeAmps = readNPY(fullfile(folderPath,fileNames{i}));
          Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
-         %[~, Data.Spikes.SpikeAmps , ~, ~ ,~, ~] = ksDriftmap(folderPath,KSversion);
+         [~, Data.Spikes.SpikeAmps , ~, ~ ,~, ~] = ksDriftmap(folderPath,KSversion);
          if ~isempty(ScalingFactor)
             Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps./ScalingFactor;
          end
@@ -227,6 +227,8 @@ for i = 1:length(fileNames)
 end
 
 [~, ~ , ~, ~ ,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
+
+
 
 %% Get Channel number corresponding to depth in um
 if str2double(Data.Info.ProbeInfo.NrRows) == 1
@@ -381,6 +383,7 @@ end
 
 %% Now extract Waveforms
 Data = Spike_Module_Get_Kilosort_Amplitude(Data);
+
 if isempty(TempData)
     [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms"); 
 else

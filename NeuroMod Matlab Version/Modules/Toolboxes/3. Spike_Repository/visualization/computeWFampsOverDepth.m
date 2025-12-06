@@ -13,3 +13,4 @@ for b = 1:length(depthBins)-1
     thiscdf = cumsum(h(end-1:-1:1));
     cdfs(b,:) = thiscdf(end:-1:1);
 end
+

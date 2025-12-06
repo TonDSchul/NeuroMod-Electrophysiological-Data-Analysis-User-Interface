@@ -58,9 +58,6 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
     
     if ~strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"WaveClus 3")
 
-        [pythonPath] = Spike_Module_Check_Load_Conda_Python_exe(executableFolder);
-        SpikeInterfaceScriptPath = strcat(executableFolder,'\Modules\SpikeInterface\SpikeInterface_Sorting.py');
-    
         AutorunConfig.CreateSpikeSorting.JustOpenSpikeInterfaceGUI = '0';
         AutorunConfig.CreateSpikeSorting.MultipleRecordings = '0';
 
@@ -88,17 +85,6 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
             file_path = strcat(file_path,'\',stringArray(BinIndex));
         end
         
-        SampleRate = Data.Info.NativeSamplingRate;
-        NumChannel = size(Data.Raw,1);
-        ypitch = Data.Info.ChannelSpacing;
-
-        % Build the command string
-        VerChannelOffset = str2double(Data.Info.ProbeInfo.VertOffset);
-        HorChannelOffset = str2double(Data.Info.ProbeInfo.HorOffset);
-        NumberRows = str2double(Data.Info.ProbeInfo.NrRows);
-        RowOffset = double(Data.Info.ProbeInfo.OffSetRows);
-        RowOffsetDistance = str2double(Data.Info.ProbeInfo.OffSetRowsDistance);
-
         if strcmp(AutorunConfig.CreateSpikeSorting.Sorter,"Mountainsort 5")
             % Loop over all fields
             fields = fieldnames(AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5);
@@ -119,7 +105,7 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
                     end
                 end
             end
-
+            SortingParametersForLater = AutorunConfig.CreateSpikeSorting.ParameterStructure;
             % Convert Sorter Parameter into dictionary
             SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5);
 
@@ -146,50 +132,34 @@ if strcmp(FunctionOrder,'Create_Spike_Sorting')
                     end
                 end
             end
-            
+            SortingParametersForLater = AutorunConfig.CreateSpikeSorting.ParameterStructure;
             % Convert Sorter Parameter into dictionary
             SortingParameters = jsonencode(AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2);
         end
         
-        % Save JSON to a temporary file
-        Tempfilepath = convertStringsToChars(file_path);
-        filePathDash = find(Tempfilepath=='\');
-        Tempfilepath = Tempfilepath(1:filePathDash(end)-1);
-
-        if isfile(fullfile(Tempfilepath, 'sorting_parameters.json'))
-            delete(fullfile(Tempfilepath, 'sorting_parameters.json'))
-        end
-        jsonFilePath = fullfile(Tempfilepath, 'sorting_parameters.json');
-        fid = fopen(jsonFilePath, 'w');
-        fwrite(fid, SortingParameters, 'char');
-        fclose(fid);
+        SpikeSortinBinPath = convertStringsToChars(file_path);
+        % First Check Number of channel in bin file is same as
+        % in current recording
+        fileinfo = dir(SpikeSortinBinPath);
+        filesize = fileinfo.bytes;     
+        bytes_per_value = 8;           
+        Ntime = length(Data.Time);                   
         
-        AutorunConfig.CreateSpikeSorting.OpenSpikeInterface = str2double(AutorunConfig.CreateSpikeSorting.OpenSpikeInterface);
-        AutorunConfig.CreateSpikeSorting.Preprocess = str2double(AutorunConfig.CreateSpikeSorting.Preprocess);
-        AutorunConfig.CreateSpikeSorting.PlotTraces = str2double(AutorunConfig.CreateSpikeSorting.PlotTraces);
-        AutorunConfig.CreateSpikeSorting.PlotSortingResults = str2double(AutorunConfig.CreateSpikeSorting.PlotSortingResults);
-        AutorunConfig.CreateSpikeSorting.LoadSorting = str2double(AutorunConfig.CreateSpikeSorting.LoadSorting);
-        AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = str2double(AutorunConfig.CreateSpikeSorting.KeepConsoleOpen);
-        AutorunConfig.CreateSpikeSorting.MultipleRecordings = str2double(AutorunConfig.CreateSpikeSorting.MultipleRecordings);
-
-        command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d', ...
-            pythonPath, SpikeInterfaceScriptPath, Tempfilepath, AutorunConfig.CreateSpikeSorting.MultipleRecordings, AutorunConfig.CreateSpikeSorting.Sorter, ...
-            AutorunConfig.CreateSpikeSorting.Preprocess, AutorunConfig.CreateSpikeSorting.LoadSorting, AutorunConfig.CreateSpikeSorting.OpenSpikeInterface, ...
-            AutorunConfig.CreateSpikeSorting.PlotSortingResults, AutorunConfig.CreateSpikeSorting.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, AutorunConfig.CreateSpikeSorting.KeepConsoleOpen, AutorunConfig.CreateSpikeSorting.PlotTraces,VerChannelOffset,HorChannelOffset,NumberRows,RowOffset,RowOffsetDistance);
+        NChannel = filesize / (bytes_per_value * Ntime);
         
-        % Execute the Python script
-        [status, cmdout] = system(command);
-        
-        % Check status
-
-        if status == 0
-            disp('Python script executed successfully:');
-            disp(cmdout);
-        else
-            disp('Error executing Python script:');
-            disp(cmdout);
+        if NChannel ~= size(Data.Raw,1)
+            warning(strcat("Saved .bin file for spike sorting has ",num2str(NChannel)," channel while current recording has ",num2str(size(Data.Raw,1))," channel. Please save current NeuroMod data again for spikesorting using the 'Save for Sorting' option! If the number of channel in .bin file is excessively high, the saved .bin file has a different number of time points compared to the current recording. Returning"));
+            msgbox(strcat("Saved .bin file for spike sorting has ",num2str(NChannel)," channel while current recording has ",num2str(size(Data.Raw,1))," channel. Please save current NeuroMod data again for spikesorting using the 'Save for Sorting' option! If the number of channel in .bin file is excessively high, the saved .bin file has a different number of time points compared to the current recording. Returning"));
+            return;
         end
 
+        if mod(Data.Info.NrChannel, 2) == 1 && str2double(Data.Info.ProbeInfo.NrRows)<3
+            msgbox("Probe has an odd number of active channel. Spike sorting only works with even number of active channel! EXCEPT you use a probe array with more than 2 channel rows.");
+            return;
+        end
+        
+        Spike_Module_Start_SpikeInterface_Sorting(Data,AutorunConfig.CreateSpikeSorting,executableFolder,SpikeSortinBinPath,AutorunConfig.CreateSpikeSorting.Sorter,0,SortingParametersForLater)
+                
     else
 
         SpikeSortingPath = strcat(Data.Info.Data_Path,'\Wave_Clus');
@@ -312,7 +282,7 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 4 external GUI") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 3 external GUI")
         % Function to load all relevant npy and .mat files Kilosort outputs
-        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,"External Kilosort GUI");
+        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,AutorunConfig.LoadfromSpikeSorting.Sorter);
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")

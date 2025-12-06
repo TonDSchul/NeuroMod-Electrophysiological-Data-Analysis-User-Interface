@@ -219,7 +219,7 @@ if ~strcmp(ClustertoShow,"All") && ~strcmp(ClustertoShow,"Non")
         delete(Cluster_handles(2:end));
     end
     
-    UniqueCluster = unique(CluterPositions);
+    UniqueCluster = unique(Data.Spikes.SpikeCluster);
     clusIndice = find(UniqueCluster==ClusterNr);
     
     if strcmp(Type,"NewCluster")

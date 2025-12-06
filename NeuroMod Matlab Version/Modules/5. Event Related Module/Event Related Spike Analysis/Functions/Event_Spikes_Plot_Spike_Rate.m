@@ -237,6 +237,9 @@ if ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,"
         return;
     end
 
+    rgbIndicie = unique(Data.Spikes.SpikeCluster);
+    rgbIndicie = ismember(rgbIndicie,clusIndice);
+
     %% Plot
     yyaxis(SpikeRateTimeFigure, 'right');
     if length(SpikesInBins)+0.5 ~= 0.5
@@ -251,15 +254,15 @@ if ~strcmp(Clustertoshow,"All") && ~strcmp(Clustertoshow,"Non") || strcmp(Type,"
     if ~strcmp(Type,"BinsizeChange")
         yyaxis(SpikeRateTimeFigure, 'right');
         if isempty(Cluster_handles)
-            bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(clusIndice,:),'Tag','ClusterRate');
+            bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(rgbIndicie,:),'Tag','ClusterRate');
         else
-            set(Cluster_handles(1), 'YData', SpikesInBins,'FaceColor', rgb_matrix(clusIndice,:),'Tag','ClusterRate');
+            set(Cluster_handles(1), 'YData', SpikesInBins,'FaceColor', rgb_matrix(rgbIndicie,:),'Tag','ClusterRate');
         end
     else
         delete(Cluster_handles(:));
         yyaxis(SpikeRateTimeFigure, 'right');
         Cluster_handles = findobj(SpikeRateTimeFigure, 'Tag', 'ClusterRate');
-        bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(clusIndice,:),'Tag','ClusterRate'); 
+        bar(SpikeRateTimeFigure,SpikesInBins, 'FaceColor', rgb_matrix(rgbIndicie,:),'Tag','ClusterRate'); 
     end
 
     % Set the x-tick labels to the correct time values
