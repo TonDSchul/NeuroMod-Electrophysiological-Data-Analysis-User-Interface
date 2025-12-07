@@ -1,4 +1,4 @@
-function [Data] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig,FunctionOrder,Data,DataPath,LoadedData)
+function [Data,CurrentPlotData] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig,FunctionOrder,Data,DataPath,LoadedData,CurrentPlotData,executableFolder)
 
 %________________________________________________________________________________________
 %% This is the main function to execute continous autorun data analysis 
@@ -132,6 +132,7 @@ end
 %______________________________________________________________________________________________________
 
 if strcmp(FunctionOrder,'Static_Power_Spectrum')
+    ExportedAlready = 0;
     for i = 1:length(AutorunConfig.StaticPowerSpectrum.PlotType)
         if strcmp(AutorunConfig.StaticPowerSpectrum.PlotType(i),"Band Power Individual Channel ")
 
@@ -145,7 +146,7 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
             StaticPowerSpectrumfig = figure();
             StaticPowerSpectrumFigure = axes;
 
-            Analyse_Main_Window_Static_Power_Spectrum(Data,StaticPowerSpectrumFigure,AutorunConfig.StaticPowerSpectrum.DataType,AutorunConfig.StaticPowerSpectrum.DataSource,str2double(AutorunConfig.StaticPowerSpectrum.Channel),num2str(AutorunConfig.StaticPowerSpectrum.Channel),AutorunConfig.StaticPowerSpectrum.FrequencyRange,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.StaticPowerSpectrum.WindowSize,AutorunConfig.StaticPowerSpectrum.UseCostumeWindowSize);
+            CurrentPlotData = Analyse_Main_Window_Static_Power_Spectrum(Data,StaticPowerSpectrumFigure,AutorunConfig.StaticPowerSpectrum.DataType,AutorunConfig.StaticPowerSpectrum.DataSource,str2double(AutorunConfig.StaticPowerSpectrum.Channel),num2str(AutorunConfig.StaticPowerSpectrum.Channel),AutorunConfig.StaticPowerSpectrum.FrequencyRange,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.StaticPowerSpectrum.WindowSize,AutorunConfig.StaticPowerSpectrum.UseCostumeWindowSize);
             
             StaticPowerSpectrumfig.Color = AutorunConfig.ComponentsInWindowColor;
 
@@ -162,21 +163,25 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
 
             DepthChannel = AutorunConfig.StaticPowerSpectrum.DepthChannel;
             
-            [~,~,AutorunConfig.CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,AutorunConfig.StaticPowerSpectrum.DataSource,PowerSpecResults,BandPower,AutorunConfig.StaticPowerSpectrum.FrequencyRange,UIAxes,UIAxes_2,TextArea,"All",AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,DepthChannel,AutorunConfig.PlotAppearance,AutorunConfig.PreservePlotChannelLocations);
+            [~,~,CurrentPlotData] = Continous_Power_Spectrum_Over_Depth(Data,AutorunConfig.StaticPowerSpectrum.DataSource,PowerSpecResults,BandPower,AutorunConfig.StaticPowerSpectrum.FrequencyRange,UIAxes,UIAxes_2,TextArea,"All",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,DepthChannel,AutorunConfig.PlotAppearance,AutorunConfig.PreservePlotChannelLocations);
             
             StaticPowerSpectrumfig.Color = AutorunConfig.ComponentsInWindowColor;
             [UIAxes] = Execute_Autorun_Set_Plot_Colors(UIAxes,AutorunConfig);
             [UIAxes_2] = Execute_Autorun_Set_Plot_Colors(UIAxes_2,AutorunConfig);
         end
         
-        
-        
-
         %% Plot Results if turned on
         if strcmp(AutorunConfig.SaveFigures,"on")
             Execute_Autorun_Save_Figure(StaticPowerSpectrumfig, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Static Power Spectrum", DataPath, AutorunConfig.StaticPowerSpectrum.PlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "StaticPowerSpectrum")
         end
+        
+        %% Export Data id required
+        if AutorunConfig.ExportDataThisBlock == 1
+            Execute_Autorun_Export_Data(AutorunConfig,"Continuous Static Spectrum",Data,executableFolder,AutorunConfig.StaticPowerSpectrum.PlotType(i),CurrentPlotData,ExportedAlready);
+            ExportedAlready = 1;
+        end
     end
+    ExportedAlready = 0;
 end
 
 %______________________________________________________________________________________________________
@@ -184,6 +189,7 @@ end
 %______________________________________________________________________________________________________
 
 if strcmp(FunctionOrder,'Continous_Spike_Analysis')
+    ExportedAlready = 0; 
     Execute = 1;
     if ~isfield(Data,'Spikes')
         msgbox("Warning: No Kilosort - or internal spike data found. Please first use the Spike Module to extract spike data");
@@ -392,7 +398,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                             disp("Template plots not available for NeuroMod internal spike detection data.")
                             continue;
                         else
-                            [TempData,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1,Data.Info.ProbeInfo.ActiveChannel,AutorunConfig.PreservePlotChannelLocations);
+                            [TempData,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,1,Data.Info.ProbeInfo.ActiveChannel,AutorunConfig.PreservePlotChannelLocations);
                         end
 
                         if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered LFP") || strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Triggered Average")
@@ -404,7 +410,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                         end
 
                         if ~strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")
-                            [~,AutorunConfig.CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,"SpikeRateBinSizeChange",FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,AutorunConfig.CurrentPlotData,AutorunConfig.PlotAppearance,1,Data.Info.ProbeInfo.ActiveChannel,AutorunConfig.PreservePlotChannelLocations);
+                            [~,CurrentPlotData] = Continous_Spikes_Manage_Analysis_Plots(Data,PlotInfo,SpikePositions,SpikeAmps,SpikeTimes,Waveforms,WaveformChannel,CluterPositions,UIAxes,"SpikeRateBinSizeChange",FakeTextAre,AutorunConfig.ContSpikeAnalysis.EventChannelToPlot,rgbMatrix,numCluster,CurrentClusterToPlot.Value,UIAxes_2,UIAxes_3,AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,1,Data.Info.ProbeInfo.ActiveChannel,AutorunConfig.PreservePlotChannelLocations);
                         end
 
                         if strcmp(AutorunConfig.ContSpikeAnalysis.AnalysisType(i),"Spike Map")
@@ -448,14 +454,28 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                 Execute_Autorun_Save_Figure(SpikeAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.ContSpikeAnalysis.AnalysisType(i), DataPath, strcat(" Cont. ",SpikeName," Spikes "), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "KilosortContinous")
                             end
                         end
+                        
+                        %% Eport Data if required
+                        if AutorunConfig.ExportDataThisBlock == 1
+                            if strcmp(CurrentClusterToPlot.Value,"All") || strcmp(CurrentClusterToPlot.Value,"Non")
+                                Execute_Autorun_Export_Data(AutorunConfig,"Continuous Spikes",Data,executableFolder,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),CurrentPlotData,ExportedAlready);
+                            else
+                                Execute_Autorun_Export_Data(AutorunConfig,strcat("Continuous Spikes Unit ",CurrentClusterToPlot.Value),Data,executableFolder,AutorunConfig.ContSpikeAnalysis.AnalysisType(i),CurrentPlotData,ExportedAlready);
+                            end
+
+                            ExportedAlready = 1;
+                        end
+                        CurrentPlotData = [];
+
                     end % nunits
-                end % Kilosort Plottype
+                end % Sorter Plottype
             end % Totaliterations ("normal" and unit specific plots)
         end % if is spikes
     end % if Execute == 1
 end % if FunctionOrder == "Cont. Spike Analysis"
 
 if strcmp(FunctionOrder,'Continous_Unit_Analysis')
+    CurrentPlotData = [];
     Execute = 1;
 
     if ~isfield(Data,'Spikes')
@@ -495,16 +515,31 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
 
         %% Plot Waveforms
         
-        Spike_Waveforms_Plot_Waveforms(Data,Units,SpikeWaveforms,SpikeCluster,Waves,Wavefigs);
+        CurrentPlotData = Spike_Waveforms_Plot_Waveforms(Data,Units,SpikeWaveforms,SpikeCluster,Waves,Wavefigs);
+        
+        if AutorunConfig.ExportDataThisBlock == 1
+            Execute_Autorun_Export_Data(AutorunConfig,"Continuous Unit Analysis",Data,executableFolder,"Waveforms",CurrentPlotData,0);
+        end
+        CurrentPlotData = [];
 
         %% Plot ISI
         
-        Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,SpikePositions,SpikeCluster,SpikeChannel,Units,Waves,ISIfigs,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),str2double(AutorunConfig.ContinousUnitAnalysis.MaxTImeISI));
-  
+        [~,CurrentPlotData] = Spike_Module_Calculate_Plot_ISI(Data,SpikeTimes,SpikePositions,SpikeCluster,SpikeChannel,Units,Waves,ISIfigs,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),str2double(AutorunConfig.ContinousUnitAnalysis.MaxTImeISI));
+        
+        if AutorunConfig.ExportDataThisBlock == 1
+            Execute_Autorun_Export_Data(AutorunConfig,"Continuous Unit Analysis",Data,executableFolder,"ISI",CurrentPlotData,0);
+        end
+        CurrentPlotData = [];
+
         %% Plot Autocorrelogramme
 
-        Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),[],str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
+        CurrentPlotData = Spikes_Module_AutoCorrelogram(Data,SpikeTimes,SpikePositions,SpikeChannel,SpikeCluster,AutoCfigs,Units,str2double(AutorunConfig.ContinousUnitAnalysis.NumBins),[],str2double(AutorunConfig.ContinousUnitAnalysis.TimeLagAutocorrelogram));
         
+        if AutorunConfig.ExportDataThisBlock == 1
+            Execute_Autorun_Export_Data(AutorunConfig,"Continuous Unit Analysis",Data,executableFolder,"Auto",CurrentPlotData,0);
+        end
+        CurrentPlotData = [];
+
         if strcmp(Data.Info.Sorter,'Non')
             SpikeName = "Internal Spike Detection";
         else
@@ -527,5 +562,6 @@ if strcmp(FunctionOrder,'Continous_Unit_Analysis')
                 Execute_Autorun_Save_Figure(UnitAnalysisFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, strcat(SpikeName," Cont. Unit Analysis"), DataPath, " ", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ContWaveforms")
             end
         end
+        
     end
 end

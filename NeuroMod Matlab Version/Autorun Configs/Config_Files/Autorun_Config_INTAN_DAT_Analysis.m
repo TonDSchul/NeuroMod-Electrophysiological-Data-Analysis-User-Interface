@@ -34,9 +34,14 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Save_for_SpikeSorting'
 % 'Open_in_Phy'
 
+%______________________
+%--- General ---
+%______________________
+% 'Export_Data' Note: Insert below after every anlysis module you want to export data from. This exports all analysis results of that module!
+
 %% Note: Those header infos HAVE to be present! Othwerwise Aurorun Managher wont work properly
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Load_from_SpikeSorting"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Continous_Unit_Analysis","Export_Data"];
 
 % Whether true relations between active channel are display in analysis
 % plots. This becomes relevant when you have inactive channel islands
@@ -272,6 +277,18 @@ AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = "Non"; %'All' OR 'No
 AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot = 'All'; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 6. Export Data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This exports ALL relevant analysis results for a given analysis. When you
+% conduct continuous spike analysis and select 3 different analysis methods
+% (like spike map, waveforms and average waveforms across depth), all
+% analysis results for all of these anylsis including spike rates are
+% exported. Therefore, this has to be inserted in the pipeline after every
+% analysis module you want to get analysis results from. 
+
+AutorunConfig.Export.Format = '.mat'; % .txt OR .xlsx OR .mat
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5. Spike Module
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5.1 Internal Spike Detection
@@ -379,4 +396,3 @@ AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = struct('general', stru
                       'multi_units_only', false, ...
                       'job_kwargs', struct('n_jobs', 0.8), ...
                       'debug', false);
-

@@ -111,8 +111,7 @@ if ProbeViewWindow == 0
         if ~app.Mainapp.Data.Info.ProbeInfo.OffSetRows
 
             Tempxdistances= x1:(x2 - x1) / ((str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)*2)+1):x2;
-            
-            squareWidth = Tempxdistances(2)-Tempxdistances(1);
+                        squareWidth = Tempxdistances(2)-Tempxdistances(1);
 
             squareWidth = squareWidth*str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows);
 
@@ -163,6 +162,11 @@ if ProbeViewWindow == 0
             end
         else
             Tempxdistances = (x1:(x2 - x1) / ((str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)*2)+2):x2);
+            
+            % If negative offset second row, xdistances have to be shifted
+            if str2double(app.Mainapp.Data.Info.ProbeInfo.OffSetRowsDistance)<0
+                Tempxdistances = Tempxdistances - (Tempxdistances(2)-Tempxdistances(1));
+            end
 
             squareWidth = Tempxdistances(2)-Tempxdistances(1);
 
@@ -600,7 +604,7 @@ if ProbeViewWindow == 0
             if strcmp(Window,'Static Spectrum Window') || strcmp(Window,'All Windows Opened')
                 if ~isempty(app.Mainapp.ContStaticSpectrumWindow)
                     if isvalid(app.Mainapp.ContStaticSpectrumWindow)
-                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray) 
+                        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.ProbeInfo.OffSetRowsDistance,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray) 
                         if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
                             [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'All',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.PreservePlotChannelLocations);
                         else
@@ -658,7 +662,7 @@ if ProbeViewWindow == 0
                 end
             end
 
-            Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
+            Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.ProbeInfo.OffSetRowsDistance,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
 
             app.ChannelSelectionEditField.Value = '';
 
@@ -727,7 +731,7 @@ if ProbeViewWindow
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),app.ChannelOrderField.Value,ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[],app.CheckBox.Value,[],app.ReverseTopandBottomChannelNumberCheckBox.Value,app.SwitchLeftandRightChannelNumberCheckBox.Value,app.ECoGArrayCheckBox.Value)
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField_2.Value),ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[],app.CheckBox.Value,[],app.ReverseTopandBottomChannelNumberCheckBox.Value,app.SwitchLeftandRightChannelNumberCheckBox.Value,app.ECoGArrayCheckBox.Value)
 
 %% Main Window probe view_____if clicked on a line but not on a channel on the right side --> not to change channel selection
 elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDirection]) < 2 && ClickedOnChannelYDirection == 0 || ClickedOnChannelXDirection == 0 && sum([ClickedOnChannelYDirection,ClickedRightSide])<2 && sum([ClickedOnChannelYDirection,ClickedLeftSide])<2 && TwoRowOffsetDesignHit == 0 % no change when user clicked on a channel square in the right
@@ -778,6 +782,6 @@ elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDire
         AllActiveChannel = app.Mainapp.Data.Info.ProbeInfo.ActiveChannel;
         ActiveChannel = app.Mainapp.ActiveChannel;
        
-        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.Channelorder,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray)
+        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.ProbeInfo.OffSetRowsDistance,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray)
     end
 end

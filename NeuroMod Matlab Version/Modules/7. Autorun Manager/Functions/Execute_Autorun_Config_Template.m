@@ -63,10 +63,23 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
     Proceed = 1;
 
     for nCurrentModuleIteration = 1:length(FunctionOrder)
+
+        CurrentPlotData = [];
         
         if Proceed == 1
             disp(strcat("Analyzing Folder number ",num2str(nRecordings)," of ",num2str(NumIterations),"; Step ",FunctionOrder(nCurrentModuleIteration)));
         end
+
+        %______________________________________________________________________________________________________
+        %% 6. Export Data Module
+        %______________________________________________________________________________________________________
+        AutorunConfig.ExportDataThisBlock = 0;
+        if length(FunctionOrder) >= nCurrentModuleIteration+1
+            if strcmp(FunctionOrder(nCurrentModuleIteration+1),"Export_Data")
+                AutorunConfig.ExportDataThisBlock = 1;
+            end
+        end
+
         %______________________________________________________________________________________________________
         %% 1. Manage Dataset Module Functions
         %______________________________________________________________________________________________________
@@ -98,20 +111,21 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
             end
     
             if strcmp(FunctionOrder(nCurrentModuleIteration),'Preprocess_Continous_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Static_Power_Spectrum') || strcmp(FunctionOrder(nCurrentModuleIteration),'Continous_Spike_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Continous_Unit_Analysis') 
-               [Data] = Execute_Autorun_Continous_Data_Module_Functions (AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData);
+               [Data,CurrentPlotData] = Execute_Autorun_Continous_Data_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData,CurrentPlotData,executableFolder);
             end
             %% 4. Event Data Module
             %______________________________________________________________________________________________________
             if strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Events') || strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Event_Related_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Spike_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_ERP') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_CSD') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Analysis_TimeFrequencyPower') || strcmp(FunctionOrder(nCurrentModuleIteration),'PreproEventDataModule') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Unit_Analysis') || strcmp(FunctionOrder(nCurrentModuleIteration),'Event_Static_Power_Spectrum') || strcmp(FunctionOrder(nCurrentModuleIteration),'Import_Events')   
-                [Data] = Execute_Autorun_Extract_Events_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData,executableFolder);
+                [Data,CurrentPlotData] = Execute_Autorun_Extract_Events_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData,executableFolder,CurrentPlotData);
             end
             %______________________________________________________________________________________________________
             %% 5. Spike Module Functions
             %______________________________________________________________________________________________________
             if strcmp(FunctionOrder(nCurrentModuleIteration),'Internal_Spike_Detection') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_from_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_for_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Create_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Internal_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Open_in_Phy')
-                [Data] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,executableFolder);
+                [Data,CurrentPlotData] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,executableFolder,CurrentPlotData);
             end
-            %______________________________________________________________________________________________________
+            
+            
         end
     end
     %% Save Autorun config 

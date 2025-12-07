@@ -1,4 +1,4 @@
-function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,ChannelRows,HorOffset,VerOffset,ChannelOrder,ActiveChannel,FirstZoomChannel,LeftProbeChanged,ProbeBrainAreas,AllActiveChannel,PlotChannelSpacing,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,SwitchTopBottom,SwitchLeftRight,ECogArray)
+function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,ChannelRows,HorOffset,VerOffset,SecondRowOffsetDistance,ActiveChannel,FirstZoomChannel,LeftProbeChanged,ProbeBrainAreas,AllActiveChannel,PlotChannelSpacing,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,SwitchTopBottom,SwitchLeftRight,ECogArray)
 
 %________________________________________________________________________________________
 %% Main Function to plot interactive probe view. Handles all sub functions to plot individual parts
@@ -15,8 +15,8 @@ function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,Cha
 % 5. HorOffset: Horizontal offset in um between channel rows (0 if 1 channel row)
 % 6. VerOffset: Vertical offset in um between channel rows (0 if 1 channel
 % row) --> affects right row only. Positive and negative possible
-% 7. ChannelOrder: double, vector with channel order. 1:NrChannel when no
-% costume channel order from Data.Info structure
+% 7. SecondRowOffsetDistance: double, offset distance forevery second
+% channel
 % 8. ActiveChannel: double vector with all channel selected/activated by the
 % user in the probe view window
 % 9. FirstZoomChannel: First Channel shown in zoomed channel view on the
@@ -53,6 +53,9 @@ function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,Cha
 % SwitchLeftRight = logical 1 or 0 only when 2 channelrows
 
 %% Set Plot properties
+if ~isnumeric(SecondRowOffsetDistance)
+    SecondRowOffsetDistance = str2double(SecondRowOffsetDistance);
+end
 
 if isnan(VerOffset)
     VerOffset = 0;
@@ -153,7 +156,7 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
     
     %% Plot Probe Scheme on the left
 
-    [yPoint,yLimits,ActiveChannel,yLimitsSquares,squareHeight] = Utility_Plot_Probe_Scheme(Figure,GrayProbeFilling,ProbeLines,ChannelViewLeft,NrChannel,ChannelSpacing,ActiveChannel,VerOffset,ChannelRows,LeftProbeChanged,AllActiveChannel,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,FirstZoomChannel,ECogArray);
+    [yPoint,yLimits,ActiveChannel,yLimitsSquares,squareHeight] = Utility_Plot_Probe_Scheme(Figure,GrayProbeFilling,ProbeLines,ChannelViewLeft,NrChannel,ChannelSpacing,ActiveChannel,VerOffset,ChannelRows,LeftProbeChanged,AllActiveChannel,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,FirstZoomChannel,ECogArray,SecondRowOffsetDistance);
     
     %% Plot Brackets
 
@@ -161,7 +164,7 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
     
     %% Plot Zoomed Channel on the right side
 
-    [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xPos,yPos] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,PlotChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,ChannelRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom);
+    [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xPos,yPos] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,PlotChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,ChannelRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom,SecondRowOffsetDistance,CreateProbeWindow,ChannelActivation);
     
     %% Plot Channel Names on the right side
 

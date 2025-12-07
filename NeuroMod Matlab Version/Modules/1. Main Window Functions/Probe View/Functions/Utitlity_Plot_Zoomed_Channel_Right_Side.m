@@ -1,4 +1,4 @@
-function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xdistances,AllYPositions] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom)
+function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xdistances,AllYPositions] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,ShowChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,NrRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom,SecondRowOffsetDistance,CreateProbeWindow,ChannelActivation)
 
 %________________________________________________________________________________________
 %% Function to plot the zoomed channel selection on the right.
@@ -81,6 +81,16 @@ if OffSetRows
         xdistances = (x1:(x2 - x1) / ((ChannelRows*2)+2):x2)+1;
     else
         xdistances = x1:(x2 - x1) / ((ChannelRows*2)+2):x2;
+        % If negative offset second row, xdistances have to be shifted
+        if SecondRowOffsetDistance<0
+            tempa = xdistances(1:floor(length(xdistances)/2));
+            tempb = xdistances(floor(length(xdistances)/2)+1:end);
+            xdistances = [tempb,tempa];
+            squareWidth = xdistances(4)-xdistances(2);
+            xdistances(5) = xdistances(5)+squareWidth;
+            xdistances(7) = xdistances(7)+squareWidth;
+            xdistances = xdistances - (xdistances(2)-xdistances(1));
+        end
     end
 else
     if ChannelRows == 1
@@ -165,72 +175,74 @@ for nrows = 1:ChannelRows
 
     xPos = xdistances(nrows+nrows);
     
-
     for i = 0:((numSquares) - 1)  
-
-        %% Offset every seconds row
-        if ChannelRows == 1
-            if OffSetRows
-                if mod(FirstZoomChannel,2)==0
-                    if mod(i, 2) == 0
-                        xPos = (xdistances(nrows+nrows)/2);    
-                    else
-                        xPos = (xdistances(nrows+nrows+2)/2)+0.2;
-                    end
-                else
-                    if mod(i, 2) == 1
-                        xPos = (xdistances(nrows+nrows)/2);    
-                    else
-                        xPos = (xdistances(nrows+nrows+2)/2)+0.2;
-                    end
-                end
-                xPos = xPos+2.7;
-            end
-        elseif ChannelRows == 2
-            if OffSetRows
-                if nrows==1
+        
+        if CreateProbeWindow == 1 || ChannelActivation == 0
+            %% Offset every seconds row
+            if ChannelRows == 1
+                if OffSetRows
                     if mod(FirstZoomChannel,2)==0
                         if mod(i, 2) == 0
-                            xPos = (xdistances(nrows+nrows)/2)+0.08;    
+                            xPos = (xdistances(nrows+nrows)/2);    
                         else
-                            xPos = (xdistances(nrows+nrows+3)/2)+0.03;
+                            xPos = (xdistances(nrows+nrows+2)/2)+0.2;
                         end
                     else
                         if mod(i, 2) == 1
-                            xPos = (xdistances(nrows+nrows)/2)+0.08;    
+                            xPos = (xdistances(nrows+nrows)/2);    
                         else
-                            xPos = (xdistances(nrows+nrows+3)/2)+0.03;
+                            xPos = (xdistances(nrows+nrows+2)/2)+0.2;
                         end
                     end
-                else
-                    if mod(FirstZoomChannel,2)==0
-                        if mod(i, 2) == 0
-                            xPos = (xdistances(nrows+nrows)/2)+0.61;    
+                    xPos = xPos+2.7;
+                end
+            elseif ChannelRows == 2
+                if OffSetRows
+                    if nrows==1
+                        if mod(FirstZoomChannel,2)==0
+                            if mod(i, 2) == 0
+                                xPos = (xdistances(nrows+nrows)/2)+0.08;    
+                            else
+                                xPos = (xdistances(nrows+nrows+3)/2)+0.03;
+                            end
                         else
-                            xPos = (xdistances(nrows+nrows+3)/2)+0.53;
+                            if mod(i, 2) == 1
+                                xPos = (xdistances(nrows+nrows)/2)+0.08;    
+                            else
+                                xPos = (xdistances(nrows+nrows+3)/2)+0.03;
+                            end
                         end
                     else
-                        if mod(i, 2) == 1
-                            xPos = (xdistances(nrows+nrows)/2)+0.61;    
+                        if mod(FirstZoomChannel,2)==0
+                            if mod(i, 2) == 0
+                                xPos = (xdistances(nrows+nrows)/2)+0.61;    
+                            else
+                                xPos = (xdistances(nrows+nrows+3)/2)+0.53;
+                            end
                         else
-                            xPos = (xdistances(nrows+nrows+3)/2)+0.53;
+                            if mod(i, 2) == 1
+                                xPos = (xdistances(nrows+nrows)/2)+0.61;    
+                            else
+                                xPos = (xdistances(nrows+nrows+3)/2)+0.53;
+                            end
                         end
                     end
+                    
+                    xPos = xPos+1.9;
+                    
                 end
-                
-                xPos = xPos+1.9;
-                
-            end
-        else % mmore than 2 rows
-            if OffSetRows
-                if mod(i,2)==0
-                    xPos = xPos + 0.72;
-                else
-                    xPos = xPos - 0.72;
+            else % mmore than 2 rows
+                if OffSetRows
+                    if mod(i,2)==0
+                        xPos = xPos + 0.72;
+                    else
+                        xPos = xPos - 0.72;
+                    end
                 end
             end
         end
-        
+
+
         if VerOffset > 0
             if nrows == 1
                 yPos = lowylimits+ ((i * squareHeight) - CorrrectedVerOffset) + (CorrrectedVerOffset/2); % y-position of the square
@@ -298,20 +310,38 @@ for nrows = 1:ChannelRows
         end
 
         Squareplots = Squareplots+1;
-
-        if isempty(ChannelViewRight)
-            % Plot the square
-            rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
-                  'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
-        else
-            if length(ChannelViewRight)>=Squareplots
-                % Plot the square
-                set(ChannelViewRight(Squareplots), 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
-                          'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
-            else
+        
+        if CreateProbeWindow == 0 && ChannelActivation == 1
+            if isempty(ChannelViewRight)
                 % Plot the square
                 rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
-                          'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
+                      'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
+            else
+                if length(ChannelViewRight)>=Squareplots
+                    % Plot the square
+                    set(ChannelViewRight(Squareplots), ...
+                              'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
+                else
+                    % Plot the square
+                    rectangle(Figure, ...
+                              'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
+                end
+            end
+        else
+            if isempty(ChannelViewRight)
+                % Plot the square
+                rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
+                      'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
+            else
+                if length(ChannelViewRight)>=Squareplots
+                    % Plot the square
+                    set(ChannelViewRight(Squareplots), 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
+                              'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
+                else
+                    % Plot the square
+                    rectangle(Figure, 'Position', [xPos, yPos, squareWidth, PlottedSquareHeight], ...
+                              'EdgeColor', EdgeColor, 'FaceColor', faceColor,'Tag','ChannelViewRight'); % Black edges with specified face color
+                end
             end
         end
     end

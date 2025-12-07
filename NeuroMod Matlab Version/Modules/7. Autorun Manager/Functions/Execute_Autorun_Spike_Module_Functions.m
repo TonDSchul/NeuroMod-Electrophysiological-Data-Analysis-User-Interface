@@ -1,4 +1,4 @@
-function [Data] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder,Data,nRecordings,executableFolder)
+function [Data,CurrentPlotData] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder,Data,nRecordings,executableFolder,CurrentPlotData)
 
 %________________________________________________________________________________________
 %% This is the main function to execute spike module autorun analysis 

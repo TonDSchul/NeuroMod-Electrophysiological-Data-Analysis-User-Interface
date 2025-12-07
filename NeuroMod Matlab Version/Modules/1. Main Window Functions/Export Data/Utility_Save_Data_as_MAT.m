@@ -176,7 +176,7 @@ if contains(Analysis,"Plot")
             DataToSave.UnitAnalyisWaveformsXTicks =  PlottedData.UnitAnalyisWaveformsXTicks;
             DataToSave.DimensionsOfCells = ["Nr Plots (1 to 3)","Nr Units per Plot"];
 
-        elseif contains(Analysis,"ISI Analyis")
+        elseif contains(Analysis,"ISI Analysis")
             
             DataToSave.UnitAnalyisISIType =  PlottedData.UnitAnalyisISIType;
             DataToSave.UnitAnalyisISIXData =  PlottedData.UnitAnalyisISIXData;
@@ -185,7 +185,7 @@ if contains(Analysis,"Plot")
             DataToSave.UnitAnalyisISIXTicks =  PlottedData.UnitAnalyisISIXTicks;
             DataToSave.DimensionsOfCells = ["Nr Plots (1 to 3)","Nr Units per Plot"];
 
-        elseif contains(Analysis,"Autocorrelogram Analyis")
+        elseif contains(Analysis,"Autocorrelogram Analysis")
             
             DataToSave.UnitAnalyisAutoType =  PlottedData.UnitAnalyisAutoType;
             DataToSave.UnitAnalyisAutoXData =  PlottedData.UnitAnalyisAutoXData;

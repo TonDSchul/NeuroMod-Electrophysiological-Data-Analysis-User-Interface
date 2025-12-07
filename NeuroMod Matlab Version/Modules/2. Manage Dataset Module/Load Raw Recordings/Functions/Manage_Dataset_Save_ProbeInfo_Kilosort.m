@@ -138,9 +138,22 @@ if str2double(ChannelRowsDropDown) == 2
         end
         indices = indices(indices <= length(vec));  
         ProperIndicies = vec(indices);
+        
+        xcoords(ProperIndicies) = xcoords(ProperIndicies) + abs(VerOffsetDistanceSecondRow);
+        
+        if VerOffsetDistanceSecondRow<0
+            x_new = xcoords;
+            idx = 1:4:length(xcoords);
+            
+            for k = idx
+                if k+3 <= length(xcoords)
+                    block = xcoords(k:k+3);
+                    x_new(k:k+3) = [block(3:4) block(1:2)];
+                end
+            end
+            xcoords = x_new;
+        end
 
-        %xcoords(ProperIndicies) = xcoords(ProperIndicies) - VerOffsetDistanceSecondRow;
-        xcoords(ProperIndicies) = xcoords(ProperIndicies) + VerOffsetDistanceSecondRow;
     end
     
     Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannelPerRow*str2double(ChannelRowsDropDown))-1)*str2double(ChannelSpacingumEditField);
