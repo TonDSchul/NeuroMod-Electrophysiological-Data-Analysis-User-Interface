@@ -319,6 +319,13 @@ if isfield(Data,'Events')
                 if strcmp(AutorunConfig.SaveFigures,"on")
                     Execute_Autorun_Save_Figure(ERPFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Event_Related_Potential", DataPath, "ERP", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "ERP")
                 end
+                
+                %% Export Data if required
+                if AutorunConfig.ExportDataThisBlock == 1
+                    Execute_Autorun_Export_Data(AutorunConfig,"Event ERP",Data,executableFolder,"",CurrentPlotData,0);
+                end
+                CurrentPlotData = [];
+
             end
         
             %% CSD
@@ -345,6 +352,12 @@ if isfield(Data,'Events')
                 if strcmp(AutorunConfig.SaveFigures,"on")
                     Execute_Autorun_Save_Figure(CSDFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Event_Related_Current_Source_Density", DataPath, "CSD", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "CSD")
                 end
+
+                %% Export Data if required
+                if AutorunConfig.ExportDataThisBlock == 1
+                    Execute_Autorun_Export_Data(AutorunConfig,"Event CSD",Data,executableFolder,"",CurrentPlotData,0);
+                end
+                CurrentPlotData = [];
             end
     
             if strcmp(FunctionOrder,'Event_Static_Power_Spectrum')
@@ -384,7 +397,12 @@ if isfield(Data,'Events')
                         
                         EventSpectrumFigure.Color = AutorunConfig.ComponentsInWindowColor;
                         [UIAxes] = Execute_Autorun_Set_Plot_Colors(UIAxes,AutorunConfig);
-    
+                        
+                        %% Export Data if required
+                        if AutorunConfig.ExportDataThisBlock == 1
+                            Execute_Autorun_Export_Data(AutorunConfig,"Event Related Static Spectrum",Data,executableFolder,AutorunConfig.AnalyseEventDataModule.SpectrumPlotType(i),CurrentPlotData,0);
+                        end
+                        CurrentPlotData = [];
                     elseif strcmp(AutorunConfig.AnalyseEventDataModule.SpectrumPlotType(i),"Band Power over Depth")
                         
                         EventSpectrumFigure = figure();
@@ -410,15 +428,20 @@ if isfield(Data,'Events')
                         EventSpectrumFigure.Color = AutorunConfig.ComponentsInWindowColor;
                         [UIAxes] = Execute_Autorun_Set_Plot_Colors(UIAxes,AutorunConfig);
                         [UIAxes_2] = Execute_Autorun_Set_Plot_Colors(UIAxes_2,AutorunConfig);
+
+                        %% Export Data if required
+                        if AutorunConfig.ExportDataThisBlock == 1
+                            Execute_Autorun_Export_Data(AutorunConfig,"Event Related Static Spectrum",Data,executableFolder,AutorunConfig.AnalyseEventDataModule.SpectrumPlotType(i),CurrentPlotData,0);
+                        end
+                        CurrentPlotData = [];
                     end
     
                     %% Plot Results if turned on
                     if strcmp(AutorunConfig.SaveFigures,"on")
                         Execute_Autorun_Save_Figure(EventSpectrumFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving,AutorunConfig.AnalyseEventDataModule.SpectrumPlotType(i), DataPath, "Event_Related_Spectrum", AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "Event_Related_Spectrum")
                     end
-    
                 end
-    
+                
             end
         
             if strcmp(FunctionOrder,'Event_Analysis_TimeFrequencyPower')
@@ -464,6 +487,12 @@ if isfield(Data,'Events')
                         if strcmp(AutorunConfig.SaveFigures,"on")
                             Execute_Autorun_Save_Figure(TFFigure, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "_Time_Frequency_Power", DataPath, AutorunConfig.AnalyseEventDataModule.TFPlotType(i), AutorunConfig.ExtractRawRecording.FileType, AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j), AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "TF")
                         end
+
+                        %% Export Data if required
+                        if AutorunConfig.ExportDataThisBlock == 1
+                            Execute_Autorun_Export_Data(AutorunConfig,"Event TF",Data,executableFolder,strcat(AutorunConfig.AnalyseEventDataModule.TFPlotType(i),",",AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j)),CurrentPlotData,0);
+                        end
+                        CurrentPlotData = [];
                     end
                 end
             end

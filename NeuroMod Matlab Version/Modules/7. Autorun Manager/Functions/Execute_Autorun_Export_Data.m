@@ -1,5 +1,6 @@
 function Execute_Autorun_Export_Data(AutorunConfig,CurrentAnalysisWindow,Data,executableFolder,CurrentAnalysis,CurrentPlotData,ExportedAlready)
 
+%% Check if data available
 if isempty(CurrentPlotData)
     warning("No analysis data found to export! Please check the order of modules in your config file!")
     return;
@@ -16,6 +17,7 @@ else
     end
 end
 
+%% Export results from cont. spike analysis
 if contains(CurrentAnalysisWindow,"Continuous Spikes")   
     if contains(CurrentAnalysis,"Template") || contains(CurrentAnalysis,"Templates")
         return;
@@ -25,40 +27,94 @@ if contains(CurrentAnalysisWindow,"Continuous Spikes")
     %% Always
     if ExportedAlready==0 && ~contains(CurrentAnalysisWindow,"Unit")
         % Spike Rate over Time
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," All Spikes Spike Rate over Time ",CurrentAnalysis));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," All Spikes Spike Rate over Time ",CurrentAnalysis),1);
         % Spike Rate over Channel
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," All Spikes Spike Rate over Channel ",CurrentAnalysis));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," All Spikes Spike Rate over Channel ",CurrentAnalysis),1);
     end
 
     if contains(CurrentAnalysisWindow,"Unit")
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," Spike Rate Unit over Time ",CurrentAnalysis));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," Spike Rate Unit over Time ",CurrentAnalysis),1);
     end
 
     if contains(CurrentAnalysisWindow,"Unit")
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," Unit Spike Times ",CurrentAnalysis));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," Unit Spike Times ",CurrentAnalysis),1);
     else
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," Spike Times ",CurrentAnalysis));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous ",Data.Info.Sorter," Spike Times ",CurrentAnalysis),1);
     end
 end
 
+%% Export results from Static Spectrum analysis
 if contains(CurrentAnalysisWindow,"Continuous Static Spectrum")  
     StartTime = 0;
     if ExportedAlready==0
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Static_Spectrum ",CurrentAnalysis));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Static_Spectrum ",CurrentAnalysis),1);
     elseif ExportedAlready==1 && ~contains(CurrentAnalysis,"Individual")
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Static_Spectrum ",CurrentAnalysis));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Static_Spectrum ",CurrentAnalysis),1);
     end
 end
 
+%% Export results from Continuous Unit analysis
 if contains(CurrentAnalysisWindow,"Continuous Unit")  
     TimeRangePlot = size(Data.Spikes.Waveforms,2)/Data.Info.NativeSamplingRate;
     StartTime = 0;
-
     if contains(CurrentAnalysis,"Waveform")
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous Unit(s) Waveform Analysis Plot"));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous Unit(s) Waveform Analysis Plot"),1);
     elseif contains(CurrentAnalysis,"ISI")
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous Unit(s) ISI Analysis Plot"));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous Unit(s) ISI Analysis Plot"),1);
     elseif contains(CurrentAnalysis,"Auto")
-        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous Unit(s) Autocorrelogram Analysis Plot"));
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,strcat("Continuous Unit(s) Autocorrelogram Analysis Plot"),1);
     end
+end
+
+if contains(CurrentAnalysisWindow,"Event ERP")  
+    TimeRangePlot = Data.Info.EventRelatedDataTimeRange(end);
+    StartTime = 0;
+    
+    Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format, executableFolder,TimeRangePlot,StartTime,"Event Related Potential over Events",1);
+    Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format, executableFolder,TimeRangePlot,StartTime,"Event Related Potential over Channel",1);
+end
+
+if contains(CurrentAnalysisWindow,"Event CSD")  
+    TimeRangePlot = Data.Info.EventRelatedDataTimeRange(end);
+    StartTime = 0;
+    
+    Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format, executableFolder,TimeRangePlot,StartTime,"Current Source Density Analysis",1);
+end
+
+
+if contains(CurrentAnalysisWindow,"Event Related Static Spectrum")  
+    TimeRangePlot = Data.Info.EventRelatedDataTimeRange(end);
+    StartTime = 0;
+    
+    if strcmp(CurrentAnalysis,"Band Power Individual Channel")
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,"Event Related Static Spectrum Individual Channel",1);
+    elseif strcmp(CurrentAnalysis,"Band Power over Depth")
+        Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,"Event Related Static Spectrum over Depth",1);
+    end
+end
+
+if contains(CurrentAnalysisWindow,"Event TF")  
+   
+    PlotMethods = string(strsplit(CurrentAnalysis,','));
+    
+    TimeRangePlot = Data.Info.EventRelatedDataTimeRange(end);
+             
+    StartTime = 0;
+    
+    if ~contains(PlotMethods(1),"ITPC")
+        AddonName = "Time Frequency Power";
+    else
+        AddonName = "Intertrial Phase Clustering";
+    end
+    
+    if contains(PlotMethods(2),"Total")
+        AddonName = strcat("Phase Independent ",AddonName);
+    elseif contains(PlotMethods(2),"PhaseLocked") && ~contains(PlotMethods(2),"NonPhaseLocked")
+        AddonName = strcat("Phase Locked ",AddonName);
+    elseif contains(PlotMethods(2),"NonPhaseLocked")
+        AddonName = strcat("Non Phase Locked ",AddonName);
+    end
+
+    Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,AddonName,1);
+
 end

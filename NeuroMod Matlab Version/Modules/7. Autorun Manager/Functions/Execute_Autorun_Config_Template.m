@@ -75,7 +75,7 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
         %______________________________________________________________________________________________________
         AutorunConfig.ExportDataThisBlock = 0;
         if length(FunctionOrder) >= nCurrentModuleIteration+1
-            if strcmp(FunctionOrder(nCurrentModuleIteration+1),"Export_Data")
+            if strcmp(FunctionOrder(nCurrentModuleIteration+1),"Export_Analysis_Results")
                 AutorunConfig.ExportDataThisBlock = 1;
             end
         end

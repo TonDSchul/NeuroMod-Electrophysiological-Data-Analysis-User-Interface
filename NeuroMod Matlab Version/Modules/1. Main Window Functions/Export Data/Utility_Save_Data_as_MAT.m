@@ -220,8 +220,19 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         DataToSave.CSDYData =  PlottedData.CSDYData;
         DataToSave.CSDCData =  PlottedData.CSDCData;
         DataToSave.CSDXTicks =  PlottedData.CSDXTicks;
+    elseif contains(Analysis,"Static Spectrum Individual Channel")
+        DataToSave.CSDType =  PlottedData.EventSpectrumType;
+        DataToSave.CSDXData =  PlottedData.EventSpectrumXData;
+        DataToSave.CSDYData =  PlottedData.EventSpectrumYData;
+        % DataToSave.CSDCData =  PlottedData.CSDCData;
+        DataToSave.CSDXTicks =  PlottedData.EventSpectrumXTicks;
+    elseif contains(Analysis,"Static Spectrum over Depth")
+        DataToSave.CSDType =  PlottedData.EventSpectrumDepthType;
+        DataToSave.CSDXData =  PlottedData.EventSpectrumDepthXData;
+        DataToSave.CSDYData =  PlottedData.EventSpectrumDepthYData;
+        DataToSave.CSDCData =  PlottedData.EventSpectrumDepthCData;
+        DataToSave.CSDXTicks =  PlottedData.EventSpectrumDepthXTicks;
     end
-
 end
 
 if contains(Analysis,"Phase") && ~ contains(Analysis,"Instantaneous")

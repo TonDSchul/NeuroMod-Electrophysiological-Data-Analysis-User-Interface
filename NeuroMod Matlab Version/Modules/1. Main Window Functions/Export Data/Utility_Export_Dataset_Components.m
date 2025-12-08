@@ -1,4 +1,4 @@
-function Utility_Export_Dataset_Components(Data,Component,Format,executableFolder)
+function Utility_Export_Dataset_Components(Data,Component,Format,executableFolder,ExecuteOutsideGUI)
 
 %________________________________________________________________________________________
 %% Function to export some dataset components as txt,csv or .mat
@@ -17,6 +17,7 @@ function Utility_Export_Dataset_Components(Data,Component,Format,executableFolde
 % 2. Component: Selected dataset component as string, i.e. "Events" or "Spikes"
 % 3. Format: Format to save data in, as string, ".mat" OR ".txt" OR ".csv"
 % 4. executableFolder_ Path to GUI currently executed as char (created on startup of Main Window)
+% 5. ExecuteOutsideGUI: double 1 or 0, if executed outside of gui use 1
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -29,7 +30,14 @@ current_time = char(datetime('now'));
 current_time(current_time==':') = '_';
 current_time(current_time==' ') = '_';
 
-SaveFolder = strcat(executableFolder,"\Analysis Results\");
+if ExecuteOutsideGUI == 0
+    SaveFolder = strcat(executableFolder,"\Analysis Results\");
+else
+    SaveFolder = strcat(Data.Info.Data_Path,"\Matlab\Exported Results\");
+    if ~exist(SaveFolder, 'dir')
+        mkdir(SaveFolder);
+    end
+end
 dashindex = find(Data.Info.Data_Path=='\');
 
 Savefile = strcat(Data.Info.Data_Path(dashindex(end)+1:end),"_",Component,"_",current_time,"_",Format);
@@ -58,30 +66,114 @@ DataToExport = Data.(Component);
 % rest of the code is concerned with writing additional string infos along
 % with data and to write data in chunks to make it faster and to show
 % proper progress of saveing.
+if strcmp(Component,"Info") && strcmp(Format,".xlsx")
+    TextInfos = {};
 
-if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info") && strcmp(Format,".txt")
-    
-    %% Write Info File
-    writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-    
-    writematrix(strcat("***** Recording Infos *****"),Fullsavefile, 'WriteMode', 'append');
-    
-    writestruct(Data.Info, Fullsavefile, FileType="json");
-    
-    writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-    
-    if strcmp(Component,"Info")
-        msgbox(strcat("Succesfully exported Dataseot to: ",Fullsavefile))
-        return;
+    %% Write Info File    
+    TextInfos{end+1} = convertStringsToChars(strcat("***** Recording Infos *****"));
+    %% Write TextInfos to Excel (starting at row 1, column A)
+    writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'A1');
+
+    %% Write Info
+    % Example: Convert structure fields into "field: value" text
+    fn = fieldnames(Data.Info);
+    TextInfos = {};
+    for k = 1:numel(fn)
+        val = Data.Info.(fn{k});
+        if isnumeric(val)
+            if size(val,1)<size(val,2)
+                val = val';
+            end
+
+            valStr = num2str(val);
+        elseif isstring(val) || ischar(val)
+            valStr = char(val);
+        else
+            valStr = '<non-displayable>';
+        end
+
+        if isnumeric(val) && length(val)>1
+            TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' *****'];
+            Currentlength = length(TextInfos);
+            for tt = 1:length(valStr)
+                TextInfos{Currentlength+tt} = valStr(tt,:);
+            end
+        else
+            TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+        end
+
     end
+    
+    % Write to Excel (column E, starting at row 1)
+    writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', 'A3');
 
+end
+
+if ~strcmp(Component,"Info") && strcmp(Format,".xlsx")
+    
+    TextInfos = {};
+    
+    %% Write Info File    
+    TextInfos{end+1} = convertStringsToChars(strcat("***** Recording Infos *****"));
+    
+    %% Write TextInfos to Excel (starting at row 1, column A)
+    writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'A1');
+    
+    TempInfo = [];
+    TempInfo.Info = Data.Info;
+    %% Delete Info files too big to reasonably show
+    if isfield(TempInfo.Info,'Channelorder')
+        fieldsToDelete = {'Channelorder'};
+        % Delete fields
+        TempInfo.Info = rmfield(TempInfo.Info, fieldsToDelete);
+    end
+    if isfield(TempInfo.Info,'EventRelatedActiveChannel')
+        fieldsToDelete = {'EventRelatedActiveChannel'};
+        % Delete fields
+        TempInfo.Info = rmfield(TempInfo.Info, fieldsToDelete);
+    end
+    if isfield(TempInfo.Info,'EventRelatedTime')
+        fieldsToDelete = {'EventRelatedTime'};
+        % Delete fields
+        TempInfo.Info = rmfield(TempInfo.Info, fieldsToDelete);
+    end
+    
+    %% Write Info
+    % Example: Convert structure fields into "field: value" text
+    fn = fieldnames(TempInfo.Info);
+    TextInfos = {};
+    for k = 1:numel(fn)
+        val = TempInfo.Info.(fn{k});
+        if isnumeric(val)
+            valStr = num2str(val);
+        elseif isstring(val) || ischar(val)
+            valStr = char(val);
+        else
+            valStr = '<non-displayable>';
+        end
+        TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+    end
+    
+    % Write to Excel (column E, starting at row 1)
+    writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', 'F1');
+    
     h = waitbar(0, strcat("Exporting ",Component ," Data..."), 'Name','Exporting Data...');
     
+    tableStartRow = length(TextInfos) + 2;  % leave 1 empty row below TextInfos
+
+    %%%% T = table(XData', YData', XTick', 'VariableNames', {'Spike Amplitude (mV)','Depth (um)','Spike Amplitude Labels (mV)'});
+
     if strcmp(Component,"Time") || strcmp(Component,"TimeDownsampled")
-        writematrix(strcat("*****", Component," Vector in Seconds *****"),Fullsavefile, 'WriteMode', 'append');
+        TextInfos = {};
+        TextInfos{end+1,1} = convertStringsToChars(strcat("*****", Component," Vector in Seconds *****"));
+
+        writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+
+        T = table(DataToExport', 'VariableNames', {'Time (s)'});
+
+        writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow+2)]);
+
     elseif strcmp(Component,"Events")
-        writematrix(strcat("*****", Component," Data in Samples *****"),Fullsavefile, 'WriteMode', 'append');
-        writematrix(strcat("***** Event Channel Type: ",Data.Info.EventChannelType," *****"),Fullsavefile, 'WriteMode', 'append');
         EventChannelNames = [];
         for z = 1:length(Data.Info.EventChannelNames)
             if z ~= length(Data.Info.EventChannelNames)
@@ -91,141 +183,92 @@ if ~strcmp(Component,"Info") && strcmp(Format,".csv") || ~strcmp(Component,"Info
             end
         end
 
-        writematrix(strcat("***** Event Channel Names: ",EventChannelNames," *****"),Fullsavefile, 'WriteMode', 'append');
+        TextInfos = {};
+        TextInfos{end+1,1} = convertStringsToChars(strcat("*****", Component," Data in Samples *****"));
+        TextInfos{end+1,1} = convertStringsToChars(strcat("***** Event Channel Type: ",Data.Info.EventChannelType," *****"));
+        TextInfos{end+1,1} = convertStringsToChars(strcat("***** Event Channel Names: ",EventChannelNames," *****"));
+
+        writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+        
+        % Write Data
+        TempEventChannelNames = string(strsplit(EventChannelNames,','));
+        for ii = 1:length(DataToExport)
+            if size(DataToExport{ii},1)<size(DataToExport{ii},2)
+                DataToExport{ii} = DataToExport{ii}';
+            end
+        end
+        % create table holding event infos
+        vars  = DataToExport(:)';                     % column vectors
+        names = cellfun(@convertStringsToChars, ...
+                        TempEventChannelNames(:), ...
+                        'UniformOutput', false);
+        
+        T = table(vars{:}, 'VariableNames', names);
+
+        writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+
 
     elseif strcmp(Component,"Spikes")
-        writematrix(strcat("***** Spike Data Structure *****"),Fullsavefile, 'WriteMode', 'append');
+        TextInfos = {};
+        TextInfos{end+1,1} = convertStringsToChars(strcat("***** Spike Data Structure *****"));
+        TextInfos{end+1,1} = convertStringsToChars(strcat("***** Spike Times in Samples, Spike Depths in um when using spike sorter or as channel ID when using internal spike detection*****"));
+        
+        writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+        
+        tableStartRow = tableStartRow + 3;
+
+        AllfieldNames = fieldnames(DataToExport);
+        
+        Extraontop  = 0;
+        for ii = 1:length(AllfieldNames)
+            currentfieldname = AllfieldNames{ii};
+            % create table holding event infos
+            if size(DataToExport.(currentfieldname),1)==1 && size(DataToExport.(currentfieldname),2)~=1
+                DataToExport.(currentfieldname) = DataToExport.(currentfieldname)';
+            end
+
+            if ~isempty(DataToExport.(currentfieldname))
+                if size(DataToExport.(currentfieldname),2)==1
+                    T = table(DataToExport.(currentfieldname), 'VariableNames', {currentfieldname});
+                    CurrentTableletter = char('A' + (ii-1 + Extraontop));
+                    writetable(T, Fullsavefile, 'Sheet', 1, 'Range', [CurrentTableletter num2str(tableStartRow)]);
+                else
+                    if size(DataToExport.(currentfieldname),2)==2 % Spike Positions and channel locations
+                        data = DataToExport.(currentfieldname);      % N×2 numeric
+                        T = table(data(:,1), data(:,2), ...
+                            'VariableNames', {['X ' currentfieldname], ['Y ' currentfieldname]});
+
+                        %Extraontop = Extraontop
+                        CurrentTableletter = char('A' + (ii-1+Extraontop));
+                        writetable(T, Fullsavefile, 'Sheet', 1, 'Range', [CurrentTableletter num2str(tableStartRow)]);
+                        Extraontop = Extraontop+1;
+                    else
+                        TextInfos = {};
+                        CurrentTableletter = char('A' + (ii-1+Extraontop));
+                        TextInfos{end+1,1} = convertStringsToChars(strcat("***** Content of Spike Data Field ",AllfieldNames{ii}," is three dimensional and can not be sensibly saved here. Please export as .mat file for full compatibility *****"));                            
+                        writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', [CurrentTableletter num2str(tableStartRow)]);
+                        warning(strcat("***** Content of Spike Data Field ",AllfieldNames{ii}," is three dimensional and can not be sensibly saved here. Please export as .mat file for full compatibility *****"));
+                    end
+                end
+            else
+                CurrentTableletter = char('A' + (ii-1));
+                TextInfos = {};
+                TextInfos{end+1,1} = convertStringsToChars(currentfieldname);                
+                TextInfos{end+1,1} = convertStringsToChars(strcat("No values!"));                
+                writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', [CurrentTableletter num2str(tableStartRow)]);
+            end
+            T = [];
+        end
     elseif strcmp(Component,"EventRelatedSpikes")
-        writematrix(strcat("***** Event Related Spike Data Structure *****"),Fullsavefile, 'WriteMode', 'append');
-    elseif strcmp(Component,"EventRelatedData")
-        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-        writematrix(strcat("***** Event Related Data (3D Matrix with dimensions: nchannel x nevents x ntime) *****"),Fullsavefile, 'WriteMode', 'append');
-        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-    elseif strcmp(Component,"PreprocessedEventRelatedData")
-        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-        writematrix(strcat("***** Preprocessed Event Related Data (3D Matrix with dimensions: nchannel x nevents x ntime) *****"),Fullsavefile, 'WriteMode', 'append');
-        writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-    end
-
-    if iscell(DataToExport)
-        numiters = length(DataToExport);
-    elseif isstruct(DataToExport)
-        numiters = length(fieldnames(DataToExport));
-        Spikefieldnames = fieldnames(DataToExport);
-    else
-        if strcmp(Component,"EventRelatedData") || strcmp(Component,"PreprocessedEventRelatedData")
-            numiters = 1; % save 3 d matrix, not multiple components of a structure or cell
-        else
-            numiters = size(DataToExport,1);
-        end
-    end
-
-    for ncomponents = 1:numiters
-        
-        if strcmp(Component,"Time") || strcmp(Component,"TimeDownsampled")
-            numchunks = 1000;
-            cols_per_chunk = floor(length(DataToExport)/numchunks);
-        else
-            if strcmp(Component,"EventRelatedData") || strcmp(Component,"PreprocessedEventRelatedData") % 3d data is saved at once
-                StrucDataToSave = DataToExport;
-            else %% for faster saving and to display progress save in steps.
-                numchunks = 10;
-                if iscell(DataToExport)
-                    cols_per_chunk = floor(length(DataToExport{ncomponents})/numchunks);
-                elseif isstruct(DataToExport)
-                    if ndims(DataToExport.(Spikefieldnames{ncomponents}))<3
-                        StrucDataToSave = DataToExport.(Spikefieldnames{ncomponents})';
-                        cols_per_chunk = floor(length(StrucDataToSave)/numchunks);
-                    else
-                        StrucDataToSave = DataToExport.(Spikefieldnames{ncomponents});
-                    end
-                end
-            end
-        end
-
-        if strcmp(Component,"Events")
-            writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-            writematrix(strcat("*****", Component," Data for Event Channel ",Data.Info.EventChannelNames(ncomponents)," *****"),Fullsavefile, 'WriteMode', 'append');
-            writematrix(strcat(" "),Fullsavefile, 'WriteMode', 'append');
-        elseif strcmp(Component,"Spikes") || strcmp(Component,"EventRelatedSpikes")
-            if strcmp(Spikefieldnames(ncomponents),"BiggestAmplWaveform") || strcmp(Spikefieldnames(ncomponents),"kept_spikes")
-                continue;
-            end
-
-            if ndims(StrucDataToSave)<3
-                writematrix(strcat("***** Content of Spike Data Field ",Spikefieldnames(ncomponents)," *****"),Fullsavefile, 'WriteMode', 'append');
-            elseif ndims(StrucDataToSave)==3
-                writematrix(strcat("***** Content of Spike Data Field ",Spikefieldnames(ncomponents)," is three dimensional and can not be sensibly saved here. Please export as .mat file for full compatibility *****"),Fullsavefile, 'WriteMode', 'append');
-                disp(strcat("***** Content of Spike Data Field ",Spikefieldnames(ncomponents)," is three dimensional and can not be sensibly saved here. Please export as .mat file for full compatibility *****"));
-                continue;
-            end
-        end      
-        
-        if ~strcmp(Component,"EventRelatedData") && ~strcmp(Component,"PreprocessedEventRelatedData") % 3d data is saved at once
-            col_range_Start = 1;
-            col_range_Stop = cols_per_chunk;
-
-            for nchunks = 1:numchunks
-                % Extract the current column chunk
-                % iscell when event data is saved
-                if nchunks ~=cols_per_chunk
-                    if iscell(DataToExport)
-                        chunk = DataToExport{ncomponents}(col_range_Start:col_range_Stop)';
-                    elseif isstruct(DataToExport)
-                        if strcmp(Spikefieldnames{ncomponents},'DataPath')
-                            chunk = StrucDataToSave(col_range_Start:col_range_Stop);
-                        else
-                            %determine if matrix or vector
-                            [nr,nc] = size(StrucDataToSave);
-                            if nr == 1 || nc == 1
-                                chunk = StrucDataToSave(col_range_Start:col_range_Stop)';
-                            elseif nr ~= 1
-                                chunk = StrucDataToSave(:,col_range_Start:col_range_Stop)';
-                            end
-                        end
-                    else
-                        chunk = DataToExport(ncomponents, col_range_Start:col_range_Stop)';
-                    end
-                else % last chunk: all data till ends
-                    if iscell(DataToExport)
-                        chunk = DataToExport{ncomponents}(col_range_Start:end)';
-                    elseif isstruct(DataToExport)
-                        if strcmp(Spikefieldnames{ncomponents},'DataPath')
-                            chunk = StrucDataToSave(col_range_Start:col_range_Stop);
-                        else
-                            if nr == 1 || nc == 1
-                                chunk = StrucDataToSave(col_range_Start:end)';
-                            elseif nr ~= 1
-                                chunk = StrucDataToSave(:,col_range_Start:end)';
-                            end
-                        end
-                    else
-                        chunk = DataToExport(ncomponents, col_range_Start:size(DataToExport,2));
-                    end
-                end
-            
-                col_range_Start = col_range_Stop+1;
-                col_range_Stop = col_range_Stop+cols_per_chunk;
-            
-                % Write the current chunk of columns
-                writematrix(chunk', Fullsavefile,'WriteMode', 'append');
-            
-                % Update the progress bar
-                fraction = nchunks/numchunks;
-                
-                msg = sprintf('Exporting %s Data... (%d%% done)', Component, round(100*fraction));
-                waitbar(fraction, h, msg);
-            end
-
-        else
-            writematrix(DataToExport, Fullsavefile,'WriteMode', 'append');
-        end
+        TextInfos = {};
+        TextInfos{end+1,1} = convertStringsToChars(strcat("***** Event Related Data (3D Matrix with dimensions: nchannel x nevents x ntime) *****"));
+        writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
     end
     
     % Close the file after writing
     %fclose(fileID);
     close(h);
-    msgbox(strcat("Succesfully exported Dataseot to: ",Fullsavefile))
+    msgbox(strcat("Succesfully exported Dataset to: ",Fullsavefile))
 end
 
 if strcmp(Format,".mat")
@@ -244,7 +287,7 @@ if strcmp(Format,".mat")
     end        
     
     delete(dlgbox);
-    msgbox(strcat("Succesfully exported Dataseot to: ",Fullsavefile))
+    msgbox(strcat("Succesfully exported Dataset to: ",Fullsavefile))
 end
 
 

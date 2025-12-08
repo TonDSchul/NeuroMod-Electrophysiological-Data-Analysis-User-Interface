@@ -1,4 +1,4 @@
-function PlottedData = Utility_Get_Plot_Data(PlottedData,Data,Format,executableFolder,TimeRangeLiveWindows,StartTime,AnalysisType)
+function PlottedData = Utility_Get_Plot_Data(PlottedData,Data,Format,executableFolder,TimeRangeLiveWindows,StartTime,AnalysisType,ExecutedOutsideGUI)
 %________________________________________________________________________________________
 %% Function to export plotted/analysed data from each window with the menu option to do so
 % This function gets called in all analysis windows with the option to
@@ -28,6 +28,8 @@ function PlottedData = Utility_Get_Plot_Data(PlottedData,Data,Format,executableF
 % For CSD and ERP anylsis it has to contain the string "Current" or
 % "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
 % Utility_Save_Data_as_MAT functions
+% 8. ExecutedOutsideGUI: double, 1 or 0. Determines savepath (in Matlab folder) and whether
+% messages are shown as msgbox (1 means executed in autorun or outside of gui)
 
 % Output Arguments:
 % 1. PlottedData: structure holding data that was plotted in case something
@@ -49,13 +51,16 @@ current_time = char(datetime('now'));
 current_time(current_time==':') = '_';
 current_time(current_time==' ') = '_';
 
-SaveFolder = strcat(executableFolder,"\Analysis Results\");
+if ExecutedOutsideGUI == 0
+    SaveFolder = strcat(executableFolder,"\Analysis Results\");
+else
+    SaveFolder = strcat(Data.Info.Data_Path,"\Matlab\Exported Results\");
+    if ~exist(SaveFolder, 'dir')
+        mkdir(SaveFolder);
+    end
+end
+
 dashindex = find(Data.Info.Data_Path=='\');
-
-% if strcmp(Format,'.csv')
-%     Format = '.xlsx';
-% end
-
 Savefile = strcat(Data.Info.Data_Path(dashindex(end)+1:end),"_",AnalysisType,"_",current_time,"_",Format);
 
 if isfolder(SaveFolder)
@@ -87,5 +92,9 @@ elseif strcmp(Format,'.xlsx')
 end
 
 if Error == 0
-    msgbox(strcat("Data was succesfully exported to: ",Fullsavefile))
+    if ExecutedOutsideGUI == 0
+        msgbox(strcat("Data was succesfully exported to: ",Fullsavefile))
+    else
+        disp(strcat("Data was succesfully exported to: ",Fullsavefile))
+    end
 end

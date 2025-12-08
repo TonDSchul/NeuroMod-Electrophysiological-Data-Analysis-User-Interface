@@ -62,6 +62,9 @@ app.UIAxes_2.Color = app.PlotAppearance.MainWindow.Data.Color.TimeBackground;
 app.UIAxes.FontSize = app.PlotAppearance.MainWindow.Data.MainFontSize;
 app.UIAxes_2.FontSize = app.PlotAppearance.MainWindow.Data.TimeFontSize;
 
+app.UIAxes.XLabel.Color = [0 0 0];   % x-label color
+app.UIAxes.XColor       = [0 0 0];   % x-tick label + axis line color
+
 if ReplaceDataType
     app.DropDown.Value = 'Raw Data';
 end

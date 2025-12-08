@@ -37,11 +37,12 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 %______________________
 %--- General ---
 %______________________
-% 'Export_Data' Note: Insert below after every anlysis module you want to export data from. This exports all analysis results of that module!
+% 'Export_Analysis_Results' NOTE: Only to export analysis results! Insert below after every anlysis module you want to export data from. This exports all analysis results of that module!
+% 'Export_Dataset_Components' NOTE: If you want to export event related data or event related spikes, you have to do it after one of the analysis options of event related data (for example Event_Analysis_ERP) for which you specify the event channel and trial numbers. 
 
 %% Note: Those header infos HAVE to be present! Othwerwise Aurorun Managher wont work properly
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Continous_Unit_Analysis","Export_Data"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Extract_Events","Event_Analysis_ERP","Event_Spike_Analysis","Export_Dataset_Components"];
 
 % Whether true relations between active channel are display in analysis
 % plots. This becomes relevant when you have inactive channel islands
@@ -128,14 +129,14 @@ AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 
 % AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter"]
 % NOTE: 
 
-AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter"]; % Preprocessing method to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "ASR" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
+AutorunConfig.PreprocessCont.PreproMethod{1} = ["Filter","Downsample"]; % Preprocessing method to apply. Either "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "ASR" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
 AutorunConfig.PreprocessCont.PreproMethod{2} = ["Filter","Downsample"]; % "Filter" OR "Downsample" OR "Normalize" OR "GrandAverage" OR "ChannelDeletion" OR "CutStart" OR "CutEnd" OR "ASR" OR "StimArtefactRejection" OR multiple Inputs like ["Filter","Downsample"]
 % Only if "Filter" is selected as one of the PreproMethods
-AutorunConfig.PreprocessCont.FilterMethod{1} = "High-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
+AutorunConfig.PreprocessCont.FilterMethod{1} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
 AutorunConfig.PreprocessCont.FilterMethod{2} = "Low-Pass"; % "High-Pass" OR "Low-Pass" OR "Narrowband" OR "Band-Stop" OR "Median Filter"
 AutorunConfig.PreprocessCont.FilterType{1} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
 AutorunConfig.PreprocessCont.FilterType{2} = "Butterworth IR"; % "Butterworth IR" OR "FIR-1" OR "Firls" 
-AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "300"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
+AutorunConfig.PreprocessCont.CuttoffFrequency{1} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
 AutorunConfig.PreprocessCont.CuttoffFrequency{2} = "220"; % Cut off frequency for filters. Only requied when filter selected in PreproMethod field, Input as char in Hz
 AutorunConfig.PreprocessCont.FilterDirection{1} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
 AutorunConfig.PreprocessCont.FilterDirection{2} = "Zero-phase forward and reverse"; % "Zero-phase forward and reverse" OR "Forward" OR "Reverse" OR "Zero-phase reverse and forward"
@@ -279,14 +280,21 @@ AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot = 'All'; % 'All' will create 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 6. Export Data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 6.1 Export Analysis Results
+%______________________________________________________________________________________________________
+
 % This exports ALL relevant analysis results for a given analysis. When you
 % conduct continuous spike analysis and select 3 different analysis methods
 % (like spike map, waveforms and average waveforms across depth), all
 % analysis results for all of these anylsis including spike rates are
 % exported. Therefore, this has to be inserted in the pipeline after every
 % analysis module you want to get analysis results from. 
-
 AutorunConfig.Export.Format = '.mat'; % .txt OR .xlsx OR .mat
+
+%% 6.1 Export Dataset Components
+%______________________________________________________________________________________________________
+AutorunConfig.Export.DatasetFormat = '.mat'; % .txt OR .csv OR .mat
+AutorunConfig.Export.DatasetComponent = ["Info","Events","EventRelatedData","Spikes","EventRelatedSpikes"]; % "Info" OR "Events" OR "EventRelatedData" OR "Spikes" OR "EventRelatedSpikes"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5. Spike Module

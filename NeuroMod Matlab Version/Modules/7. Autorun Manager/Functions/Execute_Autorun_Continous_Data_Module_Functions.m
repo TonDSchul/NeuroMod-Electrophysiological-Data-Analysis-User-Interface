@@ -175,7 +175,7 @@ if strcmp(FunctionOrder,'Static_Power_Spectrum')
             Execute_Autorun_Save_Figure(StaticPowerSpectrumfig, AutorunConfig.SaveFiguresFormat, AutorunConfig.DeleteFigureAfterSaving, "Static Power Spectrum", DataPath, AutorunConfig.StaticPowerSpectrum.PlotType(i), AutorunConfig.ExtractRawRecording.FileType, [], AutorunConfig.ExtractRawRecording.RecordingsSystem, LoadedData, "StaticPowerSpectrum")
         end
         
-        %% Export Data id required
+        %% Export Data if required
         if AutorunConfig.ExportDataThisBlock == 1
             Execute_Autorun_Export_Data(AutorunConfig,"Continuous Static Spectrum",Data,executableFolder,AutorunConfig.StaticPowerSpectrum.PlotType(i),CurrentPlotData,ExportedAlready);
             ExportedAlready = 1;
