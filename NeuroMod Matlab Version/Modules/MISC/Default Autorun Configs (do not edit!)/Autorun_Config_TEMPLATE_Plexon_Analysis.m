@@ -34,6 +34,12 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_Plexon_Analysis(DisplayOrder)
 % 'Save_for_SpikeSorting'
 % 'Open_in_Phy'
 
+%______________________
+%--- General ---
+%______________________
+% 'Export_Analysis_Results' NOTE: Only to export analysis results! Insert below after every anlysis module you want to export data from. This exports all analysis results of that module!
+% 'Export_Dataset_Components' NOTE: If you want to export event related data or event related spikes, you have to do it after one of the analysis options of event related data (for example Event_Analysis_ERP) for which you specify the event channel and trial numbers. 
+
 % What to execute
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD"];
 
@@ -269,6 +275,27 @@ AutorunConfig.AnalyseEventSpikesModule.TimeSpikeTriggeredAverage = '-0.005,0.1';
 
 AutorunConfig.AnalyseEventSpikesModule.ClusterPlotOptions = "Non"; %'All' OR 'Non' OR '1' (or whatever clusternumber you want. Starts with 1!)
 AutorunConfig.AnalyseEventSpikesModule.UnitsToPlot = 'All'; % 'All' will create a folder named units with one plot for each unit, for the plots where it matters. Otherwise enter units manualy or leave empty for no unit specific plots. For multiple units as string array i.e. "1,2,3". For single unit single number as char!
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 6. Export Data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 6.1 Export Analysis Results
+%______________________________________________________________________________________________________
+
+% This exports ALL relevant analysis results for a given analysis. When you
+% conduct continuous spike analysis and select 3 different analysis methods
+% (like spike map, waveforms and average waveforms across depth), all
+% analysis results for all of these anylsis including spike rates are
+% exported. Therefore, this has to be inserted in the pipeline after every
+% analysis module you want to get analysis results from. 
+AutorunConfig.Export.Format = '.mat'; % .txt OR .xlsx OR .mat
+
+%% 6.2 Export Dataset Components
+%______________________________________________________________________________________________________
+AutorunConfig.Export.DatasetFormat = '.txt'; % .txt OR .xlsx OR .mat
+% Event related data, raw data, preprocessed data, time and event related spikes
+% can only be exported as .mat files!
+AutorunConfig.Export.DatasetComponent = ["Info","Events","EventRelatedData","Spikes","EventRelatedSpikes"]; % "Raw" OR "Preprocessed" OR "Time" OR "TimeDownsampled" OR "Info" OR "Events" OR "EventRelatedData" OR "Spikes" OR "EventRelatedSpikes"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5. Spike Module

@@ -126,6 +126,12 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
         end
     else
        SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
+
+       if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+           [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
+
+           SpikeData.Position = FakeDepths(SpikeData.Position);
+       end
     end
 end
 

@@ -71,7 +71,7 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
         end
 
         %______________________________________________________________________________________________________
-        %% 6. Export Data Module
+        %% 6.1. Export Analysis Data Module
         %______________________________________________________________________________________________________
         AutorunConfig.ExportDataThisBlock = 0;
         if length(FunctionOrder) >= nCurrentModuleIteration+1
@@ -119,12 +119,17 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
                 [Data,CurrentPlotData] = Execute_Autorun_Extract_Events_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,Data.Info.Data_Path,LoadedData,executableFolder,CurrentPlotData);
             end
             %______________________________________________________________________________________________________
-            %% 5. Spike Module Functions
+            %% 5. Spike Module Module
             %______________________________________________________________________________________________________
             if strcmp(FunctionOrder(nCurrentModuleIteration),'Internal_Spike_Detection') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_from_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_for_SpikeSorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Create_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Internal_Spike_Sorting') || strcmp(FunctionOrder(nCurrentModuleIteration),'Open_in_Phy')
                 [Data,CurrentPlotData] = Execute_Autorun_Spike_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,executableFolder,CurrentPlotData);
             end
             
+            %% 6.2. Expot Dataset Components Module
+            %______________________________________________________________________________________________________
+            if strcmp(FunctionOrder(nCurrentModuleIteration),'Export_Dataset_Components')
+                Execute_Autorun_Export_DataSet_Components(AutorunConfig,AutorunConfig.Export.DatasetComponent,Data,executableFolder)
+            end
             
         end
     end

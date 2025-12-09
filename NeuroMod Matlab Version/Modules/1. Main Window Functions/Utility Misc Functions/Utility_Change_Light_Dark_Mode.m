@@ -1315,7 +1315,7 @@ if strcmp(Window,"ContSpikeAnalysis")
     app.SpikeRateNumBinsEditField.BackgroundColor   = ComponentsInWindowColor;
     app.TimeWindowSpiketriggredLFPEditField.BackgroundColor   = ComponentsInWindowColor;
     app.WaveformSelectionforPlottingEditField.BackgroundColor   = ComponentsInWindowColor;
-
+    
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.InternalEventSpikePlot.MainPlotBackgroundColor;
     app.UIAxes.XColor = 'k';  
     app.UIAxes.XTickLabelMode = 'auto';  
