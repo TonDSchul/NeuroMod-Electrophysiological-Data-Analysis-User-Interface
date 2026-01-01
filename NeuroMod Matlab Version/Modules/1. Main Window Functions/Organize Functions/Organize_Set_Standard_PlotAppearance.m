@@ -32,6 +32,11 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     PlotAppearance.MainWindow.Data.MainXLabel = "";
     PlotAppearance.MainWindow.Data.MainYLabel = "";
     PlotAppearance.MainWindow.Data.MainFontSize = 12;
+
+    PlotAppearance.MainWindow.Data.ShowTriggerNumber = 1;
+    PlotAppearance.MainWindow.Data.TriggerNrTextFontSize = 12;
+    PlotAppearance.MainWindow.Data.TriggerNrTextColor = [1,0,0];
+
     % Colors
     PlotAppearance.MainWindow.Data.Color.MainSpikes = [1,0,0]; % red
     PlotAppearance.MainWindow.Data.Color.MainEvents = [0,0,0]; % black
@@ -100,7 +105,7 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     % Multiple ERPs (for each channel)
     % Lables and Fontsize
     PlotAppearance.ERPWindow.MultipleERP.XLabel = "Time [s]";
-    PlotAppearance.ERPWindow.MultipleERP.YLabel = "All active channel";
+    PlotAppearance.ERPWindow.MultipleERP.YLabel = "All Active Channel";
     PlotAppearance.ERPWindow.MultipleERP.FontSize = 11;
     
     % LineWidth
@@ -155,6 +160,18 @@ if strcmp(Type,"LiveCSDPlot") || strcmp(Type,"All")
     PlotAppearance.LiveCSDWindow.FontSize = 11;
 
     PlotAppearance.LiveCSDWindow.BackgroundColor = StandardBackgroundColor; % grey
+end
+
+%% CSD Spectrogram Window
+if strcmp(Type,"LiveSpectrogramPlot") || strcmp(Type,"All") 
+    % Lables and Fontsize
+    PlotAppearance.LiveSpectrogramWindow.XLabel = "Time [s]";
+    PlotAppearance.LiveSpectrogramWindow.YLabel = "Frequency [Hz]";
+    PlotAppearance.LiveSpectrogramWindow.CLabel = "Power/Frequency [dB/Hz]";
+    PlotAppearance.LiveSpectrogramWindow.Title = "Live Spectrogram Channel ";
+    PlotAppearance.LiveSpectrogramWindow.FontSize = 11;
+    
+    PlotAppearance.LiveSpectrogramWindow.BackgroundColor = StandardBackgroundColor; % grey
 end
 
 %% Power Estimate Live Window

@@ -1,4 +1,4 @@
-function Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime)
+function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues)
 
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
@@ -34,6 +34,7 @@ function Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,Plo
 % spikes should be plotted when the user selected them 
 % 20. frameTime: double, Time in seconds of each frame based on selected
 % frame rate
+% 21. CurrentClim: double vector, lower and upper clim of max values so far
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -56,12 +57,21 @@ else
     Depth = 0:ChannelSpacing:(size(Data,1)-1)*ChannelSpacing;
     YMinLimitsMultipeERP = Depth(1);
     YMaxLimitsMultipeERP = Depth(end);
-    ylim(UIAxis, [Depth(1),Depth(end)]);
+    if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5')
+        
+        ylim(UIAxis, [1,length(unique(Info.ProbeInfo.ycoords))]);
+    else
+        ylim(UIAxis, [Depth(1),Depth(end)]);
+    end
 end
 
 %% Predefine x and y lims and title before plotting to increase performance!
 if Time(1) ~= Time(end)
-    xlim(UIAxis, [Time(1),Time(end)]);
+    if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5') && ~strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+        xlim(UIAxis, [1,length(unique(Info.ProbeInfo.xcoords))]);
+    else
+        xlim(UIAxis, [Time(1),Time(end)]);
+    end
 end
 
 if size(Data,1)>1
@@ -76,17 +86,24 @@ end
 if ~strcmp(UIAxis.XLabel.String,PlotAppearance.MainWindow.Data.MainXLabel)
     xlabel(UIAxis,PlotAppearance.MainWindow.Data.MainXLabel)
 end
-
-if Preprocessed == 0
-    if ~strcmp(UIAxis.Title.String,PlotAppearance.MainWindow.Data.Title.Raw)
-        title(UIAxis, PlotAppearance.MainWindow.Data.Title.Raw);
+% Manage Title
+if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5') && strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+    if Preprocessed == 0
+        title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Raw," at Time: ",num2str(Time(1)),"s"));
+    elseif Preprocessed == 1 
+        title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Preprocessed," at Time: ",num2str(Time(1)),"s"));
     end
-elseif Preprocessed == 1 
-    if ~strcmp(UIAxis.Title.String,PlotAppearance.MainWindow.Data.Title.Preprocessed)
-        title(UIAxis, PlotAppearance.MainWindow.Data.Title.Preprocessed);
+else
+    if Preprocessed == 0
+        if ~strcmp(UIAxis.Title.String,PlotAppearance.MainWindow.Data.Title.Raw)
+            title(UIAxis, PlotAppearance.MainWindow.Data.Title.Raw);
+        end
+    elseif Preprocessed == 1 
+        if ~strcmp(UIAxis.Title.String,PlotAppearance.MainWindow.Data.Title.Preprocessed)
+            title(UIAxis, PlotAppearance.MainWindow.Data.Title.Preprocessed);
+        end
     end
 end
-
 %% Select the current Colormap (tempcolorMapset set in Main window of GUI when colormap setting changed)
 
 EventIndicies = 0;
@@ -155,7 +172,6 @@ if strcmp(Type,"Static")
             UIAxis.XLabel.Color = [0 0 0];
             UIAxis.YLabel.Color = [0 0 0];       
             UIAxis.YColor = 'k';  
-            %UIAxes.XTickLabelMode = 'auto';
             UIAxis.XColor = 'k';  
             UIAxis.Title.Color = 'k';  
         else
@@ -185,11 +201,42 @@ if strcmp(Type,"Static")
     end
 
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-        
-        if isempty(ImageScChannel_handles)
-            imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
+
+        if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5')
+            
+            if isempty(ImageScChannel_handles)
+                surf(UIAxis, Data, ...
+                    'EdgeColor','none', ...
+                    'Tag','ImageScChannel');
+                view(UIAxis, 2);      % top-down view (optional, like contourf)
+            else
+                set(ImageScChannel_handles(1), ...
+                    'ZData', Data, ...
+                    'Tag','ImageScChannel');
+            end
+            shading(UIAxis, 'interp')
+            
+            CurrentClim = [min(Data,[],'all') max(Data,[],'all')];
+            
+            if isempty(ClimMaxValues)
+                ClimMaxValues = CurrentClim;
+            end
+
+            if CurrentClim(1)<ClimMaxValues(1)
+                ClimMaxValues(1) = CurrentClim(1);
+            end
+            if CurrentClim(2)>ClimMaxValues(2)
+                ClimMaxValues(2) = CurrentClim(2);
+            end      
+
+            clim(UIAxis,ClimMaxValues);
+
         else
-            set(ImageScChannel_handles(1), 'XData', Time, 'YData', Depth,'CData', Data,'Tag','ImageScChannel');
+            if isempty(ImageScChannel_handles)
+                imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
+            else
+                set(ImageScChannel_handles(1), 'XData', Time, 'YData', Depth,'CData', Data,'Tag','ImageScChannel');
+            end
         end
     end
 
@@ -234,39 +281,47 @@ if strcmp(Type,"Static")
         end
 
         %% add event labels as text
-        % Offset to the right of the line (adjust as needed)
-        % yPos = YMaxLimitsMultipeERP-0.36;  % place at top
-        % 
-        % % First remove old event labels if needed
-        % EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
-        % if length(EventIndexNr)<length(EventLabel)
-        %     delete(EventLabel(length(EventIndexNr)+1:end));
-        %     EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
-        % end
-        % 
-        % % Add a text label for each event
-        % for i = 1:length(EventIndexNr)
-        % 
-        %     pos = [eventTimes, yPos];  % new position
-        % 
-        %     if i <= length(EventLabel) && isgraphics(EventLabel(i))
-        %         % Update existing text
-        %         set(EventLabel(i), 'Position', [pos(i) 0], ...
-        %             'String', strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
-        %             'FontSize', 18, ...
-        %             'Tag', 'EventLabel');
-        %     else
-        %         % Create new text object
-        %         EventLabel(i) = text(UIAxis, pos(1), pos(2), ...
-        %             strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
-        %             'Rotation', 90, ...                   % vertical text
-        %             'HorizontalAlignment', 'left', ...    % anchor left of text
-        %             'VerticalAlignment', 'top', ...       % align top with yPos
-        %             'Color', 'r', ...
-        %             'FontSize', 18, ...
-        %             'Tag', 'EventLabel');
-        %     end
-        % end
+        if PlotAppearance.MainWindow.Data.ShowTriggerNumber == 1
+            % Place in the middle of the main plot
+            if isscalar(Channel_Selection)
+                yPos = (abs(YMaxLimitsMultipeERP)-abs(YMinLimitsMultipeERP))/1.1;
+            else
+                yPos = (abs(YMaxLimitsMultipeERP)-abs(YMinLimitsMultipeERP))/2;
+            end
+            
+            % First remove old event labels if needed
+            EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
+            
+            if length(EventIndexNr)<length(EventLabel)
+                delete(EventLabel(length(EventIndexNr)+1:end));
+                EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
+            end
+            
+            % Add a text label for each event
+            for i = 1:length(EventIndexNr)
+                
+                pos = [eventTimes(i), yPos];  % new position
+    
+                if i <= length(EventLabel) && isgraphics(EventLabel(i))
+                    % Update existing text
+                    set(EventLabel(i), 'Position', [pos(1), pos(2)], ...
+                        'String', strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
+                        'Color', PlotAppearance.MainWindow.Data.TriggerNrTextColor, ...
+                        'FontSize', PlotAppearance.MainWindow.Data.TriggerNrTextFontSize, ...
+                        'Tag', 'EventLabel');
+                else
+                    % Create new text object
+                    text(UIAxis, pos(1), pos(2), ...
+                        strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
+                        'Rotation', 90, ...                   % vertical text
+                        'HorizontalAlignment', 'left', ...    % anchor left of text
+                        'VerticalAlignment', 'top', ...       % align top with yPos
+                        'Color', PlotAppearance.MainWindow.Data.TriggerNrTextColor, ...
+                        'FontSize', PlotAppearance.MainWindow.Data.TriggerNrTextFontSize, ...
+                        'Tag', 'EventLabel');
+                end
+            end
+        end
     end 
 
     %% Plot Toolbox internally computed Spike Data
@@ -500,11 +555,41 @@ if strcmp(Type,"Movie")
     end
 
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-        
-        if isempty(ImageScChannel_handles)
-            imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
+
+        if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5')
+            
+            if isempty(ImageScChannel_handles)
+                surf(UIAxis, Data, ...
+                    'EdgeColor','none', ...
+                    'Tag','ImageScChannel');
+                view(UIAxis, 2);      % top-down view (optional, like contourf)
+            else
+                set(ImageScChannel_handles(1), ...
+                    'ZData', Data, ...
+                    'Tag','ImageScChannel');
+            end
+            shading(UIAxis, 'interp')
+            
+            CurrentClim = [min(Data,[],'all') max(Data,[],'all')];
+            
+            if isempty(ClimMaxValues)
+                ClimMaxValues = CurrentClim;
+            end
+
+            if CurrentClim(1)<ClimMaxValues(1)
+                ClimMaxValues(1) = CurrentClim(1);
+            end
+            if CurrentClim(2)>ClimMaxValues(2)
+                ClimMaxValues(2) = CurrentClim(2);
+            end      
+
+            clim(UIAxis,ClimMaxValues);
         else
-            set(ImageScChannel_handles(1), 'XData', Time, 'YData', Depth,'CData', Data,'Tag','ImageScChannel');
+            if isempty(ImageScChannel_handles)
+                imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')
+            else
+                set(ImageScChannel_handles(1), 'XData', Time, 'YData', Depth,'CData', Data,'Tag','ImageScChannel');
+            end
         end
     end
 
@@ -545,6 +630,49 @@ if strcmp(Type,"Movie")
             % Remove excess handles if there are more handles than events
             elseif numEvents < numHandles
                 delete(Eventline_handles(numEvents+1:end));
+            end
+        end
+
+        %% add event labels as text
+        if PlotAppearance.MainWindow.Data.ShowTriggerNumber == 1
+            % Place in the middle of the main plot
+            if isscalar(Channel_Selection)
+                yPos = (abs(YMaxLimitsMultipeERP)-abs(YMinLimitsMultipeERP))/1.1;
+            else
+                yPos = (abs(YMaxLimitsMultipeERP)-abs(YMinLimitsMultipeERP))/2;
+            end
+            
+            % First remove old event labels if needed
+            EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
+            
+            if length(EventIndexNr)<length(EventLabel)
+                delete(EventLabel(length(EventIndexNr)+1:end));
+                EventLabel = findobj(UIAxis, 'Tag', 'EventLabel');
+            end
+            
+            % Add a text label for each event
+            for i = 1:length(EventIndexNr)
+                
+                pos = [eventTimes(i), yPos];  % new position
+    
+                if i <= length(EventLabel) && isgraphics(EventLabel(i))
+                    % Update existing text
+                    set(EventLabel(i), 'Position', [pos(1), pos(2)], ...
+                        'String', strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
+                        'Color', PlotAppearance.MainWindow.Data.TriggerNrTextColor, ...
+                        'FontSize', PlotAppearance.MainWindow.Data.TriggerNrTextFontSize, ...
+                        'Tag', 'EventLabel');
+                else
+                    % Create new text object
+                    text(UIAxis, pos(1), pos(2), ...
+                        strcat("Trigger Nr ", num2str(EventIndexNr(i))), ...
+                        'Rotation', 90, ...                   % vertical text
+                        'HorizontalAlignment', 'left', ...    % anchor left of text
+                        'VerticalAlignment', 'top', ...       % align top with yPos
+                        'Color', PlotAppearance.MainWindow.Data.TriggerNrTextColor, ...
+                        'FontSize', PlotAppearance.MainWindow.Data.TriggerNrTextFontSize, ...
+                        'Tag', 'EventLabel');
+                end
             end
         end
         
@@ -725,5 +853,5 @@ end
 
 
 if size(Data,1) == 1
-    ylim(UIAxis,[-PlotLineSpacing PlotLineSpacing])
+    ylim(UIAxis,[min(Data) max(Data)])
 end

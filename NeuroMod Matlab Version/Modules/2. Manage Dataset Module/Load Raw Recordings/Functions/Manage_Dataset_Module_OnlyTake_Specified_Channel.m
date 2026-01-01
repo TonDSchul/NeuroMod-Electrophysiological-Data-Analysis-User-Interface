@@ -1,6 +1,5 @@
 function [Data] = Manage_Dataset_Module_OnlyTake_Specified_Channel(Data,ChannelSelectionField)
 
-
 if isempty(ChannelSelectionField)
     ChannelToExtract = 1:size(Data.Raw,1);
 else
@@ -23,13 +22,15 @@ else
 end
 
 if length(ChannelToExtract) > size(Data.Raw,1)
-    msgbox("Specified number of channel to extract is bigger than the amount of channels found in recording. Please adjust the number of channel to extract accordingly.");
-    error("Specified number of channel to extract is bigger than the amount of channels found in recording. Please adjust the number of channel to extract accordingly.");
+    ChannelMissmatch = strcat("Nr Channel found in recording: ",num2str(length(ChannelToExtract)),"; Nr channel found in dataset: ",num2str(size(Data.Raw,1)));
+    msgbox(strcat(ChannelMissmatch," Specified number of channel to extract is bigger than the amount of channels found in recording. Please adjust the number of channel to extract accordingly."));
+    error(strcat(ChannelMissmatch," Specified number of channel to extract is bigger than the amount of channels found in recording. Please adjust the number of channel to extract accordingly."));
 end
 
 if length(ChannelToExtract) > length(Data.Info.ProbeInfo.ActiveChannel)
-    msgbox("Specified number of channel to extract is bigger than the amount of active channel in probe design. Please adjust the number of channel to extract accordingly.");
-    error("Specified number of channel to extract is bigger than the amount of active channel in probe design. Please adjust the number of channel to extract accordingly.");
+    ChannelMissmatch = strcat("Nr Channel found in recording: ",num2str(length(ChannelToExtract)),"; Nr channel defined as active: ",num2str(length(Data.Info.ProbeInfo.ActiveChannel)));
+    msgbox(strcat(ChannelMissmatch," Specified number of channel to extract is bigger than the amount of active channel in probe design. Please adjust the number of channel to extract accordingly."));
+    error(strcat(ChannelMissmatch," Specified number of channel to extract is bigger than the amount of active channel in probe design. Please adjust the number of channel to extract accordingly."));
 end
 
 if sum(ChannelToExtract > size(Data.Raw,1))

@@ -272,7 +272,7 @@ end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% If spike analyis (Continous and ev
 
 TextInfosStart = {};
 %% -------------------- Unit Analysis -------------------- 
-if contains(Analysis,"Plot")
+if contains(Analysis,"Plot") && ~contains(Analysis,"Spectrogram")
     TextInfosStart{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
     TextInfosStart{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
     TextInfosStart{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
@@ -414,6 +414,86 @@ if contains(Analysis,"Plot")
         end
 
     end
+    
+end
+
+%% Live Spectrogram window
+if contains(Analysis,"Plot") && contains(Analysis,"Spectrogram")
+    XData  = PlottedData.LiveSpectroXData;
+    YData  = PlottedData.LiveSpectroYData;
+    XTick  = PlottedData.LiveSpectroXTicks;
+    CData = PlottedData.LiveSpectroCData;  
+    %% Write Info
+    % Example: Convert structure fields into "field: value" text
+    fn = fieldnames(PlottedData.Info);
+    TextInfos = {};
+    for k = 1:numel(fn)
+        val = PlottedData.Info.(fn{k});
+        if isnumeric(val)
+            valStr = num2str(val);
+        elseif isstring(val) || ischar(val)
+            valStr = char(val);
+        else
+            valStr = '<non-displayable>';
+        end
+        TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+    end
+    
+    TextInfos{end+1} = '';
+    TextInfos{end+1} = '****************************************************************************************************';
+    TextInfos{end+1} = '';
+    for i = 1:length(TextInfos)
+        fprintf(fid, '%s\n', TextInfos{i});
+    end
+
+    %% Find max length to pad shorter columns with NaN
+    maxLen = max([length(XData), length(YData), length(XTick)]);
+    if length(XData) < maxLen
+        XData(end+1:maxLen) = NaN;
+    end
+    if length(YData) < maxLen
+        YData(end+1:maxLen) = NaN;
+    end
+    if length(XTick) < maxLen
+        if isempty(XTick)
+            XTick(1:maxLen) = '-';
+        else
+            XTick(end+1:maxLen) = {''};
+        end
+    end
+
+    %% --- First write X/Y/XTick table (as before) ---
+    maxLen = max([length(XData), length(YData), length(XTick)]);
+    if length(XData) < maxLen, XData(end+1:maxLen) = NaN; end
+    if length(YData) < maxLen, YData(end+1:maxLen) = NaN; end
+    if length(XTick) < maxLen, XTick(end+1:maxLen) = {''}; end
+    if size(XTick,1)>size(XTick,2)
+        XTick = XTick';
+    end
+    
+    T = Utility_Save_xlsx_Set_VariableNames(PlottedData,Analysis,XData,YData,XTick);
+
+    %% --- Combine with existing table if CData exists ---
+    if ~isempty(CData)
+     
+        fprintf(fid, '\n***** C_Data (Frequency (Hz) x Time (s)) (each new line is a new row, column entries for a row are comma separated!) *****\n');
+
+        % Write each row of the matrix
+        for i = 1:size(CData,1)
+            fprintf(fid, '%g', CData(i,1));             % write first column
+            for j = 2:size(CData,2)
+                fprintf(fid, ',%g', CData(i,j));       % write remaining columns with comma
+            end
+            fprintf(fid, '\n');                         % end of row
+        end
+    end
+
+    % Write table to Excel
+    fprintf(fid, '\n');
+    fprintf(fid, '****************************************************************************************************');
+    fprintf(fid, '\n');
+    fprintf(fid, strcat(T.Properties.VariableNames{1},',',T.Properties.VariableNames{2},',',T.Properties.VariableNames{3},'\n'));
+    writetable(T, Fullsavefile, 'Delimiter', ',', 'WriteMode', 'append');
     
 end
 

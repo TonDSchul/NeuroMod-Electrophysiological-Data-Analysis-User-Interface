@@ -1,4 +1,4 @@
-function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel,PlotAppearance,EventDataToExtractFrom,PreservePlotChannelLocations)
+function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,DataSource,BandPower,FrequencyRangeHzEditField,Figure,Figure_2,TextArea,WhattoPlot,TwoORThreeD,CurrentPlotData,SelectedEvents,ActiveChannel,PlotAppearance,EventDataToExtractFrom,PreservePlotChannelLocations,BaselineNormalize,NormalizationWindow)
 %________________________________________________________________________________________
 
 %% Function to compute static power spectrum over probe depth for event related data
@@ -40,6 +40,9 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Ove
 % data is extracted (to set time which depends on downsampling, which depends on whether the user selected raw or preprocessed data)
 % 14.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
 % original spacing between active channel (in case of inactiove islands between active channel)
+% 15. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 16. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. PowerSpecResults: always empty here
@@ -53,19 +56,25 @@ function [PowerSpecResults,BandPower,CurrentPlotData] = Event_Power_Spectrum_Ove
 
 %________________________________________________________________________________________
 
+if BaselineNormalize
+    if strcmp(DataSource,"Raw Event Related Data")
+        EventRelatedData = Event_Module_Baseline_Normalize(Data,Data.EventRelatedData,NormalizationWindow,Data.Info.EventRelatedTime,"StaticSpec");
+    else
+        EventRelatedData = Event_Module_Baseline_Normalize(Data,Data.PreprocessedEventRelatedData,NormalizationWindow,Data.Info.EventRelatedTime,"StaticSpec");
+    end
+else
+    if strcmp(DataSource,"Raw Event Related Data")
+        EventRelatedData = Data.EventRelatedData;
+    else
+        EventRelatedData = Data.PreprocessedEventRelatedData;
+    end
+end
+
 %% First calculate ERP over events when multiple events selected
 if length(SelectedEvents) > 1 %--> mean over events if multiple selected
-    if strcmp(DataSource,"Raw Event Related Data")
-        DataToAnalyse = squeeze(mean(Data.EventRelatedData(:,SelectedEvents,:),2)); 
-    else
-        DataToAnalyse = squeeze(mean(Data.PreprocessedEventRelatedData(:,SelectedEvents,:),2));
-    end
+    DataToAnalyse = squeeze(mean(EventRelatedData(:,SelectedEvents,:),2));
 else % If same event --> no mean
-    if strcmp(DataSource,"Raw Event Related Data")
-        DataToAnalyse = squeeze(Data.EventRelatedData(:,SelectedEvents(1),:));
-    else
-        DataToAnalyse = squeeze(Data.PreprocessedEventRelatedData(:,SelectedEvents(1),:));
-    end
+    DataToAnalyse = squeeze(EventRelatedData(:,SelectedEvents(1),:));
 end
 
 %% Compute Spectrum over Depth 

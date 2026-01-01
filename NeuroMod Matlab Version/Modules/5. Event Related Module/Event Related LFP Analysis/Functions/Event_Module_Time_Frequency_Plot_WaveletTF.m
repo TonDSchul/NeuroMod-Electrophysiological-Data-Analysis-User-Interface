@@ -1,4 +1,4 @@
-function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection,TwoORThreeD,CurrentPlotData,PlotAppearance)
+function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Data,Figure,time,costumfrex,tfcycle,frexcycle,OneTrial,Type,TFType,ChannelSelection,EventSelection,TwoORThreeD,CurrentPlotData,PlotAppearance,BaselineNormalize,NormalizationWindow)
 
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using complex moorlet wavelets with varying wavelet widths 
@@ -50,6 +50,12 @@ elseif strcmp(TFType,"ITPC")
     elseif strcmp(Type,"PhaseLocked")
         Datatouse = real(10*log10(squeeze(tfcycle(1,:,:,2))-squeeze(tfcycle(2,:,:,2))));
     end
+end
+
+if BaselineNormalize
+    Datatouse = Datatouse';
+    Datatouse = Event_Module_Baseline_Normalize(Data,Datatouse,NormalizationWindow,Data.Info.EventRelatedTime,"TF");
+    Datatouse = Datatouse';
 end
 
 climsTF = [];

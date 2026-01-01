@@ -290,14 +290,14 @@ if __name__ == "__main__":
         try:
             # Access arguments
             file_path = sys.argv[1]
-            Sorter = sys.argv[3]  # First argument
-            MultipleRecordings = sys.argv[2]  # Second argument
-            Apply_Preprocessing = sys.argv[4]  # Second argument
-            LoadSpikeSorting = sys.argv[5] # First argument
-            OpenSpikeInterface_GUI = sys.argv[6] # Second argument
-            Plot_Results = sys.argv[7] # First argument
-            JustOpenSpikeInterfaceGUI = sys.argv[8]  # Second argument
-            SampleRate = sys.argv[9]  # Second argument
+            Sorter = sys.argv[3]  
+            MultipleRecordings = sys.argv[2]  
+            Apply_Preprocessing = sys.argv[4] 
+            LoadSpikeSorting = sys.argv[5] 
+            OpenSpikeInterface_GUI = sys.argv[6]
+            Plot_Results = sys.argv[7] 
+            JustOpenSpikeInterfaceGUI = sys.argv[8] 
+            SampleRate = sys.argv[9]  
                         
             MultipleRecordings = int(MultipleRecordings);
             
@@ -325,20 +325,20 @@ if __name__ == "__main__":
             print(f"An error occurred: {e}")
             print("Traceback details:")
             import traceback
-            traceback.print_exc()  # Print detailed error information
+            traceback.print_exc()  
         finally:
             input("Press Enter to exit...")
     else:
         # Access arguments
         file_path = sys.argv[1]
-        Sorter = sys.argv[3]  # First argument
-        MultipleRecordings = sys.argv[2]  # Second argument
-        Apply_Preprocessing = sys.argv[4]  # Second argument
-        LoadSpikeSorting = sys.argv[5] # First argument
-        OpenSpikeInterface_GUI = sys.argv[6] # Second argument
-        Plot_Results = sys.argv[7] # First argument
-        JustOpenSpikeInterfaceGUI = sys.argv[8]  # Second argument
-        SampleRate = sys.argv[9]  # Second argument
+        Sorter = sys.argv[3] 
+        MultipleRecordings = sys.argv[2]  
+        Apply_Preprocessing = sys.argv[4] 
+        LoadSpikeSorting = sys.argv[5] 
+        OpenSpikeInterface_GUI = sys.argv[6] 
+        Plot_Results = sys.argv[7] 
+        JustOpenSpikeInterfaceGUI = sys.argv[8]  
+        SampleRate = sys.argv[9]  
         
         MultipleRecordings = int(MultipleRecordings);
         

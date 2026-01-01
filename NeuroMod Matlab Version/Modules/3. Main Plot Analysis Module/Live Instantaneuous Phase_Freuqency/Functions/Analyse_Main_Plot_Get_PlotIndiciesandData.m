@@ -1,4 +1,4 @@
-function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,DataTypeDropDown,StartIndex,StopIndex,Window)
+function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,DataTypeDropDown,StartIndex,StopIndex,Window,CoupleToMainWindow)
 
 %________________________________________________________________________________________
 
@@ -17,6 +17,8 @@ function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_P
 % is not triggered. It checks if data is downsampled in different
 % situations and makes adjsutments accordingly
 % 5. Window: char, main window analysis window for which function is called
+% 6. CoupleToMainWindow: logical 1 or 0 whether time in the live analysis
+% plot is coupled to the main window plot
 
 % Output:
 % 1. StartIndex: double, Determined data index (from Data.Raw or Data.Preprocessed) at which the
@@ -35,34 +37,36 @@ function [StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_P
 %________________________________________________________________________________________
 
 % get current active Channel
-if ~strcmp(Window,"PhaseSync")
+if ~strcmp(Window,"PhaseSync") && ~strcmp(Window,"Spectrogram") 
     [DataChannelSelected] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,app.ActiveChannel,'MainPlot');
 else
     DataChannelSelected = 1:size(app.Data.Raw,1);
 end
 
-% convert time points from donwsaampled state to raw data state 
-if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Preprocessed Data') && strcmp(DataTypeDropDown,'Raw Data') 
-    TimeinSecs = app.Data.TimeDownsampled(app.CurrentTimePoints);
-    differences = abs(app.Data.Time - TimeinSecs);
-    [~, TempCurrentTimePoints] = min(differences);
-
-    TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
-    StartIndex = TempCurrentTimePoints;
-    StopIndex = StartIndex+ceil(TimeDuration*app.Data.Info.NativeSamplingRate);
-    if StopIndex > size(app.Data.Raw,2)
-        StopIndex = size(app.Data.Raw,2);
-    end
-elseif isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Raw Data') && strcmp(DataTypeDropDown,'Preprocessed Data') 
-    TimeinSecs = app.Data.Time(app.CurrentTimePoints);
-    differences = abs(app.Data.TimeDownsampled - TimeinSecs);
-    [~, TempCurrentTimePoints] = min(differences);
+if CoupleToMainWindow
+    % convert time points from donwsaampled state to raw data state 
+    if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Preprocessed Data') && strcmp(DataTypeDropDown,'Raw Data') 
+        TimeinSecs = app.Data.TimeDownsampled(app.CurrentTimePoints);
+        differences = abs(app.Data.Time - TimeinSecs);
+        [~, TempCurrentTimePoints] = min(differences);
     
-    TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
-    StartIndex = TempCurrentTimePoints;
-    StopIndex = StartIndex+round(TimeDuration*app.Data.Info.DownsampledSampleRate);
-    if StopIndex > size(app.Data.Preprocessed,2)
-        StopIndex = size(app.Data.Preprocessed,2);
+        TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
+        StartIndex = TempCurrentTimePoints;
+        StopIndex = StartIndex+ceil(TimeDuration*app.Data.Info.NativeSamplingRate);
+        if StopIndex > size(app.Data.Raw,2)
+            StopIndex = size(app.Data.Raw,2);
+        end
+    elseif isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Raw Data') && strcmp(DataTypeDropDown,'Preprocessed Data') 
+        TimeinSecs = app.Data.Time(app.CurrentTimePoints);
+        differences = abs(app.Data.TimeDownsampled - TimeinSecs);
+        [~, TempCurrentTimePoints] = min(differences);
+        
+        TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
+        StartIndex = TempCurrentTimePoints;
+        StopIndex = StartIndex+round(TimeDuration*app.Data.Info.DownsampledSampleRate);
+        if StopIndex > size(app.Data.Preprocessed,2)
+            StopIndex = size(app.Data.Preprocessed,2);
+        end
     end
 end
 

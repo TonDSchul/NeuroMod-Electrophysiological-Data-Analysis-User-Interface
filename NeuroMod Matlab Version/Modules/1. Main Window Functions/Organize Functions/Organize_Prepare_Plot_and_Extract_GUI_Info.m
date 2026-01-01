@@ -135,6 +135,43 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
     end
 end
 
+%% Determine whether main plot should be updated or jsut live windows (when just live analysis window specific parameter was changed)
+JustLiveWindow = 0;
+if ~isempty(app.CSDApp)
+    if isprop(app.CSDApp,'ExistflagCSD')
+        if app.CSDApp.ChangeMainPlot == 0
+            JustLiveWindow = 1;
+        end
+    end
+end
+if ~isempty(app.LiveECHTWindow)
+    if isprop(app.LiveECHTWindow,'ExistflagECHT')
+        if app.LiveECHTWindow.ChangeMainPlot == 0
+            JustLiveWindow = 1;
+        end
+    end
+end
+if ~isempty(app.SpectralEstApp)
+    if isprop(app.SpectralEstApp,'ExistflagSDE')
+        if app.SpectralEstApp.ChangeMainPlot == 0
+            JustLiveWindow = 1;
+        end
+    end
+end
+if ~isempty(app.LiveSpectrogramApp)
+    if isprop(app.LiveSpectrogramApp,'ExistflagLiveSpectogram')
+        if app.LiveSpectrogramApp.ChangeMainPlot == 0
+            JustLiveWindow = 1;
+        end
+    end
+end
+if ~isempty(app.PSTHApp)
+    if isprop(app.PSTHApp,'Existflag')
+        if app.PSTHApp.ChangeMainPlot == 0
+            JustLiveWindow = 1;
+        end
+    end
+end
 %% Plot Data
 % Those functions dont take the app object and are therefore plug and play
 % for other figure objects 
@@ -174,8 +211,39 @@ else
     OldDataPlotName = DataPlotType;
 end
 
-if MainPlot
-    
+if MainPlot && JustLiveWindow == 0
+    if strcmp(app.Data.Info.RecordingType,'SpikeInterface Maxwell MEA .h5') && strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        % create matrix with data for each channel at proper channel
+        % location
+        if strcmp(app.DropDown.Value,'Preprocessed Data') 
+            DataForMatrix = app.Data.Preprocessed(:,StartIndex:StopIndex);
+        elseif strcmp(app.DropDown.Value,'Raw Data')
+            DataForMatrix = app.Data.Raw(:,StartIndex:StopIndex);
+        end
+
+        DataForMatrix = DataForMatrix(:,1);
+            
+        Laufvariable = 1;
+        PlotData = NaN(str2double(app.Data.Info.ProbeInfo.NrChannel),str2double(app.Data.Info.ProbeInfo.NrRows));
+        for n = 1:str2double(app.Data.Info.ProbeInfo.NrChannel)
+            for m = 1:str2double(app.Data.Info.ProbeInfo.NrRows)
+                if sum(Laufvariable==app.Data.Info.ProbeInfo.MEAChannelOrder)>0
+                    [CurrentChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,Laufvariable,'MainPlot');
+                    if sum(Laufvariable==app.ActiveChannel)>0
+                        PlotData(n,m) = DataForMatrix(CurrentChannel);
+                    end
+                end
+                Laufvariable = Laufvariable+1;
+            end
+        end
+    else
+        if strcmp(app.DropDown.Value,'Preprocessed Data') 
+            PlotData = app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex);
+        elseif strcmp(app.DropDown.Value,'Raw Data')
+            PlotData = app.Data.Raw(app.Channelrange,StartIndex:StopIndex);
+        end
+    end
+
     frameTime = str2double(app.TimeRangeViewBox.Value(1:end-1))/app.MovieFramesPerSecond;
 
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
@@ -183,17 +251,18 @@ if MainPlot
         if isfield(app.Data.Info,'DownsampleFactor') 
             app.LastPlot = "Preprocessed";  
             SpikeDataType = app.Data.Info.SpikeType;
-            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
+            
+            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues);
         % If Raw data has to be plotted
         else
             app.LastPlot = "Preprocessed";
             SpikeDataType = app.Data.Info.SpikeType;
-            Module_MainWindow_Plot_Data(app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
+            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues);
         end
     elseif strcmp(app.DropDown.Value,'Raw Data')
         app.LastPlot = "Raw";
         SpikeDataType = app.Data.Info.SpikeType;
-        Module_MainWindow_Plot_Data(app.Data.Raw(app.Channelrange,StartIndex:StopIndex),app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime)
+        [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues);
     end
 
     %% Plot Time
@@ -220,27 +289,32 @@ end
 
 %% Plot Spike Rate if Window for that is open
 % app.PSTHApp: if spike rate window open, the variable Existflag will be
-SpikeRatePlot = 1;
-
-if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Spike Rate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-            SpikeRatePlot = 0;
+if isprop(app.PSTHApp,'Existflag')
+    SpikeRatePlot = 1;
+    
+    if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+        if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+            if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Spike Rate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+                SpikeRatePlot = 0;
+            end
         end
     end
-end
+    
+    % when user manipulates time in main window always execute
+    if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+        SpikeRatePlot = 1;
+    elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+        SpikeRatePlot = 1;
+    elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+        SpikeRatePlot = 1;
+    end
+    
+    Proceed = 1;
+    if app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value == 0 && JustLiveWindow == 0
+        Proceed = 0;
+    end
 
-% when user manipulates time in main window always execute
-if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
-    SpikeRatePlot = 1;
-elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
-    SpikeRatePlot = 1;
-elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
-    SpikeRatePlot = 1;
-end
-
-if isprop(app.PSTHApp,'Existflag')
-    if app.PSTHApp.Startup == 1 || SpikeRatePlot
+    if app.PSTHApp.Startup == 1 && Proceed == 1 || SpikeRatePlot && Proceed == 1
 
         DownsampleSPikeRate = app.PSTHApp.DownsampleCheckBox.Value;
         FilterOrder = app.PSTHApp.FilterOrder;
@@ -252,47 +326,80 @@ if isprop(app.PSTHApp,'Existflag')
             PreprocessedPlot = 0;
         end
 
-        %[StartIndex,StopIndex,DatatoPlot,Time,Samplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,StartIndex,StopIndex);
-            
-        % Also contains the bar plot!
-        if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')
-            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate (app.Data,app.CurrentTimePoints,app.TimeRangeViewBox.Value,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.PSTHApp.LockYLimCheckBox.Value,app.Data.Info.DownsampledSampleRate,app.Channelrange,StartIndex,StopIndex,PreprocessedPlot,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance);
+        if app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value == 1
+            [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,StartIndex,StopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
+            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,StartIndex,StopIndex,PreprocessedPlot,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,StartIndex,StopIndex);
         else
-            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate (app.Data,app.CurrentTimePoints,app.TimeRangeViewBox.Value,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,app.Data.Time(StartIndex:StopIndex),app.PSTHApp.LockYLimCheckBox.Value,app.Data.Info.NativeSamplingRate,app.Channelrange,StartIndex,StopIndex,PreprocessedPlot,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance);
-        end
+            TimeWindow = str2double(strsplit(app.PSTHApp.TimeWindowfromtoinsEditField.Value,','));
+            if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')
+                [~,TempStartIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(1)));
+                [~,TempStopIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(2)));
+
+                [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,TempStartIndex,TempStopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
+            else
+                [~,TempStartIndex] = min(abs(app.Data.Time - TimeWindow(1)));
+                [~,TempStopIndex] = min(abs(app.Data.Time - TimeWindow(2)));
+                [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,TempStartIndex,TempStopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
+            end
+
+
+            % TimeWindow = str2double(strsplit(app.PSTHApp.TimeWindowfromtoinsEditField.Value,','));
+            % [~,TempStartIndex] = min(abs(app.Data.Time - TimeWindow(1)));
+            % [~,TempStopIndex] = min(abs(app.Data.Time - TimeWindow(2)));
+            % [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,TempStartIndex,TempStopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
+            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,StartIndex,StopIndex,PreprocessedPlot,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,TempStartIndex,TempStopIndex);
+        end  
     end
 end
 
 %% Plot CSD if Window for that is open
 % app.CSDApp: if csd window open, the variable ExistflagCSD will be
 % property of that app (defined in startup fct of CSD window)
-
-CSDPlot = 1;
-
-if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Current Source Density") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-            CSDPlot = 0;
+if isprop(app.CSDApp,'ExistflagCSD')
+    CSDPlot = 1;
+    
+    if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+        if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+            if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Current Source Density") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+                CSDPlot = 0;
+            end
         end
     end
-end
-
-% when user manipulates time in main window always execute
-if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
-    CSDPlot = 1;
-elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
-    CSDPlot = 1;
-elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
-    CSDPlot = 1;
-end
-
-if isprop(app.CSDApp,'ExistflagCSD')
-    if app.CSDApp.Startup == 1 || CSDPlot
     
+    % when user manipulates time in main window always execute
+    if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+        CSDPlot = 1;
+    elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+        CSDPlot = 1;
+    elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+        CSDPlot = 1;
+    end
+    
+    Proceed = 1;
+    if app.CSDApp.CoupleTimetoMainWindowCheckBox.Value == 0 && JustLiveWindow == 0
+        Proceed = 0;
+    end
+
+    if app.CSDApp.Startup == 1 && Proceed == 1 || CSDPlot && Proceed == 1
+        
         hamwidth = str2double(app.CSDApp.HammWindowEditField.Value);
         ChannelSpacing = app.Data.Info.ProbeInfo.FakeSpacing;
 
-        [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,StartIndex,StopIndex,"CSD");
+        if app.CSDApp.CoupleTimetoMainWindowCheckBox.Value == 1
+            [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,StartIndex,StopIndex,"CSD",app.CSDApp.CoupleTimetoMainWindowCheckBox.Value);
+        else
+            TimeWindow = str2double(strsplit(app.CSDApp.TimeWindowfromtoinsEditField.Value,','));
+            if strcmp(app.CSDApp.DataTypeDropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')
+                [~,TempStartIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(1)));
+                [~,TempStopIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(2)));
+
+                [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"CSD",app.CSDApp.CoupleTimetoMainWindowCheckBox.Value);
+            else
+                [~,TempStartIndex] = min(abs(app.Data.Time - TimeWindow(1)));
+                [~,TempStopIndex] = min(abs(app.Data.Time - TimeWindow(2)));
+                [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.CSDApp.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"CSD",app.CSDApp.CoupleTimetoMainWindowCheckBox.Value);
+            end
+        end
         
         [app.CSDApp.CSDClim,app.CurrentPlotData] = Analyse_Main_Window_CSD(TempDatatoPlot,TempTime,hamwidth,ChannelSpacing,app.CSDApp.CSDClim,app.CSDApp.UIAxes,app.CSDApp.LockCLimCheckBox.Value,app.CSDApp.TwoORThreeD,app.CurrentPlotData,app.PlotAppearance,app.Data,EventData,TempSamplefrequency,app.CurrentEventChannel,EventPlot,app.CSDApp.DataTypeDropDown.Value,app.ActiveChannel);
         
@@ -305,67 +412,159 @@ end
 
 %% Plot Spectral Power Density estimate window is open
 
-PowerEstiamtePlot = 1;
-
-if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Power Estimate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-            PowerEstiamtePlot = 0;
+if isprop(app.SpectralEstApp,'ExistflagSDE')
+    PowerEstiamtePlot = 1;
+    
+    if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+        if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+            if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Power Estimate") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+                PowerEstiamtePlot = 0;
+            end
         end
     end
-end
+    
+    % when user manipulates time in main window always execute
+    if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+        PowerEstiamtePlot = 1;
+    elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+        PowerEstiamtePlot = 1;
+    elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+        PowerEstiamtePlot = 1;
+    end
+    
+    Proceed = 1;
+    if app.SpectralEstApp.CoupleTimetoMainWindowCheckBox.Value == 0 && JustLiveWindow == 0
+        Proceed = 0;
+    end
 
-% when user manipulates time in main window always execute
-if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
-    PowerEstiamtePlot = 1;
-elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
-    PowerEstiamtePlot = 1;
-elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
-    PowerEstiamtePlot = 1;
-end
+    if isprop(app.SpectralEstApp,'ExistflagSDE')
+        if app.SpectralEstApp.Startup == 1 && Proceed == 1 || PowerEstiamtePlot && Proceed == 1
+            %% Extract Channel Number and set colormap
+            if app.SpectralEstApp.CoupleTimetoMainWindowCheckBox.Value == 1
+                [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.SpectralEstApp.DataTypeDropDown.Value,StartIndex,StopIndex,"PowerSpect",app.SpectralEstApp.CoupleTimetoMainWindowCheckBox.Value);
+            else
+                TimeWindow = str2double(strsplit(app.SpectralEstApp.TimeWindowfromtoinsEditField.Value,','));
+                if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')
+                    [~,TempStartIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(1)));
+                    [~,TempStopIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(2)));
+    
+                    [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.SpectralEstApp.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"PowerSpect",app.SpectralEstApp.CoupleTimetoMainWindowCheckBox.Value);
+                else
+                    [~,TempStartIndex] = min(abs(app.Data.Time - TimeWindow(1)));
+                    [~,TempStopIndex] = min(abs(app.Data.Time - TimeWindow(2)));
+                    [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.SpectralEstApp.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"PowerSpect",app.SpectralEstApp.CoupleTimetoMainWindowCheckBox.Value);
+                end
+            end
 
-if isprop(app.SpectralEstApp,'ExistflagSDE')
-    if app.SpectralEstApp.Startup == 1 || PowerEstiamtePlot
-        %% Extract Channel Number and set colormap
+            [app.SpectralEstApp.PDLim,app.CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(TempDatatoPlot,TempSamplefrequency,app.SpectralEstApp.UIAxes,TempTime,app.SpectralEstApp.PDLim,app.SpectralEstApp.LockYLimCheckBox.Value,app.CurrentPlotData,app.PlotAppearance);
             
-        [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.SpectralEstApp.DataTypeDropDown.Value,StartIndex,StopIndex,"PowerSpect");
-        
-        [app.SpectralEstApp.PDLim,app.CurrentPlotData] = Analyse_Main_Window_Spectral_Density_Estimate(TempDatatoPlot,TempSamplefrequency,app.SpectralEstApp.UIAxes,TempTime,app.SpectralEstApp.PDLim,app.SpectralEstApp.LockYLimCheckBox.Value,app.CurrentPlotData,app.PlotAppearance);
-        
-        clear TempDatatoPlot TempTime TempSamplefrequency
+            clear TempDatatoPlot TempTime TempSamplefrequency
+        end
     end
 end
 
 %% Plot Inst. Frequency Live Window
 % when user manipulates time in main window always execute
-
-ECHTPlot = 1;
-
-if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Phase Synchronization") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-            ECHTPlot = 0;
+if isprop(app.LiveECHTWindow,'ExistflagECHT')
+    ECHTPlot = 1;
+    
+    if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+        if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+            if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Phase Synchronization") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+                ECHTPlot = 0;
+            end
+        end
+    end
+    
+    % when user manipulates time in main window always execute
+    if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+        ECHTPlot = 1;
+    elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+        ECHTPlot = 1;
+    elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+        ECHTPlot = 1;
+    end
+    
+    Proceed = 1;
+    if app.LiveECHTWindow.CoupleTimetoMainWindowCheckBox.Value == 0 && JustLiveWindow == 0
+        Proceed = 0;
+    end
+    
+    if isprop(app.LiveECHTWindow,'ExistflagECHT')
+        if app.LiveECHTWindow.Startup == 1 && Proceed == 1 || ECHTPlot && Proceed == 1
+            
+            if app.LiveECHTWindow.CoupleTimetoMainWindowCheckBox.Value == 1
+                [TempStartIndex,TempStopIndex,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,StartIndex,StopIndex,"PhaseSync",app.LiveECHTWindow.CoupleTimetoMainWindowCheckBox.Value);
+            else
+                TimeWindow = str2double(strsplit(app.LiveECHTWindow.TimeWindowfromtoinsEditField.Value,','));
+                if strcmp(app.LiveECHTWindow.DataTypeDropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')
+                    [~,TempStartIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(1)));
+                    [~,TempStopIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(2)));
+    
+                    [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"PhaseSync",app.LiveECHTWindow.CoupleTimetoMainWindowCheckBox.Value);
+                else
+                    [~,TempStartIndex] = min(abs(app.Data.Time - TimeWindow(1)));
+                    [~,TempStopIndex] = min(abs(app.Data.Time - TimeWindow(2)));
+                    [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"PhaseSync",app.LiveECHTWindow.CoupleTimetoMainWindowCheckBox.Value);
+                end
+            end
+            [app.LiveECHTWindow.GlobalYlim,texttoshow,app.CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(TempDatatoPlot,TempTime,TempSamplefrequency,app.LiveECHTWindow.PolarPlot,app.LiveECHTWindow.UIAxes_3,app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,app.Data,app.LiveECHTWindow.ChannelToCompare,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,app.ActiveChannel,app.LiveECHTWindow.DataTypeDropDown.Value,app.PlotAppearance,app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value,TempStartIndex,TempStopIndex,app.LiveECHTWindow.WhatToDo,app.LiveECHTWindow.Ccolormap,app.LiveECHTWindow.CalculationMethodDropDown.Value,app.LiveECHTWindow.ForceFilterOFFCheckBox.Value,app.LiveECHTWindow.ECHTFilterorderEditField.Value,app.CurrentPlotData,EventData,app.CurrentEventChannel,EventPlot,app.LiveECHTWindow.ShowAnayzedData,app.LiveECHTWindow.LowPassSettings,app.LiveECHTWindow.FilterType);      
+            app.LiveECHTWindow.TextArea.Value = texttoshow;
+    
+            clear TempDatatoPlot TempTime TempSamplefrequency
         end
     end
 end
 
+%% Plot Live Spectrogram Window
 % when user manipulates time in main window always execute
-if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
-    ECHTPlot = 1;
-elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
-    ECHTPlot = 1;
-elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
-    ECHTPlot = 1;
-end
+if isprop(app.LiveSpectrogramApp,'ExistflagLiveSpectogram')
+    LiveSpectrogramPlot = 1;
+    
+    if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+        if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+            if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Plot Spectrogram") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+                LiveSpectrogramPlot = 0;
+            end
+        end
+    end
+    
+    % when user manipulates time in main window always execute
+    if strcmp(OldDataPlotName,"MainWindowTimeManipulation")
+        LiveSpectrogramPlot = 1;
+    elseif strcmp(OldDataPlotName,"MainWindowTimeManipulationMovie")
+        LiveSpectrogramPlot = 1;
+    elseif strcmp(ExtraAnalysisWindowsType,"Preprocessing") || strcmp(ExtraAnalysisWindowsType,"SpikeExtraction") || strcmp(ExtraAnalysisWindowsType,"Events")
+        LiveSpectrogramPlot = 1;
+    end
+    
+    Proceed = 1;
+    if app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Value == 0 && JustLiveWindow == 0
+        Proceed = 0;
+    end
+    
+    if isprop(app.LiveSpectrogramApp,'ExistflagLiveSpectogram')
+        if app.LiveSpectrogramApp.Startup == 1 && Proceed == 1 || LiveSpectrogramPlot && Proceed == 1
+            
+            if app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Value == 1
+                [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveSpectrogramApp.DataTypeDropDown.Value,StartIndex,StopIndex,"Spectrogram",app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Value);
+            else
+                TimeWindow = str2double(strsplit(app.LiveSpectrogramApp.TimeWindowfromtoinsEditField.Value,','));
+                if strcmp(app.LiveSpectrogramApp.DataTypeDropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')
+                    [~,TempStartIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(1)));
+                    [~,TempStopIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(2)));
+    
+                    [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveSpectrogramApp.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"Spectrogram",app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Value);
+                else
+                    [~,TempStartIndex] = min(abs(app.Data.Time - TimeWindow(1)));
+                    [~,TempStopIndex] = min(abs(app.Data.Time - TimeWindow(2)));
+                    [a,b,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveSpectrogramApp.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"Spectrogram",app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Value);
+                end
+            end
 
-if isprop(app.LiveECHTWindow,'ExistflagECHT')
-    if app.LiveECHTWindow.Startup == 1 || ECHTPlot
-        
-        [TempStartIndex,TempStopIndex,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,StartIndex,StopIndex,"PhaseSync");
-        
-        [app.LiveECHTWindow.GlobalYlim,texttoshow,app.CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(TempDatatoPlot,TempTime,TempSamplefrequency,app.LiveECHTWindow.PolarPlot,app.LiveECHTWindow.UIAxes_3,app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,app.Data,app.LiveECHTWindow.ChannelToCompare,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,app.ActiveChannel,app.LiveECHTWindow.DataTypeDropDown.Value,app.PlotAppearance,app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value,TempStartIndex,TempStopIndex,app.LiveECHTWindow.WhatToDo,app.LiveECHTWindow.Ccolormap,app.LiveECHTWindow.CalculationMethodDropDown.Value,app.LiveECHTWindow.ForceFilterOFFCheckBox.Value,app.LiveECHTWindow.ECHTFilterorderEditField.Value,app.CurrentPlotData,EventData,app.CurrentEventChannel,EventPlot,app.LiveECHTWindow.ShowAnayzedData,app.LiveECHTWindow.LowPassSettings,app.LiveECHTWindow.FilterType);      
-        app.LiveECHTWindow.TextArea.Value = texttoshow;
-
-        clear TempDatatoPlot TempTime TempSamplefrequency
+            [app.LiveSpectrogramApp.CurrentClim,app.CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram2(app.Data,TempDatatoPlot,EventData,app.LiveSpectrogramApp.ChannelToPlotDropDown.Value,app.LiveSpectrogramApp.WindowsEditField.Value,app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Value,app.LiveSpectrogramApp.LockCLimCheckBox.Value,app.LiveSpectrogramApp.DataTypeDropDown.Value,app.LiveSpectrogramApp.CurrentClim,app.LiveSpectrogramApp.UIAxes,TempSamplefrequency,app.PlotAppearance,TempTime,app.CurrentEventChannel,EventPlot,app.CurrentPlotData,app.LiveSpectrogramApp.TwoORThreeD);
+            
+            clear TempDatatoPlot TempTime TempSamplefrequency
+        end
     end
 end

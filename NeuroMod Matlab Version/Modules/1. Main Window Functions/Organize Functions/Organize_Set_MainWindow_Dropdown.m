@@ -77,11 +77,37 @@ if isfield(Data,'Events')
         app.EventChannelDropDown.Items{i} = convertStringsToChars(Data.Info.EventChannelNames{i});
     end
 else
+    EventText_handles = findobj(app.UIAxes, 'Tag','EventLabel');
+    if ~isempty(EventText_handles)
+        delete(EventText_handles(:));
+    end
     app.EventChannelDropDown.Enable = "off";
 end
 
 for i = 1:length(app.EventChannelDropDown.Items)
     if strcmp(app.EventChannelDropDown.Items{i},PreviousEventSelection)
         app.EventChannelDropDown.Value = app.EventChannelDropDown.Items{i};
+    end
+end
+
+%% Event trial number text area in main windwo
+
+if isfield(Data,'Events')
+    EventIndice = [];
+    for i = 1:length(Data.Info.EventChannelNames)
+        if strcmp(Data.Info.EventChannelNames{i},app.EventChannelDropDown.Value)
+            EventIndice = i;
+        end
+    end
+    app.EventTriggerNumberField.Value = strcat(num2str(length(Data.Events{EventIndice}))," event trigger.");
+else
+   app.EventTriggerNumberField.Value = "No event trigger found."; 
+end
+
+% Delete event trigger number text
+if ~strcmp(app.PlotEvents,"Events")
+    EventText_handles = findobj(app.UIAxes, 'Tag','EventLabel');
+    if ~isempty(EventText_handles)
+        delete(EventText_handles(:));
     end
 end

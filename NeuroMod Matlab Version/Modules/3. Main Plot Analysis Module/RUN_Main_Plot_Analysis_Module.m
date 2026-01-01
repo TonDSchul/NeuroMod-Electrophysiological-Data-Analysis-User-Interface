@@ -108,5 +108,29 @@ elseif strcmp(ModuleFunctionName,"Live Instantaneous Frequency")
     app.LiveECHTWindow = Live_InstFrequency_Window(app);
     
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveECHT");
+
+elseif strcmp(ModuleFunctionName,"Live Spectrogram")
+
+    if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');
+    end
+
+    if ~isempty(app.ProbeViewWindowHandle) && isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') % Add option to probe view when available
+        AlreadyIn = 0;
+        for i = 1:length(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items)
+            if strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{i},'Main Plot Spectrogram')
+                AlreadyIn = 1;
+            end
+        end
+        if AlreadyIn == 0
+            app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{end+1} = 'Main Plot Spectrogram';
+        end
+    else % if no probe view available
+ 
+    end
+
+    app.LiveSpectrogramApp = Live_Spectrogram_Window(app);
     
+    [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveSpectogram");
+
 end

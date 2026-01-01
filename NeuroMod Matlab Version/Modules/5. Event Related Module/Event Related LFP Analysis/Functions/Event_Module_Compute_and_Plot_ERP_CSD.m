@@ -1,4 +1,4 @@
-function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance,ERPChannel,DataType,SingleChannelPlotType,EventNr,PreservePlotChannelLocations)
+function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance,ERPChannel,DataType,SingleChannelPlotType,EventNr,PreservePlotChannelLocations,BaselineNormalize,NormalizationWindow)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot ERP and CSD for event analysis windows
@@ -44,6 +44,9 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % can be spaced farther if there are many trigger
 % 18.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
 % original spacing between active channel (in case of inactiove islands between active channel)
+% 19. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 20. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. CSDClim
@@ -74,7 +77,12 @@ NumEvents = size(EventRelatedData,2);
 
 %% PLOT ERP
 if isempty(CSD)
-    
+    if strcmp(Type,'All')
+        if BaselineNormalize
+            EventRelatedData = Event_Module_Baseline_Normalize(Data,EventRelatedData,NormalizationWindow,EventTime,"ERP");
+        end
+    end
+
     if strcmp(Type,'SingleERPOnly') || strcmp(Type,'All')
         
         if size(EventRelatedData,2) == 0
@@ -95,7 +103,13 @@ if isempty(CSD)
         else
             [ERPChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,OriginalERPChannel,'MainPlot');
         end
-        
+
+        %% ----------------------------------- Baseline Normalize All Channel -----------------------------------
+        if strcmp(Type,'SingleERPOnly') 
+            if BaselineNormalize
+                EventRelatedData = Event_Module_Baseline_Normalize(Data,EventRelatedData,NormalizationWindow,EventTime,"ERP");
+            end
+        end
         %% ----------------------------------- Select Data based on Info from above -----------------------------------
         DataLinestoPlot = squeeze(EventRelatedData(ERPChannel,:,:));
         
@@ -105,7 +119,6 @@ if isempty(CSD)
 
         %% Plot Trials
         % Delete handles if too many (i.e. the user reduced the amount of events/trials shown)
-
         Trialplot = [];
 
         %% ----------------------------------- LinePlot -----------------------------------
@@ -334,6 +347,13 @@ if isempty(CSD)
     if strcmp(Type,'MultipleERPOnly') || strcmp(Type,'All')
         %% Plot ERP for all Channel
         adjustedcolormap = rgbcolormap(DataChannelSelected,:);
+
+        %% ----------------------------------- Baseline Normalize All Channel -----------------------------------
+        if strcmp(Type,'MultipleERPOnly')
+            if BaselineNormalize
+                EventRelatedData = Event_Module_Baseline_Normalize(Data,EventRelatedData,NormalizationWindow,EventTime,"ERP");
+            end
+        end
         
         if DataChannelSelected(1) == DataChannelSelected(end) 
             DataToPlot = squeeze(mean(EventRelatedData(DataChannelSelected(1),:,:),2))';
@@ -441,11 +461,16 @@ else
         msgbox("Error: At least 3 channel required to compute CSD! Returning.")
         return;
     end
-    
+        
     DatatoPlot = squeeze(mean(EventRelatedData(DataChannelSelected,:,:),2,'omitnan'));
     
-    [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow,Data,DataType);  
+    [csd,~] = Analyse_Main_Window_Compute_CSD(DatatoPlot',CSD.ChannelSpacing,CSD.HammWindow,Data,DataType);
     
+    %baseline normalize csd result
+    if BaselineNormalize
+        csd = Event_Module_Baseline_Normalize(Data,csd,NormalizationWindow,EventTime,"CSD");
+    end
+
     if str2double(Data.Info.ProbeInfo.VertOffset) ~= 0
         CSD.ChannelSpacing = unique(diff(Data.Info.ProbeInfo.ycoords));
     else

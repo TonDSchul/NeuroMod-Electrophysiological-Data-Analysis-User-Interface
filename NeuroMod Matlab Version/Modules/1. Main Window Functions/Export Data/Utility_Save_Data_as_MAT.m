@@ -161,7 +161,18 @@ if contains(Analysis,"Instantaneous")
     end
 end
 
-if contains(Analysis,"Plot")
+if contains(Analysis,"Plot") && contains(Analysis,"Spectrogram")
+    DataToSave.LiveSpectroType =  PlottedData.LiveSpectroType;
+    DataToSave.LiveSpectroXData =  PlottedData.LiveSpectroXData;
+    DataToSave.LiveSpectroYData =  PlottedData.LiveSpectroYData;
+    
+    DataToSave.LiveSpectroCData =  PlottedData.LiveSpectroCData;
+
+    DataToSave.LiveSpectroXTicks =  PlottedData.LiveSpectroXTicks;
+    DataToSave.DimensionsOfCells = ["Frequency [Hz]","Time [s]"];
+end
+
+if contains(Analysis,"Plot") && ~contains(Analysis,"Spectrogram")
 
     % Write TextInfos
         AnalyisText = convertStringsToChars(Analysis);

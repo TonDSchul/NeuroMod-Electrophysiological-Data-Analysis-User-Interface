@@ -253,7 +253,7 @@ end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% If spike analyis (Continous and ev
 
 TextInfosStart = {};
 %% -------------------- Unit Analysis -------------------- 
-if contains(Analysis,"Plot")
+if contains(Analysis,"Plot") && ~contains(Analysis,"Spectrogram")
     TextInfosStart{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
     TextInfosStart{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
     TextInfosStart{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
@@ -361,6 +361,68 @@ if contains(Analysis,"Plot")
     end
 end
 
+% Live Spectrogram
+if contains(Analysis,"Plot") && contains(Analysis,"Spectrogram")
+    TextInfos{end+1} = ['***** Time Duration of Analyzed Data: ' num2str(PlottedData.TimeDuration) 's *****'];
+    TextInfos{end+1} = ['***** Start Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(1)) 's *****'];
+    TextInfos{end+1} = ['***** Stop Time of Analyzed Data: ' num2str(PlottedData.Time_Points_Plot(2)) 's *****'];
+
+    XData  = PlottedData.LiveSpectroXData;
+    YData  = PlottedData.LiveSpectroYData;
+    XTick  = PlottedData.LiveSpectroXTicks;
+    CData = PlottedData.LiveSpectroCData; 
+
+    %% Write TextInfos to Excel (starting at row 1, column A)
+    writecell(TextInfos', Fullsavefile, 'Sheet', 1, 'Range', 'A1');
+    
+    %% Write Info
+    % Example: Convert structure fields into "field: value" text
+    fn = fieldnames(PlottedData.Info);
+    TextInfos = {};
+    for k = 1:numel(fn)
+        val = PlottedData.Info.(fn{k});
+        if isnumeric(val)
+            valStr = num2str(val);
+        elseif isstring(val) || ischar(val)
+            valStr = char(val);
+        else
+            valStr = '<non-displayable>';
+        end
+        TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+    end
+    
+    % Write to Excel (column E, starting at row 1)
+    writecell(TextInfos, Fullsavefile, 'Sheet', 1, 'Range', 'F1');
+
+    %% --- First write X/Y/XTick table (as before) ---
+    maxLen = max([length(XData), length(YData), length(XTick)]);
+    if length(XData) < maxLen, XData(end+1:maxLen) = NaN; end
+    if length(YData) < maxLen, YData(end+1:maxLen) = NaN; end
+    if length(XTick) < maxLen, XTick(end+1:maxLen) = {''}; end
+    if size(XTick,1)>size(XTick,2)
+        XTick = XTick';
+    end
+    
+    T = Utility_Save_xlsx_Set_VariableNames(PlottedData,Analysis,XData,YData,XTick);
+
+    % Write table to Excel
+    tableStartRow = length(TextInfos) + 2;  % leave 1 empty row below TextInfos
+    writetable(T, Fullsavefile, 'Sheet', 1, 'Range', ['A' num2str(tableStartRow)]);
+    
+    %% --- Combine with existing table if CData exists ---
+    if ~isempty(CData)
+      
+        % Add a header
+        try
+            writematrix(CData, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
+        catch
+            writematrix(CData', Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow+1)]);
+        end
+        
+        writecell({"***** Frequency (Hz) x Time (s) *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+    end
+
+end
 
 %% -------------------------------------------- For LFP Analysis of event related data --------------------------------------------
 

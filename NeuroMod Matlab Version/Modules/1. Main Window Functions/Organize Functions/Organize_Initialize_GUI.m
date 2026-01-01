@@ -126,6 +126,8 @@ if strcmp(Type,"Initial")
     app.CurrentPlotData.Type = "Non";
     app.CurrentPlotData.XTicks = [];
     
+    app.EventTriggerNumberField.Value = "";
+
 elseif strcmp(Type,"Loading")
 
     %Organize_Delete_All_Open_Windows(app,1);
@@ -172,7 +174,20 @@ elseif strcmp(Type,"Loading")
     if isfield(app.Data, 'Spikes') 
         app.DropDown_2.Items{end+1} = 'Spikes';
     end
-    
+    %% Event trial number text area in main windwo
+
+    if isfield(app.Data,'Events')
+        EventIndice = [];
+        for i = 1:length(app.Data.Info.EventChannelNames)
+            if strcmp(app.Data.Info.EventChannelNames{i},app.EventChannelDropDown.Value)
+                EventIndice = i;
+            end
+        end
+        app.EventTriggerNumberField.Value = strcat(num2str(length(app.Data.Events{EventIndice}))," event trigger.");
+    else
+       app.EventTriggerNumberField.Value = "No event trigger found."; 
+    end
+
     datapointsforstd = round(str2double(app.TimeRangeViewBox.Value(1:end-1)) * app.Data.Info.NativeSamplingRate);
 
     stdrawdata = double(std(app.Data.Raw(:,1:datapointsforstd),[],'all','omitnan'));
@@ -227,6 +242,8 @@ elseif strcmp(Type,"Extracting")
         error(strcat(num2str(size(app.Data.Raw,1))," amplifier data channels found but ",num2str(length(app.Data.Info.ProbeInfo.ActiveChannel))," probe channel defined! Please define probe layout again with as many channel as in the raw dataset!"));       
     end
     
+    app.EventTriggerNumberField.Value = "No event trigger found."; 
+    
     app.UIAxes.Box = "off";
     
 elseif strcmp(Type,"VariableDefinition")
@@ -243,7 +260,7 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Time = Time;
     clear Data;
 
-    if strcmp(RecordingType,"IntanDat") || strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"Spike2") || strcmp(RecordingType,"Open Ephys") || strcmp(RecordingType,"NEO") || strcmp(RecordingType,"TDT Tank Data")
+    if strcmp(RecordingType,"IntanDat") || strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"Spike2") || strcmp(RecordingType,"Open Ephys") || strcmp(RecordingType,"NEO") || strcmp(RecordingType,"TDT Tank Data") || strcmp(RecordingType,"SpikeGLX NP") || strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
         app.Data.Info = HeaderInfo;
     else
         fieldsToDelete = {'Header'};
@@ -254,9 +271,18 @@ elseif strcmp(Type,"VariableDefinition")
     if ~isfield(app.Data.Info,'Channelorder')
         app.Data.Info.Channelorder = [];
     end
-    
+    % give extra samples to start time sample since its shifted back! -->
+    % important for event analysis later!
+    if isfield(HeaderInfo,'ExtractedTime')
+        ExtracStartTimeStamp = HeaderInfo.ExtractedTime(1);
+    else
+        ExtracStartTimeStamp = 0;
+    end
+
     if isfield(HeaderInfo,'startTimestamp')
-        app.Data.Info.startTimestamp = HeaderInfo.startTimestamp;
+        app.Data.Info.startTimestamp = HeaderInfo.startTimestamp+ExtracStartTimeStamp;
+    elseif isfield(HeaderInfo,'firstSample')
+        app.Data.Info.startTimestamp = str2double(HeaderInfo.firstSample)+ExtracStartTimeStamp;
     else
         app.Data.Info.startTimestamp = 0;
     end
@@ -267,32 +293,39 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.NativeSamplingRate = SampleRate;
     app.Data.Info.RecordingType = RecordingType;
     
-    if ischar(Load_Data_Window_Info.ChannelSpacing) || isstring(Load_Data_Window_Info.ChannelSpacing)
-        app.Data.Info.ChannelSpacing = str2double(Load_Data_Window_Info.ChannelSpacing);
-    else
-        app.Data.Info.ChannelSpacing = Load_Data_Window_Info.ChannelSpacing;
-    end
-    
-    app.Data.Info.ProbeInfo.NrChannel = num2str(Load_Data_Window_Info.NrChannel);
-    app.Data.Info.ProbeInfo.NrRows = num2str(Load_Data_Window_Info.NumberChannelRows);
-    app.Data.Info.ProbeInfo.VertOffset = num2str(Load_Data_Window_Info.VerticalOffsetum);
-    app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
-    app.Data.Info.ProbeInfo.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
+    if ~strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+        if ischar(Load_Data_Window_Info.ChannelSpacing) || isstring(Load_Data_Window_Info.ChannelSpacing)
+            app.Data.Info.ChannelSpacing = str2double(Load_Data_Window_Info.ChannelSpacing);
+        else
+            app.Data.Info.ChannelSpacing = Load_Data_Window_Info.ChannelSpacing;
+        end
         
-    app.Data.Info.ProbeInfo.ECoGArray = Load_Data_Window_Info.ECoGArray;
-    app.Data.Info.ProbeInfo.SwitchTopBottomChannel = Load_Data_Window_Info.SwitchTopBottomChannel;
-    app.Data.Info.ProbeInfo.SwitchLeftRightChannel = Load_Data_Window_Info.SwitchLeftRightChannel;
-    app.Data.Info.ProbeInfo.FlipLoadedData = Load_Data_Window_Info.FlipLoadedData;
-    
-    app.Data.Info.ProbeInfo.OffSetRows = double(Load_Data_Window_Info.OffSetRows);
-    app.Data.Info.ProbeInfo.OffSetRowsDistance = Load_Data_Window_Info.OffSetRowsDistance;
-    
-    if isfield(Load_Data_Window_Info,'ProbeTrajectoryInfo')
-        app.Data.Info.ProbeInfo.CompleteAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesLong;
-        app.Data.Info.ProbeInfo.ShortAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort;
-        app.Data.Info.ProbeInfo.AreaDistanceFromTip = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance;
+        app.Data.Info.ProbeInfo.NrChannel = num2str(Load_Data_Window_Info.NrChannel);
+        app.Data.Info.ProbeInfo.NrRows = num2str(Load_Data_Window_Info.NumberChannelRows);
+        app.Data.Info.ProbeInfo.VertOffset = num2str(Load_Data_Window_Info.VerticalOffsetum);
+        app.Data.Info.ProbeInfo.HorOffset = num2str(Load_Data_Window_Info.HorizontalOffsetum);
+        app.Data.Info.ProbeInfo.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
+            
+        app.Data.Info.ProbeInfo.ECoGArray = Load_Data_Window_Info.ECoGArray;
+        app.Data.Info.ProbeInfo.SwitchTopBottomChannel = Load_Data_Window_Info.SwitchTopBottomChannel;
+        app.Data.Info.ProbeInfo.SwitchLeftRightChannel = Load_Data_Window_Info.SwitchLeftRightChannel;
+        app.Data.Info.ProbeInfo.FlipLoadedData = Load_Data_Window_Info.FlipLoadedData;
+        
+        app.Data.Info.ProbeInfo.OffSetRows = double(Load_Data_Window_Info.OffSetRows);
+        app.Data.Info.ProbeInfo.OffSetRowsDistance = Load_Data_Window_Info.OffSetRowsDistance;
+        
+        if isfield(Load_Data_Window_Info,'ProbeTrajectoryInfo')
+            app.Data.Info.ProbeInfo.CompleteAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesLong;
+            app.Data.Info.ProbeInfo.ShortAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort;
+            app.Data.Info.ProbeInfo.AreaDistanceFromTip = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance;
+        end
     end
-    
+
+    % Get True MEA Grid Locations for position related analyis
+    if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+        [app.Data.Info] = Manage_Dataset_MEA_Grid_Locations(app.Data.Info);
+    end
+
     % get x and y coordinates
     activechannel{1} = app.Data.Info.ProbeInfo.ActiveChannel;
     DummyStruc.Raw = [];
@@ -326,11 +359,15 @@ elseif strcmp(Type,"VariableDefinition")
     end
 
     app.TimeRangeViewBox.Value = TimeRangeText;
-
-    app.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
+    app.ClimMaxValues = [];
+    
+    if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+        app.ActiveChannel = sort(app.Data.Info.ProbeInfo.ActiveChannel);    
+    else
+        app.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
+    end
 
     app.Data.Info.SpikeType = "Non";
-
     app.ChannelChange = "ProbeView";
 
     % first plot after loading data: max 100 channel shown
@@ -383,7 +420,7 @@ elseif strcmp(Type,"Preprocessing")
     end
 
     [app] = Organize_Set_MainWindow_Dropdown(app,app.Data);
-
+    app.ClimMaxValues = [];
     % if strcmp(app.DropDown.Value,'Raw Data')
     %     app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
     % elseif strcmp(app.DropDown.Value,'Preprocessed Data')

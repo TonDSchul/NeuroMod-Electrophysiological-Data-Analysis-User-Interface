@@ -1,4 +1,4 @@
-function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder,AdditionalAmpFactor,NrChannel,NrRows)
+function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(RecordingSystem,FileType,SelectedFolder,TextArea,executablefolder,AdditionalAmpFactor,ActiveChannel,ChannelOrder,TimeAndChannelToExtract)
 
 %________________________________________________________________________________________
 
@@ -19,9 +19,11 @@ function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module
 % 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
 % 6. AdditionalAmpFactor: double, additional amplification raw data is
 % multiplied by
-% 7. NrChannel: char, from probe layout window, just for spike2
-% 8. NrRows: char, from probe layout window, number of rows with data
-% channel , just for spike2
+% 7. ActiveChannel: double array with all active channel the user defined
+% for the probe desing
+% 8. ChannelOrder: double array with the channel order the user specified.
+% Just to check whether number of elemtents are the same and give a error
+% message before data is extracted
 
 % Output: 
 % 1. Data: nchannel x ntimepoints matrix as single 
@@ -35,12 +37,49 @@ function [Data,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module
 % extraction is succesfull. 
 % 5. Time: 1 x timepoints double vector with a time in seconds for each data
 % sample
+% 6. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    TimeAndChannelToExtract.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 
 %________________________________________________________________________________________
 
+if ~strcmp(TimeAndChannelToExtract.ChannelToExtract,"All")
+    if contains(TimeAndChannelToExtract.ChannelToExtract,']') || contains(TimeAndChannelToExtract.ChannelToExtract,'[')
+        TimeAndChannelToExtract.ChannelToExtract(find(TimeAndChannelToExtract.ChannelToExtract==']')) = [];
+        TimeAndChannelToExtract.ChannelToExtract(find(TimeAndChannelToExtract.ChannelToExtract=='[')) = [];
+    end
+
+    TempChannelToExtract = str2double(strsplit(TimeAndChannelToExtract.ChannelToExtract,','));
+    if length(ActiveChannel) ~= length(TempChannelToExtract)
+        msgbox("Error: More or less  active channel defined in probe design than channels specified to extract. Please specify to extract as many channel as you have active channel. (Note: Individual channel numbers are NOT individual active channel numbers. They start at 1 and go to the number of channel found in the raw recording.)")
+        warning("Error: More or less  active channel defined in probe design than channels specified to extract. Please specify to extract as many channel as you have active channel. (Note: Individual channel numbers are NOT individual active channel numbers. They start at 1 and go to the number of channel found in the raw recording.)");
+        warning(strcat("Active channel with ",num2str(length(ActiveChannel))," elements and channel to extract with ",num2str(length(TempChannelToExtract))," elements"));
+        Data = [];
+        HeaderInfo = [];
+        SampleRate = [];
+        RecordingType = [];
+        Time = [];
+        return;
+    end
+else
+    TempChannelToExtract = 1:length(ActiveChannel);
+end
+
+if ~isempty(ChannelOrder) && sum(isnan(ChannelOrder))==0
+    if length(ChannelOrder) ~= length(TempChannelToExtract)
+        msgbox("Error: More or less channel order channel defined in probe design than channels specified to extract. Please specify to extract as many channel as you have channel in your channel order. (Note: Individual channel numbers are NOT individual channel order numbers. They start at 1 and go to the number of channel found in the raw recording.)")
+        warning("Error: More or less channel order channel defined in probe design than channels specified to extract. Please specify to extract as many channel as you have channel in your channel order. (Note: Individual channel numbers are NOT individual channel order numbers. They start at 1 and go to the number of channel found in the raw recording.)");
+        warning(strcat("Channel order with ",num2str(length(ActiveChannel))," elements and channel to extract with ",num2str(length(TempChannelToExtract))," elements"));
+        Data = [];
+        HeaderInfo = [];
+        SampleRate = [];
+        RecordingType = [];
+        Time = [];
+        return;
+    end
+end
 
 % If Intan selected as recording system
 if strcmp(RecordingSystem,"Intan")
@@ -58,7 +97,7 @@ if strcmp(RecordingSystem,"Intan")
     %                               Data.Time = Timevector
     % Output HeaderInfo = Whatever header info your
     % recording has. 
-    [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Intan_Data(FileType,SelectedFolder,TextArea);
+    [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Intan_Data(FileType,SelectedFolder,TextArea,TimeAndChannelToExtract);
     
     if isempty(Data)
         Time = [];
@@ -213,6 +252,11 @@ elseif strcmp(RecordingSystem,"TDT Tank Data")
 
     RecordingType = "TDT Tank Data";
     
+
+elseif strcmp(RecordingSystem,"Spike GLX")
+
+    [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_SpikeGLX(SelectedFolder,TimeAndChannelToExtract);
+
 %% Use Fieldtrip functions to extract Plexon data formats. First load Header and then data
 elseif strcmp(RecordingSystem,"Plexon")
     % TextArea.Value = "Extracting Data for Plexon Recording System. Please wait until this window closes and a data plot appears in the main window. If you dont have MATLAB importer mex files, this can take a while.";
@@ -314,13 +358,6 @@ elseif strcmp(RecordingSystem,"Spike2")
     hSpike2 = waitbar(0, 'Extracting Spike2 Data...', 'Name','Extracting Spike2 Data...');
     % Extract channel wise data. Loops until all channel analyzed
 
-    if ischar(NrChannel)
-        NrChannel = str2double(NrChannel);
-    end
-    if ischar(NrRows)
-        NrRows = str2double(NrRows);
-    end
-
     while nchannel == true
         
         currentchan = currentchan+1;
@@ -340,7 +377,7 @@ elseif strcmp(RecordingSystem,"Spike2")
         clear TempData
         % Update the progress bar
 
-        fraction = currentchan/(NrChannel*NrRows); %
+        fraction = currentchan/(length(ActiveChannel)); %
         msg = sprintf('Extracting Spike2 Data... (%d%% done)', round(100*fraction));
         waitbar(fraction, hSpike2, msg);
     end

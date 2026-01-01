@@ -115,7 +115,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
             
             # Build data matrix
             try:
-                RawDataChunk = RawDataChunk.magnitude.T  # shape will be (n_channels, n_samples)
+                RawDataChunk = RawDataChunk.magnitude.T  # shape will be (channels x samples)
                 Method = 1
             except Exception:
                 RawDataChunk = np.vstack([asig.magnitude.flatten() for asig in RawDataChunk]) 
@@ -196,13 +196,13 @@ if __name__ == "__main__":
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)  # Already an admin here.
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)  
     
         except Exception as e:
             print(f"An error occurred: {e}")
             print("Traceback details:")
             import traceback
-            traceback.print_exc()  # Print detailed error information
+            traceback.print_exc()
         finally:
             input("Press Enter to exit...")
     
@@ -224,7 +224,7 @@ if __name__ == "__main__":
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)  # Already an admin here.
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract) 
         
             
     

@@ -1,4 +1,4 @@
-function Event_Module_Time_Frequency_Plot_Hilbert_TF (tf,frex,time,costumfrex,OneTrial,Figure,BaselineNormalize,TFType,Type)
+function Event_Module_Time_Frequency_Plot_Hilbert_TF (Data,tf,frex,time,costumfrex,OneTrial,Figure,BaselineNormalize,TFType,Type,BaselineNormalize,NormalizationWindow)
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using filter hilbert transformation
 
@@ -29,15 +29,38 @@ function Event_Module_Time_Frequency_Plot_Hilbert_TF (tf,frex,time,costumfrex,On
 
 if strcmp(TFType,"TF")
     if strcmp(Type,"Total")
+        Datatouse = 10*log10(squeeze(tf(1,:,:,1)));
+    elseif strcmp(Type,"NonPhaseLocked")
+        Datatouse = 10*log10(squeeze(tf(2,:,:,1)));
+    elseif strcmp(Type,"PhaseLocked")
+        Datatouse = real(10*log10(squeeze(tf(1,:,:,1))-squeeze(tf(2,:,:,1))));
+    end
+elseif strcmp(TFType,"ITPC")
+    if strcmp(Type,"Total")
+        Datatouse = 10*log10(squeeze(tf(1,:,:,2)));
+    elseif strcmp(Type,"NonPhaseLocked")
+        Datatouse = 10*log10(squeeze(tf(2,:,:,2)));
+    elseif strcmp(Type,"PhaseLocked")
+        Datatouse = real(10*log10(squeeze(tf(1,:,:,2))-squeeze(tf(2,:,:,2))));
+    end
+end
+
+
+if BaselineNormalize
+    Datatouse = Event_Module_Baseline_Normalize(Data,Datatouse,NormalizationWindow,Data.Info.EventRelatedTime,"TF");
+end
+
+if strcmp(TFType,"TF")
+    if strcmp(Type,"Total")
         hold(Figure, 'on' )
         Figure.NextPlot = "replace";
         if BaselineNormalize
-            contourf(Figure,time,frex,10*log10(squeeze(tf(1,:,:,1))),40,'linecolor','none')
+            contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
             cbar_handle=colorbar('peer',Figure,'location','EastOutside');
             cbar_handle.Label.String = "db Power";
             cbar_handle.Label.Rotation = 270;
         else
-            contourf(Figure,time,frex,squeeze(tf(1,:,:,1)),40,'linecolor','none')
+            contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
             cbar_handle=colorbar('peer',Figure,'location','EastOutside');
             cbar_handle.Label.String = "Power";
             cbar_handle.Label.Rotation = 270;
@@ -54,12 +77,12 @@ if strcmp(TFType,"TF")
         hold(Figure, 'on' )
         Figure.NextPlot = "replace";
         if BaselineNormalize
-            contourf(Figure,time,frex,10*log10(squeeze(tf(2,:,:,1))),40,'linecolor','none')
+            contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
             cbar_handle=colorbar('peer',Figure,'location','EastOutside');
             cbar_handle.Label.String = "dB Power";
             cbar_handle.Label.Rotation = 270;
         else
-            contourf(Figure,time,frex,squeeze(tf(2,:,:,1)),40,'linecolor','none')
+            contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
             cbar_handle=colorbar('peer',Figure,'location','EastOutside');
             cbar_handle.Label.String = "Power";
             cbar_handle.Label.Rotation = 270;
@@ -76,12 +99,12 @@ if strcmp(TFType,"TF")
         hold(Figure, 'on' )
         Figure.NextPlot = "replace";
         if BaselineNormalize
-            contourf(Figure,time,frex,real(10*log10(squeeze(tf(1,:,:,1)-tf(2,:,:,1)))),40,'linecolor','none')
+            contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
             cbar_handle=colorbar('peer',Figure,'location','EastOutside');
             cbar_handle.Label.String = "dB Power";
             cbar_handle.Label.Rotation = 270;
         else
-            contourf(Figure,time,frex,squeeze(tf(1,:,:,1)-tf(2,:,:,1)),40,'linecolor','none')
+            contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
             cbar_handle=colorbar('peer',Figure,'location','EastOutside');
             cbar_handle.Label.String = "Power";
             cbar_handle.Label.Rotation = 270;
@@ -105,12 +128,12 @@ if strcmp(TFType,"ITPC")
             hold(Figure, 'on' )
             Figure.NextPlot = "replace";
             if BaselineNormalize
-                contourf(Figure,time,frex,10*log10(squeeze(tf(1,:,:,2))),40,'linecolor','none')
+                contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
                 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
                 cbar_handle.Label.String = "dB Power";
                 cbar_handle.Label.Rotation = 270;
             else
-                contourf(Figure,time,frex,squeeze(tf(1,:,:,2)),40,'linecolor','none')
+                contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
                 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
                 cbar_handle.Label.String = "Power";
                 cbar_handle.Label.Rotation = 270;
@@ -129,12 +152,12 @@ if strcmp(TFType,"ITPC")
             hold(Figure, 'on' )
             Figure.NextPlot = "replace";
             if BaselineNormalize
-                contourf(Figure,time,frex,10*log10(squeeze(tf(2,:,:,2))),40,'linecolor','none')
+                contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
                 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
                 cbar_handle.Label.String = "dB Power";
                 cbar_handle.Label.Rotation = 270;
             else
-                contourf(Figure,time,frex,squeeze(tf(2,:,:,2)),40,'linecolor','none')
+                contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
                 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
                 cbar_handle.Label.String = "Power";
                 cbar_handle.Label.Rotation = 270;
@@ -151,12 +174,12 @@ if strcmp(TFType,"ITPC")
             hold(Figure, 'on' )
             Figure.NextPlot = "replace";
             if BaselineNormalize
-                contourf(Figure,time,frex,real(10*log10(squeeze(tf(1,:,:,2)-tf(2,:,:,2)))),40,'linecolor','none')
+                contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
                 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
                 cbar_handle.Label.String = "dB Power";
                 cbar_handle.Label.Rotation = 270;
             else
-                contourf(Figure,time,frex,squeeze(tf(1,:,:,2)-tf(2,:,:,2)),40,'linecolor','none')
+                contourf(Figure,time,frex,Datatouse,40,'linecolor','none')
                 cbar_handle=colorbar('peer',Figure,'location','EastOutside');
                 cbar_handle.Label.String = "Power";
                 cbar_handle.Label.Rotation = 270;

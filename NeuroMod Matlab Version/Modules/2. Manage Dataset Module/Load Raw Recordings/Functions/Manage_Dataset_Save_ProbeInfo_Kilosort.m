@@ -204,28 +204,29 @@ if str2double(ChannelRowsDropDown) > 2
     
     kcoords = zeros(size(chanMap,1),size(chanMap,2))+1;
 
-    xcoords = zeros(size(chanMap,1),size(chanMap,2));
+    %xcoords = zeros(size(chanMap,1),size(chanMap,2));
+    xcoords = [];
     xcoordtemp = 0:HorOffset:HorOffset*str2double(ChannelRowsDropDown)-1;
     Laufvariable = 1;
     for tt = NrChannelPerRow:str2double(ChannelRowsDropDown):NrChannelPerRow*str2double(ChannelRowsDropDown)
         if VerOffsetSecondRow == 1
             if mod(Laufvariable,2) == 0
-                xcoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = xcoordtemp+VerOffsetDistanceSecondRow;
+                xcoords = [xcoords,xcoordtemp+VerOffsetDistanceSecondRow];
             else
-                xcoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = xcoordtemp;
+                xcoords = [xcoords,xcoordtemp];
             end
         else
-            xcoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = xcoordtemp;
+            xcoords = [xcoords,xcoordtemp];
         end
         Laufvariable = Laufvariable + 1;
     end
     
     Alldepths = 0:str2double(ChannelSpacingumEditField):((NrChannelPerRow)-1)*str2double(ChannelSpacingumEditField);
-    ycoords = zeros(size(chanMap));
-    
+    %ycoords = zeros(size(chanMap));
+    ycoords = [];
     Laufvariable = 1;
     for tt = NrChannelPerRow:str2double(ChannelRowsDropDown):NrChannelPerRow*str2double(ChannelRowsDropDown)
-        ycoords(1,tt-str2double(ChannelRowsDropDown)+1:tt) = Alldepths(Laufvariable);
+        ycoords = [ycoords,zeros(1,str2double(ChannelRowsDropDown))+Alldepths(Laufvariable)];
         Laufvariable = Laufvariable + 1;
     end
 end

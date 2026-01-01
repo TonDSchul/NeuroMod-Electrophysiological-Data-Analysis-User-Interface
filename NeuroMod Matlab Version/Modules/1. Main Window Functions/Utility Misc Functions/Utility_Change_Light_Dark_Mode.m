@@ -73,6 +73,7 @@ if strcmp(Window,'MainWindow')
     app.DropDown.BackgroundColor                      = ComponentsInWindowColor;
     app.DropDown_2.BackgroundColor                    = ComponentsInWindowColor;
     app.EventChannelDropDown.BackgroundColor          = ComponentsInWindowColor;
+    app.EventTriggerNumberField.BackgroundColor       = ComponentsInWindowColor;
     
     app.ListBox_5.BackgroundColor                     = ComponentsInWindowColor;
     app.ListBox_6.BackgroundColor                     = ComponentsInWindowColor;
@@ -163,9 +164,11 @@ if strcmp(Window,"ExtractDataWindow")
 
     app.TextArea.BackgroundColor   = ComponentsInWindowColor;
     app.TextArea_3.BackgroundColor = ComponentsInWindowColor;
+    
     app.TextArea_4.BackgroundColor = WindowBackgroundColor;
     app.RecordingSystemDropDown_2.BackgroundColor = ComponentsInWindowColor;
     app.FormatToSaveandReadintoMatlabDropDown.BackgroundColor = ComponentsInWindowColor;
+    app.AdditionalAmplificationFactorEditField_3.BackgroundColor = ComponentsInWindowColor;
 
     app.ExtractionOptionsPanel.BackgroundColor = WindowBackgroundColor;
     app.ExtractionOptionsPanel.ForegroundColor = WindowBackgroundColor;
@@ -214,7 +217,6 @@ if strcmp(Window,"ProbeLayout_Window")
     app.UIAxes2.XColor = [0 0 0];
     app.UIAxes2.YColor = [0 0 0];
     app.UIAxes2.Title.Color  = [0 0 0];
-
 
 end
 
@@ -908,6 +910,9 @@ if strcmp(Window,"EventERP")
     app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
     app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.EventChannelSelectionDropDown.BackgroundColor  = ComponentsInWindowColor;
+    
+    app.EventNumberSelectionEditField_3.BackgroundColor  = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField_2.BackgroundColor  = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.ERPWindow.SingleERP.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -957,6 +962,9 @@ if strcmp(Window,"EventCSD")
     app.ClimminmaxEditField.BackgroundColor  = ComponentsInWindowColor;
     app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.EventTriggerChannel.BackgroundColor  = ComponentsInWindowColor;
+    
+    app.EventNumberSelectionEditField_2.BackgroundColor = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField_3.BackgroundColor = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.CSDWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1010,6 +1018,9 @@ if strcmp(Window,"EventTF")
     app.FrequencyRangeminmaxstepsEditField.BackgroundColor  = ComponentsInWindowColor;
     app.CycleWidthfromto23EditField.BackgroundColor  = ComponentsInWindowColor;
 
+    app.EventNumberSelectionEditField_2.BackgroundColor = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField_3.BackgroundColor = ComponentsInWindowColor;
+
     app.ClimminmaxEditField.BackgroundColor  = ComponentsInWindowColor;
     app.WaveletTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.CycleWidthfromto23EditField.BackgroundColor  = ComponentsInWindowColor;
@@ -1054,6 +1065,9 @@ if strcmp(Window,"EventSpectrum")
     app.FrequencyRangeHzEditField.BackgroundColor  = ComponentsInWindowColor;
     app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.EventTriggerChannel.BackgroundColor  = ComponentsInWindowColor;
+    
+    app.EventNumberSelectionEditField_2.BackgroundColor = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField.BackgroundColor = ComponentsInWindowColor;
 
     app.DataSourceDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.EventSelectionEditField.BackgroundColor  = ComponentsInWindowColor;
@@ -1215,6 +1229,8 @@ if strcmp(Window,"LiveCSDWindow")
 
     app.HammWindowEditField.BackgroundColor   = ComponentsInWindowColor;
     app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+    
+    app.TimeWindowfromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.LiveCSDWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1250,6 +1266,7 @@ if strcmp(Window,"LiveSpectralPowerWindow")
     app.PowerEstimateOptionsPanel.ForegroundColor   = WindowBackgroundColor;
 
     app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.TimeWindowfromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.LivePowerEstimateWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1268,6 +1285,47 @@ if strcmp(Window,"LiveSpectralPowerWindow")
     
 end
 
+if strcmp(Window,'LiveSpectrogramWindow')
+    % texts to black
+    set(findall(app.SpectrogramWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+
+    app.SpectrogramWindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.LeftPanel.BackgroundColor = WindowBackgroundColor;
+
+    app.Panel.BackgroundColor = WindowBackgroundColor;
+
+    app.FrequencyRangeMinMaxEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.WindowsEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.ChannelToPlotDropDown.BackgroundColor   = ComponentsInWindowColor;
+    
+    app.TimeWindowfromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
+
+    app.UIAxes.Color  = app.Mainapp.PlotAppearance.LiveSpectrogramWindow.BackgroundColor;
+    app.UIAxes.XColor = 'k';  
+    app.UIAxes.YColor = 'k';  
+
+    app.UIAxes.XTickLabelMode = 'auto';  
+    app.UIAxes.YTickLabelMode = 'auto';
+    app.UIAxes.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
+    app.UIAxes.FontSize = app.Mainapp.PlotAppearance.LiveSpectrogramWindow.FontSize;
+    %app.UIAxes.FontColor = 'k';  % Tick label color
+    
+    % Set title, xlabel, ylabel colors
+    app.UIAxes.Title.Color = 'k';
+    app.UIAxes.XLabel.Color = 'k';
+    app.UIAxes.YLabel.Color = 'k';
+    
+    cb = colorbar(app.UIAxes);
+    cb.Color = 'k';              % Sets tick mark and label color to black
+    cb.Label.String = app.Mainapp.PlotAppearance.LiveSpectrogramWindow.CLabel;
+    cb.Label.Rotation = 270;
+    cb.FontSize =  app.Mainapp.PlotAppearance.LiveSpectrogramWindow.FontSize-1;
+    cb.Label.Color = 'k';        % Sets the color of the label text
+    
+end
+
 if strcmp(Window,"LiveSpikeRatePowerWindow")    
     % texts to black
     set(findall(app.SpikeRateWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
@@ -1279,6 +1337,7 @@ if strcmp(Window,"LiveSpikeRatePowerWindow")
     
     app.SpikeRateOptionsPanel.BackgroundColor   = WindowBackgroundColor;
     app.SpikeRateOptionsPanel.ForegroundColor   = WindowBackgroundColor;
+    app.TimeWindowfromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.LiveSpikeRateWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1686,7 +1745,6 @@ if strcmp(Window,'ChangeLowPassSettings')
     app.SelectSpikeRateFilterOptionsUIFigure.Color  = WindowBackgroundColor;
 
     app.EnternewCutoffFrequencyHzEditField.BackgroundColor   = ComponentsInWindowColor;
-
 end
 
 if strcmp(Window,"AskForResampling")    
@@ -1718,7 +1776,9 @@ if strcmp(Window,"InstFrequWindow")
     app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
     app.ChannelSelectionDropDown_2.BackgroundColor   = ComponentsInWindowColor;
     app.CalculationMethodDropDown.BackgroundColor   = ComponentsInWindowColor;
-
+    
+    app.TimeWindowfromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
+    
     app.UIAxes.Title.Color = 'k';
     app.UIAxes.XLabel.Color = 'k';
     app.UIAxes.YLabel.Color = 'k';
@@ -1820,6 +1880,9 @@ if strcmp(Window,"EventPhaseSyncWindow")
     app.DataTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
     app.ChannelSelectionDropDown_2.BackgroundColor   = ComponentsInWindowColor;
     app.CalculationMethodDropDown.BackgroundColor   = ComponentsInWindowColor;
+
+    app.EventNumberSelectionEditField_2.BackgroundColor = ComponentsInWindowColor;
+    app.EventNumberSelectionEditField.BackgroundColor = ComponentsInWindowColor;
 
     app.UIAxes.Title.Color = 'k';
     app.UIAxes.XLabel.Color = 'k';

@@ -1,4 +1,4 @@
-function [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Intan_Data(Filetype,SelectedFolder,TextArea)
+function [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Intan_Data(Filetype,SelectedFolder,TextArea,TimeAndChannelToExtract)
 
 %________________________________________________________________________________________
 
@@ -13,6 +13,8 @@ function [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Int
 % 2. SelectedFolder: path as char to folder containing the recording
 % 3. TextArea: Textare from app window to display progress -- not used here
 % but can be useful in future
+% 4. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    TimeAndChannelToExtract.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
 
 % Output: 
 % 1. Data: nchannel x ntimespoints single matrix with extracted raw data
@@ -29,6 +31,8 @@ function [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_Int
 Data = [];
 num_data_points = [];
 texttoshow = "Extracting Data for Intan Recording System";
+
+ChannelToExtract = convertStringsToChars(TimeAndChannelToExtract.ChannelToExtract);
 
 %% Extract .dat Files
 
@@ -58,7 +62,7 @@ if strcmp(Filetype,"Intan .dat")
         RecordingType = [];
         return;
     end
-
+    
     % Load Rhd Info file
     [~,~,frequency_parameters,~,~,~,~,~] = Intan_RHD2000_Data_Extraction(InfoRhd(end-7:end),InfoRhd(1:end-8),"NoExtracting",[]);
  
@@ -67,20 +71,50 @@ if strcmp(Filetype,"Intan .dat")
     %% If new rhx format 'One File Per Signal Type'
     if OneFilePerSignalTypeFormat == 1
         
-        numchannel = frequency_parameters.num_amplifier_channels;
+        if strcmp(ChannelToExtract,"All")
+            numchannel = frequency_parameters.num_amplifier_channels;
+            AllChannelInFile = numchannel;
+            IndividualChannel = 1:numchannel;
+        else
+            
+            AllChannelInFile = frequency_parameters.num_amplifier_channels; % just to extract data properly from file
+            if contains(ChannelToExtract,']') || contains(ChannelToExtract,'[')
+                ChannelToExtract(find(ChannelToExtract==']')) = [];
+                ChannelToExtract(find(ChannelToExtract=='[')) = [];
+            end
+            IndividualChannel = str2double(strsplit(ChannelToExtract,','));
+            numchannel = length(IndividualChannel);
+        end
 
         mmf = memmapfile(DatFilePaths{AmplifierDataIndex(1)}, 'Format', 'int16');
 
-        Numdatapointsperchannel = size(mmf.Data,1)/numchannel;
+        Numdatapointsperchannel = size(mmf.Data,1)/AllChannelInFile;
         Data = zeros(numchannel,Numdatapointsperchannel);
         
-        ChunkStart = 1;
-        ChunkEnd = Numdatapointsperchannel;
+        % generate starts (1, 1+step, 1+2*step, ...)
+        ChunkStart = (0:AllChannelInFile-1) * Numdatapointsperchannel + 1;
+        % ends = starts + step - 1 (same length as ChunkStart)
+        ChunkEnd = ChunkStart + Numdatapointsperchannel - 1;
 
-        for nchan = 1:frequency_parameters.num_amplifier_channels % Loop through all .dat files found
-                          
+        DataChannel = 1;
+        JustExecuteOnes = 0;
+
+        for nchan = 1:AllChannelInFile % Loop through all .dat files found
+            
+            % if current channel iteration that is loaded 
+            if ~ismember(nchan,IndividualChannel)
+                fraction = nchan/AllChannelInFile;
+                msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
+                waitbar(fraction, h, msg);
+                continue
+            else
+                if DataChannel == 1
+                    JustExecuteOnes = 1;
+                end
+            end
+
             % Update the progress bar
-            fraction = nchan/numchannel;
+            fraction = nchan/AllChannelInFile;
             msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
             waitbar(fraction, h, msg);
     
@@ -90,19 +124,20 @@ if strcmp(Filetype,"Intan .dat")
             TextArea = texttoshow;
     
             pause(0.05);
-    
-            if nchan == 1 % First channel: Define additional stuff
-               
-                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)));%.*0.000195)'; % in mV
+            
+            if nchan == 1 || JustExecuteOnes == 1 % First channel: Define additional stuff
 
-                ChunkStart = ChunkStart + Numdatapointsperchannel;
-                ChunkEnd = ChunkEnd + Numdatapointsperchannel;
-                      
-                num_data_points = Numdatapointsperchannel;
+                TrueChannel = IndividualChannel(nchan);
+
+                Data(DataChannel,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart(TrueChannel):ChunkEnd(TrueChannel)))); % in mV
+                
+                Data(DataChannel,1:Numdatapointsperchannel) = 0.195 * (Data(DataChannel,1:Numdatapointsperchannel) - 32768);
+                
+                DataChannel = DataChannel + 1;
                 
                 if size(Data,1) == 0 || isempty(Data)
-                    msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
-                    TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
+                    msgbox("No amplifier channel data found! Data extraction cannot be finished.");
+                    TextArea = "No amplifier channel data found! Data extraction cannot be finished.";
                     Data = [];
                     HeaderInfo = [];
                     SampleRate = [];
@@ -118,23 +153,58 @@ if strcmp(Filetype,"Intan .dat")
     
             else % if second to last channel just extract data
                 
-                Data(nchan,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart:ChunkEnd)));%.*0.000195)'; % in mV
-
-                ChunkStart = ChunkStart + Numdatapointsperchannel;
-                ChunkEnd = ChunkEnd + Numdatapointsperchannel;
+                Data(DataChannel,1:Numdatapointsperchannel) = (single(mmf.Data(ChunkStart(TrueChannel):ChunkEnd(TrueChannel)))); % in mV
+                
+                Data(DataChannel,1:Numdatapointsperchannel) = 0.195 * (Data(DataChannel,1:Numdatapointsperchannel) - 32768);
+                DataChannel = DataChannel + 1;
      
             end
+            JustExecuteOnes = 0;
         end
 
     %% If One file per channel format selected
     else
 
-        numchannel = frequency_parameters.num_amplifier_channels;
+        if strcmp(ChannelToExtract,"All")
+            numchannel = frequency_parameters.num_amplifier_channels;
+            AllChannelInFile = numchannel;
+            IndividualChannel = 1:numchannel;
+        else
+            numchannel = length(str2double(strsplit(ChannelToExtract,',')));
+            AllChannelInFile = frequency_parameters.num_amplifier_channels; % just to extract data properly from file
+            
+            ChannelToExtract = convertStringsToChars(ChannelToExtract);
+            if contains(ChannelToExtract,']') || contains(ChannelToExtract,'[')
+                ChannelToExtract(find(ChannelToExtract==']')) = [];
+                ChannelToExtract(find(ChannelToExtract=='[')) = [];
+            end
+
+            IndividualChannel = str2double(strsplit(ChannelToExtract,','));
+        end
+        
+        % Predefine Values
+        mmf = memmapfile(DatFilePaths{AmplifierDataIndex(1)}, 'Format', 'int16');
+        Data = zeros(numchannel,size(mmf.Data,1));
+        num_data_points = size(Data,2);
+        % Extract General Information about Digital Inputs
+        HeaderInfo = frequency_parameters;
+        
+        % Create Time vector based on nr of samples and sampling rate
+        SampleRate = HeaderInfo.amplifier_sample_rate;
+        
+        DataChannel = 1;
 
         for nchan = 1:length(AmplifierDataIndex) % Loop through all .dat files found
-                
+            % if current channel iteration that is loaded 
+            if ~ismember(nchan,IndividualChannel)
+                fraction = nchan/AllChannelInFile;
+                msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
+                waitbar(fraction, h, msg);
+                continue
+            end
+            
             % Update the progress bar
-            fraction = nchan/numchannel;
+            fraction = nchan/AllChannelInFile;
             msg = sprintf('Extracting Data... (%d%% done)', round(100*fraction));
             waitbar(fraction, h, msg);
     
@@ -145,16 +215,8 @@ if strcmp(Filetype,"Intan .dat")
     
             pause(0.05);
     
-            if nchan == 1 % First channel: Define additional stuff
-               
-                mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
-    
-                Data = zeros(length(AmplifierDataIndex),size(mmf.Data,1));
-    
-                Data(nchan,1:end) = (single(mmf.Data).*0.000195)'; % in mV
-                
-                num_data_points = size(Data,2);
-                
+            if ~isempty(mmf) % First channel: No need to load in again
+                Data(DataChannel,1:end) = (single(mmf.Data).*0.000195)'; % in mV            
                 if size(Data,1) == 0 || isempty(Data)
                     msgbox("No Amplifier Channel Data found! Data Extraction cannot be finished.");
                     TextArea = "No Amplifier Channel Data found! Data Extraction cannot be finished.";
@@ -164,20 +226,14 @@ if strcmp(Filetype,"Intan .dat")
                     RecordingType = [];
                     return;
                 end
-    
-                % Extract General Information about Digital Inputs
-                HeaderInfo = frequency_parameters;
-                
-                % Create Time vector based on nr of samples and sampling rate
-                SampleRate = HeaderInfo.amplifier_sample_rate;
-    
+                DataChannel = DataChannel+1;
+
             else % if second to last channel just extract data
-                
                 mmf = memmapfile(DatFilePaths{AmplifierDataIndex(nchan)}, 'Format', 'int16');
-                Data(nchan,1:num_data_points) = mmf.Data';
-                Data(nchan,1:num_data_points) = single(Data(nchan,1:num_data_points)).*0.000195; % in mV
-     
+                Data(DataChannel,1:num_data_points) = (single(mmf.Data).*0.000195)'; % in mV    
+                DataChannel = DataChannel+1;
             end
+            mmf = [];
         end
     end
 
@@ -222,7 +278,7 @@ if strcmp(Filetype,"Intan .rhd")
             return;
         end
         
-        [amplifier_data,~,frequency_parameters,~,~,t_dig,~,~] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea);
+        [amplifier_data,~,frequency_parameters,~,~,~,~,~] = Intan_RHD2000_Data_Extraction (RHDFiles,RHDPath,"Extracting",TextArea);
         
         if Numiters == 1
             if size(amplifier_data,1) == 0 || isempty(amplifier_data)

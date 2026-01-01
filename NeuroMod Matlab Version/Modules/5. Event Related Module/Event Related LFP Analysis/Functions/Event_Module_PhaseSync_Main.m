@@ -1,4 +1,4 @@
-function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToCompute,Time,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,WhatToDo,BasedOnERP,ShowAnalyzedData,DataTypeSelected,LowPassSettings,FilterType)
+function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToCompute,Time,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,WhatToDo,BasedOnERP,ShowAnalyzedData,DataTypeSelected,LowPassSettings,FilterType,BaselineNormalize,NormalizationWindow)
 
 %________________________________________________________________________________________
 %% Function to manage phase analysis of event related data
@@ -46,6 +46,9 @@ function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToComput
 % wither 'Raw Data' or 'Preprocessed Data'
 % 23. LowPassSettings: struc with fields: LowPassSettings.Cutoff, LowPassSettings.FilterOrder
 % 24. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
+% 25. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 26. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. texttoshow: text to show filter infoes in of filter steps that where
@@ -56,6 +59,11 @@ function [texttoshow,CurrentPlotData] = Event_Module_PhaseSync_Main(DataToComput
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
+
+
+if BaselineNormalize
+    DataToCompute = Event_Module_Baseline_Normalize(Data,DataToCompute,NormalizationWindow,Data.Info.EventRelatedTime);
+end
 
 if BasedOnERP
     DataToCompute = squeeze(mean(DataToCompute,2));

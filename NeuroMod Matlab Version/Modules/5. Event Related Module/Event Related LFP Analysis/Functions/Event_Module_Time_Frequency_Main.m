@@ -1,4 +1,4 @@
-function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,EventRelatedData,Figure,SampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,Type,Plottype,WaveletType,TwoORThreeD,CurrentPlotData,PlotAppearance)
+function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,EventRelatedData,Figure,SampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,Type,Plottype,WaveletType,TwoORThreeD,CurrentPlotData,PlotAppearance,BaselineNormalize,NormalizationWindow)
 
 %________________________________________________________________________________________
 %% Main Function to call correct TF analysis and plotting functions with correct event related data portion based on input in app window
@@ -32,6 +32,9 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Event
 % Wavelets" OR "Filter Hilbert"; NOTE: TODO: "Filter Hilbert" does not work yet 
 % 10. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 11. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 12. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. climsTF: clim of current plot, saved by TF window to be able to auto
@@ -44,24 +47,23 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Event
 %________________________________________________________________________________________
 
 
-if strcmp(WaveletType,"Moorlet Wavelets")
-    EventRelatedData = EventRelatedData(DataChannelSelected,EventNrRange,:);
-elseif strcmp(WaveletType,"Filter Hilbert")
-    EventRelatedData = EventRelatedData(DataChannelSelected,EventNrRange,:);
-end
+EventRelatedData = EventRelatedData(DataChannelSelected,EventNrRange,:);
+
 
 % Check if max frequ is bigger than nyquist
 if TF.FreqRange(3) > SampleRate/2
-    msgbox("Warning: Entered max frequency exceeds nyqusit. Max frequency autoset to nyquist!")
+    msgbox("Warning: Entered max frequency exceeds nyquist. Max frequency auto-set to nyquist!")
     TF.FreqRange(3) = SampleRate/2;
 end
 
 if strcmp(WaveletType,"Moorlet Wavelets")
     [tf,frex] = Event_Module_Time_Frequency_Wavelet_ITPC_Cycles(EventRelatedData,Data.Info.EventRelatedTime,[],TF.FreqRange,TF.Range_cycles);
-    [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Figure,Data.Info.EventRelatedTime,TF.FreqRange,tf,frex,0,Plottype,Type,DataChannelSelected,EventNrRange,TwoORThreeD,CurrentPlotData,PlotAppearance);
+    
+    [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Plot_WaveletTF (Data,Figure,Data.Info.EventRelatedTime,TF.FreqRange,tf,frex,0,Plottype,Type,DataChannelSelected,EventNrRange,TwoORThreeD,CurrentPlotData,PlotAppearance,BaselineNormalize,NormalizationWindow);
 elseif strcmp(WaveletType,"Filter Hilbert")
     [tf,frex] = Event_Module_Time_Frequency_Hilbert_TimeFrequ_ITPC (EventRelatedData,SampleRate,Data.Info.EventRelatedTime,TF.FreqRange,TF.FilterRange,TF.FilterOrder,[EventNrRange(1),EventNrRange(2)],DataChannelSelected,[]);
-    Event_Module_Time_Frequency_Plot_Hilbert_TF (tf,frex,Data.Info.EventRelatedTime,TF.FreqRange,0,Figure,0,Type,Plottype);
+        
+    Event_Module_Time_Frequency_Plot_Hilbert_TF (Data,tf,frex,Data.Info.EventRelatedTime,TF.FreqRange,0,Figure,0,Type,Plottype,BaselineNormalize,NormalizationWindow);
 end
 
 

@@ -112,7 +112,7 @@ end
 
 %% Loop through files types supported and determine whether they are part of the folder
 % Use regular expression to extract filenames ending with '.smrx'
-AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'";".plx'";".sev'";".nex'"];
+AllFormats = [".dat'";".rhd'";".smrx'";".ncs'";".nse'";".dma'";".sdma'";".plx'";".sev'";".nex'";".bin'";".raw.h5'"];
 
 % Loop through all contents of dfolder and compare file endings
 % with prefedined endings. Save endings found as strings in Formatsfound
@@ -196,6 +196,20 @@ if sum(contains(Formatsfound,".ncs")) >= 1 || sum(contains(Formatsfound,".nse"))
         currentit = currentit+1;
     end
     FileTypeDropDownItems = FileTypeSelection;
+end
+
+%% Spike GLX
+if sum(contains(Formatsfound,".bin")) >= 1
+    RecordingSystemDropDownItems = {};
+    RecordingSystemDropDownItems{1} = 'Spike GLX';
+    FileTypeDropDownItems{1} = 'Spike GLX NP';
+end
+
+%% MEA data
+if sum(contains(Formatsfound,".raw.h5")) >= 1
+    RecordingSystemDropDownItems = {};
+    RecordingSystemDropDownItems{1} = 'MEA Maxwell';
+    FileTypeDropDownItems{1} = 'MEA .h5 file';
 end
 
 %% Plexon -- done via NEO now

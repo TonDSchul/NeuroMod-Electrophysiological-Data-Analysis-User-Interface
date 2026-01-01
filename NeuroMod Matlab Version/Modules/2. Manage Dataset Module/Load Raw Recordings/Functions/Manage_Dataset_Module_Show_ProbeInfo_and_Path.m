@@ -229,6 +229,9 @@ if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"Auto
         %     else
         %         Formatsfound.Library = "NeuralEnsemble NEO Python Library";
         %     end
+        elseif contains(TempFormatsfound,".raw.h5")
+            ExtractWithNeo = "SpikeInterface Python Library";
+            Formatsfound.Library = "SpikeInterface Python Library";
         else
             if JustChangeLibrary == 0 % on startup
                 ExtractWithNeo = "NeuroMod Matlab";
@@ -304,6 +307,29 @@ if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"Auto
             end
             
             %FileTypeDropDownItems{1} = convertStringsToChars(strcat(FileTypeDropDownItems{1}," ",Formatsfound));
+        end
+    end
+    %% get infos from selected SpikeInterface folder
+    if ~isempty(ExtractWithNeo)
+        if strcmp(ExtractWithNeo ,"SpikeInterface Python Library") && NoFormatFound == 0
+    
+            if SelectedFolder == 0 % if not on startup
+                SelectedFolder = FolderToCheck;
+            end
+            
+            [ProbeInfoText,TempRecordingSystemDropDownItems,tempFileTypeDropDownItems,stringArray,SelectedFolder,~] = Manage_Dataset_Module_SpikeInterface_Populate_Text(app.ProbeInfoandPath,PathToOpen,1,SelectedFolder,RecordingType);
+
+            if ~isempty(TempRecordingSystemDropDownItems) && ~isempty(RecordingSystemDropDownItems)
+                RecordingSystemDropDownItems{1} = convertStringsToChars(strcat("SpikeInterface ",RecordingSystemDropDownItems{1}));
+            end
+            if ~isempty(TempRecordingSystemDropDownItems) && isempty(RecordingSystemDropDownItems)
+                RecordingSystemDropDownItems{1} = convertStringsToChars(strcat(TempRecordingSystemDropDownItems{1}," ",Formatsfound.Format));
+            end
+           
+            FolderContentsText = [];
+            if isempty(FileTypeDropDownItems)
+                FileTypeDropDownItems{1} = convertStringsToChars(tempFileTypeDropDownItems{1});
+            end
         end
     end
     %% No folder selected  / found
@@ -406,5 +432,4 @@ if strcmp(ProbeInfoOrFolder,"FolderSelection") || strcmp(ProbeInfoOrFolder,"Auto
             end         
         end
     end
-
 end

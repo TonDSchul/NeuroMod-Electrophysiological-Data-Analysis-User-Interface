@@ -36,7 +36,8 @@ elseif strcmp(Analysis,"Live_CSD_Main_Window")
     T = table(XData', YData', XTick', 'VariableNames', {'Time(s)','Depth(um)','Time Labels (s)'});
 elseif strcmp(Analysis,"Live_Spike_Rate_Main_Window")
     T = table(XData', YData', XTick', 'VariableNames', {'Time Bin','Spike Rate (Hz)','Time Labels (s)'});
-
+elseif contains(Analysis,"Live Spectrogram Plot")
+    T = table(XData', YData, XTick', 'VariableNames', {'Time [s]','Frequency (Hz)','Time Labels (s)'});
 %% Continous Spectrum
 elseif strcmp(Analysis,"Static_Spectrum")
     if strcmp(PlottedData.Type,"Power Spectrum over Depth")

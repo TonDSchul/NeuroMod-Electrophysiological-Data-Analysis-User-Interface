@@ -32,6 +32,10 @@ elseif strcmp(Window,"LivePowerEstimate")
     CopyColorBar = 0;
     CopyLegend = 0;
     CopySecondAxis = 0;
+    elseif strcmp(Window,"LiveSpectogram")
+    CopyColorBar = 1;
+    CopyLegend = 0;
+    CopySecondAxis = 0;
 elseif strcmp(Window,"LiveSpikeRate")
     CopyColorBar = 0;
     CopyLegend = 0;

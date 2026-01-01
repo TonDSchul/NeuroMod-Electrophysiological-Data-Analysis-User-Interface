@@ -297,3 +297,13 @@ try
 catch
     app.EventIndiceRejectionWindow = [];
 end
+
+%% Live Spectrogram
+try
+    if ~isempty(app.LiveSpectrogramApp)
+        delete(app.LiveSpectrogramApp);
+        app.LiveSpectrogramApp = [];
+    end
+catch
+    app.LiveSpectrogramApp = [];
+end

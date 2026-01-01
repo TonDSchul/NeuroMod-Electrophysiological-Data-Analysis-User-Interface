@@ -42,7 +42,11 @@ else %% if prepro and channel deleted make it differetm
 end
 
 if StartUp
-    EventFieldValue = strcat('1:',num2str(AlleventNr));
+    if AlleventNr>100
+        EventFieldValue = '1:100';
+    else
+        EventFieldValue = strcat('1:',num2str(AlleventNr));
+    end
 end
 
 if contains(EventFieldValue,',')

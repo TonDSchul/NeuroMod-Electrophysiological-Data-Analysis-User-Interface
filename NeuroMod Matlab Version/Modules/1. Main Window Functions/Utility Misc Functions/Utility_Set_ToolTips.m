@@ -15,6 +15,8 @@ function [app] = Utility_Set_ToolTips(app,Activated,Window)
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
+%Organize_Delete_All_Open_Windows(app,0);
+
 if Activated
     %% Main Window
     if strcmp(Window,"MainWindow") || strcmp(Window,"All")
@@ -56,6 +58,9 @@ if Activated
             app.ExtractDataWindow.RecordingSystemDropDown_2.Tooltip = "Select which code based you want to use to extract your recording data. The Neuroensemble NEO library is a python package  which supports other file formats than NeuroMod does natively and can be used with a few clicks and installations. See the README file for more information. Use NEO for Neuralynx, Plexon, Blackrock and NeuroExplorer recordings. Open Ephys recordings are supported by NeuroMod and NEO, so you can choose. For all other supported recording formats use Neuromod.";
             app.ExtractDataWindow.KeepConsoleOpen_2.Tooltip = "When you already extracted a recording with NEO, NeuroMod saves the channel and metadata in a new folder. Those can be directly loaded without having to access NEO, greatly increasing loading speed when loading multiple times.";
             app.ExtractDataWindow.KeepConsoleOpen.Tooltip = "Activate to keep the python console that opens when using NEO open to see progress of the data extraction and if some error occurs, like NEO being unable to find a supported format in the selected folder/file.";
+            
+            app.ExtractDataWindow.AdditionalAmplificationFactorEditField_2.Tooltip = "Specify which channel are extract from the raw recording. This is done BEFORE applying a channel order, so channel numbers are for the order of channel in the raw recording, not a user defined channel order. Format: 'All' to extract all channel, otherwise Matlab expressions like [1,2,3,5]";
+            app.ExtractDataWindow.AdditionalAmplificationFactorEditField_3.Tooltip = "Specify time range to extract from the raw recording. Format: 'from,to' in seconds like '0,Inf' for the whole time range or '0,10' for the first ten seconds.";
         end
     end
 
@@ -132,6 +137,9 @@ if Activated
             app.PSTHApp.Slider.Tooltip = "Change number of bins for which spike rate is calculated. Warning: high number of bins for a small time window leads to artificially high spike rates. Bin size should not get too small.";
             app.PSTHApp.LockYLimCheckBox.Tooltip = "Enable to lock the plot ylimit to the biggest values found since opening this window. Useful when updating the main plot to keep track of amplitudes.";
             app.PSTHApp.DownsampleCheckBox.Tooltip = "Downsample then binned spike rate to reduce the effect of artificially high spike rate with low bin size. Alternatively reduce number of bins to increase bin size.";
+            
+            app.PSTHApp.TimeWindowfromtoinsEditField.Tooltip = "Enter the time range for analysis when the 'Couple Time to Main Window' checkbox is deactivated. Format: comma separated numbers like 0,10 for the first ten seconds of the recording.";
+            app.PSTHApp.CoupleTimetoMainWindowCheckBox.Tooltip = "Select whether time range for the analysis is coupled to the main window data plot or to the 'Time Range' edit field in this window.";
         end
     end
 
@@ -141,6 +149,9 @@ if Activated
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
             app.SpectralEstApp.LockYLimCheckBox.Tooltip = "Enable to lock the ylimit to the biggest values found since opening this window. Useful when updating the main plot to keep track of amplitudes.";
             app.SpectralEstApp.DataTypeDropDown.Tooltip = "Select whether power is calculate for raw or preprocessed dataset.";
+
+            app.SpectralEstApp.TimeWindowfromtoinsEditField.Tooltip = "Enter the time range for analysis when the 'Couple Time to Main Window' checkbox is deactivated. Format: comma separated numbers like 0,10 for the first ten seconds of the recording.";
+            app.SpectralEstApp.CoupleTimetoMainWindowCheckBox.Tooltip = "Select whether time range for the analysis is coupled to the main window data plot or to the 'Time Range' edit field in this window.";
         end
     end
     %% Live CSD
@@ -150,6 +161,9 @@ if Activated
             app.CSDApp.HammWindowEditField.Tooltip = "Change hamm window size applied to data to smooth results (has to be odd!). Recommended to be smaller than 9.";
             app.CSDApp.LockCLimCheckBox.Tooltip = "Enable to lock the ylimit to the biggest values found since opening this window. Useful when updating the main plot to keep track of amplitudes.";
             app.CSDApp.DataTypeDropDown.Tooltip = "Select whether CSD is calculate for raw or preprocessed dataset.";
+
+            app.CSDApp.TimeWindowfromtoinsEditField.Tooltip = "Enter the time range for analysis when the 'Couple Time to Main Window' checkbox is deactivated. Format: comma separated numbers like 0,10 for the first ten seconds of the recording.";
+            app.CSDApp.CoupleTimetoMainWindowCheckBox.Tooltip = "Select whether time range for the analysis is coupled to the main window data plot or to the 'Time Range' edit field in this window.";
         end
     end
 
@@ -283,6 +297,10 @@ if Activated
             app.EventLFPERP.DataTypeDropDown.Tooltip = "Select if raw or preprocessed event related data is extracted.";
             app.EventLFPERP.ChannelSelectionDropDown_2.Tooltip = "Select a single channel for which the ERP and trial wise signal is plotted in the upper plot.";
 
+            app.EventLFPERP.BaselineNormalizeCheckBox.Tooltip = "Select whether to perform baseline normalization with the time specified in the baseline window text field. ";
+            app.EventLFPERP.EventNumberSelectionEditField_3.Tooltip = "Select the baseline time window used to baseline normalize; Format: comma separated numbers like '-0.2,0'.";
+            app.EventLFPERP.EventNumberSelectionEditField_2.Tooltip = "Info field showing the total number of trigger for the currently selected trigger channel.";
+            
             app.EventLFPERP.EventNumberSelectionEditField.Tooltip = "Specify trigger for which the ERP is computed and which are shown in the upper plot.";
             app.EventLFPERP.Slider.Tooltip = "Change spacing inbetween data lines in the lower plot.";
             
@@ -297,7 +315,11 @@ if Activated
             app.EventLFPCSD.EventTriggerChannel.Tooltip = "Select the event channel for which event related data is extracted.";
             app.EventLFPCSD.DataTypeDropDown.Tooltip = "Select if raw or preprocessed event related data is extracted.";
             app.EventLFPCSD.EventNumberSelectionEditField.Tooltip = "Specify trigger for which the ERP is computed and which are shown in the upper plot.";
-
+            
+            app.EventLFPCSD.BaselineNormalizeCheckBox.Tooltip = "Select whether to perform baseline normalization with the time specified in the baseline window text field. ";
+            app.EventLFPCSD.EventNumberSelectionEditField_3.Tooltip = "Select the baseline time window used to baseline normalize; Format: comma separated numbers like '-0.2,0'.";
+            app.EventLFPCSD.EventNumberSelectionEditField_2.Tooltip = "Info field showing the total number of trigger for the currently selected trigger channel.";
+            
             app.EventLFPCSD.HammWindowEditField.Tooltip = "Specify hamm window 'smooting' the results. Has to be odd (recommended smaller than 9).";
             app.EventLFPCSD.ClimminmaxEditField.Tooltip = "Specify the color plot limits. Format: [LowerLimit,UpperLimit]";
             app.EventLFPCSD.AutoClimButton.Tooltip = "Click the restore the default color plot limits.";
@@ -311,6 +333,10 @@ if Activated
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
             app.EventLFPSSP.DataToExtractFromDropDown.Tooltip = "Select if event related data is extracted from raw or preprocessed data.";
             app.EventLFPSSP.EventTriggerChannel.Tooltip = "Select the event channel for which event related data is extracted.";
+            
+            app.EventLFPSSP.BaselineNormalizeCheckBox.Tooltip = "Select whether to perform baseline normalization with the time specified in the baseline window text field. ";
+            app.EventLFPSSP.EventNumberSelectionEditField.Tooltip = "Select the baseline time window used to baseline normalize; Format: comma separated numbers like '-0.2,0'.";
+            app.EventLFPSSP.EventNumberSelectionEditField_2.Tooltip = "Info field showing the total number of trigger for the currently selected trigger channel.";
             
             app.EventLFPSSP.EventSelectionEditField.Tooltip = "Specify trigger (trials) over which the ERP is computed to compute the static spectrum.";
             app.EventLFPSSP.AnalysisDropDown.Tooltip = "Change the type of analysis shown. 'Band Power Individual Channel' shows the pwelch spectrum for a single channel (or mean over all data channel), while 'Band Power over Depth' shows the pwelch spectrum over all data channel.";
@@ -337,6 +363,10 @@ if Activated
             app.EventLFPTF.AutoClimButton.Tooltip = "Click the restore the default color plot limits.";
             
             app.EventLFPTF.WaveletTypeDropDown.Tooltip = "Currently only Moorlet wavelets available.";
+            
+            app.EventLFPTF.BaselineNormalizeCheckBox.Tooltip = "Select whether to perform baseline normalization with the time specified in the baseline window text field. ";
+            app.EventLFPTF.EventNumberSelectionEditField_3.Tooltip = "Select the baseline time window used to baseline normalize; Format: comma separated numbers like '-0.2,0'.";
+            app.EventLFPTF.EventNumberSelectionEditField_2.Tooltip = "Info field showing the total number of trigger for the currently selected trigger channel.";
 
             app.EventLFPTF.TimeFrequencyCheckBox.Tooltip = "If checkbox is activated, time frequency power is plotted across all selected trial.";
             app.EventLFPTF.IntertrialPhaseClusteringCheckBox.Tooltip = "If checkbox is activated, intertrial phase clustering is plotted across all selected trials.";
@@ -517,6 +547,23 @@ if Activated
             app.LiveECHTWindow.ShowDataAnalysedMenu.Tooltip = "Use the inst. frequency plot to show the narrowband pass filtered signal used for phase calculation instead.";
             app.LiveECHTWindow.ChangeFilterTypeMenu.Tooltip = "Select the kind of narrowband filter type used for narrowband filtering.";
             
+            app.LiveECHTWindow.TimeWindowfromtoinsEditField.Tooltip = "Enter the time range for analysis when the 'Couple Time to Main Window' checkbox is deactivated. Format: comma separated numbers like 0,10 for the first ten seconds of the recording.";
+            app.LiveECHTWindow.CoupleTimetoMainWindowCheckBox.Tooltip = "Select whether time range for the analysis is coupled to the main window data plot or to the 'Time Range' edit field in this window.";
+        end
+    end
+
+    %% LIVE Spectrogram
+    if strcmp(Window,"LiveSpectogram") || strcmp(Window,"All")
+        if ~isempty(app.LiveSpectrogramApp) && isvalid(app.LiveSpectrogramApp)
+            
+            app.LiveSpectrogramApp.ChannelToPlotDropDown.Tooltip = "Select the channel for which the spectrogram is calculated.";
+            app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Tooltip = "Set the frequency range to show in the analysis. Format: [Min Freq in Hz, Max Freq in Hz] like 1,500 for 1-500Hz.";
+            app.LiveSpectrogramApp.WindowsEditField.Tooltip = "Set the window length to divide the signal into segments. In samples, must be smaller than amount of data points in the current analysis time window.";
+
+            app.LiveSpectrogramApp.DataTypeDropDown.Tooltip = "Select whether to calculate the spectrogram with the raw - or preprocessed data (if available) dataset within the analysis time window.";
+            app.LiveSpectrogramApp.LockCLimCheckBox.Tooltip = "Click to lock the clim of the lower plot to the max value.";
+            app.LiveSpectrogramApp.TimeWindowfromtoinsEditField.Tooltip = "Enter the time range for analysis when the 'Couple Time to Main Window' checkbox is deactivated. Format: comma separated numbers like 0,10 for the first ten seconds of the recording.";
+            app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Tooltip = "Select whether time range for the analysis is coupled to the main window data plot or to the 'Time Range' edit field in this window.";
         end
     end
     
