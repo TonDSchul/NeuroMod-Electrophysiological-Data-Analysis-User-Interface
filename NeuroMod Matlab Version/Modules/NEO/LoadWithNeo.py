@@ -12,7 +12,9 @@ import neo
 
 from Neo_FunctionDeclaration import create_save_folder,Get_Save_Event_Data,Exract_Raw_Channel_Data,Save_MetaData,GetAcquisitionStartSample,Get_Reader,write_DataLogger
 
-def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,IsNP1,Np1DataPartToextract):
+def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel):
+    
+    
     # -----------------------------------------------------------------------
     ''' Check what to do'''
     # -----------------------------------------------------------------------
@@ -41,8 +43,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
     else:
         file_list = FolderName
         file_list = [file_list]  # wrap single string into a list
-    
-    
+        
     # -----------------------------------------------------------------------
     ''' First Create a Save Folder to save results in for Matlab to load'''
     # -----------------------------------------------------------------------
@@ -96,7 +97,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
             print("Starting Data Extraction with NEO from " + FolderName)
             write_DataLogger("Starting Data Extraction with NEO from " + FolderName,DataLoggerSaveFileName)
         
-        RawDataChunk,analogsignals,block = Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract)
+        RawDataChunk,analogsignals,block = Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel)
         
         #### ----------- If applicable: Find start sample of recording start in respect to acquisition start ----------- ####
         if first == True:
@@ -136,7 +137,8 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
     # -----------------------------------------------------------------------
     ''' Save Save Event, Meta Data and Channel Data in costume format'''
     # -----------------------------------------------------------------------
-    if JustExtractingEvents == 0 and FormatToSaveForMatlab == "Costume files (.dat,.mat)":
+
+    if JustExtractingEvents == 0 and FormatToSaveForMatlab == "Costum files (.dat,.mat)":
         
         # -----------------------------------------------------------------------
         ''' Save Event Data If present'''
@@ -150,6 +152,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
         # -----------------------------------------------------------------------
         NrChannel = RawDataChunk.shape[0]
         NrSamples = RawDataChunk.shape[1]
+        
         Save_MetaData(analogsignals,start_sample,JustExtractingEvents,MetaDataSaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples,IsNP1,Np1DataPartToextract)
         
         print("Saving Channel Data to " + ChannelDataSaveFileName + " (this might take a while)")
@@ -188,6 +191,9 @@ if __name__ == "__main__":
             IsNP1 = sys.argv[6]
             Np1DataPartToextract = sys.argv[7]
             
+            TimeToExtract = sys.argv[8]
+            IndividualChannel = sys.argv[9]
+            
             JustLoad = int(JustLoad)
             IsNP1 = int(IsNP1)
             Np1DataPartToextract = int(Np1DataPartToextract)
@@ -196,7 +202,7 @@ if __name__ == "__main__":
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)  
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel)  
     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -216,6 +222,9 @@ if __name__ == "__main__":
         IsNP1 = sys.argv[6]
         Np1DataPartToextract = sys.argv[7]
         
+        TimeToExtract = sys.argv[8]
+        IndividualChannel = sys.argv[9]
+        
         JustLoad = int(JustLoad)
         IsNP1 = int(IsNP1)
         Np1DataPartToextract = int(Np1DataPartToextract)
@@ -224,7 +233,7 @@ if __name__ == "__main__":
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract) 
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel) 
         
             
     

@@ -1,4 +1,4 @@
-function [amplifier_data,board_adc_data,frequency_parameters,board_dig_in_data,board_dig_in_channels,t_dig,sample_rate,aux_input_data,Channelnums,Channelnames] = Intan_RHD2000_Data_Extraction (file,path,type,Textarea)
+function [amplifier_data,board_adc_data,frequency_parameters,board_dig_in_data,board_dig_in_channels,t_dig,sample_rate,aux_input_data,Channelnums,Channelnames,num_amplifier_channels] = Intan_RHD2000_Data_Extraction (file,path,type,Textarea)
 
 %________________________________________________________________________________________
 

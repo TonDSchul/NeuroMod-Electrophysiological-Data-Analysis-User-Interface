@@ -1,4 +1,4 @@
-function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dataset_Load_NEO_RawData_Save_Files(NeoSaveFolder,RecordingType,FormatToSaveNEOIn)
+function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dataset_Load_NEO_RawData_Save_Files(NeoSaveFolder,RecordingType,FormatToSaveNEOIn,TimeAndChannelToExtract)
 
 %________________________________________________________________________________________
 
@@ -19,6 +19,8 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 % neo
 % 3. FormatToSaveNEOIn: char, gives info how NEO saved data and how to load
 % it, either "Costum files (.dat,.mat)" OR "NEO Format to .mat Conversion"
+% 4. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+% 
 
 % Output: 
 % 1. Data: nchannel x ntimespoints single matrix with extracted raw data
@@ -29,7 +31,6 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 % 5. Time: 1 x nsamples vector with time for each sample in seconds
 % 6. texttoshow: char, Logger.txt contents to show them in the window text
 % area as information
-
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -291,6 +292,10 @@ end
 
 msg = sprintf('Loading Data... (%d%% done)', 100);
 waitbar(100, h, msg);
+
+%% Add time and channel to extract to header info
+HeaderInfo.TimeAndChannelToExtract = TimeAndChannelToExtract;
+
 
 close(h);
 

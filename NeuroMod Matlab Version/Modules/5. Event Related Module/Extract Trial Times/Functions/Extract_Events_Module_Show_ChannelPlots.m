@@ -186,6 +186,29 @@ if strcmp(Data.Info.RecordingType,"Open Ephys")
         SampleNumber = SampleNumber - (sum(Data.Info.CutStart)*Data.Info.NativeSamplingRate);
         SampleNumber(SampleNumber<=0) = [];
     end
+
+    if isfield(Data.Info,'TimeAndChannelToExtract') %% Normalize to new zero timestamp
+        if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+            if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+                Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            else
+                TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+                Timetoextract(1) = TempTimetoextract(1);
+                Timetoextract(2) = Data.Time(end); 
+            end
+        else
+            Timetoextract = eval(TimeAndChannelToExtract.TimeToExtract);
+        end
+
+        % convert to samples
+        Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
+        if Timetoextract(1)==0
+            Timetoextract(1) = 1;
+        end
+
+        SampleNumber = SampleNumber - ((Timetoextract(1)-1));
+        SampleNumber(SampleNumber<=0) = [];
+    end
     % Include a specific duration of the event to make it clearly visible
     % -- 1ms standard
 
@@ -261,6 +284,24 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
     else
         ChannelIndentityIndice = Channel.(Type).ChannelIdentities == RHDAllChannelData;
     end
+    %% Correct for different timetoextract
+    if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+        if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+            Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+        else
+            TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            Timetoextract(1) = TempTimetoextract(1);
+            Timetoextract(2) = Data.Time(end); 
+        end
+    else
+        Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+    end
+    
+    % convert to samples
+    Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
+    if Timetoextract(1)==0
+        Timetoextract(1) = 1;
+    end
     
 
     if strcmp(Type,"eE") || strcmp(Type,"eTr") || strcmp(Type,"eS") || strcmp(Type,"eB") || strcmp(Type,"eT")
@@ -272,8 +313,13 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
     else
         IndiciesToOne = Channel.(Type).Timestamps(ChannelIndentityIndice);
     end
+    
+    %% Actually correct for specific time to extract
+    IndiciesToOne(IndiciesToOne>Timetoextract(2)) = [];
 
-    IndiciesToOne(IndiciesToOne==0)=[];
+    IndiciesToOne = IndiciesToOne - (Timetoextract(1)-1);
+
+    IndiciesToOne(IndiciesToOne<=0)=[];
     
     EventData(IndiciesToOne) = 1;
     
@@ -288,18 +334,26 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
                 disp('Trigger Onset')
                 if Channel.(Type).OnsetTimestamps(i) ~= 0
                     if Channel.(Type).OnsetTimestamps(i)+Numsamplesevent<=length(EventData)
-                        EventData(Channel.(Type).OnsetTimestamps(i):Channel.(Type).OnsetTimestamps(i)+Numsamplesevent) = 1;
+                        Indicies = Channel.(Type).OnsetTimestamps(i):Channel.(Type).OnsetTimestamps(i)+Numsamplesevent;
+                        Indicies = Indicies - (Timetoextract(1)-1);
+                        EventData(Indicies) = 1;
                     elseif Channel.(Type).OnsetTimestamps(i)+Numsamplesevent>length(EventData)
-                        EventData(Channel.(Type).OnsetTimestamps(i):end) = 1;
+                        Indicies = Channel.(Type).OnsetTimestamps(i);
+                        Indicies = Indicies - (Timetoextract(1)-1);
+                        EventData(Indicies:end) = 1;
                     end
                 end
             else % Offset
                 disp('Trigger Offset')
                 if Channel.(Type).OffsetTimestamps(i) ~= 0
                     if Channel.(Type).OffsetTimestamps(i)+Numsamplesevent<=length(EventData)
-                        EventData(Channel.(Type).OffsetTimestamps(i):Channel.(Type).OffsetTimestamps(i)+Numsamplesevent) = 1;
+                        Indicies = Channel.(Type).OffsetTimestamps(i):Channel.(Type).OffsetTimestamps(i)+Numsamplesevent;
+                        Indicies = Indicies - (Timetoextract(1)-1);
+                        EventData(Indicies) = 1;
                     elseif Channel.(Type).OffsetTimestamps(i)+Numsamplesevent>length(EventData)
-                        EventData(Channel.(Type).OffsetTimestamps(i):end) = 1;
+                        Indicies = Channel.(Type).OffsetTimestamps(i);
+                        Indicies = Indicies - (Timetoextract(1)-1);
+                        EventData(Indicies:end) = 1;
                     end
                 end
             end
@@ -307,9 +361,13 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
         else
             if Channel.(Type).Timestamps(i) ~= 0
                 if Channel.(Type).Timestamps(i)+Numsamplesevent<=length(EventData)
-                    EventData(Channel.(Type).Timestamps(i):Channel.(Type).Timestamps(i)+Numsamplesevent) = 1;
+                    Indicies = Channel.(Type).Timestamps(i):Channel.(Type).Timestamps(i)+Numsamplesevent;
+                    Indicies = Indicies - (Timetoextract(1)-1);
+                    EventData(Indicies) = 1;
                 elseif Channel.(Type).Timestamps(i)+Numsamplesevent>length(EventData)
-                    EventData(Channel.(Type).Timestamps(i):end) = 1;
+                    Indicies = Channel.(Type).Timestamps(i);
+                    Indicies = Indicies - (Timetoextract(1)-1);
+                    EventData(Indicies:end) = 1;
                 end
             end
         end
@@ -326,9 +384,6 @@ end
 if strcmp(Data.Info.RecordingType,"NEO")
     
     Channel.Samples(Channel.Samples<=0) = [];
-    Channel.Samples(Channel.Samples<=0) = [];
-    Channel.Samples(Channel.Samples<=0) = [];
-
 
     EventData = zeros(1,length(Data.Time));
     EventData(Channel.Samples) = 1;
@@ -421,26 +476,43 @@ if strcmp(Data.Info.RecordingType,"Spike2")
         fhand1 = CEDS64Open(FullDataPath);
         
         maxTimeTicks = CEDS64ChanMaxTime(fhand1, 1)+1; % +1 so the read gets the last point
+        [ dSeconds ] = CEDS64TicksToSecs( fhand1, maxTimeTicks );
         ChannelRange = str2double(strsplit(Channel,','));
         EventData = cell(1,1);
-    
+
+        %% Only extract time specified by user
+        if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+            if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+                Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            else
+                TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+                Timetoextract(1) = TempTimetoextract(1);
+                Timetoextract(2) = dSeconds; 
+            end
+        else
+            Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+        end
+        
+        i64From = CEDS64SecsToTicks(fhand1, Timetoextract(1));
+        i64To   = CEDS64SecsToTicks(fhand1, Timetoextract(2));
+        
         h = waitbar(0, 'Extracting Spike 2 Event Channel...', 'Name','Extracting Spike 2 Event Channel...');
         % Extract channel wise data. Loops until all channel analyzed
-        for nchannel = 1:1
-            
-            fraction = nchannel/length(ChannelRange);
-            msg = sprintf('Extracting Spike 2 Event Channel... (%d%% done)', round(100*fraction));
-            waitbar(fraction, h, msg);
-            
-            %% Somehow the tick and time output is the same. Moreover, output seems to be in ms. So output*1000/length of channel = 50kHz Sampling Rate
-            [~, TempData, ~] = CEDS64ReadWaveF(fhand1, str2double(app.FileTypeDropDown_2.Value), maxTimeTicks, 0, maxTimeTicks);
-            if isempty(TempData)   
-                continue;
-            end
-    
-            EventData{nchannel} = TempData;
-            clear TempData
+
+        fraction = 1/length(ChannelRange);
+        msg = sprintf('Extracting Spike 2 Event Channel... (%d%% done)', round(100*fraction));
+        waitbar(fraction, h, msg);
+        
+        %% Somehow the tick and time output is the same. Moreover, output seems to be in ms. So output*1000/length of channel = 50kHz Sampling Rate
+        [iRead, TempData, i64Time] = CEDS64ReadWaveF(fhand1, str2double(app.FileTypeDropDown_2.Value), maxTimeTicks, i64From, i64To);
+
+        %[~, TempData, ~] = CEDS64ReadWaveF(fhand1, str2double(app.FileTypeDropDown_2.Value), maxTimeTicks, 0, maxTimeTicks);
+        if ~isempty(TempData)   
+            EventData{1} = TempData;
         end
+
+        clear TempData
+   
         close(h);
     end
 

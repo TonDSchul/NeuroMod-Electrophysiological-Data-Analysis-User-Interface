@@ -327,8 +327,28 @@ if isprop(app.PSTHApp,'Existflag')
         end
 
         if app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value == 1
-            [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,StartIndex,StopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
-            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,StartIndex,StopIndex,PreprocessedPlot,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,StartIndex,StopIndex);
+            if strcmp(app.DropDown.Value,"Preprocessed Data") && isfield(app.Data.Info,'DownsampledSampleRate')
+                TimeinSecs = app.Data.TimeDownsampled(app.CurrentTimePoints);
+                % Calculate the absolute differences
+                differences = abs(app.Data.Time - TimeinSecs);
+
+                % Find the index of the minimum difference
+                [~, TempCurrentTimePoints] = min(differences);
+
+                TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
+                TempStartIndex = TempCurrentTimePoints;
+                TempStopIndex = TempStartIndex+ceil(TimeDuration*app.Data.Info.NativeSamplingRate);
+                if TempStopIndex > size(app.Data.Raw,2)
+                    TempStopIndex = size(app.Data.Raw,2);
+                end
+            else
+                TempStartIndex = StartIndex;
+                TempStopIndex = StopIndex;
+            end
+            % TempStartIndex = StartIndex;
+            % TempStopIndex = StopIndex;
+            [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,TempStartIndex,TempStopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
+            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,TempStartIndex,TempStopIndex,0,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,TempStartIndex,TempStopIndex);
         else
             TimeWindow = str2double(strsplit(app.PSTHApp.TimeWindowfromtoinsEditField.Value,','));
             if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')

@@ -21,10 +21,12 @@ function Menu_Extract_Data_Callback (app, fileNames, DefaultFolder, Window)
 
 %________________________________________________________________________________________
 
-if strcmp(app.RecordingSystemDropDown_2.Value,"SpikeInterface Python Library")
-    warning("Probe information is extracted with SpikeInterface and does not have to be specified!")
-    msgbox("Probe information is extracted with SpikeInterface and does not have to be specified!")
-    return;
+if strcmp(Window,"Extract Data")
+    if strcmp(app.RecordingSystemDropDown_2.Value,"SpikeInterface Python Library")
+        warning("Probe information is extracted with SpikeInterface and does not have to be specified!")
+        msgbox("Probe information is extracted with SpikeInterface and does not have to be specified!")
+        return;
+    end
 end
 
 app.ProbeInfoandPath.ChannelSpacing = [];

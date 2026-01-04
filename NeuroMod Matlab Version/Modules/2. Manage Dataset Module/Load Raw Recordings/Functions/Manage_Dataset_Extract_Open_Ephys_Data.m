@@ -1,4 +1,4 @@
-function [Data,Header,SampleRate] = Manage_Dataset_Extract_Open_Ephys_Data(DATA_PATH,nRecordNodes,SelectedRecordNode)
+function [Data,Header,SampleRate] = Manage_Dataset_Extract_Open_Ephys_Data(DATA_PATH,nRecordNodes,SelectedRecordNode,TimeAndChannelToExtract)
 
 %________________________________________________________________________________________
 
@@ -49,6 +49,8 @@ Header.startTimestamp = [];
 
 SampleRate = [];
 
+ChannelToExtract = convertStringsToChars(TimeAndChannelToExtract.ChannelToExtract);
+
 % "Import" matlab-tools
 addpath(genpath("."));
 
@@ -62,7 +64,6 @@ try
 catch ME
     disp(ME.identifier)
     error("Failed to load OE recording. Make sure, that the recording folder does not contain files or folder NOT created by the recording software or this GUI! Error in line 64 in Manage_Dataset_Extract_Open_Ephys_Data.m")
-
 end
 
 % Iterate over the record nodes to access data
@@ -258,7 +259,56 @@ for RecordingIndex = 1:NumRecordingIndex
             end
             
             disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel and ",num2str(length(DataChannel))," data channel"));
-            TempData = single(ContinousStream.samples(DataChannel,:));
+            
+            %% Channel to extract
+            if strcmp(ChannelToExtract,"All")
+                numchannel = size(ContinousStream.samples,1);
+                AllChannelInFile = numchannel;
+                IndividualChannel = 1:numchannel;
+            else
+                ChannelToExtract = convertStringsToChars(ChannelToExtract);
+                if contains(ChannelToExtract,']') || contains(ChannelToExtract,'[')
+                    ChannelToExtract(find(ChannelToExtract==']')) = [];
+                    ChannelToExtract(find(ChannelToExtract=='[')) = [];
+                end
+                if contains(ChannelToExtract,',')
+                    IndividualChannel = str2double(strsplit(ChannelToExtract,','));
+                else
+                    try
+                        IndividualChannel = eval(ChannelToExtract);
+                    catch
+                        msgbox("Format entered in channel to extract edit field could not be determined. Please use Matlab expressions only!");
+                        error("Format entered in channel to extract edit field could not be determined. Please use Matlab expressions only!");
+                    end
+                end
+            end
+
+            %% Determine samples to extract if only specific time points extracted
+            % Create Time vector based on nr of samples and sampling rate
+            SampleRate = ContinousStream.metadata.sampleRate;
+    
+            SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
+            StartSample = round(str2double(SplitString{1}) * SampleRate);  
+            if StartSample == 0
+                StartSample = 1;
+            end
+            if strcmp(SplitString{2},"Inf")
+                StopSample = size(ContinousStream.samples,2);
+            else
+                StopSample = round(str2double(SplitString{2}) * SampleRate);  
+            end
+            
+            if StopSample>size(ContinousStream.samples,2)
+                warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str((size(ContinousStream.samples,2)-1)/SampleRate)," seconds instead."))
+                StopSample = size(amplifier_data,2);
+            end
+    
+            disp(strcat("Ectracting raw data from ",num2str((StartSample-1)/SampleRate)," seconds to ",num2str((StopSample-1)/SampleRate)," seconds"));
+            
+            DataIndicies = StartSample : StopSample;
+
+            DataChannel=DataChannel(IndividualChannel);
+            TempData = single(ContinousStream.samples(DataChannel,DataIndicies));
     
             %% Get recording data
             Temp = node.recordings{1, RecordingIndex};
@@ -277,7 +327,7 @@ for RecordingIndex = 1:NumRecordingIndex
                         TempHeader.Bit_Volts = unique(TempHeader.Bit_Volts);
                     else
                         if iscell(Temp.info.continuous(RecordingIndex).channels)
-                            for nchannel = 1:length(Temp.info.continuous(RecordingIndex).channels)
+                            for nchannel = 1:length(DataChannel)
                                 % Non - sync channel
                                 if ~contains(Temp.info.continuous(RecordingIndex).channels{nchannel}.channel_name,'SYNC')
                                     if isfield(Temp.info.continuous(RecordingIndex).channels{nchannel},'bit_volts')
@@ -326,10 +376,68 @@ for RecordingIndex = 1:NumRecordingIndex
             TempHeader = ContinousStream.metadata;
     
             DataChannelIndicie = TempHeader.conversion==TempHeader.conversion(1);
+
+            %% Channel to extract
+            if strcmp(ChannelToExtract,"All")
+                numchannel = size(ContinousStream.samples,1);
+                AllChannelInFile = numchannel;
+                IndividualChannel = 1:numchannel;
+            else
+                ChannelToExtract = convertStringsToChars(ChannelToExtract);
+                if contains(ChannelToExtract,']') || contains(ChannelToExtract,'[')
+                    ChannelToExtract(find(ChannelToExtract==']')) = [];
+                    ChannelToExtract(find(ChannelToExtract=='[')) = [];
+                end
+                if contains(ChannelToExtract,',')
+                    IndividualChannel = str2double(strsplit(ChannelToExtract,','));
+                else
+                    try
+                        IndividualChannel = eval(ChannelToExtract);
+                    catch
+                        msgbox("Format entered in channel to extract edit field could not be determined. Please use Matlab expressions only!");
+                        error("Format entered in channel to extract edit field could not be determined. Please use Matlab expressions only!");
+                    end
+                end
+            end
+
+            %% Determine samples to extract if only specific time points extracted
+            % Create Time vector based on nr of samples and sampling rate
+
+            % Cant find SR in header info, therefore its calculated
+            % Sample number for one second rec. length
+            TimetoGetSample = ContinousStream.timestamps(1)+1; %one second
+            [~,MinIndicie] = min(abs(ContinousStream.timestamps-TimetoGetSample));
+            if ContinousStream.timestamps(end)-ContinousStream.timestamps(1) > 1
+                SampleRate = (MinIndicie-1)/1;
+                SampleRate = round(SampleRate/10000) * 10000;
+            else
+                msgbox("Error: Recording has to be longer than one second!")
+            end
     
-            TempData = single(ContinousStream.samples(DataChannelIndicie,:));
+            SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
+            StartSample = round(str2double(SplitString{1}) * SampleRate);  
+            if StartSample == 0
+                StartSample = 1;
+            end
+            if strcmp(SplitString{2},"Inf")
+                StopSample = size(ContinousStream.samples,2);
+            else
+                StopSample = round(str2double(SplitString{2}) * SampleRate);  
+            end
+            
+            if StopSample>size(ContinousStream.samples,2)
+                warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str((size(ContinousStream.samples,2)-1)/SampleRate)," seconds instead."))
+                StopSample = size(amplifier_data,2);
+            end
     
-            BitConversions = TempHeader.conversion(DataChannelIndicie); % Convert Volt in mV
+            disp(strcat("Ectracting raw data from ",num2str((StartSample-1)/SampleRate)," seconds to ",num2str((StopSample-1)/SampleRate)," seconds"));
+            
+            DataIndicies = StartSample : StopSample;
+            
+            DataChannelIndicie = DataChannelIndicie(IndividualChannel);
+            TempData = single(ContinousStream.samples(IndividualChannel(DataChannelIndicie),DataIndicies));
+    
+            BitConversions = TempHeader.conversion(IndividualChannel(DataChannelIndicie)); % Convert Volt in mV
             
             % Dont get info which channel are adc. Therefore, bit conversion is
             % used -- different for data and adc. Assumption: first conversion
@@ -357,18 +465,6 @@ for RecordingIndex = 1:NumRecordingIndex
             TempHeader.num_data_points = size(TempData,2);
             TempHeader.AllRecordingIndicies = AllRecordingIndicies;
 
-            % Cant find SR in header info, therefore its calculated
-            % Sample number for one second rec. length
-            TimetoGetSample = ContinousStream.timestamps(1)+1; %one second
-            [~,MinIndicie] = min(abs(ContinousStream.timestamps-TimetoGetSample));
-            
-            if ContinousStream.timestamps(end)-ContinousStream.timestamps(1) > 1
-                SampleRate = (MinIndicie-1)/1;
-                SampleRate = round(SampleRate/10000) * 10000;
-            else
-                msgbox("Error: Recording has to be longer than one second!")
-            end
-    
         elseif strcmp(node.format,'OpenEphys')
             %% This contains relevant header infos (samplerate and bit_volts) for this format
             TempHeader = recording.streams((streamName));
@@ -385,8 +481,58 @@ for RecordingIndex = 1:NumRecordingIndex
             end
             
             disp(strcat("Found ",num2str(length(NoDataChannel))," peripheral input channel"));
+
+            %% Channel to extract
+            if strcmp(ChannelToExtract,"All")
+                numchannel = size(ContinousStream.samples,1);
+                AllChannelInFile = numchannel;
+                IndividualChannel = 1:numchannel;
+            else               
+                ChannelToExtract = convertStringsToChars(ChannelToExtract);
+                if contains(ChannelToExtract,']') || contains(ChannelToExtract,'[')
+                    ChannelToExtract(find(ChannelToExtract==']')) = [];
+                    ChannelToExtract(find(ChannelToExtract=='[')) = [];
+                end
+                if contains(ChannelToExtract,',')
+                    IndividualChannel = str2double(strsplit(ChannelToExtract,','));
+                else
+                    try
+                        IndividualChannel = eval(ChannelToExtract);
+                    catch
+                        msgbox("Format entered in channel to extract edit field could not be determined. Please use Matlab expressions only!");
+                        error("Format entered in channel to extract edit field could not be determined. Please use Matlab expressions only!");
+                    end
+                end
+            end
+
+            %% Determine samples to extract if only specific time points extracted
+            % Create Time vector based on nr of samples and sampling rate
+            SampleRate = TempHeader.sampleRate;
+    
+            SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
+            StartSample = round(str2double(SplitString{1}) * SampleRate);  
+            if StartSample == 0
+                StartSample = 1;
+            end
+            if strcmp(SplitString{2},"Inf")
+                StopSample = size(ContinousStream.samples,2);
+            else
+                StopSample = round(str2double(SplitString{2}) * SampleRate);  
+            end
+            
+            if StopSample>size(ContinousStream.samples,2)
+                warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str((size(ContinousStream.samples,2)-1)/SampleRate)," seconds instead."))
+                StopSample = size(amplifier_data,2);
+            end
+    
+            disp(strcat("Ectracting raw data from ",num2str((StartSample-1)/SampleRate)," seconds to ",num2str((StopSample-1)/SampleRate)," seconds"));
+            
+            DataIndicies = StartSample : StopSample;
+
+            DataChannel=DataChannel(IndividualChannel);
+
             %% Get TempData
-            TempData = single(ContinousStream.samples(DataChannel,:));
+            TempData = single(ContinousStream.samples(DataChannel,DataIndicies));
             %% Convert int16 to mV
             for i = 1:length(DataChannel)
                 TempData(i,:) = (TempData(i,:).*TempHeader.channels{1,DataChannel(i)}.bitVolts)./1000; % Convert uV in mV

@@ -258,6 +258,14 @@ elseif strcmp(RecordingType,"Open Ephys")
                 disp(strcat("Event Nr. ",num2str(i),": Stop time of dataset was cut. Last ",num2str(sum(EventsToDelete))," trigger are deleted!"));
             end
         end
+        % Check for only specific time being extracted and correct for that
+        [Data,temptexttoshow] = Extract_Events_Module_Correct_For_TimeToExtract(Data,Data.Info.TimeAndChannelToExtract);
+        if ~isempty(texttoshow)
+            texttoshow = [texttoshow;temptexttoshow];
+        else
+            texttoshow = temptexttoshow;
+        end
+
     end
 
     if ~isfield(Data.Info,'CutEnd') && ~ isfield(Data.Info,'CutStart')
@@ -334,6 +342,23 @@ elseif strcmp(RecordingType,"Spike2")
         fhand1 = CEDS64Open(FullDataPath);
         
         maxTimeTicks = CEDS64ChanMaxTime(fhand1, 1)+1; % +1 so the read gets the last point
+        [ dSeconds ] = CEDS64TicksToSecs( fhand1, maxTimeTicks );
+
+        %% Only extract time specified by user
+        if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+            if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+                Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            else
+                TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+                Timetoextract(1) = TempTimetoextract(1);
+                Timetoextract(2) = dSeconds; 
+            end
+        else
+            Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+        end
+        
+        i64From = CEDS64SecsToTicks(fhand1, Timetoextract(1));
+        i64To   = CEDS64SecsToTicks(fhand1, Timetoextract(2));
             
         EventData = cell(1,length(InputChannelSelection));
     
@@ -345,7 +370,8 @@ elseif strcmp(RecordingType,"Spike2")
             pause(0.2);
             
             %% Somehow the tick and time output is the same. Moreover, output seems to be in ms. So output*1000/length of channel = 50kHz Sampling Rate
-            [~, TempData, ~] = CEDS64ReadWaveF(fhand1, InputChannelSelection(nchannel), maxTimeTicks, 0, maxTimeTicks);
+            [iRead, TempData, i64Time] = CEDS64ReadWaveF(fhand1, InputChannelSelection(nchannel), maxTimeTicks, i64From, i64To);
+
             if isempty(TempData)   
                 continue;
             end
@@ -361,6 +387,39 @@ elseif strcmp(RecordingType,"Spike2")
     end
 
 elseif strcmp(RecordingType,"NEO")
+
+    %% Correct for different timetoextract
+    if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+        if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+            Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+        else
+            TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            Timetoextract(1) = TempTimetoextract(1);
+            Timetoextract(2) = Data.Time(end); 
+        end
+    else
+        Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+    end
+
+    % convert to samples
+    Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
+    if Timetoextract(1)==0
+        Timetoextract(1) = 1;
+    end
+
+    % %% Actually correct for specific time to extract
+    % IndiciesBiggerTime = EventInfo.event_samples>Timetoextract(2);
+    % EventInfo.event_samples(EventInfo.event_samples>Timetoextract(2)) = [];
+    % EventInfo.event_labels(IndiciesBiggerTime) = [];
+    % EventInfo.event_channels(IndiciesBiggerTime) = [];
+    % 
+    % EventInfo.event_samples = EventInfo.event_samples - (Timetoextract(1)-1);
+    % IndiciesSmallerTime = EventInfo.event_samples<=0;
+    % EventInfo.event_samples(EventInfo.event_samples<=0) = [];
+    % EventInfo.event_labels(IndiciesSmallerTime) = [];
+    % EventInfo.event_channels(IndiciesSmallerTime) = [];
+
+    %% Check for time violations - maybe wrong fil loaded by user?
     Error = 0;
     if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
         if sum(EventInfo.event_samples>length(Data.Time))>0
@@ -569,9 +628,23 @@ if ~isempty(EventsToCombine)
     end
 end
 
+%% ----------------------- Delete Events if Outside of Time Range----------------------------
+if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"Spike2") && ~strcmp(Data.Info.RecordingType,"NEO") % done earlier in upper section
+    [Data,temptexttoshow] = Extract_Events_Module_Correct_For_TimeToExtract(Data,Data.Info.TimeAndChannelToExtract);
+    if ~isempty(texttoshow)
+        texttoshow = [texttoshow;temptexttoshow];
+    else
+        texttoshow = temptexttoshow;
+    end
+end
 %% ----------------------- Last Step: Check if trials violate time limts----------------------------
-
-[Data,Data.Events,texttoshow] = Extract_Events_Module_Check_Violating_Trigger(Data,Data.Events,TimeAroundEvent);
-
-
-
+if isfield(Data,'Events')
+    if ~isempty(Data.Events)
+        [Data,Data.Events,temptexttoshow] = Extract_Events_Module_Check_Violating_Trigger(Data,Data.Events,TimeAroundEvent);
+        if ~isempty(texttoshow)
+            texttoshow = [texttoshow;temptexttoshow];
+        else
+            texttoshow = temptexttoshow;
+        end
+    end
+end

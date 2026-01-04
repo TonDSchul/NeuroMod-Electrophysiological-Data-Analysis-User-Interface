@@ -230,6 +230,7 @@ if strcmp(Type,"Static")
             end      
 
             clim(UIAxis,ClimMaxValues);
+            UIAxis.YDir = 'reverse';
 
         else
             if isempty(ImageScChannel_handles)
@@ -853,5 +854,7 @@ end
 
 
 if size(Data,1) == 1
-    ylim(UIAxis,[min(Data) max(Data)])
+    if min(Data) ~= max(Data)
+        ylim(UIAxis,[min(Data) max(Data)])
+    end
 end

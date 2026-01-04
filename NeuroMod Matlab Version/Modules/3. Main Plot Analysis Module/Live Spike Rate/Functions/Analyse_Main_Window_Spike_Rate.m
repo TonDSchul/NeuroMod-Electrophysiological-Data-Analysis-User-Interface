@@ -60,7 +60,7 @@ else
 end
 
 if PreprocDataPlotCheckBox == 1 && isfield(Data.Info,'DownsampleFactor')  
-    SpikeTimes = Data.Spikes.SpikeTimes./Data.Info.DownsampleFactor;
+    SpikeTimes = round(Data.Spikes.SpikeTimes./Data.Info.DownsampleFactor);
 else
     SpikeTimes = Data.Spikes.SpikeTimes;
 end

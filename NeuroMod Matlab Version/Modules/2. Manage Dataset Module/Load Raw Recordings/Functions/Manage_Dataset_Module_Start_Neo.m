@@ -1,4 +1,4 @@
-function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract)
+function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract,TimeToLoad,ChannelToLoad)
 
 %________________________________________________________________________________________
 
@@ -19,6 +19,8 @@ function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFol
 % 7. IsNP1: double 1 or 0 whether open ephys recording is a NP 1.0 recording
 % 8. DataPartToextract: double, if IsNP1 == 1, user selected whether to
 % extract LFP or AP data: 1 = LFO data, 2 = AP Data
+% 9. TimeToLoad: char, comma separated numbers for specific time like '0,10' or '0,Inf' for whole time range, user input from the GUI
+% 11. ChannelToLoad: matlab expressions as char, user input from the GUI
 
 % note: when extracting events, add the char EventAnalysis is added to the
 % end of the char FormatToSaveandReadintoMatlab to show the NEO script to
@@ -49,8 +51,14 @@ if iscell(SelectedPath)
     SelectedPath = strjoin(SelectedPath, ',');
 end
 
-command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s" "%s" "%d" "%d"', ...
-        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection, FormatToSaveandReadintoMatlab, IsNP1, Np1DataPartToextract);
+if ~strcmp(ChannelToLoad,"All")
+    ChannelToLoad = num2str(eval(ChannelToLoad));
+end
+
+TimeToLoad = convertStringsToChars(TimeToLoad);
+
+command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s" "%s" "%d" "%d" "%s" "%s"', ...
+        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection, FormatToSaveandReadintoMatlab, IsNP1, Np1DataPartToextract, TimeToLoad,  ChannelToLoad);
 
 % Execute the Python script
 [status, cmdout] = system(command);

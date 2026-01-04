@@ -1,4 +1,4 @@
-function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dataset_Load_SpikeInterface_RawData_Save_Files(SISaveFolder)
+function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dataset_Load_SpikeInterface_RawData_Save_Files(SISaveFolder,TimeAndChannelToExtract)
 
 %________________________________________________________________________________________
 
@@ -153,6 +153,8 @@ else
     Data = single(Data);
     warning("Metadata does not contain the units of the recording data (mV,V or uV) to convert to mV. Data is not scaled automatically and may not be in mV!")
 end
+
+HeaderInfo.TimeAndChannelToExtract = TimeAndChannelToExtract;
 
 msg = sprintf('Loading Data... (%d%% done)', 100);
 waitbar(100, h, msg);

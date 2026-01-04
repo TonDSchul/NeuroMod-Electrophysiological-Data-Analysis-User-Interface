@@ -27,6 +27,14 @@ if ~isempty(ChannelOrder) && length(ChannelOrder) == length(Data.Info.ProbeInfo.
     if find(ChannelOrder == 0)
         ChannelOrder = ChannelOrder+1;
     end
+    
+    if length(ChannelOrder)~=size(Data.Raw,1)
+        numchannel = size(Data.Raw,1);
+        Data = [];
+        msgbox(strcat("Channel order has ",num2str(length(ChannelOrder))," elements while data has ",num2str(numchannel)," channel. Please adjust the channel order accordingly in the probe layout!"))
+        warning(strcat("Channel order has ",num2str(length(ChannelOrder))," elements while data has ",num2str(numchannel)," channel. Please adjust the channel order accordingly in the probe layout!"))
+        error(strcat("Channel order has ",num2str(length(ChannelOrder))," elements while data has ",num2str(numchannel)," channel. Please adjust the channel order accordingly in the probe layout!"))
+    end
 
     %% Create Channel Order
     %If the user selcted a costum channel order
@@ -39,7 +47,6 @@ if ~isempty(ChannelOrder) && length(ChannelOrder) == length(Data.Info.ProbeInfo.
         % Data.Raw = Data.Raw(InversedChannelOrder, :); % reorder 
     else
         % Reorder data according to loaded Channelorder
-
         Data.Raw = Data.Raw(ChannelOrder, :); % reorder 
     end
 

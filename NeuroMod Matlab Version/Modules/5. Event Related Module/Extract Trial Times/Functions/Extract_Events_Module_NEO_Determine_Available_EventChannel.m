@@ -134,8 +134,34 @@ if CostumeEventFilePresent == 1
         return;
     end
     
+    %% Correct for different timetoextract
+    if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+        if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+            Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+        else
+            TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            Timetoextract(1) = TempTimetoextract(1);
+            Timetoextract(2) = Data.Time(end); 
+        end
+    else
+        Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+    end
+     % convert to samples
+    Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
+    if Timetoextract(1)==0
+        Timetoextract(1) = 1;
+    end
+    
+    %% Actually correct for specific time to extract
+    event_samples = double(event_samples);
+    event_samples = event_samples - (Timetoextract(1)-1);
+    IndiciesSmallerTime = event_samples<=0;
+    event_samples(event_samples<=0) = [];
+    event_labels(IndiciesSmallerTime) = [];
+    event_channels(IndiciesSmallerTime) = [];
+
     if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
-        if sum(event_samples > length(Data.Time))
+        if sum(event_samples > length(Data.Time))>0
             currentsamples = (double(event_samples)-NeoEventStartTimeStamp)+1;
             DeletedIndices = find(currentsamples > length(Data.Time));
             if ~isempty(DeletedIndices)
@@ -152,6 +178,15 @@ if CostumeEventFilePresent == 1
             return;
         end
     end
+    
+    % %% Actually correct for specific time to extract
+    % event_samples = double(event_samples);
+    % IndiciesBiggerTime = event_samples>Timetoextract(2);
+    % event_samples(event_samples>Timetoextract(2)) = [];
+    % event_labels(IndiciesBiggerTime) = [];
+    % event_channels(IndiciesBiggerTime) = [];
+    
+    %% DO it again with samples bigger than time
     
     if contains(Data.Info.FileType,'OpenEphys') || contains(Data.Info.FileType,'Open Ephys')
         % see if there are events and how many 

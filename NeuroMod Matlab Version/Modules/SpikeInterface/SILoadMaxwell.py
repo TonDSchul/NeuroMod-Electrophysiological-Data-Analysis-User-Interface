@@ -14,6 +14,52 @@ from probeinterface import read_prb
 import scipy.io
 from pathlib import Path
 
+    
+def Sanity_Plot(recording):
+    import matplotlib.pyplot as plt
+    
+    # Parameters
+    channel_id = recording.channel_ids[0]  # channel 1 (SpikeInterface uses IDs, not 1-based index)
+    fs = recording.get_sampling_frequency()
+    
+    time_windows = [
+        (0, 2),
+        (9, 11),
+        (19, 21),
+        (99, 101),
+    ]
+    
+    plt.ion()
+
+    fig, axes = plt.subplots(len(time_windows), 1, sharex=False, figsize=(10, 8))
+    
+    for ax, (t_start, t_end) in zip(axes, time_windows):
+        start_frame = int(t_start * fs)
+        end_frame = int(t_end * fs)
+    
+        trace = recording.get_traces(
+            start_frame=start_frame,
+            end_frame=end_frame,
+            channel_ids=[channel_id],
+            return_in_uV=True
+        ).squeeze() / 1e3  # µV → mV
+    
+        t = np.arange(trace.size) / fs + t_start
+    
+        ax.plot(t, trace)
+        ax.set_title(f"{t_start}–{t_end} s")
+        ax.set_xlabel("Time (s)")
+        ax.set_ylabel("mV")
+    
+        ymin, ymax = trace.min(), trace.max()
+        if ymin == ymax:  # avoid zero-height axis
+            ymin -= 1e-6
+            ymax += 1e-6
+        ax.set_ylim(ymin, ymax)
+    
+    plt.tight_layout()
+    plt.show(block=False)
+    
 def create_save_folder(selected_folder):
     """
     Given a selected folder, create a sibling folder with ' Neo SaveFile' suffix.
@@ -37,27 +83,11 @@ def create_save_folder(selected_folder):
 
 
 def Save_MetaData_SI(recording, JustExtractingEvents,
-                      SaveFileName,ProbeMappingFilePath):
-
-    # first handle probe geometry
-    # attach the probe file
-    # Read the .prb file
-    probe_group  = read_prb(ProbeMappingFilePath)  # ProbeGroup object
-    print("########################")
-    print(probe_group)
-    print("########################")
-    # Attach probe to the SpikeInterface recording
-    # If there is only one probe, extract it
-    probe = probe_group.probes[0]  # Probe object
-    print("########################")
-    print(probe)
-    print("########################")
-    # Attach probe to the recording
-    recording = recording.set_probe(probe)
+                      SaveFileName):
     
     # Now get channel locations
     locs = recording.get_channel_locations()
-        
+    print(locs)
     #annotations = recording.annotations
     start_sample = recording.get_annotation('acquisition_start_sample')  # fallback 0
     
@@ -100,7 +130,8 @@ def Save_MetaData_SI(recording, JustExtractingEvents,
         })
 
 def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab):
- 
+    import spikeinterface as si
+    print(si.__version__)
     #### ----------- Check If Data or just Event Extraction ----------- ####
     JustExtractingEvents = 0
     if "EventExtraction" in RecordingSystemSelection:
@@ -119,15 +150,6 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     MetaDataSaveFileName = SI_Save_Path + "/SI_Saved_MetaData.mat"
     #### ------------ Set Folder name for Event Data ----------- ####
     EventSaveFileName = SI_Save_Path + "/SI_Saved_EventData.mat" 
-    
-    ''' Load Probe map File (.prb)'''
-    folder = Path(file_path)
-    prb_file = next(p for p in folder.iterdir() if p.is_file() and p.suffix == ".prb")
-    
-    if prb_file is None:
-        raise FileNotFoundError(f"No .prb containing the probe mapping information file found in directory: {folder}")
-        
-    ProbeMappingFilePath = Path(folder) / prb_file
     
     ## Actually set recording folder
     folder = Path(file_path)
@@ -157,6 +179,10 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         install_maxwell_plugin=True  
     )
     
+    channel_positions = recording.get_channel_locations()
+    
+    print(channel_positions)
+    
     # inspect basic properties
     print(recording)
     print("Sampling frequency:", recording.get_sampling_frequency())
@@ -169,7 +195,7 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     channel_ids = recording.channel_ids  # all channels
     
     print("Converting and saving channel data to " + ChannelDataSaveFileName + " (this might take a while)")
-        
+    
     with open(ChannelDataSaveFileName, 'wb') as f:
         for start in range(0, n_frames, chunk_size):
             end = min(start + chunk_size, n_frames)
@@ -188,7 +214,7 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     ''' Save MetaData'''
     # -----------------------------------------------------------------------
     
-    Save_MetaData_SI(recording,JustExtractingEvents,MetaDataSaveFileName,ProbeMappingFilePath)
+    Save_MetaData_SI(recording,JustExtractingEvents,MetaDataSaveFileName)
     
 if __name__ == "__main__":
 

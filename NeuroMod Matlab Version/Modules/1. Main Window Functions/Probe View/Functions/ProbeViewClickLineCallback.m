@@ -411,8 +411,11 @@ if ProbeViewWindow == 0
                 for i = 0:((numSquares) - 1) 
                    yPos(i+1,1) = (lowylimits+ (i * squareHeight)); % lower y pos
                    yPos(i+1,2) = (lowylimits+ (i * squareHeight)) +squareHeight; % upper y pos
-                 
-                   currentchannel(i+1) = str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)+1-(app.FirstZoomChannel+1+i);
+                   if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2
+                        currentchannel(i+1) = str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)+1-(app.FirstZoomChannel+1+i);
+                   else
+                        currentchannel(i+1) = str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+1-(app.FirstZoomChannel+1+i);
+                   end
                 end
               
                 currentchannel = currentchannel+str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)+1;
@@ -420,8 +423,11 @@ if ProbeViewWindow == 0
                 for i = 0:((numSquares) - 1) 
                    yPos(i+1,1) = (lowylimits+ (i * squareHeight)); % lower y pos
                    yPos(i+1,2) = (lowylimits+ (i * squareHeight)) +squareHeight; % upper y pos
-
-                   currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)*2+1)-(i+1);
+                    if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2
+                        currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)*2+1)-(i+1);
+                    else
+                        currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)*2+1)-(i+1);
+                    end
                 end
             end
 
@@ -435,15 +441,22 @@ if ProbeViewWindow == 0
                      for i = 0:((numSquares) - 1) 
                         yPos(i+1,1) = lowylimits+ ((i * (squareHeight)))-CorrrectedVerOffset; % lower y pos
                         yPos(i+1,2) = lowylimits+ ((i * (squareHeight)))+squareHeight-CorrrectedVerOffset; % upper y pos
-        
-                        currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel))+2-(app.FirstZoomChannel+1+i);
+                        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel))+2-(app.FirstZoomChannel+1+i);
+                        else
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows))+2-(app.FirstZoomChannel+1+i);
+                        end
+                        
                      end
                 else
                     for i = 0:((numSquares) - 1) 
                         yPos(i+1,1) = lowylimits+ ((i * (squareHeight))); % lower y pos
                         yPos(i+1,2) = lowylimits+ ((i * (squareHeight)))+squareHeight; % upper y pos
-        
-                        currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel))+2-(app.FirstZoomChannel+1+i);
+                        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel))+2-(app.FirstZoomChannel+1+i);
+                        else
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows))+2-(app.FirstZoomChannel+1+i);
+                        end
                      end
                 end
             else
@@ -451,15 +464,21 @@ if ProbeViewWindow == 0
                      for i = 0:((numSquares) - 1) 
                         yPos(i+1,1) = lowylimits+ ((i * (squareHeight)))-CorrrectedVerOffset; % lower y pos
                         yPos(i+1,2) = lowylimits+ ((i * (squareHeight)))+squareHeight-CorrrectedVerOffset; % upper y pos
-        
-                        currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)+1)-(i+1);
+                        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)+1)-(i+1);
+                        else
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+1)-(i+1);
+                        end
                      end
                 else
                     for i = 0:((numSquares) - 1) 
                         yPos(i+1,1) = lowylimits+ ((i * (squareHeight))); % lower y pos
                         yPos(i+1,2) = lowylimits+ ((i * (squareHeight)))+squareHeight; % upper y pos
-        
-                        currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)+1)-(i+1);
+                        if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) ==2
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)+1)-(i+1);
+                        else
+                            currentchannel(i+1) = (str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)+1)-(i+1);
+                        end
                      end
                 end
             end
@@ -487,11 +506,12 @@ if ProbeViewWindow == 0
         end
         
         if str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows) >2 %%% ARRAY
-            ChannelMatrix = NaN(str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)); 
+            ChannelMatrix = NaN(str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)); 
+            %ChannelMatrix = NaN(str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)); 
             Laufvariable = 1;
-            for n = 1:str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)
-                for m = 1:str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)
-                    ChannelMatrix(n,m) = Laufvariable;
+            for m = 1:str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel)
+                for n = 1:str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows)
+                    ChannelMatrix(m,n) = Laufvariable;
                     Laufvariable = Laufvariable + 1;
                 end
             end

@@ -49,7 +49,7 @@ for nevents = 1:length(Events)
         
         if isempty(WhatToDo)
 
-            if isempty(TooLarge.Event) %% if event related data would be too big (too many trigger), just delete, dont ask -- here: Not too big
+            if isempty(TooLarge.Event) %% Not too big
                 Delete_Time_Violating_TriggerWindow = Delete_Time_Violating_Trigger();
                 
                 uiwait(Delete_Time_Violating_TriggerWindow.DeleteTimeViolatingTriggerUIFigure);
@@ -98,6 +98,29 @@ end
 if ~isempty(IndiceToDelete)
     Events(IndiceToDelete) = [];
     Data.Info.EventChannelNames(IndiceToDelete) = [];
+    if isempty(Events)
+        if isfield(Data.Info,'EventChannelNames')
+            Data.Info = rmfield(Data.Info, 'EventChannelNames');
+        end
+        if isfield(Data.Info,'EventChannelType')
+            Data.Info = rmfield(Data.Info, 'EventChannelType');
+        end
+        if isfield(Data.Info,'EventRelatedDataTimeRange')
+            Data.Info = rmfield(Data.Info, 'EventRelatedDataTimeRange');
+        end
+        if isfield(Data.Info,'EventRelatedActiveChannel')
+            Data.Info = rmfield(Data.Info, 'EventRelatedActiveChannel');
+        end
+        
+        if isfield(Data,'Events')
+            Data = rmfield(Data, 'Events');
+        end
+    end
+    if isempty(texttoshow)
+        texttoshow = "All trigger had to be deleted due to time violations. No event data remaining.";
+    else
+        texttoshow = [texttoshow;"All trigger had to be deleted due to time violations. No event data remaining."];
+    end
 end
 
 if ~isempty(Delete_Time_Violating_TriggerWindow)

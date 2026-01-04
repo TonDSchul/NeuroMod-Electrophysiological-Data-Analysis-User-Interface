@@ -145,7 +145,7 @@ def create_save_folder(selected_folder):
 
     return new_folder_path
 
-def Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract):
+def Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel):
     blocks = reader.read(lazy=False)
     block = blocks[0]
     segment = block.segments[0]
@@ -166,6 +166,25 @@ def Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract):
     else:
         Amp_Signal_Object = analogsignals[0]
         
+    #--- time to extract ---
+    t_start_str, t_stop_str = TimeToExtract.split(',')
+    t_start = float(t_start_str)
+    t_stop  = float('inf') if t_stop_str.lower() == 'inf' else float(t_stop_str)
+
+    # Convert time (s) to samples
+    fs = Amp_Signal_Object.sampling_rate.rescale("Hz").magnitude
+    t_start = int(t_start * fs)
+    t_stop  = int(t_stop * fs) if t_stop != float('inf') else Amp_Signal_Object.shape[0]
+    
+    #Handle to only load specific channel
+    if IndividualChannel == "All":
+        #Only take specific time and channel
+        Amp_Signal_Object = Amp_Signal_Object[t_start:t_stop, :]
+    else:
+        IndividualChannelindices = [int(x) for x in IndividualChannel.split()]
+        # Only take specific time and channel
+
+        Amp_Signal_Object = Amp_Signal_Object[t_start:t_stop, IndividualChannelindices]
         
     return Amp_Signal_Object,analogsignals,block
 
