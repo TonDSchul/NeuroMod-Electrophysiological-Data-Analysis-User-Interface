@@ -42,7 +42,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 
 %% Note: Those header infos HAVE to be present! Othwerwise Aurorun Manager wont work properly
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Extract_Events","Event_Analysis_ERP","Export_Dataset_Components"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD","Export_Dataset_Components"];
 
 % Whether true relations between active channel are display in analysis
 % plots. This becomes relevant when you have inactive channel islands
@@ -83,16 +83,24 @@ end
 %% 1.1 Extract Data from Raw Recordings
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
-AutorunConfig.ExtractRawRecording.LibraryToUse = "NeuroMod Matlab"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library"
+AutorunConfig.ExtractRawRecording.LibraryToUse = "NeuroMod Matlab"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library" OR "SpikeInterface Python Library"
+
 AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen = 1; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0. specify whteher python console opening to show progress of NEO data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.NEOJustLoadRecording = 0; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0, whether to load the files NEO saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
-AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "NEO Format to .mat Conversion"; % Either "NEO Format to .mat Conversion" OR "Costume files (.dat,.mat)"
-AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; % Either "Auto Detected Recording System" to let NEO automatically detect the format. OR "NEO + Recordingsystemname" like "NEO Neuralynx" or "NEO Plexon" or "NEO New Open Ephys Format" OR "NEO Legacy Open Ephys Format"
+AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Only when "NeuralEnsemble NEO Python Library"; Either "NEO Format to .mat Conversion" OR "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; % Only when "NeuralEnsemble NEO Python Library"; Either "Auto Detected Recording System" to let NEO automatically detect the format. OR "NEO + Recordingsystemname" like "NEO Neuralynx" or "NEO Plexon" or "NEO New Open Ephys Format" OR "NEO Legacy Open Ephys Format"
+
+AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen = 1; % Only when "SpikeInterface Python Library"; Either 1 or 0. specify whteher python console opening to show progress of SpikeInterface data extracton should stay open with you having to press enter after it completed
+AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording = 0; % Only when "SpikeInterface Python Library"; Either 1 or 0, whether to load the files SpikeInterface saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
+AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat = "SpikeInterface MEA Maxwell"; % Only when "SpikeInterface Python Library"; Only "SpikeInterface MEA Maxwell" available, loading .h5 files saved by Maxwell MaxOne 
+
+AutorunConfig.ExtractRawRecording.ChannelToExtract = '1:32'; % char, channel to extract from recordings. Either 'All' for all channel or matlab expressions as a char like '1:10' or '[1,2,3,5,6]'
+AutorunConfig.ExtractRawRecording.TimeToExtract = '100,200'; % char, timerange of recording to extract data from. Either '0,Inf' for the whole recording time or comma separated numbers like 0,10 for the first 10 seconds.
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "Intan .dat"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; 
 
-AutorunConfig.ExtractRawRecording.ChannelToExtract = "All"; % Either "All" to extract all channel from the recording or Matlab expressions like [1,2,3] or 1:3
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
@@ -244,6 +252,10 @@ AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Eit
 AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'DIN-04'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
 AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
+
+AutorunConfig.AnalyseEventDataModule.BaselineNormalize = 0; % either 0 to not baseline normalize or 1 to do so.
+AutorunConfig.AnalyseEventDataModule.BaselineWindow = '-0.2,0'; % start and stop time in seconds to use as baseline window. char, like '-0.2,0' to use 200ms pretrigger period as baseline
+
 % ERP Settings
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
 AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '7'; % How much is CSD data smoothed in time and space domain? Format: Char
@@ -296,7 +308,7 @@ AutorunConfig.Export.Format = '.mat'; % .txt OR .xlsx OR .mat
 AutorunConfig.Export.DatasetFormat = '.txt'; % .txt OR .xlsx OR .mat
 % Event related data, raw data, preprocessed data, time and event related spikes
 % can only be exported as .mat files!
-AutorunConfig.Export.DatasetComponent = ["Info","Events","EventRelatedData","Spikes","EventRelatedSpikes"]; % "Raw" OR "Preprocessed" OR "Time" OR "TimeDownsampled" OR "Info" OR "Events" OR "EventRelatedData" OR "Spikes" OR "EventRelatedSpikes"
+AutorunConfig.Export.DatasetComponent = ["Info","Events"]; % "Raw" OR "Preprocessed" OR "Time" OR "TimeDownsampled" OR "Info" OR "Events" OR "EventRelatedData" OR "Spikes" OR "EventRelatedSpikes"
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 5. Spike Module
@@ -332,7 +344,7 @@ AutorunConfig.SaveforSpikeSorting.SaveFormat = 'double'; % 'int32' or 'int16' fo
 AutorunConfig.SaveforSpikeSorting.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data' to determine which part of the dataset is saved
 %% 5.2 Load from SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromSpikeSorting.Sorter = 'Kilosort 4 external GUI'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
+AutorunConfig.LoadfromSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
 AutorunConfig.LoadfromSpikeSorting.ScalingFactor = []; % ONLY FOR KILOSORT: char, This is the 'int16' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and applied when you saved data for kilosort before.

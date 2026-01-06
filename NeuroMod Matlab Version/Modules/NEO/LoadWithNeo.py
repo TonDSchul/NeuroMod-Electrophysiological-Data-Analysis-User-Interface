@@ -153,7 +153,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
         NrChannel = RawDataChunk.shape[0]
         NrSamples = RawDataChunk.shape[1]
         
-        Save_MetaData(analogsignals,start_sample,JustExtractingEvents,MetaDataSaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples,IsNP1,Np1DataPartToextract)
+        Save_MetaData(analogsignals,start_sample,JustExtractingEvents,MetaDataSaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel)
         
         print("Saving Channel Data to " + ChannelDataSaveFileName + " (this might take a while)")
         write_DataLogger("Saving Channel Data to " + ChannelDataSaveFileName,DataLoggerSaveFileName)

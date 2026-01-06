@@ -1,4 +1,4 @@
-function [Data,AutorunConfig] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder,Data,nRecordings,Channelorder,executableFolder)
+function [Data,AutorunConfig] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder,Data,nRecordings,Channelorder,executableFolder,TimeAndChannelToExtract)
 
 %________________________________________________________________________________________
 %% This is the main function to execute dataset management module autorun analysis 
@@ -18,6 +18,8 @@ function [Data,AutorunConfig] = Execute_Autorun_Manage_Dataset_Module_Functions(
 % 6. executableFolder: char, folder this instance of the Toolbox is saved in and
 % executed from 
 % 7. AutorunConfig.selected_folder: char, Path to currently analyzed folder
+% 8. TimeAndChannelToExtract: struc with to fields, one holding info about
+% channel to extract the other containing info about time to extract
 
 % Outputs:
 % 1. Data: main data structure 
@@ -75,7 +77,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         
         % Extract Data
         if strcmp(AutorunConfig.ExtractRawRecording.LibraryToUse,"NeuroMod Matlab")
-            [TempData,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(AutorunConfig.ExtractRawRecording.RecordingsSystem,AutorunConfig.ExtractRawRecording.FileType,SelectedFolder,PlaceholderTextare,executableFolder,AutorunConfig.AdditionalAmpFactor,AutorunConfig.ProbeInfo.NrChannel,AutorunConfig.ProbeInfo.NrRows);
+            [TempData,HeaderInfo,SampleRate,RecordingType,Time] = Manage_Dataset_Module_Extract_Raw_Recording_Main(AutorunConfig.ExtractRawRecording.RecordingsSystem,AutorunConfig.ExtractRawRecording.FileType,SelectedFolder,PlaceholderTextare,executableFolder,AutorunConfig.AdditionalAmpFactor,AutorunConfig.ProbeInfo.ActiveChannel,AutorunConfig.ProbeInfo.Channelorder,TimeAndChannelToExtract);
         elseif strcmp(AutorunConfig.ExtractRawRecording.LibraryToUse,"NeuralEnsemble NEO Python Library")
             % first chekc if its a neuropixels 1.0 recording. If
             % yes, ask if user wants LFP or AP signal
@@ -83,13 +85,25 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
             [IsNP1,DataPartToextract] = Manage_Dataset_Check_NEO_NP1_Recording(Data,SelectedFolder);
             
             % Open extra window, get more settings, start NEO python
-            [Success] = Manage_Dataset_Module_Start_Neo(SelectedFolder,executableFolder,AutorunConfig.ExtractRawRecording.NEOJustLoadRecording,AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen,AutorunConfig.ExtractRawRecording.NEOFormat,AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab,IsNP1,DataPartToextract);
+            [Success] = Manage_Dataset_Module_Start_Neo(SelectedFolder,executableFolder,AutorunConfig.ExtractRawRecording.NEOJustLoadRecording,AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen,AutorunConfig.ExtractRawRecording.NEOFormat,AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab,IsNP1,DataPartToextract,TimeAndChannelToExtract.TimeToExtract,TimeAndChannelToExtract.ChannelToExtract);
             if Success == 0
                 return;
             end
 
             % Load saved results from NEO
-            [TempData,SampleRate,HeaderInfo,RecordingType,Time,~] = Manage_Dataset_Load_NEO_RawData_Save_Files(SelectedFolder,AutorunConfig.ExtractRawRecording.NEOFormat,AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab);
+            [TempData,SampleRate,HeaderInfo,RecordingType,Time,~] = Manage_Dataset_Load_NEO_RawData_Save_Files(SelectedFolder,AutorunConfig.ExtractRawRecording.NEOFormat,AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab,TimeAndChannelToExtract);
+        
+        elseif strcmp(AutorunConfig.ExtractRawRecording.LibraryToUse,"SpikeInterface Python Library") % If SpikeInterface data extraction
+                    
+            % Open extra window, get more settings, start SpikeInterface python
+            [Success] = Manage_Dataset_Module_Start_SpikeInterface(SelectedFolder,executableFolder,AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording,AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen,AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat,AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab);
+            if Success == 0
+                return;
+            end
+            
+            % Load saved results from NEO
+
+            [TempData,SampleRate,HeaderInfo,RecordingType,Time,~] = Manage_Dataset_Load_SpikeInterface_RawData_Save_Files(SelectedFolder,TimeAndChannelToExtract);
             
         end
 
@@ -116,9 +130,12 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
             return;
         end
         
-        [Data] = Manage_Dataset_Module_OnlyTake_Specified_Channel(Data,AutorunConfig.ExtractRawRecording.ChannelToExtract);
-        
-        [Data] = Manage_Dataset_Module_Apply_ChannelOrder (Data,Channelorder);
+        if strcmp(AutorunConfig.ExtractRawRecording.LibraryToUse,"SpikeInterface Python Library")
+            % [NewChannelOrder] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.Mainapp.Data.Info.ProbeInfo.MEAChannelOrder,'MainPlot');
+            % [app.Mainapp.Data] = Manage_Dataset_Module_Apply_ChannelOrder(app.Mainapp.Data,NewChannelOrder);
+        else
+            [Data] = Manage_Dataset_Module_Apply_ChannelOrder(Data,Channelorder);
+        end
 
         %% FLip Data
         if Data.Info.ProbeInfo.FlipLoadedData == 1

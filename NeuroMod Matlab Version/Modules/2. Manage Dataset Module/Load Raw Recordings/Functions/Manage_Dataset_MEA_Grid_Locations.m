@@ -36,12 +36,21 @@ xcoords = xcoords + min(Info.MEACoords(:,1));
 ycoords = ycoords + min(Info.MEACoords(:,2));
 Laufvariable = 1;
 FakechannelMatrix = [];
-for n = 1:numel(unique(y))
-    for m = 1:numel(unique(x))
+
+for m = 1:numel(unique(x))
+    for n = 1:numel(unique(y))
         FakechannelMatrix(n,m) = Laufvariable;
         Laufvariable = Laufvariable+1;
     end
 end
+
+
+% for n = 1:numel(unique(y))
+%     for m = 1:numel(unique(x))
+%         FakechannelMatrix(n,m) = Laufvariable;
+%         Laufvariable = Laufvariable+1;
+%     end
+% end
 
 NewChannelOrder = [];
 for iii = 1:size(Info.MEACoords,1)    
@@ -55,7 +64,7 @@ Info.ProbeInfo.ActiveChannel = sort(NewChannelOrder);
 
 Info.ProbeInfo.MEAChannelOrder = NewChannelOrder;
 
-Info = rmfield(Info, 'MEACoords');
+%Info = rmfield(Info, 'MEACoords');
 
 
 

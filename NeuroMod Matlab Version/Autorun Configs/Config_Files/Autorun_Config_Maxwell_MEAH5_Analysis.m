@@ -1,4 +1,4 @@
-function [AutorunConfig] = Autorun_Config_TEMPLATE_Spike2_Analysis(DisplayOrder)
+function [AutorunConfig] = Autorun_Config_Maxwell_MEAH5_Analysis(DisplayOrder)
 
 %% Options What to Execute
 %______________________
@@ -40,6 +40,8 @@ function [AutorunConfig] = Autorun_Config_TEMPLATE_Spike2_Analysis(DisplayOrder)
 % 'Export_Analysis_Results' NOTE: Only to export analysis results! Insert below after every anlysis module you want to export data from. This exports all analysis results of that module!
 % 'Export_Dataset_Components' NOTE: If you want to export event related data or event related spikes, you have to do it after one of the analysis options of event related data (for example Event_Analysis_ERP) for which you specify the event channel and trial numbers. 
 
+AutorunConfig.MEA_Analysis = 1;
+
 % What to execute
 AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD"];
 
@@ -60,7 +62,7 @@ AutorunConfig.SaveFigures = "on";
 AutorunConfig.SaveFiguresFormat = "png"; % "png" OR "svg" OR "fig"
 AutorunConfig.DeleteFigureAfterSaving = "on";
 
-AutorunConfig.AutorunConfigName = "Intan .dat LFP and Spike Analysis";
+AutorunConfig.AutorunConfigName = "Maxwell MEA .h5 LFP and Spike Analysis";
 AutorunConfig.SaveAutorunConfig = "on"; % For later reference, the config variable can be save along with the dataset to trace back parameters with which figures were created
 AutorunConfig.twoORthree_D_Plotting = "TwoD"; % string, either "TwoD" OR "ThreeD" to show image plots as 2D plots or as 3D plots
 AutorunConfig.AdditionalAmpFactor = []; % Additional signal amplification factor; empty for non, otherwise factor raw data gets multiplied with
@@ -82,20 +84,20 @@ end
 %% 1.1 Extract Data from Raw Recordings
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
-AutorunConfig.ExtractRawRecording.LibraryToUse = "NeuroMod Matlab"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library" OR "SpikeInterface Python Library"
+AutorunConfig.ExtractRawRecording.LibraryToUse = "SpikeInterface Python Library"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library" OR "SpikeInterface Python Library"
 
 AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen = 1; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0. specify whteher python console opening to show progress of NEO data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.NEOJustLoadRecording = 0; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0, whether to load the files NEO saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
 AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Either "NEO Format to .mat Conversion" OR "Costum files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; % Either "Auto Detected Recording System" to let NEO automatically detect the format. OR "NEO + Recordingsystemname" like "NEO Neuralynx" or "NEO Plexon" or "NEO New Open Ephys Format" OR "NEO Legacy Open Ephys Format"
 
-AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)n"; % Only when "SpikeInterface Python Library"; "Costum files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen = 1; % Only when "SpikeInterface Python Library"; Either 1 or 0. specify whteher python console opening to show progress of SpikeInterface data extracton should stay open with you having to press enter after it completed
-AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording = 0; % Only when "SpikeInterface Python Library"; Either 1 or 0, whether to load the files SpikeInterface saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
+AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording = 1; % Only when "SpikeInterface Python Library"; Either 1 or 0, whether to load the files SpikeInterface saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
 AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat = "SpikeInterface MEA Maxwell"; % Only when "SpikeInterface Python Library"; Only "SpikeInterface MEA Maxwell" available, loading .h5 files saved by Maxwell MaxOne 
 
-AutorunConfig.ExtractRawRecording.RecordingsSystem = "Spike2"; % Recoring system with which recording was made. 
-AutorunConfig.ExtractRawRecording.FileType = ".smrx"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; 
+AutorunConfig.ExtractRawRecording.RecordingsSystem = "SpikeInterface MEA Maxwell"; % Recoring system with which recording was made. 
+AutorunConfig.ExtractRawRecording.FileType = "MEA .h5 file"; % "TDT .sev"
 
 AutorunConfig.ExtractRawRecording.ChannelToExtract = 'All'; % char, channel to extract from recordings. Either 'All' for all channel or matlab expressions as a char like '1:10' or '[1,2,3,5,6]'
 AutorunConfig.ExtractRawRecording.TimeToExtract = '0,Inf'; % char, timerange of recording to extract data from. Either '0,Inf' for the whole recording time or comma separated numbers like 0,10 for the first 10 seconds.
@@ -214,10 +216,11 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Spike2 Channel'; % Spike2 Channel
-AutorunConfig.ExtractEventDataModule.TriggerType = 'Rising Edge'; % char, Either 'Rising Edge' or 'Falling Edge' to determine whether rising or falling edge should be detected
-AutorunConfig.ExtractEventDataModule.EventChannelSelection = '9,10'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
-AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '0.2'; % Threshold of event signal at which events are extracted as char
+
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'TDT Trigger scalars:Evnt'; % Options: 'TDT Trigger scalars:Evnt','TDT Trigger scalars:Tria','TDT Trigger epocs:Evnt','TDT Trigger epocs:Tria','TDT Trigger epocs:Brst','TDT Trigger epocs:Stro','TDT Trigger epocs:Tick'
+AutorunConfig.ExtractEventDataModule.TriggerType = 'Rising Edge'; % do not change
+AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
+AutorunConfig.ExtractEventDataModule.EventSignalThreshold = ''; % not applicable
 % Event Related Data
 AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent = '0.3'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.6'; %Time in seconds extracted after events as char
@@ -248,7 +251,7 @@ AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expre
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
-AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Data Channel 9'; % 'Data Channel 9', the number depends on the amplifier channel event data represents that is selcted when data is extracted
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'TDT Trigger scalars:Evnt Ch 1'; % Options: 'TDT Trigger scalars:Evnt','TDT Trigger scalars:Tria','TDT Trigger epocs:Evnt','TDT Trigger epocs:Tria','TDT Trigger epocs:Brst','TDT Trigger epocs:Stro','TDT Trigger epocs:Tick' PLUS 'Ch 1' or Ch 2 depending in the input channel selection
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
 AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
 

@@ -67,7 +67,7 @@ def Get_Save_Event_Data(DataLoggerSaveFileName,reader,sampling_rate,EventSaveFil
         print("No event data found!")
         write_DataLogger("No event data found!",DataLoggerSaveFileName)
     
-def Save_MetaData(analogsignals,start_sample,JustExtractingEvents,SaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples,IsNP1,Np1DataPartToextract):
+def Save_MetaData(analogsignals,start_sample,JustExtractingEvents,SaveFileName,DataLoggerSaveFileName,Method,NrChannel,NrSamples,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel):
     # -----------------------------------------------------------------------
     ''' Save MetaData'''
     # -----------------------------------------------------------------------
@@ -106,7 +106,8 @@ def Save_MetaData(analogsignals,start_sample,JustExtractingEvents,SaveFileName,D
                 'channel_ids': channel_ids,
                 'n_channels': NrChannel,
                 'n_samples': NrSamples,
-                'acqu_start_samples': start_sample
+                'timetoextract': TimeToExtract,
+                'individualchannel': IndividualChannel
             })
         else:
             scipy.io.savemat(SaveFileName, {
@@ -116,7 +117,9 @@ def Save_MetaData(analogsignals,start_sample,JustExtractingEvents,SaveFileName,D
                 'channel_ids': channel_ids,
                 'n_channels': NrChannel,
                 'n_samples': NrSamples,
-                'acqu_start_samples': start_sample       
+                'acqu_start_samples': start_sample,
+                'timetoextract': TimeToExtract,
+                'individualchannel': IndividualChannel
             })
     
     

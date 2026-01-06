@@ -297,6 +297,9 @@ if isfield(Data,'Events')
                 
             % ERP
             if strcmp(FunctionOrder,'Event_Analysis_ERP')
+
+                
+
                
                 ERPFigure = figure();
                 UIAxes = subplot(2,1,1);
@@ -306,9 +309,9 @@ if isfield(Data,'Events')
                 SelectedChannel = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
                 
                 if strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,'Raw Event Related Data')
-                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.EventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,SelectedChannel,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations);
+                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.EventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,SelectedChannel,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                 else
-                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.PreprocessedEventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,SelectedChannel,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations);
+                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,UIAxes_2,Data.PreprocessedEventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,SelectedChannel,[],tempcolorMapset,str2double(AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots),'All',AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                 end
                 
                 ERPFigure.Color = AutorunConfig.ComponentsInWindowColor;
@@ -340,9 +343,9 @@ if isfield(Data,'Events')
                 CSD.SelectedChannel = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
                 
                 if strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,'Raw Event Related Data')
-                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.EventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations);
+                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.EventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                 else
-                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.PreprocessedEventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations);
+                    [~,~,~,~,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,UIAxes,[],Data.PreprocessedEventRelatedData(:,EventNr,:),Data.Info.EventRelatedTime,CSD.SelectedChannel,CSD,[],[],[],AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.SingleERPChannel,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SingleChannelPlotType,EventNr,AutorunConfig.PreservePlotChannelLocations,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                 end
     
                 CSDFigure.Color = AutorunConfig.ComponentsInWindowColor;
@@ -393,7 +396,7 @@ if isfield(Data,'Events')
                             delete(cb);                  % Delete the colorbar
                         end
                         
-                        [CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,UIAxes,AutorunConfig.AnalyseEventDataModule.SpectrumDataType,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SelectedChannel,AutorunConfig.AnalyseEventDataModule.SpectrumChannel,AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange,CurrentPlotData,AutorunConfig.PlotAppearance,SelectedEvents,AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom);
+                        [CurrentPlotData] = Event_Analyse_Static_Power_Spectrum(Data,UIAxes,AutorunConfig.AnalyseEventDataModule.SpectrumDataType,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,SelectedChannel,AutorunConfig.AnalyseEventDataModule.SpectrumChannel,AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange,CurrentPlotData,AutorunConfig.PlotAppearance,SelectedEvents,AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                         
                         EventSpectrumFigure.Color = AutorunConfig.ComponentsInWindowColor;
                         [UIAxes] = Execute_Autorun_Set_Plot_Colors(UIAxes,AutorunConfig);
@@ -423,7 +426,7 @@ if isfield(Data,'Events')
                         
                         BandPower = [];
                         
-                        [~,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,BandPower,AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange,UIAxes,UIAxes_2,[],'All',AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,SelectedEvents,DepthChannel,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom,AutorunConfig.PreservePlotChannelLocations);    
+                        [~,BandPower,CurrentPlotData] = Event_Power_Spectrum_Over_Depth(Data,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,BandPower,AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange,UIAxes,UIAxes_2,[],'All',AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,SelectedEvents,DepthChannel,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom,AutorunConfig.PreservePlotChannelLocations,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);    
                         
                         EventSpectrumFigure.Color = AutorunConfig.ComponentsInWindowColor;
                         [UIAxes] = Execute_Autorun_Set_Plot_Colors(UIAxes,AutorunConfig);
@@ -460,22 +463,22 @@ if isfield(Data,'Events')
         
                         if strcmp(AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom,'Raw Data')
                             if strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,"Raw Event Related Data")
-                                [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.EventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance);
+                                [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.EventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                             elseif strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,"Preprocessed Event Related Data")
-                                [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.PreprocessedEventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance);
+                                [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.PreprocessedEventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                             end
                         else
                             if isfield(Data.Info,"DownsampleFactor")
                                 if strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,"Raw Event Related Data")
-                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.EventRelatedData,UIAxes,Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance);
+                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.EventRelatedData,UIAxes,Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                                 elseif strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,"Preprocessed Event Related Data")
-                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.PreprocessedEventRelatedData,UIAxes,Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance);
+                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.PreprocessedEventRelatedData,UIAxes,Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                                 end
                             else
                                 if strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,"Raw Event Related Data")
-                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.EventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance);
+                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.EventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                                 elseif strcmp(AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,"Preprocessed Event Related Data")
-                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.PreprocessedEventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance);
+                                    [~,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Data.PreprocessedEventRelatedData,UIAxes,Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,TimearoundEvent,TF,AutorunConfig.AnalyseEventDataModule.TFPlotType(i),AutorunConfig.AnalyseEventDataModule.TFPlotAddons(j),"Moorlet Wavelets",AutorunConfig.twoORthree_D_Plotting,CurrentPlotData,AutorunConfig.PlotAppearance,AutorunConfig.AnalyseEventDataModule.BaselineNormalize,AutorunConfig.AnalyseEventDataModule.BaselineWindow);
                                 end
                             end
                         end

@@ -15,7 +15,7 @@ clear TempData;
 
 Data.Time = Time;
 
-if strcmp(RecordingType,"IntanDat") || strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"Spike2") || strcmp(RecordingType,"Open Ephys") || strcmp(RecordingType,"NEO") || strcmp(RecordingType,"TDT Tank Data")
+if strcmp(RecordingType,"IntanDat") || strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"Spike2") || strcmp(RecordingType,"Open Ephys") || strcmp(RecordingType,"NEO") || strcmp(RecordingType,"TDT Tank Data") || strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
     Data.Info = HeaderInfo;
 else
     fieldsToDelete = {'Header'};
@@ -39,29 +39,36 @@ Data.Info.Data_Path = SelectedFolder;
 Data.Info.NativeSamplingRate = SampleRate;
 Data.Info.RecordingType = RecordingType;
 
-if ischar(AutorunConfig.ProbeInfo.ChannelSpacing) || isstring(AutorunConfig.ProbeInfo.ChannelSpacing)
-    Data.Info.ChannelSpacing = str2double(AutorunConfig.ProbeInfo.ChannelSpacing);
-else
-    Data.Info.ChannelSpacing = AutorunConfig.ProbeInfo.ChannelSpacing;
+if ~strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+    if ischar(AutorunConfig.ProbeInfo.ChannelSpacing) || isstring(AutorunConfig.ProbeInfo.ChannelSpacing)
+        Data.Info.ChannelSpacing = str2double(AutorunConfig.ProbeInfo.ChannelSpacing);
+    else
+        Data.Info.ChannelSpacing = AutorunConfig.ProbeInfo.ChannelSpacing;
+    end
+    
+    Data.Info.ProbeInfo.NrChannel = num2str(AutorunConfig.ProbeInfo.NrChannel);
+    Data.Info.ProbeInfo.NrRows = num2str(AutorunConfig.ProbeInfo.NumberChannelRows);
+    Data.Info.ProbeInfo.VertOffset = num2str(AutorunConfig.ProbeInfo.VerticalOffsetum);
+    Data.Info.ProbeInfo.HorOffset = num2str(AutorunConfig.ProbeInfo.HorizontalOffsetum);
+    Data.Info.ProbeInfo.ActiveChannel = sort(AutorunConfig.ProbeInfo.ActiveChannel);
+    
+    Data.Info.ProbeInfo.SwitchTopBottomChannel = AutorunConfig.ProbeInfo.SwitchTopBottomChannel;
+    Data.Info.ProbeInfo.SwitchLeftRightChannel = AutorunConfig.ProbeInfo.SwitchLeftRightChannel;
+    Data.Info.ProbeInfo.FlipLoadedData = AutorunConfig.ProbeInfo.FlipLoadedData;
+    
+    Data.Info.ProbeInfo.OffSetRows = double(AutorunConfig.ProbeInfo.OffSetRows);
+    Data.Info.ProbeInfo.OffSetRowsDistance = AutorunConfig.ProbeInfo.OffSetRowsDistance;
+    
+    if isfield(AutorunConfig.ProbeInfo,'ProbeTrajectoryInfo')
+        Data.Info.ProbeInfo.CompleteAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesLong;
+        Data.Info.ProbeInfo.ShortAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesShort;
+        Data.Info.ProbeInfo.AreaDistanceFromTip = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaTipDistance;
+    end
 end
 
-Data.Info.ProbeInfo.NrChannel = num2str(AutorunConfig.ProbeInfo.NrChannel);
-Data.Info.ProbeInfo.NrRows = num2str(AutorunConfig.ProbeInfo.NumberChannelRows);
-Data.Info.ProbeInfo.VertOffset = num2str(AutorunConfig.ProbeInfo.VerticalOffsetum);
-Data.Info.ProbeInfo.HorOffset = num2str(AutorunConfig.ProbeInfo.HorizontalOffsetum);
-Data.Info.ProbeInfo.ActiveChannel = sort(AutorunConfig.ProbeInfo.ActiveChannel);
-
-Data.Info.ProbeInfo.SwitchTopBottomChannel = AutorunConfig.ProbeInfo.SwitchTopBottomChannel;
-Data.Info.ProbeInfo.SwitchLeftRightChannel = AutorunConfig.ProbeInfo.SwitchLeftRightChannel;
-Data.Info.ProbeInfo.FlipLoadedData = AutorunConfig.ProbeInfo.FlipLoadedData;
-
-Data.Info.ProbeInfo.OffSetRows = double(AutorunConfig.ProbeInfo.OffSetRows);
-Data.Info.ProbeInfo.OffSetRowsDistance = AutorunConfig.ProbeInfo.OffSetRowsDistance;
-
-if isfield(AutorunConfig.ProbeInfo,'ProbeTrajectoryInfo')
-    Data.Info.ProbeInfo.CompleteAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesLong;
-    Data.Info.ProbeInfo.ShortAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesShort;
-    Data.Info.ProbeInfo.AreaDistanceFromTip = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaTipDistance;
+% Get True MEA Grid Locations for position related analyis
+if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+    [Data.Info] = Manage_Dataset_MEA_Grid_Locations(Data.Info);
 end
 
 % get x and y coordinates
@@ -85,3 +92,4 @@ end
 Data.Info.ProbeInfo.YLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, xx), Data.Info.ProbeInfo.ycoords, Data.Info.ProbeInfo.xcoords, 'UniformOutput', false);
     
 Data.Info.SpikeType = "Non";
+

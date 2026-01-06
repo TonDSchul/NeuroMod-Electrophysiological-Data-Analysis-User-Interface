@@ -225,17 +225,37 @@ if MainPlot && JustLiveWindow == 0
             
         Laufvariable = 1;
         PlotData = NaN(str2double(app.Data.Info.ProbeInfo.NrChannel),str2double(app.Data.Info.ProbeInfo.NrRows));
+        
+        AllX = sort(unique(app.Data.Info.MEACoords(:,1)));
+        AllY = sort(unique(app.Data.Info.MEACoords(:,2)));
         for n = 1:str2double(app.Data.Info.ProbeInfo.NrChannel)
             for m = 1:str2double(app.Data.Info.ProbeInfo.NrRows)
-                if sum(Laufvariable==app.Data.Info.ProbeInfo.MEAChannelOrder)>0
-                    [CurrentChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,Laufvariable,'MainPlot');
-                    if sum(Laufvariable==app.ActiveChannel)>0
-                        PlotData(n,m) = DataForMatrix(CurrentChannel);
+                %if sum(Laufvariable==app.ActiveChannel)>0
+                    if Laufvariable<size(app.Data.Info.MEACoords,1)
+                        IndiciesX = find(app.Data.Info.MEACoords(Laufvariable,1) == AllX);
+                        IndiciesY = find(app.Data.Info.MEACoords(Laufvariable,2) == AllY);
+                        
+                        if ~isempty(IndiciesX)&&~isempty(IndiciesY)
+                            PlotData(IndiciesY,IndiciesX) = DataForMatrix(Laufvariable);
+                        end
                     end
-                end
-                Laufvariable = Laufvariable+1;
+                %end
+                Laufvariable = Laufvariable + 1;
             end
         end
+        
+        
+        % for n = 1:str2double(app.Data.Info.ProbeInfo.NrChannel)
+        %     for m = 1:str2double(app.Data.Info.ProbeInfo.NrRows)
+        %         if sum(Laufvariable==app.Data.Info.ProbeInfo.MEAChannelOrder)>0
+        %             [CurrentChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,Laufvariable,'MainPlot');
+        %             if sum(Laufvariable==app.ActiveChannel)>0
+        %                 PlotData(str2double(app.Data.Info.ProbeInfo.NrRows)-m+1,str2double(app.Data.Info.ProbeInfo.NrChannel)-n+1) = DataForMatrix(CurrentChannel);
+        %             end
+        %         end
+        %         Laufvariable = Laufvariable+1;
+        %     end
+        % end
     else
         if strcmp(app.DropDown.Value,'Preprocessed Data') 
             PlotData = app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex);

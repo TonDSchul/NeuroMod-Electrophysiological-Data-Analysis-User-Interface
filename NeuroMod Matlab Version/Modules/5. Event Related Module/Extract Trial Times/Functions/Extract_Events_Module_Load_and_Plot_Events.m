@@ -78,6 +78,26 @@ if strcmp(Data.Info.RecordingType,"IntanDat")
         end
     end
 
+    if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+        if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+            Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+        else
+            TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            Timetoextract(1) = TempTimetoextract(1);
+            Timetoextract(2) = Data.Time(end); 
+        end
+    else
+        Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+    end
+    
+    % convert to samples
+    Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
+    if Timetoextract(1)==0
+        Timetoextract(1) = 1;
+    end
+    
+    InputChannelData = InputChannelData(Timetoextract(1):Timetoextract(2));
+
     % for rhd was already extracted (to not load data every time this
     % function is called) -- eaier to load at start ups
 elseif strcmp(Data.Info.RecordingType,"IntanRHD")

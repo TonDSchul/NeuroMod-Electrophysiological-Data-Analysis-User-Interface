@@ -5,8 +5,8 @@ Spyder Editor
 This is a temporary script file.
 """
 import spikeinterface.full as si
-
-
+import numpy as np
+import json
 import spikeinterface.widgets as sw
 import matplotlib.pyplot as plt
 from tempfile import TemporaryDirectory
@@ -52,57 +52,50 @@ FolderToStartAt = 1 # only when MultipleRecordings = 1
 
 """ ################################################################ PipeLine functions ###################################################################### """
 
-def main(subfolders,file_path):
+def main(subfolders,file_path,GUIParamsfile):
+    ## first load GUI params guiding what is done in this script and giving probe layout etc
+    with open(GUIParamsfile, 'r') as f:
+        GUIparams = json.load(f)
+
+    # Assuming GUIparams is loaded from JSON already
+    file_path = GUIparams['file_path']
+    MultipleRecordings = int(GUIparams['MultipleRecordings'])
+    Sorter = GUIparams['SelectedSorter']
+    Apply_Preprocessing = int(GUIparams['Preprocess'])
+    LoadSpikeSorting = int(GUIparams['LoadSorting'])
+    OpenSpikeInterface_GUI = int(GUIparams['OpenSpikeInterface'])
+    Plot_Results = int(GUIparams['PlotSortingResults'])
+    JustOpenSpikeInterfaceGUI = int(GUIparams['JustOpenSpikeInterfaceGUI'])
+    SampleRate = float(GUIparams['SampleRate'])
+    num_elec = int(GUIparams['NumChannel'])
+    ypitch = float(GUIparams['ypitch'])
+    KeepConsoleOpen = int(GUIparams['KeepConsoleOpen'])
+    PlotTraces = int(GUIparams['PlotTraces'])
+    VerChannelOffset = int(GUIparams['VerChannelOffset'])
+    HorChannelOffset = int(GUIparams['HorChannelOffset'])
+    NumberRows = int(GUIparams['NumberRows'])
+    RowOffset = int(GUIparams['RowOffset'])
+    RowOffsetDistance = int(GUIparams['RowOffsetDistance'])
     
-    file_path = sys.argv[1]
-    Sorter = sys.argv[3]  # First argument
-    MultipleRecordings = sys.argv[2]  # Second argument
-    Apply_Preprocessing = sys.argv[4]  # Second argument
-    LoadSpikeSorting = sys.argv[5]  # First argument
-    OpenSpikeInterface_GUI = sys.argv[6]  # Second argument
-    Plot_Results = sys.argv[7]  # First argument
-    JustOpenSpikeInterfaceGUI = sys.argv[8]  # Second argument
-    SampleRate = sys.argv[9]  # Second argument
-    num_elec = sys.argv[10]  # Second argument
-    ypitch = sys.argv[11]  # Second argument
-    PlotTraces = sys.argv[13]  # Second argument
+    # Arrays
+    AllChannel = int(GUIparams['AllChannel'])  # if stored as 0/1 in JSON
+    ActiveChannel = GUIparams['ActiveChannel']
+    Xcoords = GUIparams['xCoords']
+    Ycoords = GUIparams['yCoords']
     
-    VerChannelOffset = sys.argv[14]  
-    HorChannelOffset = sys.argv[15]  
-    NumberRows = sys.argv[16]  
-    RowOffset = sys.argv[17]  
-    RowOffsetDistance = sys.argv[18]  
-    
-    AllChannel = sys.argv[19]  # Second argument
-    ActiveChannel = sys.argv[20]  # Second argument
-    
-    Xcoords = sys.argv[21]  # Second argument
-    Ycoords = sys.argv[22]  # Second argument
-    
+    # Check if the file exists, then delete it
+    if os.path.exists(GUIParamsfile):
+        os.remove(GUIParamsfile)
+        print(f"Deleted file: {GUIParamsfile}")
+    else:
+        print("File does not exist, nothing to delete.")
+            
     # Read the JSON file
     #json_file_path = sys.argv[12]  # Assume it's the last argument
-    JsonFilename = file_path+"/sorting_parameters.json"
+    JsonFilename = os.path.join(file_path, 'sorting_parameters.json')
     with open(JsonFilename, 'r') as f:
         SortingParameter = json.load(f)
-        
-    MultipleRecordings = int(MultipleRecordings);
-    Apply_Preprocessing = int(Apply_Preprocessing);
-    LoadSpikeSorting = int(LoadSpikeSorting);
-    OpenSpikeInterface_GUI = int(OpenSpikeInterface_GUI);
-    JustOpenSpikeInterfaceGUI = int(JustOpenSpikeInterfaceGUI);
-    Plot_Results = int(Plot_Results);
-    PlotTraces = int(PlotTraces);
-    
-    VerChannelOffset = int(VerChannelOffset);
-    HorChannelOffset = int(HorChannelOffset);
-    NumberRows = int(NumberRows);
-    RowOffset = int(RowOffset);
-    RowOffsetDistance = int(RowOffsetDistance);
-    
-    num_elec = int(num_elec)
-    ypitch = int(ypitch)
-    AllChannel = int(AllChannel)  # Second argument
-    
+            
     print(f"Received arguments: {file_path}, {MultipleRecordings}, {Sorter}, {Apply_Preprocessing}, {LoadSpikeSorting}, {OpenSpikeInterface_GUI}, {Plot_Results}, {JustOpenSpikeInterfaceGUI} , {SampleRate}")
     
     print("SpikeInterface Version installed: " + si.__version__)
@@ -282,25 +275,30 @@ def main(subfolders,file_path):
         DeleteFolderContents(PathToSaveCached)
     
 if __name__ == "__main__":
+    # First Load mat file with GUI params guiding execution here
+    GUIParamsfile = sys.argv[1]
+    print(GUIParamsfile)
+    # Load JSON into a Python dictionary
+    with open(GUIParamsfile, 'r') as f:
+        GUIparams = json.load(f)
+
+    # Assuming GUIparams is loaded from JSON already
+    file_path = GUIparams['file_path']
+    MultipleRecordings = int(GUIparams['MultipleRecordings'])
+    Sorter = GUIparams['SelectedSorter']
+    LoadSpikeSorting = int(GUIparams['LoadSorting'])
+    OpenSpikeInterface_GUI = int(GUIparams['OpenSpikeInterface'])
+    Plot_Results = int(GUIparams['PlotSortingResults'])
+    JustOpenSpikeInterfaceGUI = int(GUIparams['JustOpenSpikeInterfaceGUI'])
+    KeepConsoleOpen = int(GUIparams['KeepConsoleOpen'])
+    PlotTraces = int(GUIparams['PlotTraces'])
     
-    KeepConsoleOpen = sys.argv[12]
-    KeepConsoleOpen = int(KeepConsoleOpen)
-    
+    print("GUI params loaded successfully!")
+
     if KeepConsoleOpen == 1:
         try:
             # Access arguments
-            file_path = sys.argv[1]
-            Sorter = sys.argv[3]  
-            MultipleRecordings = sys.argv[2]  
-            Apply_Preprocessing = sys.argv[4] 
-            LoadSpikeSorting = sys.argv[5] 
-            OpenSpikeInterface_GUI = sys.argv[6]
-            Plot_Results = sys.argv[7] 
-            JustOpenSpikeInterfaceGUI = sys.argv[8] 
-            SampleRate = sys.argv[9]  
-                        
-            MultipleRecordings = int(MultipleRecordings);
-            
+
             if not pyuac.isUserAdmin():
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
@@ -319,7 +317,7 @@ if __name__ == "__main__":
                 else:
                     subfolders = file_path
                 
-                main(subfolders,file_path)  
+                main(subfolders,file_path,GUIParamsfile)  
                 
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -329,18 +327,6 @@ if __name__ == "__main__":
         finally:
             input("Press Enter to exit...")
     else:
-        # Access arguments
-        file_path = sys.argv[1]
-        Sorter = sys.argv[3] 
-        MultipleRecordings = sys.argv[2]  
-        Apply_Preprocessing = sys.argv[4] 
-        LoadSpikeSorting = sys.argv[5] 
-        OpenSpikeInterface_GUI = sys.argv[6] 
-        Plot_Results = sys.argv[7] 
-        JustOpenSpikeInterfaceGUI = sys.argv[8]  
-        SampleRate = sys.argv[9]  
-        
-        MultipleRecordings = int(MultipleRecordings);
         
         if not pyuac.isUserAdmin():
             print("Re-launching as admin!")
@@ -361,5 +347,5 @@ if __name__ == "__main__":
                 subfolders = file_path
             
             
-            main(subfolders,file_path) 
+            main(subfolders,file_path,GUIParamsfile) 
             

@@ -49,7 +49,7 @@ for i = 1:length(DatasetComponent)
     
     if strcmp(DatasetComponent(i),"EventRelatedData")
         if ~isfield(Data,DatasetComponent(i))
-            warning("No event realted data found to export! Please first conduct event related analysis before you export.")
+            warning("No event related data found to export! Please first conduct event related analysis before you export.")
             continue;
         end
         if ~strcmp(AutorunConfig.Export.DatasetFormat,'.mat')

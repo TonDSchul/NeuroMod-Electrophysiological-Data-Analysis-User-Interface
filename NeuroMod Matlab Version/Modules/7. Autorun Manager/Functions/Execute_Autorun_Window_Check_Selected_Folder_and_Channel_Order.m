@@ -148,11 +148,17 @@ else
             else
                 [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.sev');
             end
+        elseif contains(AutorunConfig.ExtractRawRecording.RecordingsSystem,"SpikeInterface MEA Maxwell") 
+            if find(AutorunConfig.FunctionOrder == "Load_Data")
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.dat');
+            else
+                [containsFiles] = Execute_Autorun_Config_Simple_Check_FileEnding(selected_folder,'.h5');
+            end
         end
 
         if containsFiles == false
-            msgbox("Selected folder does not contain valid recording files. Exiting")
-            error("Selected folder does not contain valid recording files. Exiting")
+            msgbox(strcat("Selected folder does not contain valid recording files for recording type ",AutorunConfig.ExtractRawRecording.RecordingsSystem," selected in current Autorun config. Exiting"))
+            error(strcat("Selected folder does not contain valid recording files for recording type ",AutorunConfig.ExtractRawRecording.RecordingsSystem," selected in current Autorun config. Exiting"))
         end
 
         AutorunConfig.selected_folder = selected_folder;

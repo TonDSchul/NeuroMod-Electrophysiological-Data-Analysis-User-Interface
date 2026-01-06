@@ -58,10 +58,63 @@ end
 
 SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(SelectedSorter,ParameterStructure,file_path);
 
-command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %s %s', ...
-    pythonPath, SpikeInterfaceScriptPath, file_path, SpikeInterfaceParameter.MultipleRecordings, SelectedSorter, ...
-    SpikeInterfaceParameter.Preprocess, SpikeInterfaceParameter.LoadSorting, SpikeInterfaceParameter.OpenSpikeInterface, ...
-    SpikeInterfaceParameter.PlotSortingResults, SpikeInterfaceParameter.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, SpikeInterfaceParameter.KeepConsoleOpen, SpikeInterfaceParameter.PlotTraces,VerChannelOffset,HorChannelOffset,NumberRows,RowOffset,RowOffsetDistance,AllChannel,ActiveChannel,xCoords,yCoords);
+%% Save Parameter for sorting to load in!
+GUIparams = struct();
+
+GUIparams.file_path = file_path;
+GUIparams.MultipleRecordings = SpikeInterfaceParameter.MultipleRecordings;
+GUIparams.SelectedSorter = SelectedSorter;
+
+GUIparams.Preprocess = SpikeInterfaceParameter.Preprocess;
+GUIparams.LoadSorting = SpikeInterfaceParameter.LoadSorting;
+GUIparams.OpenSpikeInterface = SpikeInterfaceParameter.OpenSpikeInterface;
+GUIparams.PlotSortingResults = SpikeInterfaceParameter.PlotSortingResults;
+GUIparams.JustOpenSpikeInterfaceGUI = SpikeInterfaceParameter.JustOpenSpikeInterfaceGUI;
+
+GUIparams.SampleRate = SampleRate;
+GUIparams.NumChannel = NumChannel;
+GUIparams.ypitch = ypitch;
+
+GUIparams.KeepConsoleOpen = SpikeInterfaceParameter.KeepConsoleOpen;
+GUIparams.PlotTraces = SpikeInterfaceParameter.PlotTraces;
+
+GUIparams.VerChannelOffset = VerChannelOffset;
+GUIparams.HorChannelOffset = HorChannelOffset;
+GUIparams.NumberRows = NumberRows;
+GUIparams.RowOffset = RowOffset;
+GUIparams.RowOffsetDistance = RowOffsetDistance;
+
+GUIparams.AllChannel = AllChannel;
+GUIparams.ActiveChannel = ActiveChannel;
+GUIparams.xCoords = xCoords;
+GUIparams.yCoords = yCoords;
+
+%% Save
+PathTosaveTempParams = fullfile(TempSpikeSortinBinPath,'GUIParams.json');
+
+jsonStr = jsonencode(GUIparams, 'PrettyPrint', true);
+
+% Define output file path
+jsonFilePath = PathTosaveTempParams;  % or specify full path directly
+
+% Write JSON to file
+fid = fopen(jsonFilePath, 'w');
+if fid == -1
+    error('Cannot create JSON file: %s', jsonFilePath);
+end
+fwrite(fid, jsonStr, 'char');
+fclose(fid);
+
+clear GUIparams
+disp("Successfully saved GUI params for SpikeInterface script to load.")
+
+command = sprintf('"%s" "%s" "%s"', ...
+    pythonPath, SpikeInterfaceScriptPath, PathTosaveTempParams);
+
+% command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %s %s', ...
+%     pythonPath, SpikeInterfaceScriptPath, file_path, SpikeInterfaceParameter.MultipleRecordings, SelectedSorter, ...
+%     SpikeInterfaceParameter.Preprocess, SpikeInterfaceParameter.LoadSorting, SpikeInterfaceParameter.OpenSpikeInterface, ...
+%     SpikeInterfaceParameter.PlotSortingResults, SpikeInterfaceParameter.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, SpikeInterfaceParameter.KeepConsoleOpen, SpikeInterfaceParameter.PlotTraces,VerChannelOffset,HorChannelOffset,NumberRows,RowOffset,RowOffsetDistance,AllChannel,ActiveChannel,xCoords,yCoords);
 
 % Execute the Python script
 [status, cmdout] = system(command);

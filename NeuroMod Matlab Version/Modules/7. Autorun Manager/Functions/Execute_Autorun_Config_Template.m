@@ -54,6 +54,9 @@ elseif strcmp(AutorunConfig.ColorMode,'LightMode_Light_Dark')
     AutorunConfig.WindowBackgroundColor = [0.95,0.95,0.95];
 end
 
+TimeAndChannelToExtract.ChannelToExtract = AutorunConfig.ExtractRawRecording.ChannelToExtract;
+TimeAndChannelToExtract.TimeToExtract = AutorunConfig.ExtractRawRecording.TimeToExtract;
+                
 %______________________________________________________________________________________________________
 %% Loop over number of recordings and functions to be executed
 %______________________________________________________________________________________________________
@@ -85,7 +88,7 @@ for nRecordings = AutorunConfig.StartFromFolder:NumIterations
         %______________________________________________________________________________________________________
         
         if strcmp(FunctionOrder(nCurrentModuleIteration),'Extract_Raw_Recording') || strcmp(FunctionOrder(nCurrentModuleIteration),'Load_Data') || strcmp(FunctionOrder(nCurrentModuleIteration),'Save_Data')
-            [Data,AutorunConfig] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,Channelorder,executableFolder);
+            [Data,AutorunConfig] = Execute_Autorun_Manage_Dataset_Module_Functions(AutorunConfig,FunctionOrder(nCurrentModuleIteration),Data,nRecordings,Channelorder,executableFolder,TimeAndChannelToExtract);
             
             %% Skip this folder when no data found
             if isempty(Data)

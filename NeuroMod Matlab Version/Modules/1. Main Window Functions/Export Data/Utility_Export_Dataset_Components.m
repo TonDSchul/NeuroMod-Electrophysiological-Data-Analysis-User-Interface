@@ -73,15 +73,12 @@ if strcmp(Format,".mat")
 
     Fullsavefile=convertStringsToChars(Fullsavefile);
     % Saved variable name is the name of the component selected
-    eval([Component ' = DataToExport;']);
+    DataToSave = Data.(Component);
+    eval(strcat(Component," = DataToSave;"))
+    %eval(strcat(Component, ' = DataToExport;'));
     % save as .mat
    
-    if ~strcmp(Component,"Info")
-        Info = Data.Info;
-        save(Fullsavefile,Component,'Info','-v7.3');
-    else
-        save(Fullsavefile,Component,'-v7.3');
-    end        
+    save(Fullsavefile,Component,'-v7.3');      
     
     delete(dlgbox);
 
