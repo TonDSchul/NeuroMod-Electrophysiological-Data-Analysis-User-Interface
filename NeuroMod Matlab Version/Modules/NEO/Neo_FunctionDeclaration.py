@@ -184,7 +184,8 @@ def Exract_Raw_Channel_Data(reader,IsNP1,Np1DataPartToextract,TimeToExtract,Indi
         #Only take specific time and channel
         Amp_Signal_Object = Amp_Signal_Object[t_start:t_stop, :]
     else:
-        IndividualChannelindices = [int(x) for x in IndividualChannel.split()]
+        IndividualChannelindices = [int(x) - 1 for x in IndividualChannel.split()]
+        # zero index!
         # Only take specific time and channel
 
         Amp_Signal_Object = Amp_Signal_Object[t_start:t_stop, IndividualChannelindices]

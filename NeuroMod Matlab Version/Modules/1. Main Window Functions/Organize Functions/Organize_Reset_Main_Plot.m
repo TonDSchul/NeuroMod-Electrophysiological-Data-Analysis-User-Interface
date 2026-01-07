@@ -56,15 +56,6 @@ if DeleteChannelData
     end
 end
 
-%Take care of potentially changed backgroundcolor
-app.UIAxes.Color = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
-app.UIAxes_2.Color = app.PlotAppearance.MainWindow.Data.Color.TimeBackground;
-app.UIAxes.FontSize = app.PlotAppearance.MainWindow.Data.MainFontSize;
-app.UIAxes_2.FontSize = app.PlotAppearance.MainWindow.Data.TimeFontSize;
-
-app.UIAxes.XLabel.Color = [0 0 0];   % x-label color
-app.UIAxes.XColor       = [0 0 0];   % x-tick label + axis line color
-
 if ReplaceDataType
     app.DropDown.Value = 'Raw Data';
 end
@@ -103,3 +94,12 @@ end
 Organize_Prepare_Plot_and_Extract_GUI_Info(app,1,"Initial","Static",app.PlotEvents,app.Plotspikes);
 
 Utility_Initialize_Clicks_Plots(app,"Static");
+
+%Take care of potentially changed backgroundcolor
+app.UIAxes.Color = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
+app.UIAxes_2.Color = app.PlotAppearance.MainWindow.Data.Color.TimeBackground;
+app.UIAxes.FontSize = app.PlotAppearance.MainWindow.Data.MainFontSize;
+app.UIAxes_2.FontSize = app.PlotAppearance.MainWindow.Data.TimeFontSize;
+app.UIAxes.Title.Color = [0 0 0];   % red
+app.UIAxes.XLabel.Color = [0 0 0];   % x-label color
+app.UIAxes.XColor       = [0 0 0];   % x-tick label + axis line color

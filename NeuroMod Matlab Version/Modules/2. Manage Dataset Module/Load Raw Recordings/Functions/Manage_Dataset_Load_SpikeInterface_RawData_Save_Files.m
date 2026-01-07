@@ -37,7 +37,7 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 
 dashindice = find(SISaveFolder == '\');
 Foldername = SISaveFolder(dashindice(end)+1:end);
-ModifiedSaveFile = strcat(SISaveFolder(1:dashindice(end)),Foldername," Neo SaveFile");
+ModifiedSaveFile = strcat(SISaveFolder(1:dashindice(end)),Foldername," SpikeInterface SaveFile");
 texttoshow = [];
 
 if ~isfolder(ModifiedSaveFile)
@@ -72,15 +72,31 @@ DatLocation = strcat(ModifiedSaveFile,'\SI_Saved_Channel_Data.dat');
 
         return;
     end
-
+    
     HeaderInfo.NeoSaveFolder = SISaveFolder;
     HeaderInfo.FileType = "Maxwell MEA .h5";
-    HeaderInfo.MEACoords = channel_locations;
-    HeaderInfo.ChannelIDS = str2double(string(channel_ids));
     
+    HeaderInfo.ChannelIDS = str2double(string(custom_channel_ids));
+    %HeaderInfo.MEACoords = channel_locations(HeaderInfo.ChannelIDS+1,:);
+    HeaderInfo.MEACoords = channel_locations;
+    % Infer num time and num samples from custom time and channel entry
+    TimeToExtract = str2double(strsplit(TimeAndChannelToExtract.TimeToExtract,','));
+    if TimeToExtract(2) == Inf
+        %n_samples
+    else
+        n_samples = (TimeToExtract(1)*sampling_rate)+1:TimeToExtract(2)*sampling_rate;
+    end
+    if strcmp(ChannelToExtract,"All")
+
+    else
+        n_channels = length(string(ChannelToExtract));
+    end
+
     RecordingType = "SpikeInterface Maxwell MEA .h5";
     Time = 0:1/sampling_rate:(double(n_samples)-1)*(1/sampling_rate);
     SampleRate = sampling_rate;
+    HeaderInfo.ChannelToExtract = ChannelToExtract;
+    HeaderInfo.TimeToExtract = TimeToExtract;
 
     texttoshow = "Loaded metadata from Maxwell MEA .h5 recording.";
 
@@ -98,7 +114,7 @@ msg = sprintf('Preparing Data to load... (%d%% done)', 25);
 waitbar(25, h, msg);
 
 nchan = double(n_channels);
-ntime = double(n_samples);
+ntime = double(n_samples)-1; % zero indexed!
 
 FileIdentifier = fopen(DatLocation,'r');
 
@@ -115,7 +131,7 @@ end
 msg = sprintf('Loading Data... (%d%% done)', 50);
 waitbar(50, h, msg);
     
-dN = ntime;
+dN = ntime; 
 
 % mmf = memmapfile(DatLocation, ...
 %     'Format', {'single', [nchan, ntime], 'x'});
@@ -129,7 +145,7 @@ fclose(FileIdentifier);
     
 % assure channel by time
 if size(Data,1)>size(Data,2)
-    Data = Data';
+    Data = single(Data)';
 end
 
 texttoshow = [texttoshow;"";"Loaded channeld data from Maxwell MEA .h5 recording."];

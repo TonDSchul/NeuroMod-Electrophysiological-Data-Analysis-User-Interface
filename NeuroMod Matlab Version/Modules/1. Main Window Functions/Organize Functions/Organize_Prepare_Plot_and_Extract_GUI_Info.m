@@ -220,42 +220,40 @@ if MainPlot && JustLiveWindow == 0
         elseif strcmp(app.DropDown.Value,'Raw Data')
             DataForMatrix = app.Data.Raw(:,StartIndex:StopIndex);
         end
+        
+        x = app.Data.Info.MEACoords(:,1);
+        y = app.Data.Info.MEACoords(:,2);
+
+        if ~strcmp(app.Data.Info.TimeAndChannelToExtract.ChannelToExtract,"All")
+            ChannelToExtract = eval(app.Data.Info.TimeAndChannelToExtract.ChannelToExtract);
+        else
+            ChannelToExtract = 1:size(app.Data.Info.MEACoords,1);
+        end
 
         DataForMatrix = DataForMatrix(:,1);
-            
-        Laufvariable = 1;
-        PlotData = NaN(str2double(app.Data.Info.ProbeInfo.NrChannel),str2double(app.Data.Info.ProbeInfo.NrRows));
         
-        AllX = sort(unique(app.Data.Info.MEACoords(:,1)));
-        AllY = sort(unique(app.Data.Info.MEACoords(:,2)));
-        for n = 1:str2double(app.Data.Info.ProbeInfo.NrChannel)
-            for m = 1:str2double(app.Data.Info.ProbeInfo.NrRows)
-                %if sum(Laufvariable==app.ActiveChannel)>0
-                    if Laufvariable<size(app.Data.Info.MEACoords,1)
-                        IndiciesX = find(app.Data.Info.MEACoords(Laufvariable,1) == AllX);
-                        IndiciesY = find(app.Data.Info.MEACoords(Laufvariable,2) == AllY);
-                        
-                        if ~isempty(IndiciesX)&&~isempty(IndiciesY)
-                            PlotData(IndiciesY,IndiciesX) = DataForMatrix(Laufvariable);
-                        end
-                    end
-                %end
-                Laufvariable = Laufvariable + 1;
-            end
-        end
+        % create matrix with data for each channel at proper channel
+        % location
+        % x = app.Data.Info.MEACoords(ChannelToExtract,1);
+        % y = app.Data.Info.MEACoords(ChannelToExtract,2);
         
+        [x_unique, ~, x_idx] = unique(x);
+        [y_unique, ~, y_idx] = unique(y);
         
-        % for n = 1:str2double(app.Data.Info.ProbeInfo.NrChannel)
-        %     for m = 1:str2double(app.Data.Info.ProbeInfo.NrRows)
-        %         if sum(Laufvariable==app.Data.Info.ProbeInfo.MEAChannelOrder)>0
-        %             [CurrentChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,Laufvariable,'MainPlot');
-        %             if sum(Laufvariable==app.ActiveChannel)>0
-        %                 PlotData(str2double(app.Data.Info.ProbeInfo.NrRows)-m+1,str2double(app.Data.Info.ProbeInfo.NrChannel)-n+1) = DataForMatrix(CurrentChannel);
-        %             end
-        %         end
-        %         Laufvariable = Laufvariable+1;
-        %     end
-        % end
+        nx = numel(x_unique);
+        ny = numel(y_unique);
+        
+        PlotData = nan(ny, nx);   % rows = y, cols = x
+        PlotData(sub2ind([ny, nx], y_idx(ChannelToExtract), x_idx(ChannelToExtract))) = DataForMatrix;
+        
+        % Delete not active channel
+
+        ChannelMatrix = reshape(1:(nx*ny), nx, ny).';
+
+        Mask = ismember(ChannelMatrix, app.ActiveChannel);
+        
+        PlotData(~Mask) = nan;
+
     else
         if strcmp(app.DropDown.Value,'Preprocessed Data') 
             PlotData = app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex);
@@ -272,17 +270,17 @@ if MainPlot && JustLiveWindow == 0
             app.LastPlot = "Preprocessed";  
             SpikeDataType = app.Data.Info.SpikeType;
             
-            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues);
+            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh);
         % If Raw data has to be plotted
         else
             app.LastPlot = "Preprocessed";
             SpikeDataType = app.Data.Info.SpikeType;
-            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues);
+            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh);
         end
     elseif strcmp(app.DropDown.Value,'Raw Data')
         app.LastPlot = "Raw";
         SpikeDataType = app.Data.Info.SpikeType;
-        [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues);
+        [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh);
     end
 
     %% Plot Time

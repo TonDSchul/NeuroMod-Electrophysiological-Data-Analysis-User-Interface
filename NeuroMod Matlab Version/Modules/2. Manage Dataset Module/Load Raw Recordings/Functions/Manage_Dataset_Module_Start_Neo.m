@@ -20,7 +20,7 @@ function  [Success] = Manage_Dataset_Module_Start_Neo(SelectedPath,executableFol
 % 8. DataPartToextract: double, if IsNP1 == 1, user selected whether to
 % extract LFP or AP data: 1 = LFO data, 2 = AP Data
 % 9. TimeToLoad: char, comma separated numbers for specific time like '0,10' or '0,Inf' for whole time range, user input from the GUI
-% 11. ChannelToLoad: matlab expressions as char, user input from the GUI
+% 10. ChannelToLoad: matlab expressions as char, user input from the GUI
 
 % note: when extracting events, add the char EventAnalysis is added to the
 % end of the char FormatToSaveandReadintoMatlab to show the NEO script to

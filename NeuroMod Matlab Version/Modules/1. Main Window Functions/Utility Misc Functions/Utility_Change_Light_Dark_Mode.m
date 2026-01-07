@@ -169,6 +169,8 @@ if strcmp(Window,"ExtractDataWindow")
     app.RecordingSystemDropDown_2.BackgroundColor = ComponentsInWindowColor;
     app.FormatToSaveandReadintoMatlabDropDown.BackgroundColor = ComponentsInWindowColor;
     app.AdditionalAmplificationFactorEditField_3.BackgroundColor = ComponentsInWindowColor;
+    
+    app.Save_Probe_SpikeInterface.BackgroundColor = ComponentsInWindowColor;
 
     app.ExtractionOptionsPanel.BackgroundColor = WindowBackgroundColor;
     app.ExtractionOptionsPanel.ForegroundColor = WindowBackgroundColor;

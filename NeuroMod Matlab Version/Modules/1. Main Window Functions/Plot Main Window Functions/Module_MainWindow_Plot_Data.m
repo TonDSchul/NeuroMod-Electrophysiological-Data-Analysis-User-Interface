@@ -1,4 +1,4 @@
-function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues)
+function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues,MEASSurMesh)
 
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
@@ -35,6 +35,8 @@ function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Chann
 % 20. frameTime: double, Time in seconds of each frame based on selected
 % frame rate
 % 21. CurrentClim: double vector, lower and upper clim of max values so far
+% 22. MEASSurMesh: char, determines plot function used. either "Surf" or "Mesh" depending on what user
+% selects. Standard = Surf
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -88,11 +90,11 @@ if ~strcmp(UIAxis.XLabel.String,PlotAppearance.MainWindow.Data.MainXLabel)
 end
 % Manage Title
 if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5') && strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-    if Preprocessed == 0
-        title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Raw," at Time: ",num2str(Time(1)),"s"));
-    elseif Preprocessed == 1 
-        title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Preprocessed," at Time: ",num2str(Time(1)),"s"));
-    end
+    % if Preprocessed == 0
+    %     title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Raw," at Time: ",num2str(Time(1)),"s"));
+    % elseif Preprocessed == 1 
+    %     title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Preprocessed," at Time: ",num2str(Time(1)),"s"));
+    % end
 else
     if Preprocessed == 0
         if ~strcmp(UIAxis.Title.String,PlotAppearance.MainWindow.Data.Title.Raw)
@@ -204,18 +206,30 @@ if strcmp(Type,"Static")
 
         if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5')
             
-            if isempty(ImageScChannel_handles)
-                surf(UIAxis, Data, ...
-                    'EdgeColor','none', ...
-                    'Tag','ImageScChannel');
-                view(UIAxis, 2);      % top-down view (optional, like contourf)
-            else
-                set(ImageScChannel_handles(1), ...
-                    'ZData', Data, ...
-                    'Tag','ImageScChannel');
+            if Preprocessed == 0
+                title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Raw," at Time: ",num2str(Time(1)),"s"));
+            elseif Preprocessed == 1 
+                title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Preprocessed," at Time: ",num2str(Time(1)),"s"));
             end
-            shading(UIAxis, 'interp')
             
+            if strcmp(MEASSurMesh,"Surf")
+                if isempty(ImageScChannel_handles)
+                    surf(UIAxis, Data, ...
+                        'EdgeColor','none', ...
+                        'Tag','ImageScChannel');
+                    view(UIAxis, 2);      % top-down view (optional, like contourf)
+                else
+                    set(ImageScChannel_handles(1), ...
+                        'ZData', Data, ...
+                        'Tag','ImageScChannel');
+                end
+            end
+            
+            if strcmp(MEASSurMesh,"Mesh")
+                mesh(UIAxis,Data,'Tag','ImageScChannel')
+                
+            end
+
             CurrentClim = [min(Data,[],'all') max(Data,[],'all')];
             
             if isempty(ClimMaxValues)
@@ -228,7 +242,9 @@ if strcmp(Type,"Static")
             if CurrentClim(2)>ClimMaxValues(2)
                 ClimMaxValues(2) = CurrentClim(2);
             end      
-
+            if strcmp(MEASSurMesh,"Mesh")
+                zlim(UIAxis,ClimMaxValues);
+            end
             clim(UIAxis,ClimMaxValues);
             UIAxis.YDir = 'reverse';
 
@@ -558,19 +574,24 @@ if strcmp(Type,"Movie")
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
 
         if strcmp(Info.RecordingType,'SpikeInterface Maxwell MEA .h5')
-            
-            if isempty(ImageScChannel_handles)
-                surf(UIAxis, Data, ...
-                    'EdgeColor','none', ...
-                    'Tag','ImageScChannel');
-                view(UIAxis, 2);      % top-down view (optional, like contourf)
-            else
-                set(ImageScChannel_handles(1), ...
-                    'ZData', Data, ...
-                    'Tag','ImageScChannel');
+            if strcmp(MEASSurMesh,"Surf")
+                if isempty(ImageScChannel_handles)
+                    surf(UIAxis, Data, ...
+                        'EdgeColor','none', ...
+                        'Tag','ImageScChannel');
+                    view(UIAxis, 2);      % top-down view (optional, like contourf)
+                else
+                    set(ImageScChannel_handles(1), ...
+                        'ZData', Data, ...
+                        'Tag','ImageScChannel');
+                end
             end
-            shading(UIAxis, 'interp')
             
+            if strcmp(MEASSurMesh,"Mesh")
+                mesh(UIAxis,Data,'Tag','ImageScChannel')
+                zlim(UIAxis,ClimMaxValues);
+            end
+
             CurrentClim = [min(Data,[],'all') max(Data,[],'all')];
             
             if isempty(ClimMaxValues)
@@ -585,6 +606,7 @@ if strcmp(Type,"Movie")
             end      
 
             clim(UIAxis,ClimMaxValues);
+            UIAxis.YDir = 'reverse';
         else
             if isempty(ImageScChannel_handles)
                 imagesc(UIAxis,Time,Depth,Data,'Tag','ImageScChannel')

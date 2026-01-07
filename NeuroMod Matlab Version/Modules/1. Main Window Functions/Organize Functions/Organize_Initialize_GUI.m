@@ -287,13 +287,14 @@ elseif strcmp(Type,"VariableDefinition")
         app.Data.Info.startTimestamp = 0;
     end
     
-    app.Data.Info.num_data_points = size(app.Data.Raw,2);
-    app.Data.Info.NrChannel = size(app.Data.Raw,1);
+    
     app.Data.Info.Data_Path = SelectedFolder;
     app.Data.Info.NativeSamplingRate = SampleRate;
     app.Data.Info.RecordingType = RecordingType;
     
     if ~strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+        app.Data.Info.num_data_points = size(app.Data.Raw,2);
+        app.Data.Info.NrChannel = size(app.Data.Raw,1);
         if ischar(Load_Data_Window_Info.ChannelSpacing) || isstring(Load_Data_Window_Info.ChannelSpacing)
             app.Data.Info.ChannelSpacing = str2double(Load_Data_Window_Info.ChannelSpacing);
         else
@@ -319,11 +320,14 @@ elseif strcmp(Type,"VariableDefinition")
             app.Data.Info.ProbeInfo.ShortAreaNames = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaNamesShort;
             app.Data.Info.ProbeInfo.AreaDistanceFromTip = Load_Data_Window_Info.ProbeTrajectoryInfo.AreaTipDistance;
         end
+    else
+        app.Data.Info.num_data_points = size(app.Data.Raw,2);
+        app.Data.Info.NrChannel = size(app.Data.Raw,1);
     end
 
     % Get True MEA Grid Locations for position related analyis
     if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
-        [app.Data.Info] = Manage_Dataset_MEA_Grid_Locations(app.Data.Info);
+        [app.Data.Info] = Manage_Dataset_MEA_Grid_Locations(app.Data.Info,app.Data.Info.MEACoords,HeaderInfo);
     end
 
     % get x and y coordinates
@@ -369,7 +373,8 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.Data.Info.SpikeType = "Non";
     app.ChannelChange = "ProbeView";
-
+    app.MEASSurMesh = "Surf";
+    
     % first plot after loading data: max 100 channel shown
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
         app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);

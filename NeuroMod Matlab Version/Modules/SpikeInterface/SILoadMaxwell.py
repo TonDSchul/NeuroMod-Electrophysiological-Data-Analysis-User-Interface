@@ -9,11 +9,13 @@ import os
 import sys
 import numpy as np
 import pyuac
-from spikeinterface.extractors import read_maxwell
-from probeinterface import read_prb
 import scipy.io
+from scipy.io import savemat
 from pathlib import Path
 
+from spikeinterface.extractors import read_maxwell
+from probeinterface.io import write_prb
+from probeinterface import Probe, ProbeGroup
     
 def Sanity_Plot(recording):
     import matplotlib.pyplot as plt
@@ -69,7 +71,7 @@ def create_save_folder(selected_folder):
     base_name = os.path.basename(selected_folder)
 
     # Construct new folder name
-    new_folder_name = f"{base_name} Neo SaveFile"
+    new_folder_name = f"{base_name} SpikeInterface SaveFile"
     new_folder_path = os.path.join(parent_dir, new_folder_name)
 
     # Create the folder if it doesn't exist
@@ -83,11 +85,11 @@ def create_save_folder(selected_folder):
 
 
 def Save_MetaData_SI(recording, JustExtractingEvents,
-                      SaveFileName):
+                      SaveFileName,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract):
     
     # Now get channel locations
     locs = recording.get_channel_locations()
-    print(locs)
+
     #annotations = recording.annotations
     start_sample = recording.get_annotation('acquisition_start_sample')  # fallback 0
     
@@ -96,40 +98,103 @@ def Save_MetaData_SI(recording, JustExtractingEvents,
     
     # sampling rate
     sampling_rate = recording.get_sampling_frequency()  # Hz
-
+    # Number of channels
+    n_channels = recording.get_num_channels()  # integer
+    # Number of frames / samples
+    n_samples = recording.get_num_frames()     # integer
     # channel info
-    channel_ids = recording.get_channel_ids()
+    Origchannel_ids = recording.get_channel_ids()
+    channel_ids = Origchannel_ids[channel_ids_extract]
+
     try:
-        channel_names = [str(ch) for ch in channel_ids]  # default names = IDs
+        channel_names = [str(ch) for ch in Origchannel_ids]  # default names = IDs
     except:
-        channel_names = [f"ch{i}" for i in range(len(channel_ids))]
+        channel_names = [f"ch{i}" for i in range(len(Origchannel_ids))]
 
     try:
         units = recording.get_channel_property("units")
     except:
-        units = ["mV"] * len(channel_ids)  # fallback
+        units = ["mV"] * len(Origchannel_ids)  # fallback
 
-    n_channels = recording.get_num_channels()
-    n_samples = recording.get_num_frames()
-
-    print("Channel IDs:", channel_ids)
-
+    
     if JustExtractingEvents == 0 and SaveFileName is not None:
-        print("Saving Metadata to " + SaveFileName)
+        print("Saving Metadata to " + str(SaveFileName))
                 
         # save .mat
         scipy.io.savemat(SaveFileName, {
             'sampling_rate': sampling_rate,
             'units': units,
             'channel_names': channel_names,
-            'channel_ids': channel_ids,
+            'orig_channel_ids': Origchannel_ids,
+            'custom_channel_ids': channel_ids,
             'n_channels': n_channels,
             'n_samples': n_samples,
             'acqu_start_samples': start_sample,
-            'channel_locations': locs
+            'channel_locations': locs,
+            'StartSampleToExtract': start_frame_extract,
+            'StopSampleToExtract': end_frame_extract,
+            'ChannelToExtract': channel_ids_extract,
         })
 
-def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab):
+def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract):
+    print("Attempting to save probe info.")
+    probe = recording.get_probe()
+    channel_ids = recording.channel_ids
+    channel_ids = channel_ids[channel_ids_extract]
+    print("######################")
+    print(channel_ids)
+    print("######################")
+    if SaveFormat == ".prb":
+        
+        # Select only the desired channels
+        sub_probe = Probe(ndim=probe.ndim)
+        sub_probe.set_contacts(
+            positions=probe.contact_positions[channel_ids],
+            shapes=np.array([probe.contact_shapes[i] for i in channel_ids]) if probe.contact_shapes is not None else None,
+            shapes_params=np.array([probe.contact_shape_params[i] for i in channel_ids]) if probe.contact_shape_params is not None else None,
+            device_channel_indices=np.array([probe.device_channel_indices[i] for i in channel_ids]),
+            # Optional: assign contact_ids as 0..n-1
+            contact_ids=np.arange(len(channel_ids))
+        )
+    
+        # Wrap in a ProbeGroup
+        probegroup = ProbeGroup()
+        probegroup.add_probe(sub_probe)
+    
+        write_prb(SaveFolder, probegroup)
+        print("Successfully saved probe information in " + str(SaveFolder))
+    
+    if SaveFormat == ".mat":
+        # ---------- Save for Kilsoort as .mat file ----------
+        pos = probe.contact_positions
+        
+        n_channels = len(channel_ids_extract)
+    
+        chanMap0ind = channel_ids.astype(np.int32)
+        chanMap = chanMap0ind + 1  # MATLAB 1-based
+        connected = np.ones(n_channels, dtype=bool)
+        
+        xcoords = pos[channel_ids_extract, 0]
+        ycoords = pos[channel_ids_extract, 1]
+    
+        kcoords = np.ones(n_channels, dtype=np.int32)
+    
+        fs = float(recording.get_sampling_frequency())
+    
+        mat_dict = {
+            "chanMap": chanMap,
+            "chanMap0ind": chanMap0ind,
+            "connected": connected,
+            "xcoords": xcoords,
+            "ycoords": ycoords,
+            "kcoords": kcoords,
+            "fs": fs,
+        }
+    
+        savemat(SaveFolder, mat_dict)
+        print("Succesfully saved probe information in " + str(SaveFolder))
+
+def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToExtract):
     import spikeinterface as si
     print(si.__version__)
     #### ----------- Check If Data or just Event Extraction ----------- ####
@@ -142,15 +207,23 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     # -----------------------------------------------------------------------
     ''' First Create a Save Folder to save results in for Matlab to load'''
     # -----------------------------------------------------------------------
-    #### ----------- Create Save folder next to recording folder ----------- ####
-    SI_Save_Path = create_save_folder(file_path)
+    SI_Save_Path = Path(create_save_folder(file_path))
+
     #### ------------ Set Folder name for raw channel data ----------- ####
-    ChannelDataSaveFileName = SI_Save_Path + "/SI_Saved_Channel_Data.dat"
-    #### ------------ Set Folder name for MetaData ----------- ####
-    MetaDataSaveFileName = SI_Save_Path + "/SI_Saved_MetaData.mat"
-    #### ------------ Set Folder name for Event Data ----------- ####
-    EventSaveFileName = SI_Save_Path + "/SI_Saved_EventData.mat" 
+    ChannelDataSaveFileName = SI_Save_Path / "SI_Saved_Channel_Data.dat"
     
+    #### ------------ Set Folder name for MetaData ----------- ####
+    MetaDataSaveFileName = SI_Save_Path / "SI_Saved_MetaData.mat"
+    
+    #### ------------ Set Folder name for Event Data ----------- ####
+    EventSaveFileName = SI_Save_Path / "SI_Saved_EventData.mat"
+    
+    #### ------------ Set Folder name for ProbeInfo ----------- ####
+    if SaveProbeInfoFormat == ".mat":
+        ProbeSaveFileName = SI_Save_Path / "SI_Probe_Mapping.mat"
+    elif SaveProbeInfoFormat == ".prb":
+        ProbeSaveFileName = SI_Save_Path / "SI_Probe_Mapping.prb"
+        
     ## Actually set recording folder
     folder = Path(file_path)
     h5_file = next(p for p in folder.iterdir() if p.is_file() and p.suffix == ".h5")
@@ -161,13 +234,13 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     RecordingFilePath = Path(folder) / h5_file
     
     #### ----------- Save Info wat was done ----------- ####
-    print("Created Folder to Save Channel Data and Metadata for matlab to read: " + SI_Save_Path)
+    print("Created Folder to Save Channel Data and Metadata for matlab to read: " + str(SI_Save_Path))
     
-    print("Starting Data Extraction with SpikeInterface from " + file_path)
+    print("Starting Data Extraction with SpikeInterface from " + str(file_path))
     
     print("Checking if a suitable recording format is found in selected folder:")
         
-    print("Loading Maxwell Recording from Path " + file_path)
+    print("Loading Maxwell Recording from Path " + str(file_path))
     
     # load the recording
     recording = read_maxwell(
@@ -178,7 +251,7 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         rec_name=None,         
         install_maxwell_plugin=True  
     )
-    
+        
     channel_positions = recording.get_channel_locations()
     
     print(channel_positions)
@@ -189,32 +262,81 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     print("Number of channels:", recording.get_num_channels())
     print("Duration (s):", recording.get_total_duration())
     
+    # Parse time range, allow 'Inf' as end
+    t_start_str, t_end_str = TimeToExtract.split(",")
+    
+    t_start = float(t_start_str)
+    if t_end_str.lower() == "inf":
+        t_end = float("inf")
+    else:
+        t_end = float(t_end_str)
+    
     fs = recording.get_sampling_frequency()
-    chunk_size = int(fs * 10)  # 10-second chunks
     n_frames = recording.get_num_frames()
-    channel_ids = recording.channel_ids  # all channels
     
-    print("Converting and saving channel data to " + ChannelDataSaveFileName + " (this might take a while)")
+    # Convert to frame indices
+    start_frame_extract = int(t_start * fs)
+    if t_end == float("inf"):
+        end_frame_extract = n_frames
+    else:
+        end_frame_extract = int(t_end * fs)
     
-    with open(ChannelDataSaveFileName, 'wb') as f:
-        for start in range(0, n_frames, chunk_size):
-            end = min(start + chunk_size, n_frames)
+    # Clamp to recording bounds
+    start_frame_extract = max(0, start_frame_extract)
+    end_frame_extract   = min(n_frames, end_frame_extract)
+    
+    # Chunk parameters
+    chunk_size = int(fs * 10)  # 10-second chunks
+    
+    channel_ids = recording.channel_ids
+    
+    print(
+        "Converting and saving channel data to",
+        ChannelDataSaveFileName,
+        f"(frames {start_frame_extract} → {end_frame_extract})"
+    )
+    
+    print("Converting and saving channel data to " + str(ChannelDataSaveFileName )+ " (this might take a while)")
+    
+    # set channel to extract
+    if ChannelToExtract == "All":
+        n_channels = recording.get_num_channels()  # integer
+        channel_ids_extract = np.arange(n_channels)  # [0, 1, 2, ..., n_channels-1]
+    else:
+        channel_ids_extract = np.array(
+        [int(ch) - 1 for ch in ChannelToExtract.split() if ch.strip() != ""],
+        dtype=int
+        )
+    
+    with open(ChannelDataSaveFileName, "wb") as f:
+        for start in range(start_frame_extract, end_frame_extract, chunk_size):
+            end = min(start + chunk_size, end_frame_extract)
+    
             traces_chunk = recording.get_traces(
                 start_frame=start,
                 end_frame=end,
-                channel_ids=channel_ids,
-                return_in_uV=True
+                channel_ids=channel_ids[channel_ids_extract],
+                return_in_uV=True,
             )
-            # Convert to mV
+    
+            # Convert µV → mV
             traces_chunk_mV = traces_chunk / 1e3
-            # Transpose to (channels x samples)
+    
+            # Write as float32, channels × samples
             traces_chunk_mV.astype(np.float32).tofile(f)
             
     # -----------------------------------------------------------------------
     ''' Save MetaData'''
     # -----------------------------------------------------------------------
     
-    Save_MetaData_SI(recording,JustExtractingEvents,MetaDataSaveFileName)
+    Save_MetaData_SI(recording,JustExtractingEvents,MetaDataSaveFileName,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract)
+    
+    # -----------------------------------------------------------------------
+    ''' Save Probe'''
+    # -----------------------------------------------------------------------
+
+    if SaveProbeInfo == 1:
+        Save_Probe_Info(recording,ProbeSaveFileName,SaveProbeInfoFormat,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract)
     
 if __name__ == "__main__":
 
@@ -228,6 +350,12 @@ if __name__ == "__main__":
             JustLoad = sys.argv[3]
             RecordingSystemSelection = sys.argv[4]
             FormatToSaveandReadintoMatlab = sys.argv[5]
+            SaveProbeInfo = sys.argv[6]
+            SaveProbeInfoFormat = sys.argv[7]
+            TimeToExtract = sys.argv[8]
+            ChannelToextract = sys.argv[9]
+            
+            SaveProbeInfo = int(SaveProbeInfo)
             
             JustLoad = int(JustLoad)
             
@@ -235,7 +363,7 @@ if __name__ == "__main__":
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab)  
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract)  
     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -252,6 +380,12 @@ if __name__ == "__main__":
         JustLoad = sys.argv[3]
         RecordingSystemSelection = sys.argv[4]
         FormatToSaveandReadintoMatlab = sys.argv[5]
+        SaveProbeInfo = sys.argv[6]
+        SaveProbeInfoFormat = sys.argv[7]
+        TimeToExtract = sys.argv[8]
+        ChannelToextract = sys.argv[9]
+        
+        SaveProbeInfo = int(SaveProbeInfo)
        
         JustLoad = int(JustLoad)
         
@@ -259,6 +393,6 @@ if __name__ == "__main__":
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab)  
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract)  
         
 
