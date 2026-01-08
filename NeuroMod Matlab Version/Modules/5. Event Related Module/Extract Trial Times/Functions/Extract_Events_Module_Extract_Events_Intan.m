@@ -57,12 +57,6 @@ if strcmp(Filetype, "Digital Inputs")
 
         end
 
-        if isfield(Data.Info,'CutStart')
-            if ~isempty(Data.Info.CutStart)
-                NumSamples = Data.Info.CutStart;
-            end
-        end
-
         [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData,EventInfoType);
 
     elseif strcmp(Data.Info.RecordingType,"IntanRHD")
@@ -181,14 +175,8 @@ elseif strcmp(Filetype, "DIN Inputs")
 
         end
 
-        if isfield(Data.Info,'CutStart')
-            if ~isempty(Data.Info.CutStart)
-                NumSamples = Data.Info.CutStart;
-            end
-        end
-
         [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,InputChannelIndicie,Filetype,Threshold,InputChannelData,EventInfoType);
-
+        
     elseif strcmp(Data.Info.RecordingType,"IntanRHD")
 
         InputDatatoextract={};

@@ -372,6 +372,8 @@ end
 if ThresholdSign(2)==0
     delete(NegThreshHandle);
 end
+PosThreshHandle = findobj(BottomFigure, 'Tag', 'PosThresh');
+NegThreshHandle = findobj(BottomFigure, 'Tag', 'NegThresh');
 
 % plot threshold
 if PlotThreshold == 1 
@@ -390,7 +392,7 @@ if PlotThreshold == 1
             threshline(2) = line(BottomFigure,[Time(1),Time(end)],[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','NegThresh');
         else
             set(NegThreshHandle, 'XData', [Time(1),Time(end)], 'YData',[-Threshold,-Threshold],'Color','g','LineStyle','--','LineWidth',2,'Tag','NegThresh');
-            threshline(1) = NegThreshHandle;
+            threshline(2) = NegThreshHandle;
         end
     end
 end
@@ -431,7 +433,11 @@ uistack(MeanERP, 'top');
 uistack(eventline, 'top');
 
 if PlotThreshold == 1 
-    uistack(threshline, 'top');
+    try
+        uistack(threshline, 'top');
+    catch
+
+    end
 end
 
 BottomFigure.FontSize = 11;
@@ -454,7 +460,12 @@ if PlotThreshold == 1
     if isempty(findobj(BottomFigure, 'Type', 'legend'))
         try
             % Create legend and then set its 'HandleVisibility' to 'off'
-            legendHandle = legend([h(1), MeanERP, eventline,threshline(1)], {'Trials/Events', 'ERP', 'Trigger', 'Thresh'});
+            if ThresholdSign(1)==1 && ThresholdSign(2)==0
+                legendHandle = legend([h(1), MeanERP, eventline, threshline(1)], {'Trials/Events', 'ERP', 'Trigger', 'Thresh'});
+            else
+                legendHandle = legend([h(1), MeanERP, eventline, threshline(2)], {'Trials/Events', 'ERP', 'Trigger', 'Thresh'});
+            end
+            
             set(legendHandle, 'HandleVisibility', 'off');
         end
     end

@@ -256,7 +256,9 @@ elseif strcmp(RecordingSystem,"TDT Tank Data")
     TextArea.Value = "Extracting Data for TDT Recording System. Please wait until this window closes and a data plot appears in the main window. If you dont have MATLAB importer mex files, this can take a while.";
     
     pause(0.2);
-    
+
+    SelectedLFPAP = [];
+
     %% Determine Channel
     ChannelToExtract = convertStringsToChars(TimeAndChannelToExtract.ChannelToExtract);
     if strcmp(ChannelToExtract,"All")
@@ -298,6 +300,7 @@ elseif strcmp(RecordingSystem,"TDT Tank Data")
                   'HEADERS', 1);
     
     if ~isempty(fieldnames(Widemeta.stores))
+        SelectedLFPAP = 'Wide';
         %% Determine TIME!(s) to extract if only specific time points extracted
         SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
         StartSample = round(str2double(SplitString{1}));  
@@ -329,7 +332,7 @@ elseif strcmp(RecordingSystem,"TDT Tank Data")
         end
         Data = single(data.streams.Wide.data);
         SampleRate = data.streams.Wide.fs;
-        HeaderInfo.Fs = SampleRate;
+
     else % no wide data found
         %% check if wide data stored (preffered)
         Wavemeta = TDTbin2mat(SelectedFolder, ...
@@ -347,8 +350,14 @@ elseif strcmp(RecordingSystem,"TDT Tank Data")
             DTDDataTypeWindow = TDT_LFP_or_AP();
 
             uiwait(DTDDataTypeWindow.TDTDataSelectionUIFigure)
-
+            
             if isvalid(DTDDataTypeWindow)
+                if DTDDataTypeWindow.SelectedRecordings == 1
+                    SelectedLFPAP = 'Wave';
+                else
+                    SelectedLFPAP = 'Spik';
+                end
+
                 if DTDDataTypeWindow.SelectedRecordings == 1
                     %% Determine TIME!(s) to extract if only specific time points extracted
                     SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
@@ -433,6 +442,8 @@ elseif strcmp(RecordingSystem,"TDT Tank Data")
 
     HeaderInfo = data.info;
     HeaderInfo.Fs = SampleRate;
+
+    HeaderInfo.SelectedRecordingTdT = SelectedLFPAP;
 
     if size(Data,1)>size(Data,2)
         Data = Data';

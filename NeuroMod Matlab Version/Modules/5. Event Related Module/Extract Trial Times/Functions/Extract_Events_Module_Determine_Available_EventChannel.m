@@ -227,9 +227,69 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
     end
 
 elseif strcmp(Data.Info.RecordingType,"TDT Tank Data") 
-    
+    %% get start and stop sample for data extractikon
     if ~strcmp(FileType,'NoDataExtraction')
-        data = TDTbin2mat(Path);
+        if strcmp(Data.Info.SelectedRecordingTdT,"Wide")
+            Widemeta = TDTbin2mat(Path, ...
+                  'TYPE', {'streams'}, ...
+                  'STORE', {'Wide'}, ...
+                  'HEADERS', 1);
+            %% Determine TIME!(s) to extract if only specific time points extracted
+            SplitString = strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,',');
+            StartSample = round(str2double(SplitString{1}));  
+            if strcmp(SplitString{2},"Inf")
+                StopSample = Widemeta.stores.Wide.ts(end);
+            else
+                StopSample = round(str2double(SplitString{2}));  
+            end
+            
+            if StopSample>Widemeta.stores.Wide.ts(end)
+                warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str(Widemeta.stores.Wide.ts(end))," seconds instead."))
+                StopSample = Widemeta.stores.Wide.ts(end);
+            end
+        elseif  strcmp(Data.Info.SelectedRecordingTdT,"Wave")
+            %% check if wide data stored (preffered)
+            Wavemeta = TDTbin2mat(Path, ...
+                          'TYPE', {'streams'}, ...
+                          'STORE', {'Wave'}, ...
+                          'HEADERS', 1);
+            %% Determine TIME!(s) to extract if only specific time points extracted
+            SplitString = strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,',');
+            StartSample = round(str2double(SplitString{1}));  
+            if strcmp(SplitString{2},"Inf")
+                StopSample = Wavemeta.stores.Wave.ts(end);
+            else
+                StopSample = round(str2double(SplitString{2}));  
+            end
+            
+            if StopSample>Wavemeta.stores.Wave.ts(end)
+                warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str(Widemeta.stores.Wide.ts(end))," seconds instead."))
+                StopSample = Wavemeta.stores.Wave.ts(end);
+            end
+
+        elseif  strcmp(Data.Info.SelectedRecordingTdT,"Spik")
+            SpikeMeta = TDTbin2mat(Path, ...
+                          'TYPE', {'streams'}, ...
+                          'STORE', {'Spik'}, ...
+                          'HEADERS', 1);
+            %% Determine TIME!(s) to extract if only specific time points extracted
+            SplitString = strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,',');
+            StartSample = round(str2double(SplitString{1}));  
+            if strcmp(SplitString{2},"Inf")
+                StopSample = SpikeMeta.stores.Spik.ts(end);
+            else
+                StopSample = round(str2double(SplitString{2}));  
+            end
+            
+            if StopSample>SpikeMeta.stores.Spik.ts(end)
+                warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str(Widemeta.stores.Wide.ts(end))," seconds instead."))
+                StopSample = SpikeMeta.stores.Spik.ts(end);
+            end
+        end
+
+        %data = TDTbin2mat(Path);
+        data = TDTbin2mat(Path, 'T1',StartSample,'T2', StopSample);
+
     end
   
     %% File Paths

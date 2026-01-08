@@ -118,7 +118,7 @@ OriginalActiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
 if PreservePlotChannelLocations
-    [StartDepth,StopDepth,ChannelRange,ydata] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,ActiveChannel);
+    [StartDepth,StopDepth,ChannelRange,ydata] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,OriginalActiveChannel);
     
     BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
 
@@ -129,7 +129,7 @@ if PreservePlotChannelLocations
         end
     end
 else
-    [StartDepth,StopDepth,ChannelRange,ydata] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,ActiveChannel);
+    [StartDepth,StopDepth,ChannelRange,ydata] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,OriginalActiveChannel);
 
     BPEstimate = BandPower.allPowerEst(ActiveChannel,:);
   

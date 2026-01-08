@@ -243,27 +243,49 @@ elseif strcmp(RecordingType,"Open Ephys")
     % OPEN EPHYS!! FOR OTHERS THIS IS MANAGED BELOW
     for i = 1:length(Data.Events)
         if isfield(Data.Info,'CutStart')
-            index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
-            EventsToDelete = Data.Events{i} <= index;
-            if sum(EventsToDelete)>0
-                Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
-                Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
-                disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," trigger are deleted!"));
-            end
+           
+            Data.Events{i} = Data.Events{i} - (sum(Data.Info.CutStart)*Data.Info.NativeSamplingRate);
+            Data.Events{i}(Data.Events{i}<=0) = [];
+    
         end
-        if isfield(Data.Info,'CutEnd')
-            EventsToDelete = Data.Events{i} > length(Data.Time);
-            if sum(EventsToDelete)>0
-                Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
-                disp(strcat("Event Nr. ",num2str(i),": Stop time of dataset was cut. Last ",num2str(sum(EventsToDelete))," trigger are deleted!"));
-            end
-        end
+        % if isfield(Data.Info,'TimeAndChannelToExtract') %% Normalize to new zero timestamp
+        %     if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+        %         if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+        %             Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+        %         else
+        %             TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+        %             Timetoextract(1) = TempTimetoextract(1);
+        %             Timetoextract(2) = Data.Time(end); 
+        %         end
+        %     else
+        %         Timetoextract = eval(TimeAndChannelToExtract.TimeToExtract);
+        %     end
+        % 
+        %     % convert to samples
+        %     Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
+        %     if Timetoextract(1)==0
+        %         Timetoextract(1) = 1;
+        %     end
+        % 
+        %     Data.Events{i} = Data.Events{i} - ((Timetoextract(1)-1));
+        %     Data.Events{i}(Data.Events{i}<=0) = [];
+        % end
+
+        
         % Check for only specific time being extracted and correct for that
         [Data,temptexttoshow] = Extract_Events_Module_Correct_For_TimeToExtract(Data,Data.Info.TimeAndChannelToExtract);
         if ~isempty(texttoshow)
             texttoshow = [texttoshow;temptexttoshow];
         else
             texttoshow = temptexttoshow;
+        end
+        
+        if isfield(Data.Info,'CutEnd')
+            EventsToDelete = Data.Events{i} > length(Data.Time);
+            if sum(EventsToDelete)>0
+                Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
+                disp(strcat("Event Nr. ",num2str(i),": Stop time of dataset was cut. Last ",num2str(sum(EventsToDelete))," trigger are deleted!"));
+            end
         end
 
     end
@@ -374,6 +396,20 @@ elseif strcmp(RecordingType,"Spike2")
 
             if isempty(TempData)   
                 continue;
+            else
+                if length(TempData)>length(Data.Time)
+                    TempData(end) = [];
+                end
+            end
+
+            if isfield(Data.Info,"CutStart")
+                StartTimeSamples = round(sum(Data.Info.CutStart)*Data.Info.NativeSamplingRate);
+                TempData(1:StartTimeSamples) = [];
+            end
+
+            if isfield(Data.Info,"CutEnd")
+                StopTimeSamples = round(sum(Data.Info.CutEnd)*Data.Info.NativeSamplingRate);
+                TempData(end-StopTimeSamples:end) = [];
             end
     
             EventData{nchannel} = TempData;
@@ -381,7 +417,7 @@ elseif strcmp(RecordingType,"Spike2")
         end
     
         EventInfoType = EventInfo.EventType;
-
+        
         [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,[],"Spike2",str2double(Threshold),EventData,EventInfoType);
 
     end
@@ -486,22 +522,28 @@ if isfield(Data,'Events')
             end
 
             if ~isempty(Data.Events{i})
-                if ~strcmp(RecordingType,"Open Ephys") % Done above
+                if ~strcmp(RecordingType,"Open Ephys") && ~strcmp(RecordingType,"Spike2") % Done above
                     % account for time being cut (cut start and cut end)
                     index = 0;
+                    TempEvents = Data.Events;
+                    TimeToextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+                    TimeToextractSamples = round(TimeToextract(1)*Data.Info.NativeSamplingRate);
+                    TempEvents{i} = TempEvents{i}-TimeToextractSamples;
+
                     if isfield(Data.Info,'CutStart')
                         index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
         
-                        EventsToDelete = Data.Events{i} <= index;
-
+                        EventsToDelete = TempEvents{i} <= index;
+                        
                         if sum(EventsToDelete)>0
                             Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
+                            TempEvents{i}(EventsToDelete) = []; % Delete indicies smaller than start
                             disp(strcat("Event Nr. ",num2str(i),": Start time of dataset was cut. First ",num2str(sum(EventsToDelete))," triggers are deleted!"));
                         end
                     end
             
                     if isfield(Data.Info,'CutEnd')
-                        EventsToDelete = Data.Events{i} >= index+length(Data.Time)-1;
+                        EventsToDelete = TempEvents{i} >= index+length(Data.Time)-1;
                         if sum(EventsToDelete)>0
                             Data.Events{i}(EventsToDelete) = []; % Delete indicies smaller than start
                             disp(strcat("Stop time of dataset was cut. First ",num2str(sum(EventsToDelete))," triggers are deleted!"));

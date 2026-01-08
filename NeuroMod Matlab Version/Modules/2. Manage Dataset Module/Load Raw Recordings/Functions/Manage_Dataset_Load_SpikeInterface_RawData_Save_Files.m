@@ -84,7 +84,7 @@ DatLocation = strcat(ModifiedSaveFile,'\SI_Saved_Channel_Data.dat');
     if TimeToExtract(2) == Inf
         %n_samples
     else
-        n_samples = (TimeToExtract(1)*sampling_rate)+1:TimeToExtract(2)*sampling_rate;
+        n_samples = TimeToExtract(2)*sampling_rate - (TimeToExtract(1)*sampling_rate);
     end
     if strcmp(ChannelToExtract,"All")
 

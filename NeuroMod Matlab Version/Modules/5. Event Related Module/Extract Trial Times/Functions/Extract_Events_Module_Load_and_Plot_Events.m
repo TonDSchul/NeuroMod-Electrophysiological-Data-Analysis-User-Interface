@@ -84,7 +84,7 @@ if strcmp(Data.Info.RecordingType,"IntanDat")
         else
             TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
             Timetoextract(1) = TempTimetoextract(1);
-            Timetoextract(2) = Data.Time(end); 
+            Timetoextract(2) = length(InputChannelData)/Data.Info.NativeSamplingRate; 
         end
     else
         Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
@@ -102,6 +102,25 @@ if strcmp(Data.Info.RecordingType,"IntanDat")
     % function is called) -- eaier to load at start ups
 elseif strcmp(Data.Info.RecordingType,"IntanRHD")
     InputChannelData = single(RHDAllChannelData(InputChannelSelection,:));
+    if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+        if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+            Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+        else
+            TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+            Timetoextract(1) = TempTimetoextract(1);
+            Timetoextract(2) = length(InputChannelData)/Data.Info.NativeSamplingRate; 
+        end
+    else
+        Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+    end
+    
+    % convert to samples
+    Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
+    if Timetoextract(1)==0
+        Timetoextract(1) = 1;
+    end
+    
+    InputChannelData = InputChannelData(Timetoextract(1):Timetoextract(2));
     clear("RHDAllChannelData");
 elseif strcmp(Data.Info.RecordingType,"Open Ephys") || strcmp(Data.Info.RecordingType,"Neuralynx") || strcmp(Data.Info.RecordingType,"NEO") || strcmp(Data.Info.RecordingType,"TDT Tank Data")
     InputChannelData = EventInfo;
@@ -113,7 +132,7 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
 end
 
 %% If cutstart or cutend:
-if ~strcmp(Data.Info.RecordingType,"Open Ephys") % for open ephys done in Show_ChannelPlots function
+if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"TDT Tank Data") % for open ephys done in Show_ChannelPlots function
     if isfield(Data.Info,'CutStart')
         index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
         InputChannelData(1:index) = [];
@@ -129,19 +148,23 @@ if ~strcmp(Data.Info.RecordingType,"Open Ephys") % for open ephys done in Show_C
 end
 %% Downsample if not empty
 if ~isempty(DownsampleRate)
-    DownsampleRate = str2double(DownsampleRate);
-
-    if mod(Data.Info.NativeSamplingRate/DownsampleRate,1) ~=0
-        DownsampleFactor = round(Data.Info.NativeSamplingRate/DownsampleRate);
-        DownsampleRate = Data.Info.NativeSamplingRate/DownsampleFactor;
-        DownsampleFactor = Data.Info.NativeSamplingRate/DownsampleRate;
-        disp("Warning: Downsamplefactor resulting from entered sample rate is not an integer. Downsampled samplerate is adjusted accordingly!")
-    else
-        DownsampleFactor = Data.Info.NativeSamplingRate/DownsampleRate;
+    if str2double(DownsampleRate)<Data.Info.NativeSamplingRate
+        DownsampleRate = str2double(DownsampleRate);
+    
+        if mod(Data.Info.NativeSamplingRate/DownsampleRate,1) ~=0
+            DownsampleFactor = round(Data.Info.NativeSamplingRate/DownsampleRate);
+            DownsampleRate = Data.Info.NativeSamplingRate/DownsampleFactor;
+            DownsampleFactor = Data.Info.NativeSamplingRate/DownsampleRate;
+            disp("Warning: Downsamplefactor resulting from entered sample rate is not an integer. Downsampled samplerate is adjusted accordingly!")
+        else
+            DownsampleFactor = Data.Info.NativeSamplingRate/DownsampleRate;
+        end
+    
+        InputChannelData = downsample(InputChannelData,DownsampleFactor);
+        Time = downsample(Data.Time,DownsampleFactor);
+    else % if same as native sample rate
+        Time = Data.Time;
     end
-
-    InputChannelData = downsample(InputChannelData,DownsampleFactor);
-    Time = downsample(Data.Time,DownsampleFactor);
 else
     Time = Data.Time;
 end

@@ -316,11 +316,17 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
     
     %% Actually correct for specific time to extract
     IndiciesToOne(IndiciesToOne>Timetoextract(2)) = [];
-
     IndiciesToOne = IndiciesToOne - (Timetoextract(1)-1);
+    
+    if isfield(Data.Info,'CutStart')
+        StartTime = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate);
+        IndiciesToOne = IndiciesToOne - StartTime;
+    end
 
     IndiciesToOne(IndiciesToOne<=0)=[];
     
+    IndiciesToOne(IndiciesToOne>length(Data.Time)) = [];
+
     EventData(IndiciesToOne) = 1;
     
     % Include a specific duration of the event to make it clearly visible
@@ -335,11 +341,11 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
                 if Channel.(Type).OnsetTimestamps(i) ~= 0
                     if Channel.(Type).OnsetTimestamps(i)+Numsamplesevent<=length(EventData)
                         Indicies = Channel.(Type).OnsetTimestamps(i):Channel.(Type).OnsetTimestamps(i)+Numsamplesevent;
-                        Indicies = Indicies - (Timetoextract(1)-1);
+                        %Indicies = Indicies - (Timetoextract(1)-1);
                         EventData(Indicies) = 1;
                     elseif Channel.(Type).OnsetTimestamps(i)+Numsamplesevent>length(EventData)
                         Indicies = Channel.(Type).OnsetTimestamps(i);
-                        Indicies = Indicies - (Timetoextract(1)-1);
+                        %Indicies = Indicies - (Timetoextract(1)-1);
                         EventData(Indicies:end) = 1;
                     end
                 end
@@ -348,11 +354,11 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
                 if Channel.(Type).OffsetTimestamps(i) ~= 0
                     if Channel.(Type).OffsetTimestamps(i)+Numsamplesevent<=length(EventData)
                         Indicies = Channel.(Type).OffsetTimestamps(i):Channel.(Type).OffsetTimestamps(i)+Numsamplesevent;
-                        Indicies = Indicies - (Timetoextract(1)-1);
+                        %Indicies = Indicies - (Timetoextract(1)-1);
                         EventData(Indicies) = 1;
                     elseif Channel.(Type).OffsetTimestamps(i)+Numsamplesevent>length(EventData)
                         Indicies = Channel.(Type).OffsetTimestamps(i);
-                        Indicies = Indicies - (Timetoextract(1)-1);
+                        %Indicies = Indicies - (Timetoextract(1)-1);
                         EventData(Indicies:end) = 1;
                     end
                 end
@@ -362,11 +368,11 @@ if strcmp(Data.Info.RecordingType,"TDT Tank Data")
             if Channel.(Type).Timestamps(i) ~= 0
                 if Channel.(Type).Timestamps(i)+Numsamplesevent<=length(EventData)
                     Indicies = Channel.(Type).Timestamps(i):Channel.(Type).Timestamps(i)+Numsamplesevent;
-                    Indicies = Indicies - (Timetoextract(1)-1);
+                    %Indicies = Indicies - (Timetoextract(1)-1);
                     EventData(Indicies) = 1;
                 elseif Channel.(Type).Timestamps(i)+Numsamplesevent>length(EventData)
                     Indicies = Channel.(Type).Timestamps(i);
-                    Indicies = Indicies - (Timetoextract(1)-1);
+                    %Indicies = Indicies - (Timetoextract(1)-1);
                     EventData(Indicies:end) = 1;
                 end
             end
@@ -505,12 +511,13 @@ if strcmp(Data.Info.RecordingType,"Spike2")
         
         %% Somehow the tick and time output is the same. Moreover, output seems to be in ms. So output*1000/length of channel = 50kHz Sampling Rate
         [iRead, TempData, i64Time] = CEDS64ReadWaveF(fhand1, str2double(app.FileTypeDropDown_2.Value), maxTimeTicks, i64From, i64To);
-
+        
         %[~, TempData, ~] = CEDS64ReadWaveF(fhand1, str2double(app.FileTypeDropDown_2.Value), maxTimeTicks, 0, maxTimeTicks);
         if ~isempty(TempData)   
             EventData{1} = TempData;
+            EventData{1}(end)=[];
         end
-
+        
         clear TempData
    
         close(h);

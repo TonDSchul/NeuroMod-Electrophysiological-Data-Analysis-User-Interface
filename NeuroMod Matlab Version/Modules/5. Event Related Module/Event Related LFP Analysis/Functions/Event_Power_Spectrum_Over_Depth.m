@@ -111,24 +111,35 @@ OriginalactiveChannel = ActiveChannel;
 [ActiveChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveChannel,'MainWindow');
 
 if PreservePlotChannelLocations
-    ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ProbeInfo.FakeSpacing:Data.Info.ProbeInfo.FakeSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ProbeInfo.FakeSpacing;
-      
-    ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
+    [StartDepth,StopDepth,ChannelRange,ydata] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,OriginalActiveChannel);
     
     BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
-    
+
     for i = 1:length(ydata)
         CurrentChannel = ChannelRange(i);
-        if sum(CurrentChannel==OriginalactiveChannel)>0
+        if sum(CurrentChannel==OriginalActiveChannel)>0
             BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
         end
     end
+    
+    % ydata = (min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ProbeInfo.FakeSpacing:Data.Info.ProbeInfo.FakeSpacing:(max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel))-1)*Data.Info.ProbeInfo.FakeSpacing;
+    % 
+    % ChannelRange = min(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel)):max(Data.Info.ProbeInfo.ActiveChannel(ActiveChannel));
+    % 
+    % BPEstimate = zeros(length(ydata),size(BandPower.allPowerEst,2));
+    % 
+    % for i = 1:length(ydata)
+    %     CurrentChannel = ChannelRange(i);
+    %     if sum(CurrentChannel==OriginalactiveChannel)>0
+    %         BPEstimate(i,:) = BandPower.allPowerEst((Data.Info.ProbeInfo.ActiveChannel==CurrentChannel),:);
+    %     end
+    % end
 else
     % FakeChannelRange = 1:length(ActiveChannel);
     % FakeYpositions = (FakeChannelRange-1)*Data.Info.ChannelSpacing;
     % StartDepth = min(FakeYpositions);
     % StopDepth = max(FakeYpositions);
-    [StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,ActiveChannel);
+    [StartDepth,StopDepth,~,~] = Spike_Module_Analysis_Determine_Depths(Data,PreservePlotChannelLocations,OriginalactiveChannel);
     ydata = StartDepth:Data.Info.ProbeInfo.FakeSpacing:StopDepth;
 
     BPEstimate = BandPower.allPowerEst(ActiveChannel,:);

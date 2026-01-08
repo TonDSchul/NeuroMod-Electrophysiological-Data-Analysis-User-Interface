@@ -59,7 +59,7 @@ if isempty(Data.Events)
     end
 end
 if isempty(texttoshow)
-    texttoshow = "All trigger had to be deleted due to time violations. No event data remaining.";
+    texttoshow = "No event trigger violate time constraints.";
 else
     texttoshow = [texttoshow;"All trigger had to be deleted due to time violations. No event data remaining."];
 end
