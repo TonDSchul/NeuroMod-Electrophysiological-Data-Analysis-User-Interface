@@ -261,13 +261,11 @@ if strcmp(WhatToDo,"Get Information")
     for i = 1:length(Events)
         if isfield(Events{i},'processor_id')
             if isempty(Events{i}.processor_id)
-                % Remove the 'Age' field
                 Events{i} = rmfield(Events{i}, 'processor_id');
             end
         end
         if isfield(Events{i},'nodeId')
             if isempty(Events{i}.nodeId)
-                % Remove the 'Age' field
                 Events{i} = rmfield(Events{i}, 'nodeId');
             end
         end

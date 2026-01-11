@@ -197,29 +197,29 @@ elseif strcmp(RecordingSystem,"Neuralynx")
             end
         end
     end
-    % 
-    % %% Determine samples to extract if only specific time points extracted
-    % SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
-    % StartSample = round(str2double(SplitString{1}) * SampleRate);  
-    % if StartSample == 0
-    %     StartSample = 1;
-    % end
-    % if strcmp(SplitString{2},"Inf")
-    %     StopSample = HeaderInfo.nSamples;
-    % else
-    %     StopSample = round(str2double(SplitString{2}) * SampleRate);  
-    % end
-    % 
-    % if StopSample>HeaderInfo.nSamples
-    %     warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str((HeaderInfo.nSamples-1)/SampleRate)," seconds instead."))
-    %     StopSample = HeaderInfo.nSamples;
-    % end
-    % 
-    % disp(strcat("Ectracting raw data from ",num2str((StartSample-1)/SampleRate)," seconds to ",num2str((StopSample-1)/SampleRate)," seconds"));
-    % 
-    % DataIndicies = StartSample : StopSample;
+
+    %% Determine samples to extract if only specific time points extracted
+    SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
+    StartSample = round(str2double(SplitString{1}) * SampleRate);  
+    if StartSample == 0
+        StartSample = 1;
+    end
+    if strcmp(SplitString{2},"Inf")
+        StopSample = HeaderInfo.nSamples;
+    else
+        StopSample = round(str2double(SplitString{2}) * SampleRate);  
+    end
+
+    if StopSample>HeaderInfo.nSamples
+        warning(strcat("Time to extract exceeds length of the selected recording. Taking the whole recording length of ",num2str((HeaderInfo.nSamples-1)/SampleRate)," seconds instead."))
+        StopSample = HeaderInfo.nSamples;
+    end
+
+    disp(strcat("Ectracting raw data from ",num2str((StartSample-1)/SampleRate)," seconds to ",num2str((StopSample-1)/SampleRate)," seconds"));
+
+    %DataIndicies = StartSample : StopSample;
     
-    [Data] = ft_read_data(SelectedFolder,'header',HeaderInfo);
+    [Data] = ft_read_data(SelectedFolder,'header',HeaderInfo, 'begsample', StartSample, 'endsample', StopSample);
     
     if isempty(Data)
         Data = [];
@@ -229,7 +229,7 @@ elseif strcmp(RecordingSystem,"Neuralynx")
         return;
     end
 
-    Data = single(Data(IndividualChannel));
+    Data = single(Data(IndividualChannel,:));
 
     % Convert to mV
     Data = Data ./1000;

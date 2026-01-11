@@ -36,7 +36,7 @@ SampleRate = Data.Info.NativeSamplingRate;
 NumChannel = size(Data.Raw,1);
 ypitch = Data.Info.ChannelSpacing;
 
-% Build the command string
+%% Set all variables needed
 VerChannelOffset = str2double(Data.Info.ProbeInfo.VertOffset);
 HorChannelOffset = str2double(Data.Info.ProbeInfo.HorOffset);
 NumberRows = str2double(Data.Info.ProbeInfo.NrRows);
@@ -58,7 +58,7 @@ end
 
 SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(SelectedSorter,ParameterStructure,file_path);
 
-%% Save Parameter for sorting to load in!
+%% Save Parameter for sorting script to load
 GUIparams = struct();
 
 GUIparams.file_path = file_path;
@@ -108,13 +108,10 @@ fclose(fid);
 clear GUIparams
 disp("Successfully saved GUI params for SpikeInterface script to load.")
 
+pause(1)
+
 command = sprintf('"%s" "%s" "%s"', ...
     pythonPath, SpikeInterfaceScriptPath, PathTosaveTempParams);
-
-% command = sprintf('"%s" "%s" "%s" %d "%s" %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %s %s', ...
-%     pythonPath, SpikeInterfaceScriptPath, file_path, SpikeInterfaceParameter.MultipleRecordings, SelectedSorter, ...
-%     SpikeInterfaceParameter.Preprocess, SpikeInterfaceParameter.LoadSorting, SpikeInterfaceParameter.OpenSpikeInterface, ...
-%     SpikeInterfaceParameter.PlotSortingResults, SpikeInterfaceParameter.JustOpenSpikeInterfaceGUI, SampleRate, NumChannel, ypitch, SpikeInterfaceParameter.KeepConsoleOpen, SpikeInterfaceParameter.PlotTraces,VerChannelOffset,HorChannelOffset,NumberRows,RowOffset,RowOffsetDistance,AllChannel,ActiveChannel,xCoords,yCoords);
 
 % Execute the Python script
 [status, cmdout] = system(command);

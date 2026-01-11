@@ -1,5 +1,22 @@
 function Error = Utility_Check_Saved_Spike_PlotData(PlottedData,Analysis)
 
+%________________________________________________________________________________________
+
+%% This function checks what kind of spike data the user wants to save and gives warnings/messages how/what/what is not possible
+
+% Input:
+% 1. PlottedData: struc with saved data from plot to export
+% 2. Analysis: string specifying the name of the analysis the user wants to
+% export
+
+% Output:
+% 1. Error: double, 1 or 0 whether an error occured
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 Error = 0;
 
 %%------------------------------------------------------- Event Related Spike Rate Heatmap -------------------------------------------------------

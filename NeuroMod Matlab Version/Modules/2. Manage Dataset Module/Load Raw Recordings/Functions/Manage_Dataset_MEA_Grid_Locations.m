@@ -1,5 +1,27 @@
 function [Info] = Manage_Dataset_MEA_Grid_Locations(Info,MEACoords,HeaderInfo)
 
+%________________________________________________________________________________________
+
+%% function that creates a probe design for NeuroMod based on the Maxwell MEA channel coordinates from SpikeINterface
+% Also figures out the active channel! Since some random channel inbetween
+% can be inactive, which are not indicated
+
+% Input:
+% 1. Info: structure with recording metadata (app.Data.Info)
+% 2. MEACoords: nchannel x 2 matric with x and y coordinates of each
+% channel, comes from spikeinterface
+% 3. HeaderInfo: metadata extracted from the raw recording before its
+% 'curated' and becomes app.Data.Info
+
+% Output: 
+% 1. Info: structure with recording metadata (app.Data.Info)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 x = MEACoords(:,1);
 y = MEACoords(:,2);
 

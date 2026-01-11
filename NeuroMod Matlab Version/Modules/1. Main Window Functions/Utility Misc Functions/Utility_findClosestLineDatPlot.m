@@ -17,10 +17,6 @@ function closestLine = Utility_findClosestLineDatPlot(app,axis, clickPoint)
 
 %________________________________________________________________________________________
 
-%% Function to identify the closest line to the point in the plot the user clicked on
-% axis = UIaxis object from main window (app.UIaxis)
-% clickPoint = x and y coordinates in the plot the user clicked on
-
 % Get UIaxis children (plotted data lines)
 children = findobj(axis, 'Type', 'line', 'Tag', 'Data');
 % Loop through all plotted lines

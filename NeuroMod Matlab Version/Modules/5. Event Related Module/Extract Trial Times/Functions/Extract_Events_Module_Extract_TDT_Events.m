@@ -61,6 +61,8 @@ if isempty(TriggerTye)
 end
 
 Laufvariable=1;
+Events = cell(size(InputChannelSelection));
+
 for i = 1:length(InputChannelSelection)
     if strcmp(TriggerTye,"eE") || strcmp(TriggerTye,"eTr") || strcmp(TriggerTye,"eS") || strcmp(TriggerTye,"eB") || strcmp(TriggerTye,"eT")
             if strcmp(State,"Trigger Onset")
@@ -76,20 +78,22 @@ for i = 1:length(InputChannelSelection)
     if sum(CurrentEventChannelIndice)>0
         if strcmp(TriggerTye,"eE") || strcmp(TriggerTye,"eTr") || strcmp(TriggerTye,"eS") || strcmp(TriggerTye,"eB") || strcmp(TriggerTye,"eT")
             if strcmp(State,"Trigger Onset")
-                Events{Laufvariable} = EventInfo.(TriggerTye).OnsetTimestamps(CurrentEventChannelIndice);
+                Events{i} = EventInfo.(TriggerTye).OnsetTimestamps(CurrentEventChannelIndice);
             else
-                Events{Laufvariable} = EventInfo.(TriggerTye).OffsetTimestamps(CurrentEventChannelIndice);
+                Events{i} = EventInfo.(TriggerTye).OffsetTimestamps(CurrentEventChannelIndice);
             end
         else
-            Events{Laufvariable} = EventInfo.(TriggerTye).Timestamps(CurrentEventChannelIndice);
+            Events{i} = EventInfo.(TriggerTye).Timestamps(CurrentEventChannelIndice);
         end
-        if size(Events{Laufvariable},1)>size(Events{Laufvariable},2)
-            Events{Laufvariable} = Events{Laufvariable}';
+        if size(Events{InputChannelSelection},1)>size(Events{i},2)
+            Events{i} = Events{i}';
         end
-        EventChannelNames{Laufvariable} = convertStringsToChars(strcat(FileTypeDropDown," Ch ",num2str(InputChannelSelection(i))));
+        EventChannelNames{i} = convertStringsToChars(strcat(FileTypeDropDown," Ch ",num2str(InputChannelSelection(i))));
         Laufvariable = Laufvariable+1;
     else
         disp("Selected input channel selection nr ",num2str(InputChannelSelection(i)),"contains no valid trigger.")
+        Events{i} = {};
+        EventChannelNames{i} = {};
     end
     
 end

@@ -57,14 +57,47 @@ end
 
 TimeToLoad = convertStringsToChars(TimeToLoad);
 
-command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s" "%s" "%d" "%d" "%s" "%s"', ...
-        NEOPython_Conda_Environment_Path, NeoScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection, FormatToSaveandReadintoMatlab, IsNP1, Np1DataPartToextract, TimeToLoad,  ChannelToLoad);
+%% Save Parameter for sorting script to load
+NEOparams = struct();
+
+NEOparams.SelectedPath = SelectedPath;
+NEOparams.KeepPythonOpen = double(KeepPythonOpen);
+NEOparams.JustLoadDatFile = double(JustLoadDatFile);
+
+NEOparams.RecordingSystemSelection = RecordingSystemSelection;
+NEOparams.FormatToSaveandReadintoMatlab = FormatToSaveandReadintoMatlab;
+NEOparams.IsNP1 = IsNP1;
+NEOparams.Np1DataPartToextract = Np1DataPartToextract;
+NEOparams.TimeToLoad = TimeToLoad;
+NEOparams.ChannelToLoad = ChannelToLoad;
+
+%% Save
+
+PathTosaveTempParams = fullfile(SelectedPath,'NEOParams.json');
+
+jsonStr = jsonencode(NEOparams, 'PrettyPrint', true);
+
+% Define output file path
+jsonFilePath = PathTosaveTempParams;  % or specify full path directly
+
+% Write JSON to file
+fid = fopen(jsonFilePath, 'w');
+if fid == -1
+    error('Cannot create JSON file: %s', jsonFilePath);
+end
+fwrite(fid, jsonStr, 'char');
+fclose(fid);
+
+disp("Successfully saved NEO params for data extraction script to load.")
+
+pause(2)
+command = sprintf('"%s" "%s" "%s"', ...
+        NEOPython_Conda_Environment_Path, NeoScriptPath, PathTosaveTempParams);
 
 % Execute the Python script
 [status, cmdout] = system(command);
 
 % Check status
-
 if status == 0
     disp('Python script executed successfully:');
     disp(cmdout);
@@ -73,3 +106,5 @@ else
     disp('Error executing Python script:');
     disp(cmdout);
 end
+
+clear NEOparams

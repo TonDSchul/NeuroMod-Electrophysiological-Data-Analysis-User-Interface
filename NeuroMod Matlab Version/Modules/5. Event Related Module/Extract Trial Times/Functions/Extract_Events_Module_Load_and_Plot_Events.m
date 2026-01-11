@@ -132,7 +132,7 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
 end
 
 %% If cutstart or cutend:
-if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"TDT Tank Data") % for open ephys done in Show_ChannelPlots function
+if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"TDT Tank Data") && ~contains(Data.Info.RecordingType,"NEO") % for open ephys done in Show_ChannelPlots function
     if isfield(Data.Info,'CutStart')
         index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
         InputChannelData(1:index) = [];

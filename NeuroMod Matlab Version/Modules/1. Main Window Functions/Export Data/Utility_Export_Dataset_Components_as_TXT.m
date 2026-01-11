@@ -1,5 +1,23 @@
 function Utility_Export_Dataset_Components_as_TXT(Data,Component,Format,SaveFolder,Fullsavefile,ExecuteOutsideGUI)
 
+%________________________________________________________________________________________
+
+%% This function exports dataset components, i.e. app.Data field structures as a .txt file
+
+% Input:
+% 1. Data: struc with main window data
+% 2. Component: char, dataset component to extract. "Info" OR "Events" OR "Spikes" OR "Time" OR "TimeDownsampled"
+% 3. Format: not necessary anymore but preserverd -- ToDO
+% 4. SaveFolder: not necessary anymore but preserverd -- ToDO
+% 5. Fullsavefile: path to save data in (with filename and ending)
+% 6. ExecuteOutsideGUI: double, 1 or 0 whether called in GUI or
+% outside of GUI in Autorun/batch analysis
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 DataToExport = Data.(Component);
 
 fid = fopen(Fullsavefile,'w');  % open file for writing

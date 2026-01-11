@@ -1,5 +1,31 @@
 function [TimeToExtractField,ChannelToExtractField] = Manage_Dataset_Check_Time_Channel_Fields(TimeToExtractField,ChannelToExtractField,event)
 
+%________________________________________________________________________________________
+
+%% Function to check the input edit fields of the extract raw recordings window that set the time to extract and channel to extract
+
+% when wanting to extract spike 2 data, this library is necessary. We need
+% to know the path this was installed in. When wanting to extract Spike2
+% data the first time in NeuroMod, the user is asked for that path and it
+% is saved in a variable in GUI_Path/Modules/MISC/Variables/CEDS64Path.mat.
+% After this, this variable is searched for and the path in it is check (whether it exists)
+
+% Input:
+% 1. TimeToExtractField: char, user input for time to extract
+% 2. ChannelToExtractField: char, user input for channel to extract
+% 3. event: holds event info from manipulating the edit field (from
+% Matlab). Used is: events.PreviousValue which holds the edit field char
+% before it was manipulated
+
+% Output: 
+% 1. TimeToExtractField: char, corrected user input for time to extract
+% 2. ChannelToExtractField: char, corrected user input for channel to extract
+ 
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Check time to extract data from edit field entry
 if ~isempty(TimeToExtractField)
     if ~contains(TimeToExtractField,',')

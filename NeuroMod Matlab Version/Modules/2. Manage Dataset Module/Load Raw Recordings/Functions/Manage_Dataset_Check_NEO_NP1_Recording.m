@@ -1,5 +1,26 @@
 function [IsNP1,DataPartToextract] = Manage_Dataset_Check_NEO_NP1_Recording(Data,RecordingPath)
 
+%________________________________________________________________________________________
+
+%% Function to detect lfp and ap signal of Neuropixel recordings and asks the user which one to extract
+% info if it is NP recording is searched for in sync_messages.txt in the
+% Open Ephys recording folder
+
+% Input:
+% 1. Data: main window data structure
+% 2. RecordingPath: Path to the recording selected at data extraction
+
+% Output: IsNP1 =double, 1 or 0 whether NP1 recording (in other words
+% sync_messages.txt) was found inf passed recording path
+% DataPartToextract: double, 1 or 0 whether the user selected to extract LFP
+%or AP data. 1=LFP, 2 = AP
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 IsNP1 = 0;
 DataPartToextract = 0;
 

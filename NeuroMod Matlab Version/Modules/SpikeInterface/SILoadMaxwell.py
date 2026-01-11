@@ -12,6 +12,7 @@ import pyuac
 import scipy.io
 from scipy.io import savemat
 from pathlib import Path
+import json
 
 from spikeinterface.extractors import read_maxwell
 from probeinterface.io import write_prb
@@ -194,9 +195,19 @@ def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extr
         savemat(SaveFolder, mat_dict)
         print("Succesfully saved probe information in " + str(SaveFolder))
 
-def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToExtract):
+def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToExtract,SIParamsfile):
     import spikeinterface as si
+    print("Currently installed SI version:")
     print(si.__version__)
+    
+    # Check if the file exists, then delete it
+    if os.path.exists(SIParamsfile):
+        print(f"Deleted file: {SIParamsfile}")
+        print(SIParamsfile)
+        os.remove(SIParamsfile)
+    else:
+        print("File does not exist, nothing to delete.")
+        
     #### ----------- Check If Data or just Event Extraction ----------- ####
     JustExtractingEvents = 0
     if "EventExtraction" in RecordingSystemSelection:
@@ -339,31 +350,33 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         Save_Probe_Info(recording,ProbeSaveFileName,SaveProbeInfoFormat,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract)
     
 if __name__ == "__main__":
-
-    KeepConsoleOpen = sys.argv[2]   
-    KeepConsoleOpen = int(KeepConsoleOpen)
-
+    
+    SIParamsfile = sys.argv[1]
+    print(SIParamsfile)
+    # Load JSON into a Python dictionary
+    with open(SIParamsfile, 'r') as f:
+        SIparams = json.load(f)
+        
+    # Assuming NEOparams is loaded from JSON already
+    file_path = SIparams['SelectedPath']
+    JustLoad = int(SIparams['JustLoadDatFile'])
+    KeepConsoleOpen = int(SIparams['KeepPythonOpen'])
+    RecordingSystemSelection = SIparams['RecordingSystemSelection']
+    FormatToSaveandReadintoMatlab = SIparams['FormatToSaveandReadintoMatlab']
+    SaveProbeInfo = int(SIparams['SaveProbeInfo'])
+    SaveProbeInfoFormat = SIparams['SaveProbeInfoFormat']
+    TimeToExtract = SIparams['TimeToLoad']
+    ChannelToextract = SIparams['ChannelToLoad']
+    
     if KeepConsoleOpen == 1:
         try:
             # Access arguments
-            file_path = sys.argv[1]
-            JustLoad = sys.argv[3]
-            RecordingSystemSelection = sys.argv[4]
-            FormatToSaveandReadintoMatlab = sys.argv[5]
-            SaveProbeInfo = sys.argv[6]
-            SaveProbeInfoFormat = sys.argv[7]
-            TimeToExtract = sys.argv[8]
-            ChannelToextract = sys.argv[9]
-            
-            SaveProbeInfo = int(SaveProbeInfo)
-            
-            JustLoad = int(JustLoad)
-            
+
             if not pyuac.isUserAdmin():
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract)  
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract,SIParamsfile)  
     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -375,24 +388,27 @@ if __name__ == "__main__":
     
     
     if KeepConsoleOpen == 0:
-        # Access arguments
-        file_path = sys.argv[1]
-        JustLoad = sys.argv[3]
-        RecordingSystemSelection = sys.argv[4]
-        FormatToSaveandReadintoMatlab = sys.argv[5]
-        SaveProbeInfo = sys.argv[6]
-        SaveProbeInfoFormat = sys.argv[7]
-        TimeToExtract = sys.argv[8]
-        ChannelToextract = sys.argv[9]
-        
-        SaveProbeInfo = int(SaveProbeInfo)
-       
-        JustLoad = int(JustLoad)
+        SIParamsfile = sys.argv[1]
+        print(SIParamsfile)
+        # Load JSON into a Python dictionary
+        with open(SIParamsfile, 'r') as f:
+            SIparams = json.load(f)
+            
+        # Assuming NEOparams is loaded from JSON already
+        file_path = SIparams['SelectedPath']
+        JustLoad = int(SIparams['JustLoadDatFile'])
+        KeepConsoleOpen = int(SIparams['KeepPythonOpen'])
+        RecordingSystemSelection = SIparams['RecordingSystemSelection']
+        FormatToSaveandReadintoMatlab = SIparams['FormatToSaveandReadintoMatlab']
+        SaveProbeInfo = int(SIparams['SaveProbeInfo'])
+        SaveProbeInfoFormat = SIparams['SaveProbeInfoFormat']
+        TimeToExtract = SIparams['TimeToLoad']
+        ChannelToextract = SIparams['ChannelToLoad']
         
         if not pyuac.isUserAdmin():
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract)  
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract,SIParamsfile)  
         
 

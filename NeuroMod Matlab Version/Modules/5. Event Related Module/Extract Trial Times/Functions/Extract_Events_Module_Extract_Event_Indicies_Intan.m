@@ -96,6 +96,6 @@ end
 
 for numevents = 1:length(Data.Events)
     if length(Data.Events{numevents}) > 1000
-        msgbox(strcat("Warning: Event Channel ",num2str(numevents)," has extracted more than 1000 events. Change the threshold to avoid or delete the channel from the channel selection.")); 
+        msgbox(strcat("Warning: Event Channel ",num2str(numevents)," has extracted more than 1000 events. If this is not expected try to change the threshold accordingly.")); 
     end
 end

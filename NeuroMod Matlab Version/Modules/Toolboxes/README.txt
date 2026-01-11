@@ -17,7 +17,7 @@ NOTE: in 6. Modified/Open Ephys Tools the BinaryRecording.m function was fixed (
 
 General Remarks:
 
-Some functions of the spike repository from the cortex lab GitHub page are modified to fit the purpose of this GUI and are save in 4. Modified.
+Some functions of the spike repository from the cortex lab GitHub page are modified to fit the purpose of this GUI. Some of them are saved in 4. Modified.
 
 Field trip functions are used for:
 

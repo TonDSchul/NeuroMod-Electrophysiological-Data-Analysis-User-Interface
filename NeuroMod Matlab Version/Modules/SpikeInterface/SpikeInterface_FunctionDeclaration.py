@@ -10,7 +10,7 @@ import spikeinterface.preprocessing as spre
 import spikeinterface.sorters as ss
 import spikeinterface.widgets as sw
 import numpy as np
-from probeinterface import generate_linear_probe
+
 from probeinterface import Probe
 from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
@@ -21,7 +21,7 @@ import inspect
 import os
 import shutil
 from scipy.io import savemat
-from scipy.io import loadmat
+
 
 """ ################################################################ Load Binary file Function ####### """
 def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sorter,CompletePath):

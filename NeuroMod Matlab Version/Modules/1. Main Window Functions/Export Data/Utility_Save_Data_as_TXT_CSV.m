@@ -1,7 +1,7 @@
 function Error = Utility_Save_Data_as_TXT_CSV(Fullsavefile,PlottedData,Analysis)
 
 %________________________________________________________________________________________
-%% Function to export plotted/Analyzed data as .csv or .txt files
+%% Function to export plotted/Analyzed data as .txt file
 % This function gets called in the Utility_Get_Plot_Data function
 
 % Input Arguments:
@@ -108,7 +108,9 @@ if ~contains(Analysis,"Plot") && ~contains(Analysis,"Event Related") && ~contain
         else
             valStr = '<non-displayable>';
         end
-        TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+        if size(valStr,1)==1 || size(valStr,2)==1
+            TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+        end
     end
     
     TextInfos{end+1} = '';

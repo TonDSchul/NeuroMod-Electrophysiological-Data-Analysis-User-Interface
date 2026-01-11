@@ -1,5 +1,24 @@
 function Savefilepath = Manage_Dataset_Module_Save_Probe_For_GUI(PathToSave,app)
 
+%________________________________________________________________________________________
+
+%% This function saves user defined probe info so that it can be easily loaded into NeuroMod again
+
+% Input:
+% 1. PathToSave: char, path to save probeinfo in. If not a folder, ask user
+% 2. app: Create Probe Window app object
+
+% Output: 
+% 1. Savefilepath: char, path data was eventually saved in
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 if isfolder(PathToSave)
     % Prompt user for file save location and name
     [file, path] = uiputfile(fullfile(PathToSave,'*.mat'), 'Save as');

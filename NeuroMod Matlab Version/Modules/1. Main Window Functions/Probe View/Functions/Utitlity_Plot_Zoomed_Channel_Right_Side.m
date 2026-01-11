@@ -45,7 +45,11 @@ ReversedActiveChannelLeft = [];
 if NrChannel<=32
     numSquares = NrChannel; % Number of squares - 
 else
-    numSquares = 32; % Number of squares - 
+    if ChannelRows<3
+        numSquares = 32; % Number of squares - 
+    else
+        numSquares = NrChannel;
+    end 
 end
 
 highylimits = yLimitBracktes(2);

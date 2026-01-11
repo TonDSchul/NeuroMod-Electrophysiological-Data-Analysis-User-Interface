@@ -9,12 +9,20 @@ import sys
 import pyuac
 import numpy as np
 import neo
+import json
 
 from Neo_FunctionDeclaration import create_save_folder,Get_Save_Event_Data,Exract_Raw_Channel_Data,Save_MetaData,GetAcquisitionStartSample,Get_Reader,write_DataLogger
 
-def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel):
+def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel,NEOParamsfile):
     
-    
+    # Check if the file exists, then delete it
+    if os.path.exists(NEOParamsfile):
+        print(f"Deleted file: {NEOParamsfile}")
+        print(NEOParamsfile)
+        os.remove(NEOParamsfile)
+    else:
+        print("File does not exist, nothing to delete.")
+        
     # -----------------------------------------------------------------------
     ''' Check what to do'''
     # -----------------------------------------------------------------------
@@ -177,32 +185,32 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
     write_DataLogger("Finished!",DataLoggerSaveFileName)
                 
 if __name__ == "__main__":
-
-    KeepConsoleOpen = sys.argv[2]   
-    KeepConsoleOpen = int(KeepConsoleOpen)
+    
+    NEOParamsfile = sys.argv[1]
+    print(NEOParamsfile)
+    # Load JSON into a Python dictionary
+    with open(NEOParamsfile, 'r') as f:
+        NEOparams = json.load(f)
+        
+    # Assuming NEOparams is loaded from JSON already
+    file_path = NEOparams['SelectedPath']
+    JustLoad = int(NEOparams['JustLoadDatFile'])
+    RecordingSystemSelection = NEOparams['RecordingSystemSelection']
+    FormatToSaveandReadintoMatlab = NEOparams['FormatToSaveandReadintoMatlab']
+    IsNP1 = int(NEOparams['IsNP1'])
+    Np1DataPartToextract = int(NEOparams['Np1DataPartToextract'])
+    TimeToExtract = NEOparams['TimeToLoad']
+    KeepConsoleOpen = int(NEOparams['KeepPythonOpen'])
+    IndividualChannel = NEOparams['ChannelToLoad']
 
     if KeepConsoleOpen == 1:
         try:
-            # Access arguments
-            file_path = sys.argv[1]
-            JustLoad = sys.argv[3]
-            RecordingSystemSelection = sys.argv[4]
-            FormatToSaveandReadintoMatlab = sys.argv[5]
-            IsNP1 = sys.argv[6]
-            Np1DataPartToextract = sys.argv[7]
-            
-            TimeToExtract = sys.argv[8]
-            IndividualChannel = sys.argv[9]
-            
-            JustLoad = int(JustLoad)
-            IsNP1 = int(IsNP1)
-            Np1DataPartToextract = int(Np1DataPartToextract)
-            
+                        
             if not pyuac.isUserAdmin():
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel)  
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel,NEOParamsfile)  
     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -214,26 +222,12 @@ if __name__ == "__main__":
     
     
     if KeepConsoleOpen == 0:
-        # Access arguments
-        file_path = sys.argv[1]
-        JustLoad = sys.argv[3]
-        RecordingSystemSelection = sys.argv[4]
-        FormatToSaveandReadintoMatlab = sys.argv[5]
-        IsNP1 = sys.argv[6]
-        Np1DataPartToextract = sys.argv[7]
-        
-        TimeToExtract = sys.argv[8]
-        IndividualChannel = sys.argv[9]
-        
-        JustLoad = int(JustLoad)
-        IsNP1 = int(IsNP1)
-        Np1DataPartToextract = int(Np1DataPartToextract)
-        
+                
         if not pyuac.isUserAdmin():
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel) 
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,IsNP1,Np1DataPartToextract,TimeToExtract,IndividualChannel,NEOParamsfile) 
         
             
     

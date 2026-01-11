@@ -81,6 +81,9 @@ if isfield(Data,'Events')
     [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
 end
 
+% Data.Info.EventChannelNames = {};
+% Data.Info.EventChannelType = [];
+
 %% If Intan Recording System selected
 if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
     %% Check if any of the event channel types are available
@@ -209,6 +212,34 @@ if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
 
     %% Start Event Extraction with parameters found above
     [Data] = Extract_Events_Module_Extract_Events_Intan(Data,FileTypeDropDown,EventInfoField,Path,str2double(Threshold),InputChannelSelection,RHDAllChannelData,EventInfoType);
+    
+    %% Create EventChannelNames 
+    for ii = 1:length(Data.Events)
+        if strcmp(FileTypeDropDown,"AUX Inputs")
+            Data.Info.EventChannelNames{ii} = ChannelNames.Aux{InputChannelSelection(ii)};
+            Data.Info.EventChannelType = "AUX Inputs";
+            EventChannelDropDown = Data.Info.EventChannelNames;
+        elseif strcmp(FileTypeDropDown,"Analog Input")
+            Data.Info.EventChannelNames{ii}  = ChannelNames.Analog{InputChannelSelection(ii)} ;
+            Data.Info.EventChannelType = "Analog Input";
+            EventChannelDropDown = Data.Info.EventChannelNames;
+        elseif strcmp(FileTypeDropDown,"Digital Inputs")
+            Data.Info.EventChannelNames{ii}  = ChannelNames.Digital{InputChannelSelection(ii)} ;
+            Data.Info.EventChannelType = "Digital Inputs";
+            EventChannelDropDown = Data.Info.EventChannelNames;
+        elseif strcmp(FileTypeDropDown,"DIN Inputs")
+            Data.Info.EventChannelNames{ii}  = ChannelNames.Digital{InputChannelSelection(ii)} ;
+            Data.Info.EventChannelType = "DIN Inputs";
+            EventChannelDropDown = Data.Info.EventChannelNames;
+        end
+    end
+    %% ----------------------- Combine event channel if selected ----------------------------
+    % Data.Events{n} can be empty of nothing found! So combine events here
+    % because indicies stay preserved
+    if ~isempty(EventsToCombine)
+        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventInfo.InputChannelNumber,InputChannelSelection,[]);  
+        EventChannelNames = Data.Info.EventChannelNames;
+    end
 
 %% Analyze Open Ephys Data
 elseif strcmp(RecordingType,"Open Ephys")
@@ -239,41 +270,33 @@ elseif strcmp(RecordingType,"Open Ephys")
     
     [Data.Events,Info] = Extract_Events_Module_Extract_Open_Ephys_Events(Data,Path,"All",Nodenr,NoddeID,InputChannelSelection,StateSelection,startTimestamp,Data.Info.AllRecordingIndicies);
     
+    %% Create event channel names
+    EventChannelDropDown = {};
+    for nevents = 1:length(Data.Events)
+        Data.Info.EventChannelNames{nevents} = convertStringsToChars(Info.EventChannelName{nevents});
+        Data.Info.EventChannelType = strcat(AvailableNode(Nodenr)," TTL");
+        EventChannelDropDown{nevents} = Data.Info.EventChannelNames{nevents};
+    end
+
+    % Data.Events {n} returns Empty if no events --> combine events here bc
+    % indicies are preserved
+    %% ----------------------- Combine event channel if selected ----------------------------
+    if ~isempty(EventsToCombine)
+        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,AdditionalEventInfo.InputChannelNumber,InputChannelSelection,[]);
+        EventChannelNames = Data.Info.EventChannelNames;
+    end
+
     % account for time being cut (cut start and cut end) ------ ONLY FOR
     % OPEN EPHYS!! FOR OTHERS THIS IS MANAGED BELOW
     for i = 1:length(Data.Events)
         if isfield(Data.Info,'CutStart')
-           
             Data.Events{i} = Data.Events{i} - (sum(Data.Info.CutStart)*Data.Info.NativeSamplingRate);
             Data.Events{i}(Data.Events{i}<=0) = [];
-    
-        end
-        % if isfield(Data.Info,'TimeAndChannelToExtract') %% Normalize to new zero timestamp
-        %     if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
-        %         if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
-        %             Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
-        %         else
-        %             TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
-        %             Timetoextract(1) = TempTimetoextract(1);
-        %             Timetoextract(2) = Data.Time(end); 
-        %         end
-        %     else
-        %         Timetoextract = eval(TimeAndChannelToExtract.TimeToExtract);
-        %     end
-        % 
-        %     % convert to samples
-        %     Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
-        %     if Timetoextract(1)==0
-        %         Timetoextract(1) = 1;
-        %     end
-        % 
-        %     Data.Events{i} = Data.Events{i} - ((Timetoextract(1)-1));
-        %     Data.Events{i}(Data.Events{i}<=0) = [];
-        % end
-
+        end 
         
         % Check for only specific time being extracted and correct for that
         [Data,temptexttoshow] = Extract_Events_Module_Correct_For_TimeToExtract(Data,Data.Info.TimeAndChannelToExtract);
+
         if ~isempty(texttoshow)
             texttoshow = [texttoshow;temptexttoshow];
         else
@@ -311,6 +334,13 @@ elseif strcmp(RecordingType,"Neuralynx")
     end
     
     [Data.Events,EventChannelNames] = Extract_Events_Module_Neuralynx_Manage_Events_Main(event,Data,InputChannelSelection);
+    
+    %% ----------------------- Combine event channel if selected ----------------------------
+    if ~isempty(EventsToCombine)
+        Data.Info.EventChannelNames = EventChannelNames;
+        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventInfo.InputChannelNumber,InputChannelSelection,[]);
+        EventChannelNames = Data.Info.EventChannelNames;
+    end
 
 elseif strcmp(RecordingType,"TDT Tank Data")
 
@@ -320,6 +350,14 @@ elseif strcmp(RecordingType,"TDT Tank Data")
         msgbox("No TDT events could be extracted from file!");
         return;
     end
+
+    %% ----------------------- Combine event channel if selected ----------------------------
+    if ~isempty(EventsToCombine)
+        Data.Info.EventChannelNames = EventChannelNames;
+        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventInfo.InputChannelNumber,InputChannelSelection,[]);
+        %EventChannelNames = Data.Info.EventChannelNames;
+    end
+
 elseif strcmp(RecordingType,"Spike2")
     
     %% Check whether Json library is installed necessray to analyze this format
@@ -419,93 +457,100 @@ elseif strcmp(RecordingType,"Spike2")
         EventInfoType = EventInfo.EventType;
         
         [Data,~] = Extract_Events_Module_Extract_Event_Indicies_Intan(Data,[],"Spike2",str2double(Threshold),EventData,EventInfoType);
+        
+        %% Create event channel names
+        Data.Info.Spike2EventChannelToTake = convertStringsToChars(Data.Info.Spike2EventChannelToTake);
 
+        Spike2EventChannelToTake = str2double(strsplit(Data.Info.Spike2EventChannelToTake,','));
+
+        EventChannelDropDown = {};
+        for nevents = 1:length(Data.Events)
+            Data.Info.EventChannelNames{nevents} = convertStringsToChars(strcat("Data Channel ",num2str(Spike2EventChannelToTake(nevents))));
+            EventChannelDropDown{nevents} = convertStringsToChars(Data.Info.EventChannelNames{nevents});
+        end
+        Data.Info.EventChannelType = strcat("Event Channel ",num2str(nevents));
+
+        %% ----------------------- Combine event channel if selected ----------------------------
+        
+        if ~isempty(EventsToCombine)
+            [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventInfo.InputChannelNumber,InputChannelSelection,[]);
+            EventChannelNames = Data.Info.EventChannelNames;
+        end
     end
 
 elseif strcmp(RecordingType,"NEO")
 
-    %% Correct for different timetoextract
-    if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
-        if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
-            Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
-        else
-            TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
-            Timetoextract(1) = TempTimetoextract(1);
-            Timetoextract(2) = Data.Time(end); 
-        end
-    else
-        Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
-    end
-
-    % convert to samples
-    Timetoextract = round(Timetoextract*Data.Info.NativeSamplingRate);
-    if Timetoextract(1)==0
-        Timetoextract(1) = 1;
-    end
-
-    % %% Actually correct for specific time to extract
-    % IndiciesBiggerTime = EventInfo.event_samples>Timetoextract(2);
-    % EventInfo.event_samples(EventInfo.event_samples>Timetoextract(2)) = [];
-    % EventInfo.event_labels(IndiciesBiggerTime) = [];
-    % EventInfo.event_channels(IndiciesBiggerTime) = [];
-    % 
-    % EventInfo.event_samples = EventInfo.event_samples - (Timetoextract(1)-1);
-    % IndiciesSmallerTime = EventInfo.event_samples<=0;
-    % EventInfo.event_samples(EventInfo.event_samples<=0) = [];
-    % EventInfo.event_labels(IndiciesSmallerTime) = [];
-    % EventInfo.event_channels(IndiciesSmallerTime) = [];
-
-    %% Check for time violations - maybe wrong fil loaded by user?
-    Error = 0;
-    if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
-        if sum(EventInfo.event_samples>length(Data.Time))>0
-            msgbox("Warning: Trigger outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
-            
-            EventInfo.event_labels(EventInfo.event_samples>length(Data.Time)) = [];
-            EventInfo.event_channels(EventInfo.event_samples>length(Data.Time)) = [];
-            EventInfo.event_samples(EventInfo.event_samples>length(Data.Time)) = [];
-            
-            TempUniqueChannel = unique(EventInfo.event_channels);
-            InputChannelSelection(~ismember(InputChannelSelection,TempUniqueChannel)) = [];
-            
-            %DeletedChannelIndices = find(~ismember(InputChannelSelection,TempUniqueChannel));
-    
-            if isempty(EventInfo.event_samples) || isempty(InputChannelSelection)
-                msgbox("Warning: All trigger indices had to be deleted.");
-                [Data,~] = Organize_Delete_Dataset_Components(Data,"Events");
-                return;
-            end
-        end
-    end
+    % event channel names
     EventChannelNames = cell(1,length(InputChannelSelection));
     for i = 1:length(InputChannelSelection)
         EventChannelNames{i} = convertStringsToChars(strcat("Event Ch ",num2str(InputChannelSelection(i))));
     end
+    % fill event variable
+    UniqueChannel = unique(EventInfo.event_channels);
+    SelecteChannelIndice = ismember(UniqueChannel,InputChannelSelection);
     
-    if Error == 0
-        UniqueChannel = unique(EventInfo.event_channels);
-        SelecteChannelIndice = ismember(UniqueChannel,InputChannelSelection);
+    UniqueChannel(SelecteChannelIndice==0) = [];
+    Data.Events = cell(1,sum(SelecteChannelIndice));
+    DeleteIndice = [];
+    
+    for neventchannel = 1:length(UniqueChannel)
+        CurrentChannelIndice = EventInfo.event_channels == UniqueChannel(neventchannel);
         
-        UniqueChannel(SelecteChannelIndice==0) = [];
-        Data.Events = cell(1,sum(SelecteChannelIndice));
-        DeleteIndice = [];
-        
-        for neventchannel = 1:length(UniqueChannel)
-            CurrentChannelIndice = EventInfo.event_channels == UniqueChannel(neventchannel);
-            
-            if sum(CurrentChannelIndice)>0
-                Data.Events{neventchannel} = EventInfo.event_samples(CurrentChannelIndice); % adjust by recording time stamp!
-            else
-                Data.Events{neventchannel} = [];
-                DeleteIndice = [DeleteIndice,neventchannel];
-            end
-        end
-        
-        if ~isempty(DeleteIndice)
-            Data.Events(DeleteIndice) = [];
-            EventChannelNames(DeleteIndice) = [];
+        if sum(CurrentChannelIndice)>0
+            Data.Events{neventchannel} = EventInfo.event_samples(CurrentChannelIndice); % adjust by recording time stamp!
+        else
+            Data.Events{neventchannel} = [];
+            DeleteIndice = [DeleteIndice,neventchannel];
         end
     end
+
+    %% ----------------------- Combine event channel if selected ----------------------------
+    
+    if ~isempty(EventsToCombine)
+        Data.Info.EventChannelNames = EventChannelNames;
+        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventInfo.InputChannelNumber,InputChannelSelection,[]);
+        EventChannelNames = Data.Info.EventChannelNames;
+    end
+
+    IndicieToDeleteEnd = [];
+    
+    for tt = 1:length(Data.Events)
+        %% Correct for cut time
+        if isfield(Data.Info,'CutStart')
+            index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
+            Data.Events{tt} = Data.Events{tt} - index;
+        end
+    
+        IndicieToDeleteSmallerZero = Data.Events{tt}<=0;
+    
+        if isfield(Data.Info,'CutEnd')
+            index = round(sum(Data.Info.CutEnd) * Data.Info.NativeSamplingRate); % convert in samples
+            IndicieToDeleteEnd = Data.Events{tt}>index;
+        end
+        
+        if ~isempty(IndicieToDeleteEnd)
+            if ~isempty(IndicieToDeleteSmallerZero)
+                IndicieToDeleteSmallerZero = IndicieToDeleteSmallerZero + IndicieToDeleteEnd;
+                IndicieToDeleteSmallerZero(IndicieToDeleteSmallerZero>1) = 1;
+            end
+        end
+    
+        if ~isempty(IndicieToDeleteSmallerZero)
+            Data.Events{tt}(IndicieToDeleteSmallerZero==1) = [];
+        end
+    
+        %% Check for time violations - maybe wrong file loaded by user?
+
+        %if ~isfield(Data.Info,'CutEnd') && ~isfield(Data.Info,'CutStart')
+        if sum(Data.Events{tt}>length(Data.Time))>0
+            msgbox("Warning: Trigger outside of max time range found. Check whether you selected and loaded event data from the correct recording. Events outside of time range are deleted.");
+            
+            IndiciesOverTime = Data.Events{tt}>length(Data.Time);
+            Data.Events{tt}(IndiciesOverTime) = [];
+        end
+        %end
+    end
+    
 end
 
 %% Wrap Up and Cleaning
@@ -522,7 +567,7 @@ if isfield(Data,'Events')
             end
 
             if ~isempty(Data.Events{i})
-                if ~strcmp(RecordingType,"Open Ephys") && ~strcmp(RecordingType,"Spike2") % Done above
+                if ~strcmp(RecordingType,"Open Ephys") && ~strcmp(RecordingType,"Spike2") && ~strcmp(RecordingType,"NEO") % Done above
                     % account for time being cut (cut start and cut end)
                     index = 0;
                     TempEvents = Data.Events;
@@ -553,39 +598,9 @@ if isfield(Data,'Events')
                         Data.Events{i} = Data.Events{i} - index; %substract number of indicies before first event that are cut away so that events are scaled o new ime range
                     end
                 end
-                
-                Data.Info.EventChannelNames = {};
-                Data.Info.EventChannelType = [];
-                
-                % Add Event Channel Names
-                if strcmp(RecordingType,"IntanRHD") || strcmp(RecordingType,"IntanDat")
-                    for nevents = 1:length(Data.Events)
-                        if strcmp(FileTypeDropDown,"AUX Inputs")
-                            Data.Info.EventChannelNames{nevents} = ChannelNames.Aux{InputChannelSelection(nevents)};
-                            Data.Info.EventChannelType = "AUX Inputs";
-                            EventChannelDropDown = Data.Info.EventChannelNames;
-                        elseif strcmp(FileTypeDropDown,"Analog Input")
-                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Analog{InputChannelSelection(nevents)} ;
-                            Data.Info.EventChannelType = "Analog Input";
-                            EventChannelDropDown = Data.Info.EventChannelNames;
-                        elseif strcmp(FileTypeDropDown,"Digital Inputs")
-                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Digital{InputChannelSelection(nevents)} ;
-                            Data.Info.EventChannelType = "Digital Inputs";
-                            EventChannelDropDown = Data.Info.EventChannelNames;
-                        elseif strcmp(FileTypeDropDown,"DIN Inputs")
-                            Data.Info.EventChannelNames{nevents}  = ChannelNames.Digital{InputChannelSelection(nevents)} ;
-                            Data.Info.EventChannelType = "DIN Inputs";
-                            EventChannelDropDown = Data.Info.EventChannelNames;
-                        end
-                    end
-                elseif strcmp(RecordingType,"Open Ephys")
-                    EventChannelDropDown = {};
-                    for nevents = 1:length(Data.Events)
-                        Data.Info.EventChannelNames{nevents} = convertStringsToChars(Info.EventChannelName{nevents});
-                        Data.Info.EventChannelType = strcat(AvailableNode(Nodenr)," TTL");
-                        EventChannelDropDown{nevents} = Data.Info.EventChannelNames{nevents};
-                    end
-                elseif strcmp(RecordingType,"Neuralynx")
+                                
+                % Add Event Channel Names    
+                if strcmp(RecordingType,"Neuralynx")
                     EventChannelDropDown = {};
                     Data.Info.EventChannelNames = EventChannelNames;
                     Data.Info.EventChannelType = ".nev";
@@ -593,24 +608,10 @@ if isfield(Data,'Events')
                     EventChannelDropDown = {};
                     Data.Info.EventChannelNames = EventChannelNames;
                     Data.Info.EventChannelType = FileTypeDropDown;
-
                 elseif strcmp(RecordingType,"NEO")
-
                     Data.Info.EventChannelType = "NEO";
                     EventChannelDropDown = {};
-                    Data.Info.EventChannelNames = EventChannelNames;
-
-                elseif strcmp(RecordingType,"Spike2")
-                    Data.Info.Spike2EventChannelToTake = convertStringsToChars(Data.Info.Spike2EventChannelToTake);
-
-                    Spike2EventChannelToTake = str2double(strsplit(Data.Info.Spike2EventChannelToTake,','));
-
-                    EventChannelDropDown = {};
-                    for nevents = 1:length(Data.Events)
-                        Data.Info.EventChannelNames{nevents} = convertStringsToChars(strcat("Data Channel ",num2str(Spike2EventChannelToTake(nevents))));
-                        EventChannelDropDown{nevents} = convertStringsToChars(Data.Info.EventChannelNames{nevents});
-                    end
-                    Data.Info.EventChannelType = strcat("Event Channel ",num2str(nevents));
+                    Data.Info.EventChannelNames = EventChannelNames;                    
                 end
                 
                 if i == 1
@@ -660,18 +661,12 @@ else
     return;
 end
 
-%% ----------------------- Combine event channel if selected ----------------------------
-
-if ~isempty(EventsToCombine)
-    if strcmp(Data.Info.RecordingType,"Open Ephys")
-        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,AdditionalEventInfo.InputChannelNumber,InputChannelSelection,Eventstodelete);
-    else
-        [Data] = Extract_Events_Module_Combine_Events(Data,EventsToCombine,EventInfo.InputChannelNumber,InputChannelSelection,Eventstodelete);
-    end
-end
-
 %% ----------------------- Delete Events if Outside of Time Range----------------------------
-if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"Spike2") && ~strcmp(Data.Info.RecordingType,"NEO") % done earlier in upper section
+% only those formats NOT, because they already extract just the relevenat
+% time points and account for that in event data.
+% Is done for: Intan(only implemented partial reading in extract raw data),
+% TdT and Neuralynx (not tested yet! :()
+if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"Spike2") && ~strcmp(Data.Info.RecordingType,"NEO") && ~contains(Data.Info.RecordingType,"Neuralynx") % done earlier in upper section
     [Data,temptexttoshow] = Extract_Events_Module_Correct_For_TimeToExtract(Data,Data.Info.TimeAndChannelToExtract);
     if ~isempty(texttoshow)
         texttoshow = [texttoshow;temptexttoshow];
@@ -679,7 +674,7 @@ if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingT
         texttoshow = temptexttoshow;
     end
 end
-%% ----------------------- Last Step: Check if trials violate time limts----------------------------
+%% ----------------------- Last Step: Check if trials violate time limts (for event related data!)----------------------------
 if isfield(Data,'Events')
     if ~isempty(Data.Events)
         [Data,Data.Events,temptexttoshow] = Extract_Events_Module_Check_Violating_Trigger(Data,Data.Events,TimeAroundEvent);

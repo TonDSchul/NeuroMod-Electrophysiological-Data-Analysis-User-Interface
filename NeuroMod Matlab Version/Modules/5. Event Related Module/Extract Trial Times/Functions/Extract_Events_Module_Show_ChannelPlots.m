@@ -389,10 +389,20 @@ end
 
 if strcmp(Data.Info.RecordingType,"NEO")
     
+    if isfield(Data.Info,'CutStart')
+        index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
+        Channel.Samples = Channel.Samples - index;
+    end
+
+    if isfield(Data.Info,'CutEnd')
+        index = round(sum(Data.Info.CutEnd) * Data.Info.NativeSamplingRate); % convert in samples
+        Channel.Samples(Channel.Samples>index) = [];
+    end
+
     Channel.Samples(Channel.Samples<=0) = [];
 
     EventData = zeros(1,length(Data.Time));
-    EventData(Channel.Samples) = 1;
+    %EventData(Channel.Samples) = 1;
 
     % Include a specific duration of the event to make it clearly visible
     % -- 2ms standard
@@ -406,6 +416,7 @@ if strcmp(Data.Info.RecordingType,"NEO")
             EventData(Channel.Samples(i):end) = 1;
         end
     end
+    %% Correct for time cons
 
     [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate);
     

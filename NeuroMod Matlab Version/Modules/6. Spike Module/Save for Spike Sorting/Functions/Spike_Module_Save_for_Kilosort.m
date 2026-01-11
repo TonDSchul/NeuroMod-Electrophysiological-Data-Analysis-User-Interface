@@ -134,25 +134,33 @@ else
     fidRaw = fopen(folderPath, 'wb'); 
 end
 
-Lengthcount = 0;
-for chunkIdx = 1:nChunks
-    % progress bar
-    fraction = chunkIdx/nChunks;
-    msg = sprintf('Saving data... (%d%% done)', round(100*fraction));
-    waitbar(fraction, h, msg);
-
-    % chunk
-    chunkData = SaveDataRaw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1);
-    Lengthcount = Lengthcount + length(chunkData);
-
-    if strcmp(Format,'int32')
-        fwrite(fidRaw,chunkData,'*int32');
-    elseif strcmp(Format,'int16')
-        fwrite(fidRaw,chunkData,'*int16');
-    else
-        fwrite(fidRaw,chunkData,'*double');
-    end
+if strcmp(Format,'int32')
+    fwrite(fidRaw,SaveDataRaw,'*int32');
+elseif strcmp(Format,'int16')
+    fwrite(fidRaw,SaveDataRaw,'*int16');
+else
+    fwrite(fidRaw,SaveDataRaw,'*double');
 end
+
+% Lengthcount = 0;
+% for chunkIdx = 1:nChunks
+%     % progress bar
+%     fraction = chunkIdx/nChunks;
+%     msg = sprintf('Saving data... (%d%% done)', round(100*fraction));
+%     waitbar(fraction, h, msg);
+% 
+%     % chunk
+%     chunkData = SaveDataRaw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1);
+%     Lengthcount = Lengthcount + length(chunkData);
+% 
+%     if strcmp(Format,'int32')
+%         fwrite(fidRaw,chunkData,'*int32');
+%     elseif strcmp(Format,'int16')
+%         fwrite(fidRaw,chunkData,'*int16');
+%     else
+%         fwrite(fidRaw,chunkData,'*double');
+%     end
+% end
 
 if strcmp(Format,'int16') || strcmp(Format,'int32')
     %% Save Scalingfactor for later when kilosort is loaded to scale amplitude back

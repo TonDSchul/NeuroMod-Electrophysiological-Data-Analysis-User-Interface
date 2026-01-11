@@ -56,8 +56,43 @@ end
 
 TimeToLoad = convertStringsToChars(TimeToLoad);
 
-command = sprintf('"%s" "%s" "%s" "%d" "%d" "%s" "%s" "%d" "%s" "%s" "%s"', ...
-        Python_Conda_Environment_Path, SIScriptPath, SelectedPath, double(KeepPythonOpen), double(JustLoadDatFile), RecordingSystemSelection, FormatToSaveandReadintoMatlab, double(SaveProbeInfo),SaveProbeInfoFormat,TimeToLoad,ChannelToLoad);
+%% Save Parameter for sorting script to load
+SIparams = struct();
+
+SIparams.SelectedPath = SelectedPath;
+SIparams.KeepPythonOpen = KeepPythonOpen;
+SIparams.JustLoadDatFile = JustLoadDatFile;
+SIparams.RecordingSystemSelection = RecordingSystemSelection;
+
+SIparams.FormatToSaveandReadintoMatlab = FormatToSaveandReadintoMatlab;
+SIparams.SaveProbeInfo = SaveProbeInfo;
+SIparams.SaveProbeInfoFormat = SaveProbeInfoFormat;
+SIparams.TimeToLoad = TimeToLoad;
+SIparams.ChannelToLoad = ChannelToLoad;
+
+%% Save
+PathTosaveTempParams = fullfile(SelectedPath,'SIParams.json');
+
+jsonStr = jsonencode(SIparams, 'PrettyPrint', true);
+
+% Define output file path
+jsonFilePath = PathTosaveTempParams;  % or specify full path directly
+
+% Write JSON to file
+fid = fopen(jsonFilePath, 'w');
+if fid == -1
+    error('Cannot create JSON file: %s', jsonFilePath);
+end
+fwrite(fid, jsonStr, 'char');
+fclose(fid);
+
+clear SIparams
+disp("Successfully saved GUI params for SpikeInterface script to load.")
+
+pause(1)
+
+command = sprintf('"%s" "%s" "%s"', ...
+        Python_Conda_Environment_Path, SIScriptPath, PathTosaveTempParams);
 
 % Execute the Python script
 [status, cmdout] = system(command);

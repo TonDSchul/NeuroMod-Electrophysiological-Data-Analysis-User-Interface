@@ -1,5 +1,21 @@
 function Organize_Export_Components_to_WorkSpace(Data,Component,ExecutedInGUI)
 
+%________________________________________________________________________________________
+
+%% This function exports a component of the main window data structure to the matlab workspace
+
+% Input:
+% 1. Data: main window data structure
+% 2. Component: string specifying the name of the dataset component to
+% export; see below for options
+% 3. ExecutedInGUI: double, 1 or 0 whether it is executed in GUI (1) or not
+% (0)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 exported = 0;
 
 if strcmp(Component,"Raw")

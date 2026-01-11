@@ -1,5 +1,38 @@
 function [Error,SavePath,raw,event,eventdata] = Manage_Dataset_SaveData_FieldTrip(Data,DataType,SaveEvents,SaveFieldTripMat,OpenRawDataBrowser,OpenEventDataBrowser,Autorun,FolderToSave,EventChannel,EventDataType)
 
+%________________________________________________________________________________________
+
+%% This function saves NeuroMod data as a .mat file compatible with FieldTrip
+
+% Input:
+% 1. Data: main window data structure with all relevant data components
+% 2. DataType: char, either "Raw Data" or "Preprocessed Data" to indicate
+% 3. SaveEvents: double 1 or 0 whether to save event data if present
+% what component to save
+% 4. SaveFieldTripMat: double, 1 or 0 whether mat file is saved (1) for later use in FieldTrip or whether
+% this function puts data in a structure to use within NeuroMod
+% 5. OpenRawDataBrowser: 1 or 0 to open fieldtrips raw data inspector
+% 6. OpenEventDataBrowser: 1 or 0 to open fieldtrips event data inspector
+% 7. Autorun: 1 or 0 whether executed in NeuroMod (0) or in batch autorun
+% analysis(0)
+% 8. FolderToSave: folder to save fieldtrip compatible fiel in
+% 9. EventChannel: event channel for which event data is saved along with
+% channel data for use in FieldTrip
+% 10. EventDataType: char, wither "Raw Event Related Data" or "Preprocessed
+% 11. Event Related Data" indicating which one the user wants to save/use
+
+% Output: 
+% 1. Error: 1 or 0 whether error occured
+% 2. SavePath: path .mat file was actually saved to
+% 3. raw: fieldtrip data structure holding metadata and channel data
+% 4. event: currently empty
+% 5. eventdata: fieldtrip data structure holding event data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 SR = [];
 Error = 0;
 SavePath = [];

@@ -60,6 +60,8 @@ classdef BinaryRecording < Recording
                 
                 stream.metadata.names = {};
                 for j = 1:length(self.info.continuous(i).channels)
+
+                    %%%%%%% Modified for Neuromod!!! %%%%%%%%%%%
                     if iscell(self.info.continuous(i).channels)
                         stream.metadata.names{j} = self.info.continuous(i).channels{j}.channel_name;
                     else

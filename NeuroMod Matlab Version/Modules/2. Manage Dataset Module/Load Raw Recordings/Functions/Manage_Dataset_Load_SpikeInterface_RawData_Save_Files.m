@@ -93,7 +93,7 @@ DatLocation = strcat(ModifiedSaveFile,'\SI_Saved_Channel_Data.dat');
     end
 
     RecordingType = "SpikeInterface Maxwell MEA .h5";
-    Time = 0:1/sampling_rate:(double(n_samples)-1)*(1/sampling_rate);
+    
     SampleRate = sampling_rate;
     HeaderInfo.ChannelToExtract = ChannelToExtract;
     HeaderInfo.TimeToExtract = TimeToExtract;
@@ -172,9 +172,9 @@ end
 
 HeaderInfo.TimeAndChannelToExtract = TimeAndChannelToExtract;
 
+Time = 0:1/sampling_rate:(size(Data,2)-1)*(1/sampling_rate);
+
 msg = sprintf('Loading Data... (%d%% done)', 100);
 waitbar(100, h, msg);
 
 close(h);
-
-

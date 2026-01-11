@@ -16,6 +16,8 @@ This variable is autosaved and updated automatically if necessary.
 7. Example_Events.csv: example file containing 50 trigger times in samples to load into the 'Import Trigger Times'
 8. Example_Events.txt: example file containing 50 trigger times in samples to load into the 'Import Trigger Times'
 9. ExampleTriggerIdentities.txt: example file containing trigger identities for trigger. This can be loaded in the 'Extract Trigger Times' to divide a single event channel with 50 triggers into two different event channel called T1 and T2 (see text file contents) with 25 trigger each
+10. NEO_Python_Conda_Path.mat: saves path to anaconda environment in which NEO was installed
+11. Phy_Python_Conda_Path.mat: saves path to anaconda environment in which Phy2 was installed
 
 ---------------------- Take these example files as reference for the expected format! ------------------
 
@@ -27,6 +29,9 @@ Also, there are files in the 'Default Autorun Configs (do not edit!)' folder con
 3. Autorun_Config_TEMPLATE_Neuralynx_Analysis
 4. Autorun_Config_TEMPLATE_OPEN_EPHYS_Analysis
 5. Autorun_Config_TEMPLATE_Spike2_Analysis
+6. Autorun_Config_TEMPLATE_Plexon_Analysis
+7. Autorun_Config_TEMPLATE_TDT_Analysis
+8. Autorun_Config_TEMPLATE_Maxwell_MEAH5_Analysis
 
 The 'docs' folder contains example python script to load the formats NeuroMod offers to save into the python toolboxes NEO, pynwb and SpikeInterface
 

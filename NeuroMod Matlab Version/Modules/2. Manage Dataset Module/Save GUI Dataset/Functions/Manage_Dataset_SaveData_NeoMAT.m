@@ -1,5 +1,30 @@
 function [PathToSave,Error] = Manage_Dataset_SaveData_NeoMAT(Data,SampleRate,DataToSave,SaveEvents,SaveSpikes,Time,Autorun,FolderToSave)
 
+%________________________________________________________________________________________
+
+%% This function saves NeuroMod data as a .mat file compatible with NEO
+
+% Input:
+% 1. Data: main window data structure with all relevant data components
+% 2. SampleRate: double, sample rate of data being saved
+% 3. DataToSave: char, either "Raw Data" or "Preprocessed Data"
+% 4. SaveEvents: double 1 or 0 whether to save event data if present
+% 5. SaveSpikes: double 1 or 0 whether to save spike data if present
+% 6. Time: double vector with time points in seconds of recording
+% 7. Autorun: 1 or 0 whether executed in NeuroMod (0) or in batch autorun
+% analysis(0)
+% 8. FolderToSave: folder to save NEO compatible file in
+
+% Output: 
+% 1. PathToSave: path .mat file was actually saved to
+% 2. Error: 1 or 0 whether error occured
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 Error = 0;
 PathToSave = [];
 

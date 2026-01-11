@@ -5,22 +5,13 @@ Spyder Editor
 This is a temporary script file.
 """
 import spikeinterface.full as si
-import numpy as np
 import json
 import spikeinterface.widgets as sw
 import matplotlib.pyplot as plt
-from tempfile import TemporaryDirectory
-from spikeinterface import load_extractor
 from spikeinterface import load
-import spikeinterface.preprocessing as spre
-import spikeinterface.sorters as ss
-
-from mountainsort5.util import create_cached_recording
 
 from spikeinterface.exporters import export_to_phy
 import shutil
-import json
-import inspect
 
 from SpikeInterface_FunctionDeclaration import Load_Binary_In_SpikeInterface
 from SpikeInterface_FunctionDeclaration import Create_Probe
@@ -36,16 +27,11 @@ from SpikeInterface_FunctionDeclaration import SaveSpikePosition_mat
 from SpikeInterface_FunctionDeclaration import get_all_subfolders
 from SpikeInterface_FunctionDeclaration import get_bin_files
 from SpikeInterface_FunctionDeclaration import get_dat_files
-from SpikeInterface_FunctionDeclaration import SortWithKilosort
 
-from DeletePermissionErrorHandle import DeletePermittedHandle
-
-import time
 import os
 import sys
 import pyuac
-import tkinter as tkste
-from tkinter import filedialog
+
 
 
 FolderToStartAt = 1 # only when MultipleRecordings = 1

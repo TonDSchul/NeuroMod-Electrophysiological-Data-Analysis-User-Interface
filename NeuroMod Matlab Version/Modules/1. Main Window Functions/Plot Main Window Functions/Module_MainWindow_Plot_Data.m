@@ -1,4 +1,4 @@
-function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues,MEASSurMesh)
+function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues,MEASSurMesh,AdditionalPlotDelay)
 
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
@@ -37,6 +37,8 @@ function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Chann
 % 21. CurrentClim: double vector, lower and upper clim of max values so far
 % 22. MEASSurMesh: char, determines plot function used. either "Surf" or "Mesh" depending on what user
 % selects. Standard = Surf
+% 23. AdditionalPlotDelay: double, number of seconds for additional plot
+% delay when movie mode is active
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -866,7 +868,7 @@ if strcmp(Type,"Movie")
     % limit time for new plot so that its not updating too fast and
     % according to framerate
     plottime = toc;
-    
+    pause(AdditionalPlotDelay)
     if plottime<frameTime
         timeremaining = frameTime-plottime;
         pause(timeremaining);

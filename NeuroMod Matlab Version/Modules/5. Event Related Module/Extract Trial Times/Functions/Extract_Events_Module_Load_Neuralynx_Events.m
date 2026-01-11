@@ -18,19 +18,6 @@ end
 
 [event] = Extract_Events_Module_Extract_Events_Neuralynx(Filename,NeuralynxRecordingPath);
 
-%% FOR TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% for i = 1:numel(event)
-%     if event(i).value == 1 || event(i).value == 11
-%         if iscell(event(i).sample)
-%             % If the value is a cell (e.g., {123456}), extract and modify
-%             event(i).sample{1} = event(i).sample{1} + 50000000;
-%         else
-%             % If the value is directly numeric (not in a cell), modify directly
-%             event(i).sample = event(i).sample + 50000000;
-%         end
-%     end
-% end
-
 if isempty(event)
     msgbox("No Neuralynx events could be extracted from file!");
     Texttoshow = ("No Neuralynx events could be extracted from file!");

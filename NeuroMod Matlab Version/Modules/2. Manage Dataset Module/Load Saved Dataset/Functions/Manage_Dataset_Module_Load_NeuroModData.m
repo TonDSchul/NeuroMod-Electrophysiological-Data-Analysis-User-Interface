@@ -60,7 +60,7 @@ if strcmp(Format,".dat")
     if isfield(Header,'Whattosave')
         if Header.Whattosave(1) == 1 && Header.Whattosave(2) == 0
             dN = ntime;
-            Datatoload.Raw = NaN(nchan,ntime);
+            %Datatoload.Raw = NaN(nchan,ntime);
             mmf = memmapfile(FullPath, 'Format', {'int16', [nchan ntime], 'x'});
 
             Datatoload.Raw = mmf.Data.x(1:nchan,1:dN);
@@ -71,7 +71,8 @@ if strcmp(Format,".dat")
             Datatoload.Raw = [];
             dN = ntime;
 
-            Datatoload.Raw = NaN(nchan,ntime);
+            %Datatoload.Raw = NaN(nchan,ntime);
+            
             mmf = memmapfile(FullPath, 'Format', {'int16', [nchan ntime], 'x'});
             Datatoload.Raw = mmf.Data.x(1:nchan,1:dN);
             Datatoload.Raw = single(Datatoload.Raw) / Header.Info.scalingFactor;
@@ -87,8 +88,8 @@ if strcmp(Format,".dat")
 
             dN = ntime+ntime_Preprocessed;
             
-            Datatoload.Raw = NaN(nchan,dN);
-            Datatoload.Preprocessed = NaN(nchan,ntime_Preprocessed);
+            %Datatoload.Raw = NaN(nchan,dN);
+            %Datatoload.Preprocessed = NaN(nchan,ntime_Preprocessed);
 
             mmf = memmapfile(FullPath, 'Format', {'int16', [nchan dN], 'x'});
             Datatoload.Raw = mmf.Data.x(1:nchan,1:dN);

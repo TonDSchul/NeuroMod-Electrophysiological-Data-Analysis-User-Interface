@@ -10,13 +10,13 @@ if find(ismember(EventsToCombine.CombinedChannel,ActualUserEventChannelSelection
     return;
 end
 
-if ~isempty(Eventstodelete)
-    if find(ismember(EventsToCombine.CombinedChannel,Eventstodelete) == 1)
-        Indices = ismember(EventsToCombine.CombinedChannel,Eventstodelete);
-        msgbox(strcat("Error: One or more of the selected channel to combine had to be deleted (for example bc. it was not selected as input event channe or due to all triggers being outside of time window). Cannot combine events! Please try again by deleteing the channel without triggers in the input event channel selection field! Event Indices affected: ",num2str(EventsToCombine.CombinedChannel(Indices))))
-        return;
-    end
-end
+% if ~isempty(Eventstodelete)
+%     if find(ismember(EventsToCombine.CombinedChannel,Eventstodelete) == 1)
+%         Indices = ismember(EventsToCombine.CombinedChannel,Eventstodelete);
+%         msgbox(strcat("Error: One or more of the selected channel to combine had to be deleted (for example bc. it was not selected as input event channe or due to all triggers being outside of time window). Cannot combine events! Please try again by deleteing the channel without triggers in the input event channel selection field! Event Indices affected: ",num2str(EventsToCombine.CombinedChannel(Indices))))
+%         return;
+%     end
+% end
 
 CompleteEventChannelSelection = str2double(strsplit(CompleteEventChannelSelection,','));
 
@@ -47,10 +47,14 @@ end
 % delete individual event channel (or all)
 if length(EventsToCombine.CombinedIdentity) < length(Data.Events)
     Data.Events(CapturedRealEventIndices) = [];
-    Data.Info.EventChannelNames(CapturedRealEventIndices) = [];
+    if isfield(Data.Info,'EventChannelNames')
+        Data.Info.EventChannelNames(CapturedRealEventIndices) = [];
+    end
 else % if all are deleted, initialize empty cell
     Data.Events = cell(1,length(AllCombinedChannel));
-    Data.Info.EventChannelNames = cell(1,length(AllCombinedChannel));
+    if isfield(Data.Info,'EventChannelNames')
+        Data.Info.EventChannelNames = cell(1,length(AllCombinedChannel));
+    end
 end
 
 if ~isempty(AllEvents)
@@ -64,5 +68,11 @@ if ~isempty(AllEvents)
             Data.Events{end+1} = AllEvents{i}';
             Data.Info.EventChannelNames{end+1} = EventsToCombine.NewCombinedChannelNames{i};
         end
+    end
+end
+
+if ~isempty(Data.Events)
+    for i = 1:length(Data.Events)
+        Data.Events{i} = sort(Data.Events{i});
     end
 end

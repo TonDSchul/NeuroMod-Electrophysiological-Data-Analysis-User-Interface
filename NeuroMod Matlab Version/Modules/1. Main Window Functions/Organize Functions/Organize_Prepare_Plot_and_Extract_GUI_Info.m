@@ -216,10 +216,20 @@ if MainPlot && JustLiveWindow == 0
         % create matrix with data for each channel at proper channel
         % location
         if strcmp(app.DropDown.Value,'Preprocessed Data') 
-            DataForMatrix = app.Data.Preprocessed(:,StartIndex:StopIndex);
+            if StartIndex-10 > 0
+                DataForMatrix = app.Data.Preprocessed(:,StartIndex-10:StartIndex);
+            else
+                DataForMatrix = app.Data.Preprocessed(:,StartIndex);
+            end
         elseif strcmp(app.DropDown.Value,'Raw Data')
-            DataForMatrix = app.Data.Raw(:,StartIndex:StopIndex);
+            if StartIndex-10 > 0
+                DataForMatrix = app.Data.Raw(:,StartIndex-10:StartIndex);
+            else
+                DataForMatrix = app.Data.Preprocessed(:,StartIndex);
+            end
         end
+
+        %% If show data trails take the sum over specific number of time points
         
         x = app.Data.Info.MEACoords(:,1);
         y = app.Data.Info.MEACoords(:,2);
@@ -229,14 +239,11 @@ if MainPlot && JustLiveWindow == 0
         else
             ChannelToExtract = 1:size(app.Data.Info.MEACoords,1);
         end
+        % sum
+        if size(DataForMatrix,2)>1
+            DataForMatrix = sum(DataForMatrix(:,1),2);
+        end
 
-        DataForMatrix = DataForMatrix(:,1);
-        
-        % create matrix with data for each channel at proper channel
-        % location
-        % x = app.Data.Info.MEACoords(ChannelToExtract,1);
-        % y = app.Data.Info.MEACoords(ChannelToExtract,2);
-        
         [x_unique, ~, x_idx] = unique(x);
         [y_unique, ~, y_idx] = unique(y);
         
@@ -270,17 +277,17 @@ if MainPlot && JustLiveWindow == 0
             app.LastPlot = "Preprocessed";  
             SpikeDataType = app.Data.Info.SpikeType;
             
-            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh);
+            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh,app.AdditionalPlotDelay);
         % If Raw data has to be plotted
         else
             app.LastPlot = "Preprocessed";
             SpikeDataType = app.Data.Info.SpikeType;
-            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh);
+            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh,app.AdditionalPlotDelay);
         end
     elseif strcmp(app.DropDown.Value,'Raw Data')
         app.LastPlot = "Raw";
         SpikeDataType = app.Data.Info.SpikeType;
-        [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh);
+        [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh,app.AdditionalPlotDelay);
     end
 
     %% Plot Time

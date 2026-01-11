@@ -188,16 +188,41 @@ elseif strcmp(Type,"Loading")
        app.EventTriggerNumberField.Value = "No event trigger found."; 
     end
 
+    if app.Data.Time(end)<3
+        if app.Data.Time(end)<1
+            TimeRangeText = strcat(num2str(app.Data.Time(end)),"s");
+            app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
+        else
+            TimeRangeText = strcat(num2str(1),"s");
+            app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
+        end
+    else
+        TimeRangeText = strcat(num2str(1),"s");
+        app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
+    end
+
+    app.TimeRangeViewBox.Value = TimeRangeText;
+    app.ClimMaxValues = [];
+    app.Data.Info.SpikeType = "Non";
+    app.ChannelChange = "ProbeView";
+    app.MEASSurMesh = "Surf";
+    app.AdditionalPlotDelay = 0;
+    app.PreservePlotChannelLocations = 1;
+
+    % first plot after loading data: max 100 channel shown
+    if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
+        app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
+    end
+
     datapointsforstd = round(str2double(app.TimeRangeViewBox.Value(1:end-1)) * app.Data.Info.NativeSamplingRate);
 
     stdrawdata = double(std(app.Data.Raw(:,1:datapointsforstd),[],'all','omitnan'));
     lowerlimit = 0;
 
-    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*5];
-    app.Slider.Value = stdrawdata;
+    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*10];
+    app.Slider.Value = stdrawdata*2;
 
     app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
-    
     app.PowerSpecResults = [];
 
     channelnr = size(app.Data.Raw,1);
@@ -207,6 +232,12 @@ elseif strcmp(Type,"Loading")
     Utility_Show_Info_Loaded_Data(app);
 
     app.UIAxes.Box = "off";
+
+    if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        app.UIAxes.YDir = 'reverse';
+    else
+        app.UIAxes.YDir = 'normal';
+    end
 
 elseif strcmp(Type,"Extracting")
 
@@ -374,13 +405,13 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.SpikeType = "Non";
     app.ChannelChange = "ProbeView";
     app.MEASSurMesh = "Surf";
-    
+    app.AdditionalPlotDelay = 0;
+    app.PreservePlotChannelLocations = 1;
+
     % first plot after loading data: max 100 channel shown
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
         app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
     end
-
-    app.PreservePlotChannelLocations = 1;
 
     % % Get Channel Selection when new app.Data loadaed
     % ChannelString = strcat("1",",",num2str(app.Data.Info.NrChannel));

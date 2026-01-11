@@ -1,5 +1,31 @@
 function T = Utility_Save_xlsx_Set_VariableNames(PlottedData,Analysis,XData,YData,XTick)
 
+%________________________________________________________________________________________
+
+%% This function puts x,y, and xtick data that is supposed to be exported in a table to save in a .xlsx file
+
+% Input:
+% 1. PlottedData: struc with info about data to be exported (which is the
+% same as plotted data, therefore the name)
+% 2. Analysis: char, kind of analysis for which data is exported. sets
+% header name of each table row
+% 3. XData: double vector with x data to be exported
+% 4. YData: double vector with y data to be exported
+% 5. XTick: cell array with each cell holding a char representing one xtick
+% label
+
+
+% Output: 
+% 1. folderPath: char, path the user selected to save in
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 if contains(Analysis,"All Spikes Spike Rate over Time")
     T = table(XData', YData', XTick', 'VariableNames', {'Time Bin','Spike Rate (Hz)','Time Labels (s)'});
 elseif contains(Analysis,"All Spikes Spike Rate over Channel")
