@@ -6,7 +6,7 @@
 
 ** Warning: If you want to use NeuroMod with a valid MATLAB license, it will only work with Matlab Versions 2023a or newer **
 
-NeuroMod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
+NeuroMod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank or array probe designs with arbitrary geometry. 
 It seamlessly integrates established toolboxes such as Kilosort, SpikeInterface, NEO, Open Ephys Tools and Fieldtrip for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between Matlab and Python packages.
 
 The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
@@ -37,7 +37,7 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
   - [How to Install Phy to Open via NeuroMod](#how-to-install-phy-to-open-via-neuromod)
 
-  - [How to Install the decompression .dll for Maxwell Biosystems MEA .h5 files](#how-to-install-the-decompression-.dll-for-maxwell-biosystems-mea-.h5-files)	
+  - [How to Install the Decompression .dll for Maxwell Biosystems MEA .h5 files](#how-to-install-the-decompression-.dll-for-maxwell-biosystems-mea-.h5-files)	
 
   - [About Performance](#about-performance)
 
@@ -346,7 +346,7 @@ After successful installation you can now view and curate spike sorting results 
 
 **Information:** You can load spike sorting results from Mountainsort 5 and Spyking Circus 2 with the SpikeInterface GUI too. However, this is done in the 'Spike Detection and Sorting' window by changing the spike sorting parameter. Activate the checkboxes to open the SpikeInterface GUI and optionally to load spike sorting results to not have to wait for the spike sorting itself to finish again.
 
-> ### **How to Install the decompression .dll for Maxwell Biosystems MEA .h5 files**
+> ### **How to Install the Decompression .dll for Maxwell Biosystems MEA .h5 files**
 >
 In order to be able to extract MEA .h5 data files in any library you have to 'install' a .dll file by adding it to the environmental variables in windows. Follow the instructions provided here: https://share.mxwbio.com/d/5b5017febe354c8e942a/files/?p=%2FMxW%20-%20Installing%20the%20Decompression%20Library%20to%20load%20MaxLab%20Live%20Recordings.pdf
 
@@ -375,14 +375,20 @@ If you want to update fieldtrip or one of the other tools available on Github, t
 
 > ## **Nomenclature**
 
-Raw Recording: Original recording files created by the respective recording software.
-Events: Input signals into the recording system representing external stimuli, like a tones being played, behavioral responses etc. Can contain multiple continuous signals or multiple sets of discrete time points.
-Event Channel Type: Types of event input signals, which depending on the recording system can be for example digital, analog or auxiliary channel in case of Intan recordings or recording nodes in case of Open Ephys recording. Each type can contain multiple individual event channel.
-Event Channel: A single continuous event signal or set of discrete time points describing one (and the same) kind of external stimulus (like a tone being played). One event channel type can contain multiple event channel, each describing a certain type of external stimulus.
-Trigger: Exact time points in each event input channel at which an external stimuli is happening. If the event signal is composed of discrete time points, triggers are equal to these time points. With a continuous event input signal, triggers are time points at which the event signal exceeds a certain threshold.
-Trials: Data in a time range around each trigger (before and after).
+<u>Raw Recording</u>: Original recording files created by the respective recording software.
+
+<u>Events</u>: Input signals into the recording system representing external stimuli, like a tones being played, behavioral responses etc. Can contain multiple continuous signals or multiple sets of discrete time points.
+
+<u>Event Channel Type</u>: Types of event input signals, which depending on the recording system can be for example digital, analog or auxiliary channel in case of Intan recordings or recording nodes in case of Open Ephys recording. Each type can contain multiple individual event channel.
+
+<u>Event Channel</u>: A single continuous event signal or set of discrete time points describing one (and the same) kind of external stimulus (like a tone being played). One event channel type can contain multiple event channel, each describing a certain type of external stimulus.
+
+<u>Trigger</u>: Exact time points in each event input channel at which an external stimuli is happening. If the event signal is composed of discrete time points, triggers are equal to these time points. With a continuous event input signal, triggers are time points at which the event signal exceeds a certain threshold.
+
+<u>Trials</u>: Data in a time range around each trigger (before and after).
 Live Window: Window that updates along with the main window data plot, showing an analysis of the data plotted in the main window (if coupling to the main window time is enabled in the respective window).
-Event related: Data of all trials. Event related analysis is therefore the same as trial analysis.
+
+<u>Event related</u>: Data of all trials. Event related analysis is therefore the same as trial analysis.
 
 
 > ## **Rules and Philosophy**
