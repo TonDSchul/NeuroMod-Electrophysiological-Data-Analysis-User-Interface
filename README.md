@@ -6,7 +6,7 @@
 
 ** Warning: If you want to use NeuroMod with a valid MATLAB license, it will only work with Matlab Versions 2023a or newer **
 
-NeuroMod is an interactive toolbox for analysing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
+NeuroMod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank probe designs with arbitrary geometry. 
 It seamlessly integrates established toolboxes such as Kilosort, SpikeInterface, NEO, Open Ephys Tools and Fieldtrip for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between Matlab and Python packages.
 
 The aim is to offer a comfortable and user-friendly experience while providing clear instructions and feedback on actions taken, rather than hard-to-interpret error messages or opaque processes. Nearly all parameters related to data extraction and analysis are automatically set, but can still be adjusted within the GUI.
@@ -37,32 +37,39 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
   - [How to Install Phy to Open via NeuroMod](#how-to-install-phy-to-open-via-neuromod)
 
+  - [How to Install the decompression .dll for Maxwell Biosystems MEA .h5 files](#how-to-install-the-decompression-.dll-for-maxwell-biosystems-mea-.h5-files)	
+
   - [About Performance](#about-performance)
 
   - [General Remarks](#general-remarks)
-    
-- [Rules and Philosophy](#rules-and-philosophy)
+
+  - [Nomenclature](#nomenclature)
+
+ - [Rules and Philosophy](#rules-and-philosophy)
   
-- [Disclaimer, License and Contact](#disclaimer-license-and-contact)
+ - [Disclaimer, License and Contact](#disclaimer-license-and-contact)
 
 > ## **Data Formats and Capabilities**
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
 
-NeuroMod supports data extraction from raw recording data with two different 'libraries' - first the NeuroMod intern (Matlab-based) data extraction and second data extraction using the NeuralEnsemble NEO Python package - all through the user interface without the need for coding! Both libraries support recordings obtained with the Open Ephys GUI but to different extends - NeuroMod supports all OE formats (binary .dat; .nwb and OE format files) from any recording system (OE acquisition board; Intan RHD acquisition board; Neuropixels basestation with NP1.0 or 2.0 probes), while NEO only supports binary format recordings, also including Neuropixels recordings with a Neuropixels basestation. Additionally, both libraries support extraction of Neuralynx .ncs recordings (.ncs; .nev; .nse and .ntt files).
+NeuroMod supports data extraction from raw recording data with three different 'libraries' - first the NeuroMod intern (Matlab-based) data extraction, secondly data extraction using the NeuralEnsemble NEO Python package and thirdly data extraction using SpikeInterface- all through the user interface without the need for coding! The MATLAB intern and NEO libraries support recordings obtained with the Open Ephys GUI but to different extends - NeuroMod supports all OE formats (binary .dat; .nwb and OE format files) from any recording system (OE acquisition board; Intan RHD acquisition board; Neuropixels basestation with NP1.0 or 2.0 probes), while NEO only supports binary format recordings, also including Neuropixels recordings with a Neuropixels basestation. Additionally, both libraries support extraction of Neuralynx .ncs recordings (.ncs; .nev; .nse and .ntt files).
 
-Besides these shared formats, NeuroMod itself currently supports formats recorded with the Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 software. This includes .dat and .rhd files from the Intan RHX and RHD software, TDT (Tucker Davis Tank format) recordings and .smrx files for Spike2 recordings. Through the use of the NEO library, NeuroMod furthermore offers to extract Plexon (.plx) recordings.
+Besides these shared formats, NeuroMod itself currently supports formats recorded with the Intan RHX data acquisition software (and legacy RHD software) as well as Spike2 software and Tucker Davis Tank recordings. This includes .dat and .rhd files from the Intan RHX and RHD software, .smrx files for Spike2 recordings and TDT (Tucker Davis Tank format) recordings. 
+Through the use of the NEO library, NeuroMod furthermore offers to extract Plexon (.plx) recordings - while the use of the SpikeInterfae library allows to extract Maxwell Biosystems MaxOne MEA recordings in the .h5 format.
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/FormatOverview.jpg" align="right" width="45%" />
 
 **Note:** When you want to load Neuropixels recordings from the Open Ephys GUI with NEO, it does not support having multiple recording folder within the same session, i.e. when acquisition was stopped and started again within the same recording session. To handle and concatenate multiple recordings within the same session, use the MATLAB internal library! Switching the format to save and load back into MATLAB to the custom format.
 
-**Note:** When using NEO to extract data from a raw recording, make sure there are no additional files or folder within the recording folder other than those that come from the recording software! Otherwise, NEO might not detect the format correctly or at all.
+**Note:** When using SpikeInterface to extract Maxwell MEA data, you can take the same anconda environment as for spike sorting described below. See this section for install instructions.
+
+**Note:** When using NEO or SpikeInterface to extract data from a raw recording, make sure there are no additional files or folder within the recording folder other than those that come from the recording software! Otherwise, NEO might not detect the format correctly or at all.
 
 Since a lot of recordings are trial based and rely on synchronized event/TTL data, not only continuous amplifier channel data, but also event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analysed, enabling not only the pre-processing, analysis, and visualization of continuous data but also of event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, phase synchronization and event-related potentials for low-frequency signal components as well as event related spike analysis.
 
-The supported recording systems can be used with a wide range of probes designs, influencing downstream data analysis. Therefore, a fully interactive probe design and probe view window enables to set arbitrary probe designs (of longituinal single shank probes) while always having an overview and full control over which channel are used for the analysis. Even Neuropixel probe designs with hundreds of recording channels almost freely distributed over the whole shank can be analysed without loosing oversight and with a visual representation of brain areas distributed over the probe based on coordinates obtained from the Neuropixels Trajectory Explorer. Note: Multishank recordings (for example from NP 2.0 probes) can also be loaded, but are integrated into the same shank design, requiring to manually select the active analysis channel corresponding to a single shank.
+The supported recording systems can be used with a wide range of probes designs, influencing downstream data analysis. Therefore, a fully interactive probe design and probe view window enables to set arbitrary probe designs (of longituinal single shank probes and multielectrode arrays) while always having an overview and full control over which channel are used for the analysis. Even Neuropixel probe designs with hundreds of recording channels almost freely distributed over the whole shank can be analysed without loosing oversight and with a visual representation of brain areas distributed over the probe based on coordinates obtained from the Neuropixels Trajectory Explorer. Note: Multishank recordings (for example from NP 2.0 probes) can also be loaded, but are integrated into the same shank design, requiring to manually select the active analysis channel corresponding to a single shank.
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/Example_Image_2.jpg" align="right" width="70%" />
 
@@ -168,11 +175,13 @@ https://ced.co.uk/upgrades/spike2matson
 
 When you extract .smrx for the first time, you are asked to select the folder 'CED64ML' that is created when installing the Spike2 MATLAB SON Interface which is necessary to read .smrx files. Once the path is set it is saved permanently, so you only have to do this once.
 
+For how to install NEO and SpikeInterface refer to 'How to Install SpikeInterface for Spike Sorting in NeuroMod'
+
 > ### **Overview of Other Toolboxes Used**
 
-Spike Sorting with Mountainsort 5 and SpyKING CIRCUS 2 as well as raw recording data extraction of some formats are handled by python libraries, that are called and executed via custom python functions. More specifically, SpikeInterface for spike sorting and NeuralEnsemble NEO for data extraction, which have to be installed manually but can then be used via NeuroMod without any coding. See below for more information.
+Spike Sorting with Mountainsort 5 and SpyKING CIRCUS 2 as well as raw recording data extraction of some formats are handled by python libraries, that are called and executed via custom python functions. More specifically, SpikeInterface for data extraction and spike sorting and NeuralEnsemble NEO for data extraction, which have to be installed manually but can then be used via NeuroMod without any coding. See below for more information.
 
-Spike sorting with Mountainsort 5, SpykingCircus 2 is implemented in a custom python script executed via NeuroMod that uses the SpikeInterface library. 
+Spike sorting with Mountainsort 5, SpykingCircus 2 as well as data extraction of Maxwell MaxOne MEA .h5 recordings are implemented in a custom python script executed via NeuroMod that uses the SpikeInterface library. 
 
 Check out **SpikeInterface**: 
 
@@ -309,6 +318,9 @@ To install the NEO python package, you have to follow the same steps as describe
 ```python
 pip install neo[nixio,tiffio]
 pip install pynwb
+pip install scipy
+pip install matplotlib
+pip install pyuac
 ```
 For more information visit: https://neo.readthedocs.io/en/latest/install.html
 
@@ -334,9 +346,13 @@ After successful installation you can now view and curate spike sorting results 
 
 **Information:** You can load spike sorting results from Mountainsort 5 and Spyking Circus 2 with the SpikeInterface GUI too. However, this is done in the 'Spike Detection and Sorting' window by changing the spike sorting parameter. Activate the checkboxes to open the SpikeInterface GUI and optionally to load spike sorting results to not have to wait for the spike sorting itself to finish again.
 
+> ### **How to Install the decompression .dll for Maxwell Biosystems MEA .h5 files**
+>
+In order to be able to extract MEA .h5 data files in any library you have to 'install' a .dll file by adding it to the environmental variables in windows. Follow the instructions provided here: https://share.mxwbio.com/d/5b5017febe354c8e942a/files/?p=%2FMxW%20-%20Installing%20the%20Decompression%20Library%20to%20load%20MaxLab%20Live%20Recordings.pdf
+
 > ### **About Performance**
 > 
-Everything was developed and tested with the following system: AM5 platform; CPU: AMD Ryzen 7 7800X3D, 32GB 4600Mhz DDR5 Ram, 1TB SSD, NVIDIA GeForce GTX 1660 and B650 AORUS ELITE AX mainboard. Since all relevant GUI information (raw and preprocessed data, spikes, event related data etc.) are saved in RAM, it is recommended to have at least 32GB of RAM. This allows to comfortably do everything with recordings lengths of up to 600 seconds and 32 channel. 
+Everything was developed and tested with the following system: AM5 platform; CPU: AMD Ryzen 7 7800X3D, 32GB 4600Mhz DDR5 Ram, 1TB SSD, NVIDIA GeForce GTX 1660 and B650 AORUS ELITE AX mainboard. Since all relevant GUI information (raw and preprocessed data, spikes, event related data etc.) are saved in RAM, it is recommended to have at least 32GB of RAM. This allows to comfortably do everything with recording lengths of up to 600 seconds and 32 channel. 
 
 The main window plot runs in 'Movie' mode with 1 seconds time range, 64 channel and 30000 Hz sample rate at 40-50 frames a second (without spike or event plots activated). If you have a comparable system but worse performance, check the Matlab graphics renderer by typing in the Matlab command window: info = rendererinfo. It should show something similar to:
 
@@ -353,10 +369,22 @@ When saving your dataset for later use in NeuroMod, channel data is saved as a .
 > ### **General Remarks**
 
 If you want to update fieldtrip or one of the other tools available on Github, there are several things to consider:
-- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. They are saved in GUI_Path\Modules\Toolboxes\6. Modified\ . When you just update the not modified files, there is no guarantee that they will be compatible with the modified files.
+- First some files of those tools are modified to fit the purpose of this GUI. You cant simply replace them. When you just update the not modified files, there is no guarantee that they will be compatible with the modified files.
 - Second, some tools saved in the folders of this GUI like fieldtrip do not contain all files. This has to do with compatibility errors with other tools, specifically the open ephys tools which won't work with all fieldtrip files in the GUI directory.
 - If you encounter errors or things I missed, have questions or want to incorporate one of the tools more in depth, please don't hesitate to contact me.
-    
+
+> ## **Nomenclature**
+
+Raw Recording: Original recording files created by the respective recording software.
+Events: Input signals into the recording system representing external stimuli, like a tones being played, behavioral responses etc. Can contain multiple continuous signals or multiple sets of discrete time points.
+Event Channel Type: Types of event input signals, which depending on the recording system can be for example digital, analog or auxiliary channel in case of Intan recordings or recording nodes in case of Open Ephys recording. Each type can contain multiple individual event channel.
+Event Channel: A single continuous event signal or set of discrete time points describing one (and the same) kind of external stimulus (like a tone being played). One event channel type can contain multiple event channel, each describing a certain type of external stimulus.
+Trigger: Exact time points in each event input channel at which an external stimuli is happening. If the event signal is composed of discrete time points, triggers are equal to these time points. With a continuous event input signal, triggers are time points at which the event signal exceeds a certain threshold.
+Trials: Data in a time range around each trigger (before and after).
+Live Window: Window that updates along with the main window data plot, showing an analysis of the data plotted in the main window (if coupling to the main window time is enabled in the respective window).
+Event related: Data of all trials. Event related analysis is therefore the same as trial analysis.
+
+
 > ## **Rules and Philosophy**
 > 
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like SpikeInterface, NEO and Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone - including students and beginners can comfortably use it. 
