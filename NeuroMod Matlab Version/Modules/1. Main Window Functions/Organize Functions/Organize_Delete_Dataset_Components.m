@@ -76,6 +76,7 @@ if strcmp(ComponentToDelete,"Spikes")
 
     Data.Info.SpikeType = "Non";
     
+    
 elseif strcmp(ComponentToDelete,"EventRelatedSpikes")
     
     if isfield(Data,'EventRelatedSpikes')

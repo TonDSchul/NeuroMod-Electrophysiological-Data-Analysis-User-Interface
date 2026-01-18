@@ -549,7 +549,7 @@ elseif strcmp(Detectionmethod,"Quiroga Method")
         
         end
     end
-    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions(:,2);
 end
 
 %% If no Spikes found, fields are empty. Delete field

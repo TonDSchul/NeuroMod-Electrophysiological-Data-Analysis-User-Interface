@@ -1,8 +1,8 @@
 function [PlotData,TimeToPlot]= Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Data,DataForMatrix,TimeToPlot,ActiveDataChannel)
 
 %% If show data trails take the sum over specific number of time points
-NumRows = length(unique(Data.Info.MEACoords(:,1)));
-NumChannel = length(unique(Data.Info.MEACoords(:,2)));
+NumRows = length(unique(Data.Info.ProbeInfo.xcoords));
+NumChannel = length(unique(Data.Info.ProbeInfo.ycoords));
 
 PlotData = cell(NumChannel, NumRows);
 

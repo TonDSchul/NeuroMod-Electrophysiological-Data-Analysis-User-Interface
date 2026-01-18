@@ -170,10 +170,14 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
     [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xPos,yPos] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,PlotChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,ChannelRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom,SecondRowOffsetDistance,CreateProbeWindow,ChannelActivation);
     
     ProbeViewProperties.XlimsPlottedChannel = xPos;
-    ProbeViewProperties.YlimsPlottedChannel = yPos;
+    if ChannelRows <= 2
+        ProbeViewProperties.YlimsPlottedChannel = [yLimitsSquares(1)+(ChannelSpacing/2),yLimitsSquares(2)+(ChannelSpacing/2)];
+    else % arrays
+        ProbeViewProperties.YlimsPlottedChannel = yPos;
+    end
     %% Plot Channel Names on the right side
 
-    Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation,PlotChannelSpacing,VerOffset,ChannelSpacing,SwitchTopBottom,xPos,yPos,OffSetRows)
+    Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation,PlotChannelSpacing,VerOffset,ChannelSpacing,SwitchTopBottom,xPos,yPos,OffSetRows);
     
     if ECogArray == 0
         if yLimits(2)>=yLimitBracktes(2)
@@ -193,5 +197,5 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
     end
 
     
-    Probe_View_Set_Y_Ticks(Figure,yLimits(2)-ChannelSpacing,yLimits(1),CreateProbeWindow,ChannelClicked)
+    Probe_View_Set_Y_Ticks(Figure,yLimits(2)-ChannelSpacing,yLimits(1),CreateProbeWindow,ChannelClicked);
 end

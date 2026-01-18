@@ -24,12 +24,17 @@ try
             end
         end
     else
-        Placeholder = {};
-        app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items = Placeholder;
-        app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{1} = 'All Windows Opened';
-        app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{2} = 'Main Window';
+        if ~isempty(app.ProbeViewWindowHandle)
+            Placeholder = {};
+            app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items = Placeholder;
+            app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{1} = 'All Windows Opened';
+            app.ProbeViewWindowHandle.ChangeforWindowDropDown.Items{2} = 'Main Window';
+        end
     end
 catch
+    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        close(app.ProbeViewWindowHandle.ProbeViewUIFigure);
+    end
     app.ProbeViewWindowHandle = [];
 end
 

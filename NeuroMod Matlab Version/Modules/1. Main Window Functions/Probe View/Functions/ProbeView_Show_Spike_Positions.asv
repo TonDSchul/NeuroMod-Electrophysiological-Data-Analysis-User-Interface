@@ -32,11 +32,10 @@ if strcmp(Data.Info.SpikeType,"Internal")
             FlippedChannel = length(Data.Info.ProbeInfo.ActiveChannel)-(unique(ChannelSpikPos)-1);
             
             if isscalar(unique(Data.Info.ProbeInfo.xcoords))
-                ClusterXSpikePosum = zeros(size(ChannelSpikPos));
+                ClusterXSpikePosum = 0;
             else
                 ClusterXSpikePosum = Data.Info.ProbeInfo.xcoords(ChannelSpikPos);
             end
-            
             ClusterYSpikePosum = Data.Info.ProbeInfo.ycoords(FlippedChannel); 
 
             % scale spikepos to probe view plot pos
@@ -44,17 +43,17 @@ if strcmp(Data.Info.SpikeType,"Internal")
             PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
             
             if sum(isinf(PreScaledX))>0
-                PreScaledX = 1;
+                PreScaledX = 0;
             end
             if sum(isinf(PreScaledY))>0
-                PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / ProbeViewProperties.YlimsPlottedChannel(1);
+                PreScaledY = 0;
             end
 
             FullyScaledX = (ClusterXSpikePosum - min(Data.Info.ProbeInfo.xcoords)) * PreScaledX + ProbeViewProperties.XlimsPlottedChannel(1);
             FullyScaledY = (ClusterYSpikePosum - min(Data.Info.ProbeInfo.ycoords)) * PreScaledY + ProbeViewProperties.YlimsPlottedChannel(1);
             
             if isscalar(unique(Data.Info.ProbeInfo.xcoords))
-                ClusterXSpikPos = 0.5;
+                ClusterXSpikPos = 1;
                 ClusterYSpikPos = FullyScaledY;
             else
                 ClusterXSpikPos = FullyScaledX;
@@ -92,9 +91,8 @@ else
     FullyScaledY = (FlippedY - min(Data.Info.ProbeInfo.ycoords)) * PreScaledY + ProbeViewProperties.YlimsPlottedChannel(1);
     
     NumSpikesCluster = nan(1,length(unique(Data.Spikes.SpikeCluster)));
-    UniqueCluster = unique(Data.Spikes.SpikeCluster);
-    for i = 1:length(UniqueCluster)
-        CurrentCluster = UniqueCluster(i);
+    for i = 1:length(unique(Data.Spikes.SpikeCluster))
+        CurrentCluster = Data.Spikes.SpikeCluster(i);
         CurrentClusterIndicie = CurrentCluster==Data.Spikes.SpikeCluster;
         NumSpikesCluster(i) = sum(CurrentClusterIndicie);
     end
@@ -104,9 +102,8 @@ else
                  * (550 - 1);
     
     % Loop over cluster and plot
-    UniqueCluster = unique(Data.Spikes.SpikeCluster);
     for i = 1:length(unique(Data.Spikes.SpikeCluster))
-        CurrentCluster = UniqueCluster(i);
+        CurrentCluster = Data.Spikes.SpikeCluster(i);
         CurrentClusterIndicie = CurrentCluster==Data.Spikes.SpikeCluster;
         
         if isscalar(unique(Data.Info.ProbeInfo.xcoords))

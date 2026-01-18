@@ -87,12 +87,12 @@ for nChannel = 1:AllChannel
     if isempty(BorderHandles)
         for j = 1:NumberRowDataChannel
             idx = length(Time)*j;
-            line(ax,[idx, idx], ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border')
+            line(ax,[idx, idx], ax.YLim, 'LineWidth', 1.5, 'Color', 'k', 'Tag', 'Border')
         end
     else
         for j = 1:NumberRowDataChannel
             idx = length(Time)*j;
-            set(BorderHandles(j), 'XData', [idx, idx], 'YData', ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border');
+            set(BorderHandles(j), 'XData', [idx, idx], 'YData', ax.YLim, 'LineWidth', 1.5, 'Color', 'k', 'Tag', 'Border');
         end
     end
 
@@ -118,43 +118,48 @@ for nChannel = 1:AllChannel
         blockWidth = length(Time);
     
         yText = ax.YLim(2) + 0.05 * range(ax.YLim);  % slightly above axis
-        
-        ScaledFontSize = -0.27778 * nBlocks + 15.556;
-
+    
         for j = 1:nBlocks
             xCenter = (j-1)*blockWidth + blockWidth/2;
             
             Allchannelcurrently = j:length(unique(Data.Info.ProbeInfo.xcoords)):Data.Info.ProbeInfo.ActiveChannel(end);
-            
+
             text(ax, xCenter, yText, ...
-                strcat("Ch ", num2str(j)," to ",num2str(Allchannelcurrently(end))), ...
+                strcat("Ch ", num2str(j)," to ",num2str(Allchannelcurrently(end))," (in Steps of ",num2str(length(unique(Data.Info.ProbeInfo.xcoords))),")"), ...
                 'HorizontalAlignment','center', ...
                 'VerticalAlignment','bottom', ...
-                'FontSize', ScaledFontSize, ...
+                'FontSize', 30/length(unique(Data.Info.ProbeInfo.xcoords)), ...
                 'Color', 'k', ...
                 'Clipping','off', ...     % IMPORTANT
                 'Tag','RowLabel');
         end
 
-    end
-    % remove old labels if they exist
-    delete(findobj(ax,'Type','text','Tag','LeftAxisLabel'))
-    
-    % horizontal offset (to the left of axis)
-    xOffset = -0.05 * range(ax.XLim);  
+        % Loop over all axes, but only top axis receives the label on the left
+        %for iii = 1:AllChannel
+            ax = app.ChannelAxes{iii};
+            
+            if iii == 1   % only top axis
+                % remove old labels if they exist
+                delete(findobj(ax,'Type','text','Tag','LeftAxisLabel'))
+                
+                % horizontal offset (to the left of axis)
+                xOffset = -0.05 * range(ax.XLim);  
+        
+                % vertical position: middle of the axis
+                yText = mean(ax.YLim, 'omitnan');
+                
+                text(ax, 1, yText, ...
+                    strcat("Signal from ",num2str(ax.YLim(1))," to ",num2str(ax.YLim(2))," mV"), ...             % change as needed
+                    'HorizontalAlignment','right', ...
+                    'VerticalAlignment','middle', ...
+                    'FontSize', 6, ...
+                    'Color', 'k', ...
+                    'Clipping','off', ...
+                    'Tag','LeftAxisLabel');
+            end
+        %end
 
-    % vertical position: middle of the axis
-    yText = mean(ax.YLim, 'omitnan');
-    
-    if ~isnan(Center-app.Slider.Value) && ~isnan(Center+app.Slider.Value)
-        text(ax, 1, yText, ...
-            strcat("Signal from ",num2str(Center-app.Slider.Value)," to ",num2str(Center+app.Slider.Value)," mV"), ...             % change as needed
-            'HorizontalAlignment','right', ...
-            'VerticalAlignment','middle', ...
-            'FontSize', 6, ...
-            'Color', 'k', ...
-            'Clipping','off', ...
-            'Tag','LeftAxisLabel');
+
     end
     %plot text to the left of each column with data
 
