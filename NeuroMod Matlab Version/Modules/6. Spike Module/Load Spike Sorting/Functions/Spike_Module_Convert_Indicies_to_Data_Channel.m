@@ -35,6 +35,10 @@ function [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data)
 FakeDepths = NaN(size(Data.Spikes.SpikeTimes));
 
 for i = 1:length(Data.Spikes.SpikeChannel)
+
+    % [~, idx] = min(abs(Data.Info.ProbeInfo.ycoords - Data.Spikes.SpikePositions(i,2)));
+    % CurrentIntegerY = Data.Info.ProbeInfo.ycoords(idx);
+    
     CurrentIntegerY = Data.Info.ProbeInfo.ycoords(Data.Spikes.SpikeChannel(i));
     RestaroundInteger = Data.Spikes.SpikePositions(i,2)-CurrentIntegerY;
     FakeDepths(i) = FakeYpositions(Data.Spikes.SpikeChannel(i)) + RestaroundInteger;

@@ -104,11 +104,22 @@ else
                 DataChannelSpikePositions = ismember(SpikePositions(nwaves), Data.Info.ProbeInfo.ActiveChannel);
                 
                 if DataChannelSpikePositions==1
+                    % recenter waveform
+                    DataRange = startIdx:endIdx;
                     DataIndex = ismember(Data.Info.ProbeInfo.ActiveChannel,SpikePositions(nwaves));
-                    Waveforms(nwaves, :) = Data.(DataField)(DataIndex, startIdx:endIdx);
+                    [~,minpeakloc] = min(Data.(DataField)(DataIndex, DataRange));
+                    
+                    startIdx = DataRange(minpeakloc) - TimePoints;
+                    endIdx = DataRange(minpeakloc) + TimePoints;
+                    if startIdx > 0 && endIdx <= size(Data.(DataField), 2)
+                        Waveforms(nwaves, :) = Data.(DataField)(DataIndex, startIdx:endIdx);
+                    else
+                        Waveforms(nwaves, :) = NaN;
+                    end                    
                 else
                     Waveforms(nwaves, :) = NaN;
                 end
+                
             else % Internal Spike sorting
                 Waveforms(nwaves, :) = Data.(DataField)(SpikePositions(nwaves), startIdx:endIdx);
             end

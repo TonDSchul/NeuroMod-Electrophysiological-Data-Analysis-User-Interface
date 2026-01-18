@@ -120,7 +120,7 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
         UinquePos = unique(app.Data.Spikes.ChannelPosition(:,1));
     
         if numel(UinquePos)>=2
-            SpikeData.Position = app.Data.Spikes.DataCorrectedSpikePositions(SpikeDataIndex,2); 
+            SpikeData.Position = app.Data.Spikes.SpikeChannel(SpikeDataIndex); 
         else
             SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
         end
@@ -128,9 +128,9 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
        SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
 
        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-           [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
-
-           SpikeData.Position = FakeDepths(SpikeData.Position);
+           % [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
+           % 
+           % SpikeData.Position = FakeDepths(SpikeData.Position);
        end
     end
 end
@@ -212,82 +212,99 @@ else
 end
 
 if MainPlot && JustLiveWindow == 0
-    if strcmp(app.Data.Info.RecordingType,'SpikeInterface Maxwell MEA .h5') && strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-        % create matrix with data for each channel at proper channel
-        % location
-        if strcmp(app.DropDown.Value,'Preprocessed Data') 
-            if StartIndex-10 > 0
-                DataForMatrix = app.Data.Preprocessed(:,StartIndex-10:StartIndex);
-            else
-                DataForMatrix = app.Data.Preprocessed(:,StartIndex);
-            end
-        elseif strcmp(app.DropDown.Value,'Raw Data')
-            if StartIndex-10 > 0
-                DataForMatrix = app.Data.Raw(:,StartIndex-10:StartIndex);
-            else
-                DataForMatrix = app.Data.Preprocessed(:,StartIndex);
-            end
-        end
-
-        %% If show data trails take the sum over specific number of time points
-        
-        x = app.Data.Info.MEACoords(:,1);
-        y = app.Data.Info.MEACoords(:,2);
-
-        if ~strcmp(app.Data.Info.TimeAndChannelToExtract.ChannelToExtract,"All")
-            ChannelToExtract = eval(app.Data.Info.TimeAndChannelToExtract.ChannelToExtract);
-        else
-            ChannelToExtract = 1:size(app.Data.Info.MEACoords,1);
-        end
-        % sum
-        if size(DataForMatrix,2)>1
-            DataForMatrix = sum(DataForMatrix(:,1),2);
-        end
-
-        [x_unique, ~, x_idx] = unique(x);
-        [y_unique, ~, y_idx] = unique(y);
-        
-        nx = numel(x_unique);
-        ny = numel(y_unique);
-        
-        PlotData = nan(ny, nx);   % rows = y, cols = x
-        PlotData(sub2ind([ny, nx], y_idx(ChannelToExtract), x_idx(ChannelToExtract))) = DataForMatrix;
-        
-        % Delete not active channel
-
-        ChannelMatrix = reshape(1:(nx*ny), nx, ny).';
-
-        Mask = ismember(ChannelMatrix, app.ActiveChannel);
-        
-        PlotData(~Mask) = nan;
-
-    else
-        if strcmp(app.DropDown.Value,'Preprocessed Data') 
-            PlotData = app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex);
-        elseif strcmp(app.DropDown.Value,'Raw Data')
-            PlotData = app.Data.Raw(app.Channelrange,StartIndex:StopIndex);
-        end
-    end
-
-    frameTime = str2double(app.TimeRangeViewBox.Value(1:end-1))/app.MovieFramesPerSecond;
-
+    
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
-        % If downsampled data to show: Input argument 11 in plot fct = 1 (1 if donwsampled, 0 if not)
-        if isfield(app.Data.Info,'DownsampleFactor') 
-            app.LastPlot = "Preprocessed";  
-            SpikeDataType = app.Data.Info.SpikeType;
-            
-            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh,app.AdditionalPlotDelay);
-        % If Raw data has to be plotted
-        else
-            app.LastPlot = "Preprocessed";
-            SpikeDataType = app.Data.Info.SpikeType;
-            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh,app.AdditionalPlotDelay);
-        end
+        PlotData = app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex);
     elseif strcmp(app.DropDown.Value,'Raw Data')
-        app.LastPlot = "Raw";
-        SpikeDataType = app.Data.Info.SpikeType;
-        [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.MEASSurMesh,app.AdditionalPlotDelay);
+        PlotData = app.Data.Raw(app.Channelrange,StartIndex:StopIndex);
+    end
+    
+    DataLinesGrid = 0;
+
+    if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"DataLinesGrid")
+        DataLinesGrid = 1;
+    end    
+   
+    frameTime = str2double(app.TimeRangeViewBox.Value(1:end-1))/app.MovieFramesPerSecond;
+    
+    if DataLinesGrid == 0 % if no individual subplot data lines in a grid
+        if strcmp(app.DropDown.Value,'Preprocessed Data') 
+            % If downsampled data to show: Input argument 11 in plot fct = 1 (1 if donwsampled, 0 if not)
+            if isfield(app.Data.Info,'DownsampleFactor') 
+                app.LastPlot = "Preprocessed";  
+                SpikeDataType = app.Data.Info.SpikeType;
+                
+                [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.AdditionalPlotDelay);
+            % If Raw data has to be plotted
+            else
+                app.LastPlot = "Preprocessed";
+                SpikeDataType = app.Data.Info.SpikeType;
+                [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.AdditionalPlotDelay);
+            end
+        elseif strcmp(app.DropDown.Value,'Raw Data')
+            app.LastPlot = "Raw";
+            SpikeDataType = app.Data.Info.SpikeType;
+            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.AdditionalPlotDelay);
+        end
+    else % if individual subplot data lines in a grid
+        % initialize panel 
+        if isempty(app.ChannelAxes)
+            AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords));
+            AllRows    = length(unique(app.Data.Info.ProbeInfo.xcoords));
+      
+            % Create grid INSIDE PANEL
+            app.ChannelGrid = uigridlayout(app.Grid_Traces_View_Panel, [AllChannel, 1]);
+            app.ChannelGrid.RowSpacing    = 0;
+            app.ChannelGrid.ColumnSpacing = 0;
+            app.ChannelGrid.Padding       = [0 0 0 0];
+            app.ChannelGrid.BackgroundColor = ...
+            app.PlotAppearance.MainWindow.Data.Color.MainBackground;
+            
+            % Preallocate axes storage
+            app.ChannelAxes = cell(AllChannel,1);
+            
+            for nChannel = 1:AllChannel
+                ax = uiaxes(app.ChannelGrid);
+                ax.Layout.Row    = nChannel;
+                ax.Layout.Column = 1;
+                hold(ax,'on')
+                ax.XTick = [];
+                ax.YTick = [];
+                ax.Box   = 'on';
+                ax.LineWidth = 1;
+            
+                ax.Color  = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
+                ax.XColor = ax.Color;
+                ax.YColor = ax.Color;
+                
+                ax.XLabel.String = '';
+                ax.YLabel.String = '';
+                ax.Title.String  = '';
+                
+                ax.Box = 'on';           % keep frame
+                ax.TickLength = [0 0];   % important
+                ax.LooseInset = [0 0 0 0];   % works for uiaxes (R2020b+)
+                ax.InnerPosition = ax.OuterPosition;
+            
+                app.ChannelAxes{nChannel} = ax;
+            end
+        end
+
+        if ~isempty(app.ChannelAxes)
+            if strcmp(app.DropDown.Value,'Preprocessed Data') 
+                if isfield(app.Data.Info,'DownsampleFactor') 
+                    app.LastPlot = "Preprocessed";
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel)
+                else
+                    app.LastPlot = "Preprocessed";
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel)
+                end
+            elseif strcmp(app.DropDown.Value,'Raw Data')
+                app.LastPlot = "Raw";
+                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel)
+            end
+        end
+        
     end
 
     %% Plot Time

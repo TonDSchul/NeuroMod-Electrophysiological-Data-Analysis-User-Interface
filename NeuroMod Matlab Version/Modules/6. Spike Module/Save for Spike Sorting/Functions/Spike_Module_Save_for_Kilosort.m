@@ -83,23 +83,10 @@ end
 
 %% Scale Raw Data to int32 or int16
 if strcmp(Format,'int16')
-    if strcmp(DatasetType,'Raw Data')
-        SaveDataRaw = int16(Data.Raw .* scalingFactor);
-    else
-        SaveDataRaw = int16(Data.Preprocessed .* scalingFactor);
-    end
+
 elseif strcmp(Format,'int32')
-    if strcmp(DatasetType,'Raw Data')
-        SaveDataRaw = int32(Data.Raw .* scalingFactor);
-    else
-        SaveDataRaw = int32(Data.Preprocessed .* scalingFactor);
-    end
+
 else
-    if strcmp(DatasetType,'Raw Data')
-        SaveDataRaw = double(Data.Raw);
-    else
-        SaveDataRaw = double(Data.Preprocessed);
-    end
     folderPath = convertStringsToChars(folderPath);
     % Check if the folder exists
     dashindex = find(folderPath=='\');
@@ -117,7 +104,7 @@ end
 h = waitbar(0, 'Saving data...', 'Name','Saving data...');
 
 %Set chunk size
-dN = size(SaveDataRaw,2);
+dN = size(Data.Raw,2);
 if dN >2000
     stepSize = round(dN/500);   
 else
@@ -134,33 +121,44 @@ else
     fidRaw = fopen(folderPath, 'wb'); 
 end
 
-if strcmp(Format,'int32')
-    fwrite(fidRaw,SaveDataRaw,'*int32');
-elseif strcmp(Format,'int16')
-    fwrite(fidRaw,SaveDataRaw,'*int16');
-else
-    fwrite(fidRaw,SaveDataRaw,'*double');
-end
+Lengthcount = 0;
+for chunkIdx = 1:nChunks
+    % progress bar
+    fraction = chunkIdx/nChunks;
+    msg = sprintf('Saving data... (%d%% done)', round(100*fraction));
+    waitbar(fraction, h, msg);
 
-% Lengthcount = 0;
-% for chunkIdx = 1:nChunks
-%     % progress bar
-%     fraction = chunkIdx/nChunks;
-%     msg = sprintf('Saving data... (%d%% done)', round(100*fraction));
-%     waitbar(fraction, h, msg);
-% 
-%     % chunk
-%     chunkData = SaveDataRaw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1);
-%     Lengthcount = Lengthcount + length(chunkData);
-% 
-%     if strcmp(Format,'int32')
-%         fwrite(fidRaw,chunkData,'*int32');
-%     elseif strcmp(Format,'int16')
-%         fwrite(fidRaw,chunkData,'*int16');
-%     else
-%         fwrite(fidRaw,chunkData,'*double');
-%     end
-% end
+    % chunk
+    if strcmp(Format,'int32')
+        if strcmp(DatasetType,'Raw Data')
+            chunkData = int32(Data.Raw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1) .* scalingFactor);
+        else
+            chunkData = int32(Data.Preprocessed(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1) .* scalingFactor);
+        end
+    elseif strcmp(Format,'int16')
+        if strcmp(DatasetType,'Raw Data')
+            chunkData = int16(Data.Raw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1) .* scalingFactor);
+        else
+            chunkData = int16(Data.Preprocessed(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1) .* scalingFactor);
+        end
+    elseif strcmp(Format,'double')
+        if strcmp(DatasetType,'Raw Data')
+            chunkData = double(Data.Raw(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1));
+        else
+            chunkData = double(Data.Preprocessed(:, dataIdx(chunkIdx):dataIdx(chunkIdx+1)-1));
+        end
+    end
+
+    Lengthcount = Lengthcount + length(chunkData);
+
+    if strcmp(Format,'int32')
+        fwrite(fidRaw,chunkData,'*int32');
+    elseif strcmp(Format,'int16')
+        fwrite(fidRaw,chunkData,'*int16');
+    else
+        fwrite(fidRaw,chunkData,'*double');
+    end
+end
 
 if strcmp(Format,'int16') || strcmp(Format,'int32')
     %% Save Scalingfactor for later when kilosort is loaded to scale amplitude back

@@ -17,6 +17,7 @@ import json
 from spikeinterface.extractors import read_maxwell
 from probeinterface.io import write_prb
 from probeinterface import Probe, ProbeGroup
+from spikeinterface.preprocessing import unsigned_to_signed
     
 def Sanity_Plot(recording):
     import matplotlib.pyplot as plt
@@ -263,6 +264,9 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         install_maxwell_plugin=True  
     )
         
+    
+    #recording = unsigned_to_signed(recording_unsigned)
+    
     channel_positions = recording.get_channel_locations()
     
     print(channel_positions)
@@ -327,7 +331,7 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
                 start_frame=start,
                 end_frame=end,
                 channel_ids=channel_ids[channel_ids_extract],
-                return_in_uV=True,
+                return_in_uV=True
             )
     
             # Convert µV → mV

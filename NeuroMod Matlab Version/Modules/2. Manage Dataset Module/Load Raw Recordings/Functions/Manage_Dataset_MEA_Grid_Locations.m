@@ -1,4 +1,4 @@
-function [Info] = Manage_Dataset_MEA_Grid_Locations(Info,MEACoords,HeaderInfo)
+function [Data] = Manage_Dataset_MEA_Grid_Locations(Data,MEACoords,HeaderInfo)
 
 %________________________________________________________________________________________
 
@@ -7,14 +7,14 @@ function [Info] = Manage_Dataset_MEA_Grid_Locations(Info,MEACoords,HeaderInfo)
 % can be inactive, which are not indicated
 
 % Input:
-% 1. Info: structure with recording metadata (app.Data.Info)
+% 1. Data.Info: structure with recording metadata (app.Data.Data.Info)
 % 2. MEACoords: nchannel x 2 matric with x and y coordinates of each
 % channel, comes from spikeinterface
 % 3. HeaderInfo: metadata extracted from the raw recording before its
-% 'curated' and becomes app.Data.Info
+% 'curated' and becomes app.Data.Data.Info
 
 % Output: 
-% 1. Info: structure with recording metadata (app.Data.Info)
+% 1. Data.Info: structure with recording metadata (app.Data.Data.Info)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -31,20 +31,20 @@ XDist = max(xDiff);
 yDiff = diff(sort(y(:)));                     
 YDist = max(yDiff);
 
-Info.ChannelSpacing = YDist;
+Data.Info.ChannelSpacing = YDist;
 
-Info.ProbeInfo.NrChannel = num2str(numel(unique(y)));
-Info.ProbeInfo.NrRows = num2str(numel(unique(x)));
-Info.ProbeInfo.VertOffset = num2str(0);
-Info.ProbeInfo.HorOffset = num2str(XDist);
+Data.Info.ProbeInfo.NrChannel = num2str(numel(unique(y)));
+Data.Info.ProbeInfo.NrRows = num2str(numel(unique(x)));
+Data.Info.ProbeInfo.VertOffset = num2str(0);
+Data.Info.ProbeInfo.HorOffset = num2str(XDist);
 
-Info.ProbeInfo.ECoGArray = 1;
-Info.ProbeInfo.SwitchTopBottomChannel = 0;
-Info.ProbeInfo.SwitchLeftRightChannel = 0;
-Info.ProbeInfo.FlipLoadedData = 0;
+Data.Info.ProbeInfo.ECoGArray = 1;
+Data.Info.ProbeInfo.SwitchTopBottomChannel = 0;
+Data.Info.ProbeInfo.SwitchLeftRightChannel = 0;
+Data.Info.ProbeInfo.FlipLoadedData = 0;
 
-Info.ProbeInfo.OffSetRows = 0;
-Info.ProbeInfo.OffSetRowsDistance = "0";
+Data.Info.ProbeInfo.OffSetRows = 0;
+Data.Info.ProbeInfo.OffSetRowsDistance = "0";
 
 %% get ActiveChannel from Probe -- just for layout, no influence on how channels are displayed!
 % Only specific channel 
@@ -56,16 +56,16 @@ end
 
 activechannel{1} = 1:size(MEACoords,1);
 DummyStruc.Raw = [];
-DummyStruc.Info.ProbeInfo.NrChannel = Info.ProbeInfo.NrChannel;
+DummyStruc.Info.ProbeInfo.NrChannel = Data.Info.ProbeInfo.NrChannel;
 
-[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",Info.ProbeInfo.NrRows,Info.ProbeInfo.NrChannel,num2str(Info.ChannelSpacing),activechannel,Info.ProbeInfo.OffSetRows,str2double(Info.ProbeInfo.OffSetRowsDistance),str2double(Info.ProbeInfo.VertOffset),str2double(Info.ProbeInfo.HorOffset),0);
+[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
 xcoords = xcoords + min(MEACoords(:,1));
 ycoords = ycoords + min(MEACoords(:,2));
 
 ActiveChannel = [];
 Laufvariable = 1;
 
-TempMEACoords=Info.MEACoords;
+TempMEACoords=Data.Info.MEACoords;
 TempMEACoords=TempMEACoords(ChannelToExtract,:);
 
 for n = 1:length(xcoords)
@@ -81,7 +81,12 @@ for n = 1:length(xcoords)
     Laufvariable = Laufvariable + 1;
 end
 
-Info.ProbeInfo.ActiveChannel = ActiveChannel;
+Data.Info.ProbeInfo.ActiveChannel = ActiveChannel;
 
+%% Infer Channelorder from given channel positions >> just order MEA Coords and take order for channel too!
+[~, NewChannelOrder] = sortrows(MEACoords, [2 1]);
 
+Data.Raw = Data.Raw(NewChannelOrder,:);
+
+Data.Info.ChannelOrder = NewChannelOrder;
 

@@ -1,4 +1,4 @@
-function Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,ChannelRows,HorOffset,VerOffset,SecondRowOffsetDistance,ActiveChannel,FirstZoomChannel,LeftProbeChanged,ProbeBrainAreas,AllActiveChannel,PlotChannelSpacing,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,SwitchTopBottom,SwitchLeftRight,ECogArray)
+function ProbeViewProperties = Utility_Plot_Interactive_Probe_View(Figure,ChannelSpacing,NrChannel,ChannelRows,HorOffset,VerOffset,SecondRowOffsetDistance,ActiveChannel,FirstZoomChannel,LeftProbeChanged,ProbeBrainAreas,AllActiveChannel,PlotChannelSpacing,CreateProbeWindow,ChannelActivation,ChannelClicked,OffSetRows,RowClicked,SwitchTopBottom,SwitchLeftRight,ECogArray)
 
 %________________________________________________________________________________________
 %% Main Function to plot interactive probe view. Handles all sub functions to plot individual parts
@@ -60,6 +60,9 @@ end
 if isnan(VerOffset)
     VerOffset = 0;
 end
+
+ProbeViewProperties.XlimsPlottedChannel = [];
+ProbeViewProperties.YlimsPlottedChannel = [];
 
 %% Get and manage existing handles
 if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
@@ -166,6 +169,8 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
 
     [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xPos,yPos] = Utitlity_Plot_Zoomed_Channel_Right_Side(Figure,ChannelViewRight,NrChannel,ChannelSpacing,PlotChannelSpacing,ChannelRows,VerOffset,FirstZoomChannel,ActiveChannel,ChannelRows,yLimitBracktes,AllActiveChannel,OffSetRows,SwitchTopBottom,SecondRowOffsetDistance,CreateProbeWindow,ChannelActivation);
     
+    ProbeViewProperties.XlimsPlottedChannel = xPos;
+    ProbeViewProperties.YlimsPlottedChannel = yPos;
     %% Plot Channel Names on the right side
 
     Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChannel,ChannelRows,FirstZoomChannel,numSquares,squareHeight,lowylimits,CorrrectedVerOffset,CreateProbeWindow,ChannelActivation,PlotChannelSpacing,VerOffset,ChannelSpacing,SwitchTopBottom,xPos,yPos,OffSetRows)

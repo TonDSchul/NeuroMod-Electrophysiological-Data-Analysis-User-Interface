@@ -53,7 +53,20 @@ end
 if strcmp(Window,'MainWindow')
     % texts to black
     set(findall(app.NeuromodToolboxMainWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
-
+    
+    app.Grid_Traces_View_Panel.BackgroundColor                  = WindowBackgroundColor;
+    if ~isempty(app.PlotAppearance)
+        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"DataLinesGrid")
+            app.Grid_Traces_View_Panel.Visible                = "on";
+            app.Grid_Traces_View_Panel.Enable                 = "on";
+        else
+            app.Grid_Traces_View_Panel.Visible                = "off";
+            app.Grid_Traces_View_Panel.Enable                 = "off";
+        end
+    else
+        app.Grid_Traces_View_Panel.Visible                = "off";
+        app.Grid_Traces_View_Panel.Enable                 = "off";
+    end
     % backgrounds to grey
     app.NeuromodToolboxMainWindowUIFigure.Color       = WindowBackgroundColor;
     app.ManageDatasetPanel.BackgroundColor            = WindowBackgroundColor;

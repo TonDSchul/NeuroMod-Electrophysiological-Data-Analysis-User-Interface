@@ -170,6 +170,40 @@ else
     warning("Metadata does not contain the units of the recording data (mV,V or uV) to convert to mV. Data is not scaled automatically and may not be in mV!")
 end
 
+%% Infer Channelorder from given channel positions 
+x = HeaderInfo.MEACoords(:,1);
+y = HeaderInfo.MEACoords(:,2);
+
+if ~strcmp(TimeAndChannelToExtract.ChannelToExtract,"All")
+    ChannelToExtract = eval(TimeAndChannelToExtract.ChannelToExtract);
+else
+    ChannelToExtract = 1:size(HeaderInfo.MEACoords,1);
+end
+
+[x_unique, ~, x_idx] = unique(x);
+[y_unique, ~, y_idx] = unique(y);
+
+nx = numel(x_unique);
+ny = numel(y_unique);
+
+% PlotData = nan(ny, nx);   % rows = y, cols = x
+Data(sub2ind([ny, nx], y_idx(ChannelToExtract), x_idx(ChannelToExtract))) = Data;
+
+% Delete not active channel
+
+ChannelMatrix = reshape(1:(nx*ny), nx, ny).';
+
+Mask = ismember(ChannelMatrix, app.ActiveChannel);
+
+PlotData(~Mask) = nan;
+
+
+
+
+
+
+
+
 
 HeaderInfo.TimeAndChannelToExtract = TimeAndChannelToExtract;
 

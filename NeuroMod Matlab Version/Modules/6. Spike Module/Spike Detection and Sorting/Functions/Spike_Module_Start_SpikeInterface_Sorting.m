@@ -47,6 +47,19 @@ ActiveChannel = sprintf('%d,', Data.Info.ProbeInfo.ActiveChannel - 1);
 ActiveChannel(end) = [];  % remove final comma
 AllChannel = str2double(Data.Info.ProbeInfo.NrChannel);
 
+% if strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
+%     TempCoords = Data.Info.MEACoords;
+%     TempCoords(:,1) = TempCoords(:,1) - min(TempCoords(:,1));%set to start = 0
+%     TempCoords(:,2) = TempCoords(:,2) - min(TempCoords(:,2));%set to start = 0
+%     yCoords = sprintf('%d,', TempCoords(:,2)');
+%     xCoords = sprintf('%d,', TempCoords(:,1)');
+%     if yCoords(end)==','
+%         yCoords(end) = [];
+%     end
+%     if xCoords(end)==','
+%         xCoords(end) = [];
+%     end
+% else
 yCoords = sprintf('%d,', Data.Info.ProbeInfo.ycoords);
 xCoords = sprintf('%d,', Data.Info.ProbeInfo.xcoords);
 if yCoords(end)==','
@@ -55,6 +68,7 @@ end
 if xCoords(end)==','
     xCoords(end) = [];
 end
+% end
 
 SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(SelectedSorter,ParameterStructure,file_path);
 
@@ -83,13 +97,14 @@ GUIparams.HorChannelOffset = HorChannelOffset;
 GUIparams.NumberRows = NumberRows;
 GUIparams.RowOffset = RowOffset;
 GUIparams.RowOffsetDistance = RowOffsetDistance;
-
+GUIparams.RecordingType = Data.Info.RecordingType;
 GUIparams.AllChannel = AllChannel;
 GUIparams.ActiveChannel = ActiveChannel;
+
 GUIparams.xCoords = xCoords;
 GUIparams.yCoords = yCoords;
 
-%% Save
+%% Save GUI Params
 PathTosaveTempParams = fullfile(TempSpikeSortinBinPath,'GUIParams.json');
 
 jsonStr = jsonencode(GUIparams, 'PrettyPrint', true);
@@ -126,7 +141,7 @@ if status == 0
     dashindex = find(file_path=='\');
     TempFilePath = file_path(1:dashindex(end)-1);
     
-    msgbox("Spike Sorting succesfull! Results can now be laoded using the 'Load Sorting Results' window or by selecting 'Load Sorting Results' in the 'Options' dropdown menu of the 'Spike Detection and Sorting Window'.")
+    msgbox("Spike sorting script finished. If no errors occured, results can now be laoded using the 'Load Sorting Results' window or by selecting 'Load Sorting Results' in the 'Options' dropdown menu of the 'Spike Detection and Sorting Window'.")
 
 else
     disp('Error executing Python script:');

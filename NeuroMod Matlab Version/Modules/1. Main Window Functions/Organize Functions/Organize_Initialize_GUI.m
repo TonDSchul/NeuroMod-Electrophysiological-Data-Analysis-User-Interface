@@ -187,7 +187,7 @@ elseif strcmp(Type,"Loading")
     else
        app.EventTriggerNumberField.Value = "No event trigger found."; 
     end
-
+    
     if app.Data.Time(end)<3
         if app.Data.Time(end)<1
             TimeRangeText = strcat(num2str(app.Data.Time(end)),"s");
@@ -200,27 +200,31 @@ elseif strcmp(Type,"Loading")
         TimeRangeText = strcat(num2str(1),"s");
         app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
     end
-
+    
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.ClimMaxValues = [];
-    app.Data.Info.SpikeType = "Non";
+    
     app.ChannelChange = "ProbeView";
-    app.MEASSurMesh = "Surf";
+    app.Grid_Traces_View_Panel.Visible                = "off";
+    app.Grid_Traces_View_Panel.Enable                 = "off";
+    app.ChannelAxes = [];
+    app.ChannelGrid = [];
+
     app.AdditionalPlotDelay = 0;
     app.PreservePlotChannelLocations = 1;
-
+    
     % first plot after loading data: max 100 channel shown
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
         app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
     end
-
+    
     datapointsforstd = round(str2double(app.TimeRangeViewBox.Value(1:end-1)) * app.Data.Info.NativeSamplingRate);
-
+    
     stdrawdata = double(std(app.Data.Raw(:,1:datapointsforstd),[],'all','omitnan'));
     lowerlimit = 0;
-
-    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*10];
-    app.Slider.Value = stdrawdata*2;
+    
+    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*2];
+    app.Slider.Value = (stdrawdata+stdrawdata*2)/2;
 
     app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
     app.PowerSpecResults = [];
@@ -358,7 +362,7 @@ elseif strcmp(Type,"VariableDefinition")
 
     % Get True MEA Grid Locations for position related analyis
     if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
-        [app.Data.Info] = Manage_Dataset_MEA_Grid_Locations(app.Data.Info,app.Data.Info.MEACoords,HeaderInfo);
+        [app.Data] = Manage_Dataset_MEA_Grid_Locations(app.Data,app.Data.Info.MEACoords,HeaderInfo);
     end
 
     % get x and y coordinates
@@ -404,7 +408,12 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.Data.Info.SpikeType = "Non";
     app.ChannelChange = "ProbeView";
-    app.MEASSurMesh = "Surf";
+    app.Grid_Traces_View_Panel.Visible                = "off";
+    app.Grid_Traces_View_Panel.Enable                 = "off";
+    
+    app.ChannelAxes = [];
+    app.ChannelGrid = [];
+
     app.AdditionalPlotDelay = 0;
     app.PreservePlotChannelLocations = 1;
 
@@ -431,8 +440,8 @@ elseif strcmp(Type,"VariableDefinition")
     stdrawdata = double(std(app.Data.Raw(:,1:datapointsforstd),[],'all','omitnan'));
     lowerlimit = 0;
 
-    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*10];
-    app.Slider.Value = stdrawdata*2;
+    app.Slider.Limits = [lowerlimit,stdrawdata+stdrawdata*2];
+    app.Slider.Value = (stdrawdata+stdrawdata*2)/2;
 
     app.PlotLineSpacing = app.Slider.Value;  % Height between each row plot
 

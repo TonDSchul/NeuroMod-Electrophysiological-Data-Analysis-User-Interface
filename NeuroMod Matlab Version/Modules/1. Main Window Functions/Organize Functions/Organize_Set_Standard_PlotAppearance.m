@@ -45,6 +45,10 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     PlotAppearance.MainWindow.Data.LineWidth.MainSpikes = 2.5;
     PlotAppearance.MainWindow.Data.LineWidth.MainEvents = 2.5;
     PlotAppearance.MainWindow.Data.LineWidth.MainData = 1.5;
+
+    %Grid plot Stuff
+    PlotAppearance.MainWindow.Data.LockedClimSettings = "on";
+    PlotAppearance.MainWindow.Data.GridViewWindowScaling = [-0.5 0.5];
 end
 
 %% Main Window Time Plot

@@ -9,6 +9,7 @@ import spikeinterface.full as si
 import spikeinterface.preprocessing as spre
 import spikeinterface.sorters as ss
 import spikeinterface.widgets as sw
+
 import numpy as np
 
 from probeinterface import Probe
@@ -50,15 +51,30 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sort
     return recording 
 
 """ ################################################################ Generate Probe Desing ####### """
-def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel,Xcoords,Ycoords):
+def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel,Xcoords,Ycoords,RecordingType):
         
     print("Creating and attaching Probe")
+    '''
+    if RecordingType == "SpikeInterface Maxwell MEA .h555":
+        xcoordsvec = np.array([float(v) for v in Xcoords.split(',')])
+        ycoordsvec = np.array([float(v) for v in Ycoords.split(',')])
+        total_nb_channels = len(xcoordsvec)
         
+        # Create probe object
+        probe = Probe(si_units='um')
+                
+        # Add all contacts at once using numpy arrays
+        positions = np.column_stack((xcoordsvec, ycoordsvec))  # x, y, z=0
+        probe.set_contacts(positions=positions, shapes='circle', shape_params={'radius': 10})
+        probe.set_device_channel_indices(np.arange(len(xcoordsvec)))
+        
+    else:
+    '''
     positions = np.zeros((AllChannel * NumberRows, 2))
     
-    xcoordsvec = np.fromstring(Xcoords, sep=',', dtype=int)
-    ycoordsvec = np.fromstring(Ycoords, sep=',', dtype=int)
-    
+    xcoordsvec = np.array([float(v) for v in Xcoords.split(',')])
+    ycoordsvec = np.array([float(v) for v in Ycoords.split(',')])
+
     positions[:len(ycoordsvec), 0] = xcoordsvec
     positions[:len(ycoordsvec), 1] = ycoordsvec
     
@@ -74,25 +90,24 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
     # set active channel to not nan
     for i, ch in enumerate(ActiveChannelVec):
         device_mapping[ch] = i
+            
+        ############################################################################################
+        # -------------------------------------- Create Probe, Add Channel IDs --------------------------------------
+        ############################################################################################
         
-    ############################################################################################
-    # -------------------------------------- Create Probe, Add Channel IDs --------------------------------------
-    ############################################################################################
-    
-    # create an empty probe object with coordinates in um
-    probe = Probe(ndim=2, si_units='um')
-    # set contacts
-    probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
-    
-    probe.set_device_channel_indices(device_mapping)
-    probe.set_contact_ids(np.arange(AllChannel * NumberRows))  # ← must match positions length
+        # create an empty probe object with coordinates in um
+        probe = Probe(ndim=2, si_units='um')
+        # set contacts
+        probe.set_contacts(positions=positions, shapes='circle',shape_params={'radius': 10})
+        
+        probe.set_device_channel_indices(device_mapping)
+        probe.set_contact_ids(np.arange(AllChannel * NumberRows))  # ← must match positions length
     
     ############################################################################################
     # -------------------------------------- Plot Probe --------------------------------------
     ############################################################################################
     if PlotTraces == 1:
-        print("Plotting Traces...")
-        
+        print("Plotting Probe...")
         # Create a color list: red for active, blue for inactive
         colors = ['red' if not np.isnan(ch) else 'blue' for ch in device_mapping]
         
@@ -106,17 +121,18 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
         # Add legend
         plt.legend(handles=[active_patch, inactive_patch], loc='upper right')
         plt.show()
-        
+            
+    #if RecordingType != "SpikeInterface Maxwell MEA .h5":
     probe.to_dataframe(complete=True).loc[:, ["shank_ids", "device_channel_indices"]]
     
     Recording = Recording.set_probe(probe)
-
+    
     return probe
 
 """ ################################################################ Preprocessing ####### """
 def Preprocessing(Recording,Probe,Apply_Preprocessing):
     
-    PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000, dtype=np.float64)
+    PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=3000, dtype=np.float64)
     PreProRecording = spre.common_reference(recording=PreProRecording, dtype=np.float64)
                 
     PreProRecording = PreProRecording.set_probe(Probe)
@@ -133,12 +149,12 @@ def combined_plot(recording,PreproRecording,ypitch):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6))  # Two rows, one column
     
     # Redirect plots to the first axes
-    plt.sca(ax1)  # Set the current axes to ax1
-    sw.plot_traces(recording,  backend="matplotlib",ax=ax1)  # Plot the first function here
+    plt.sca(ax1)  
+    sw.plot_traces(recording,  backend="matplotlib",ax=ax1,channel_ids=recording.channel_ids[:32],time_range=(0, 4.0))  
     
     # Redirect plots to the second axes
-    plt.sca(ax2)  # Set the current axes to ax2
-    sw.plot_traces(PreproRecording, backend="matplotlib",ax=ax2)  # Plot the second function here
+    plt.sca(ax2) 
+    sw.plot_traces(PreproRecording,  backend="matplotlib",ax=ax2,channel_ids=recording.channel_ids[:32],time_range=(0, 4.0))  
     
     # Adjust layout to make the subplots look better
     plt.tight_layout()
@@ -336,19 +352,17 @@ def PlotTemplatesandRaster(analyzer):
     num_elements = len(av_templates)  # Gets the total number of templates
     num_rows = 4  # Define 4 rows
     num_cols = (num_elements + num_rows - 1) // num_rows  # Calculate columns needed
-    
-    # Create a figure with subplots arranged in a 4-row grid
+
     fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 10), squeeze=False)
-    
-    # Flatten the axes for easy iteration
+
     axes_flat = axes.flatten()
     
     # Plot each template
     for unit_index, unit_id in enumerate(analyzer.unit_ids[:num_elements]):
         ax = axes_flat[unit_index]
-        template = av_templates[unit_index]  # Extract the template (a NumPy array)
-        ax.plot(template)  # Use ax.plot() to plot the NumPy array on the subplot
-        ax.set_title(f"Unit ID: {unit_id}")  # Set the title for the subplot
+        template = av_templates[unit_index]  
+        ax.plot(template)  
+        ax.set_title(f"Unit ID: {unit_id}")  
     
     # Hide unused subplots
     for ax in axes_flat[num_elements:]:

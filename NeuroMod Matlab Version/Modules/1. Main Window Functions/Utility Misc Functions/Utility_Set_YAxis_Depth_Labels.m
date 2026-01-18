@@ -42,13 +42,21 @@ else
 end
 
 % Apply to the Data.Info.ProbeInfo.ycoords-axis of your app's UIAxes
-if numel(CurrentActiveChannel)>10
+if numel(CurrentActiveChannel)>10 && numel(CurrentActiveChannel)<100
     if mod(length(Ypositions),2)
         Figure.YTick = Ypositions(1:2:end);
         Figure.YTickLabel = newLabels(1:2:end);
     else
         Figure.YTick = Ypositions(1:3:end);
         Figure.YTickLabel = newLabels(1:3:end);
+    end
+elseif numel(CurrentActiveChannel)>100
+    if mod(length(Ypositions),2)
+        Figure.YTick = Ypositions(1:8:end);
+        Figure.YTickLabel = newLabels(1:8:end);
+    else
+        Figure.YTick = Ypositions(1:9:end);
+        Figure.YTickLabel = newLabels(1:9:end);
     end
 else
     Figure.YTick = Ypositions;

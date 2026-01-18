@@ -18,6 +18,7 @@ from SpikeInterface_FunctionDeclaration import Create_Probe
 from SpikeInterface_FunctionDeclaration import Preprocessing
 from SpikeInterface_FunctionDeclaration import combined_plot
 
+
 from SpikeInterface_FunctionDeclaration import SortWithSpikingCircus
 from SpikeInterface_FunctionDeclaration import SortWithMountainSort
 from SpikeInterface_FunctionDeclaration import CreateSortingAnalyzer
@@ -62,7 +63,8 @@ def main(subfolders,file_path,GUIParamsfile):
     NumberRows = int(GUIparams['NumberRows'])
     RowOffset = int(GUIparams['RowOffset'])
     RowOffsetDistance = int(GUIparams['RowOffsetDistance'])
-    
+    RecordingType = GUIparams['RecordingType']
+        
     # Arrays
     AllChannel = int(GUIparams['AllChannel'])  # if stored as 0/1 in JSON
     ActiveChannel = GUIparams['ActiveChannel']
@@ -147,9 +149,9 @@ def main(subfolders,file_path,GUIParamsfile):
         """ ################################################################ Start Processing ###################################################################### """
             
         Recording = Load_Binary_In_SpikeInterface(PathToLoad,SampleRate,num_elec,Sorter,CompletePath)
-                
-        Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel,Xcoords,Ycoords)
         
+        Probe = Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel,Xcoords,Ycoords,RecordingType)
+            
         Recording = Recording.set_probe(Probe)
         
         if LoadSpikeSorting == 0: 
