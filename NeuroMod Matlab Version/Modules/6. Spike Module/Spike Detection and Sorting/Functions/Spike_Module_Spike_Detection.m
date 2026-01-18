@@ -230,7 +230,7 @@ if strcmp(Detectionmethod,"Threshold: Mean - Std")
 
         end  
     end 
-    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions(:,2);
 
 elseif strcmp(Detectionmethod,"Threshold: Median - Std")
     %% Correlated Noise: Mean of signal
@@ -395,7 +395,7 @@ elseif strcmp(Detectionmethod,"Threshold: Median - Std")
         end
             
     end
-    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions;
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikePositions(:,2);
 
 elseif strcmp(Detectionmethod,"Quiroga Method")
 
@@ -611,12 +611,8 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikePositions(SpikesWithWaveform==0,:) = [];
     Data.Spikes.SpikeAmps = Data.Spikes.SpikeAmps(SpikesWithWaveform==1);
     Data.Spikes.Waveforms(SpikesWithWaveform==0,:) = [];
-    if str2double(Data.Info.ProbeInfo.NrRows)>2 && size(Data.Spikes.SpikeChannel,1)==2
-        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(2,SpikesWithWaveform==1)';
-    else
-        Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1);
-    end
-
+    Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1);
+    
     if min(Data.Spikes.SpikeChannel)==0
         Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel+1;
     end
