@@ -391,6 +391,10 @@ if sum(SpikesWithWaveform)>0
     %Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
 end
 
+if min(Data.Spikes.SpikeCluster)==0
+    Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster + 1;
+end
+
 % Now if we have two rows we have to adjust the actual channel to a data
 % channel which goes from 1 to 64. This ensures porper scaling in the main
 % window plot, but is not valid for any computations down the line!

@@ -1,7 +1,26 @@
 function ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles)
 
-if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")     
-    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf")
+if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+    %Create Mask for inactive channel to not shown interpolated data for
+    %     %them
+    
+    InactiveMask = true(size(Data));
+    LaufVariable = 1;
+    if length(unique(Info.ProbeInfo.xcoords))>=2
+        CorrectedActiveChannel = Info.ProbeInfo.ActiveChannel(ActiveChannel);
+        for nchannnel = 1:length(unique(Info.ProbeInfo.ycoords))
+            for nrows = 1:length(unique(Info.ProbeInfo.xcoords))
+                if sum(LaufVariable==Info.ProbeInfo.ActiveChannel)>0
+                    if sum(LaufVariable==CorrectedActiveChannel)==0 % not present original data channel
+                        InactiveMask(nchannnel,nrows) = false;
+                    end
+                end
+                LaufVariable = LaufVariable + 1;
+            end
+        end
+    end
+
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
         if isempty(ImageScChannel_handles)
             if isscalar(unique(Info.ProbeInfo.xcoords))
                 ChannelText_handles = findobj(UIAxis,'Tag', 'TextArea');
@@ -116,20 +135,84 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
 
                 xlim(UIAxis,[-2,5]);
             else % plot matrix
-                pcolor(UIAxis, Data, ...
+                if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
+                    [X,Y] = meshgrid(1:size(Data,2),1:size(Data,1));
+                    scale = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol;
+                    xq = linspace(1,size(Data,2),size(Data,2)*scale);
+                    yq = linspace(1,size(Data,1),size(Data,1)*scale);
+                    [Xq,Yq] = meshgrid(xq,yq);
+                    
+                    Data = fillmissing(Data,'nearest');   % or 'linear'
+                    Data = interp2(X,Y,Data,Xq,Yq,'cubic');
+                    %also interpolate active channel mask
+                    MaskInterp = interp2(X,Y,double(InactiveMask),Xq,Yq,'nearest') > 0.5;
+                    Data(MaskInterp==0) = nan;
+
+                    pcolor(UIAxis, Xq,Yq,Data, ...
                     'EdgeColor','none', ...
                     'Tag','ImageScChannel');
+                else
+                    Data(InactiveMask==0) = nan;
+                    
+                    pcolor(UIAxis,Data, ...
+                    'EdgeColor','none', ...
+                    'Tag','ImageScChannel');
+                end
+
+                
             end
            
         else
-            set(ImageScChannel_handles(1), ...
-                'CData', Data, ...
-                'Tag','ImageScChannel');
+            if length(ImageScChannel_handles)>1
+                delete(ImageScChannel_handles(2:end))
+            end
+
+            if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
+                [X,Y] = meshgrid(1:size(Data,2),1:size(Data,1));
+                scale = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol;
+                xq = linspace(1,size(Data,2),size(Data,2)*scale);
+                yq = linspace(1,size(Data,1),size(Data,1)*scale);
+                [Xq,Yq] = meshgrid(xq,yq);
+                
+                Data = fillmissing(Data,'nearest');   % or 'linear'
+                Data = interp2(X,Y,Data,Xq,Yq,'cubic');
+
+                %also interpolate active channel mask
+                MaskInterp = interp2(X,Y,double(InactiveMask),Xq,Yq,'nearest') > 0.5;
+                Data(MaskInterp==0) = nan;
+            else
+                Data(InactiveMask==0) = nan;
+            end
+
+            set(ImageScChannel_handles(1),'CData',Data,'Tag','ImageScChannel')
         end
     end
     
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")
-        h = mesh(UIAxis,Data,'Tag','ImageScChannel');
+        if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
+            [X,Y] = meshgrid(1:size(Data,2),1:size(Data,1));
+            scale = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol;
+            xq = linspace(1,size(Data,2),size(Data,2)*scale);
+            yq = linspace(1,size(Data,1),size(Data,1)*scale);
+            [Xq,Yq] = meshgrid(xq,yq);
+            
+            Data = fillmissing(Data,'nearest');   % or 'linear'
+            Data = interp2(X,Y,Data,Xq,Yq,'cubic');
+
+            %also interpolate active channel mask
+            MaskInterp = interp2(X,Y,double(InactiveMask),Xq,Yq,'nearest') > 0.5;
+            Data(MaskInterp==0) = nan;
+
+            h = mesh(UIAxis,Data,'Tag','ImageScChannel');
+        else
+            %also interpolate active channel mask
+            %MaskInterp = interp2(X,Y,double(InactiveMask),Xq,Yq,'nearest') > 0.5;
+            Data(InactiveMask==0) = nan;
+
+            h = mesh(UIAxis,Data,'Tag','ImageScChannel');
+        end
+
+        
         h.FaceColor = 'flat';   % or 'flat'
         h.EdgeColor = 'k';     % optional
         colormap(UIAxis, parula)   % or jet, turbo, etc.
@@ -149,13 +232,19 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
             ClimMaxValues(2) = CurrentClim(2);
         end      
         if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")
-            zlim(UIAxis,ClimMaxValues);
+            if CurrentClim(1) ~= CurrentClim(2)
+                zlim(UIAxis,CurrentClim);
+            end
             view(UIAxis, 45, 45)
         end
-        clim(UIAxis,ClimMaxValues);
+        if CurrentClim(1) ~= CurrentClim(2)
+            clim(UIAxis,CurrentClim);
+        end
     else
         CurrentClim = [min(Data,[],'all') max(Data,[],'all')];
-        clim(UIAxis,CurrentClim);
+        if CurrentClim(1) ~= CurrentClim(2)
+            clim(UIAxis,CurrentClim);
+        end
     end
 
     UIAxis.YDir = 'reverse';
@@ -182,12 +271,18 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
             ClimMaxValues(2) = CurrentClim(2);
         end      
         if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")
-            zlim(UIAxis,ClimMaxValues);
+            if CurrentClim(1) ~= CurrentClim(2)
+                zlim(UIAxis,CurrentClim);
+            end
             view(UIAxis, 45, 45)
         end
-        clim(UIAxis,ClimMaxValues);
+        if CurrentClim(1) ~= CurrentClim(2)
+            clim(UIAxis,CurrentClim);
+        end
     else
         CurrentClim = [min(Data,[],'all') max(Data,[],'all')];
-        clim(UIAxis,CurrentClim);
+        if CurrentClim(1) ~= CurrentClim(2)
+            clim(UIAxis,CurrentClim);
+        end
     end
 end

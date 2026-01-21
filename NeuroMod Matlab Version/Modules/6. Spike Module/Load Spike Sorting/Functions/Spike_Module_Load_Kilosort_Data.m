@@ -228,16 +228,19 @@ end
 
 [~, ~ , ~, ~ ,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
 
-
+%% Extract Waveforms
+% For Kilosort we dont have channel information to extract from raw or
+% preprocessed data --> Therefore we take channel closest to position
 
 %% Get Channel number corresponding to depth in um
 if str2double(Data.Info.ProbeInfo.NrRows) == 1
-    SpikePositions = SpikePositions./Data.Info.ChannelSpacing;
+
+    SpikePositions = (Data.Spikes.SpikePositions(:,2))./Data.Info.ChannelSpacing;
     Data.Spikes.SpikeChannel = round(SpikePositions)+1;
     
-    % now some channel can be wrongly assigned when right at the border between
-    % two channel --> spike channel can be NOT part of active channel (if there
-    % is a gap in active channel) but is shifted by one
+    % runs through always when testes, follwoing not needed just there as
+    % failsave .. if found channel not part of activechannel bc right at
+    % the border to an inactive
     NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
     % Get the spikes that are NOT in ActiveChannel
     ZeroIndex = find(NonExistent==0);
@@ -245,41 +248,40 @@ if str2double(Data.Info.ProbeInfo.NrRows) == 1
     for i = 1:length(ZeroIndex)
         CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
         
-        % take nearest channel. If two nearest, take the smaller one (bc round() was used)
+        % take nearest channel. If two nearest, take the smaller one
         [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
         
-        % Handle ties: if multiple channels have same distance, pick the lower one
+        %if multiple have same distance, pick the lower one
         nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
         Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
     end
-else %% Two channel rows
-    %% Depth can be the same. Therefore we need the x position as well
-    SpikePositionsX = Data.Spikes.SpikePositions(:,1);
-    for i = 1:length(SpikePositions)
+else %% Two or more channel rows
+        %% Depth can be the smae. Therefore we need the x position as well
+    
+    for i = 1:length(Data.Spikes.SpikePositions(:,2))
         % find closes y values (multiple)
-        distances = abs(Data.Info.ProbeInfo.ycoords - SpikePositions(i));
+        distances = abs(Data.Info.ProbeInfo.ycoords - Data.Spikes.SpikePositions(i,2));
         minDist = min(distances);
         % indice of all channel matching depth -- two if same channel
         % depths for both rows
         Yidx = find(distances == minDist);
         
         % find closest x value (only one)
-        [~, Xidx] = min(abs(Data.Info.ProbeInfo.xcoords(Yidx) - SpikePositionsX(i))); 
+
+        [~, Xidx] = min(abs(Data.Info.ProbeInfo.xcoords(Yidx) - Data.Spikes.SpikePositions(i,1))); 
         
-        Data.Spikes.SpikeChannel(i) = Yidx(Xidx);
-
+        Data.Spikes.SpikeChannel(i) = Yidx(round(Xidx));
     end
-
-    % now some channel can be wrongly assigned when right at the border between
-    % two channel --> spike channel can be NOT part of active channel (if there
-    % is a gap in active channel) but is shifted by one
+    
+    % runs through always when testes, follwoing not needed just there as
+    % failsave .. if found channel not part of activechannel bc right at
+    % the border to an inactive
     NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
     % Get the spikes that are NOT in ActiveChannel
     ZeroIndex = find(NonExistent==0);
     
     for i = 1:length(ZeroIndex)
         CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
-        
         % take nearest channel. If two nearest, take the smaller one (bc round() was used)
         [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
         
@@ -408,6 +410,10 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
 end
 
+if min(Data.Spikes.SpikeCluster)==0
+    Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster + 1;
+end
+
 % Now if we have two rows we have to adjust the actual channel to a data
 % channel which goes from 1 to 64. This ensures porper scaling in the main
 % window plot, but is not valid for any computations down the line!
@@ -416,6 +422,15 @@ UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
 
 if numel(UinquePos)>=2
     [Data] = Spike_Module_Convert_Indicies_to_Data_Channel(Data);
+end
+
+%% Last Step: Convert Channel locations in active channel into data channel
+AllChannel = 1:size(Data.Raw,1);
+for i = 1:length(Data.Spikes.SpikeChannel)
+    IndiceMember = Data.Spikes.SpikeChannel(i)==Data.Info.ProbeInfo.ActiveChannel;
+    if ~isempty(IndiceMember)
+        Data.Spikes.SpikeChannel(i) = AllChannel(IndiceMember);
+    end
 end
 
 if KSversion == 3

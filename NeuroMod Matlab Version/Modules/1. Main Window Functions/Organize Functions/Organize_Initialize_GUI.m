@@ -204,15 +204,29 @@ elseif strcmp(Type,"Loading")
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.ClimMaxValues = [];
     
+    app.PlayedMovieBefore = 0;
+
     app.ChannelChange = "ProbeView";
     app.Grid_Traces_View_Panel.Visible                = "off";
     app.Grid_Traces_View_Panel.Enable                 = "off";
-    app.ChannelAxes = [];
-    app.ChannelGrid = [];
+    if ~isempty(app.ChannelAxes)
+        for k = 1:numel(app.ChannelAxes)
+            if isvalid(app.ChannelAxes{k})  
+                delete(app.ChannelAxes{k});
+            end
+        end
+        app.ChannelAxes = [];
+    end
+    if ~isempty(app.ChannelGrid)
+        delete(app.ChannelGrid)
+        app.ChannelGrid = [];
+    end
 
-    app.AdditionalPlotDelay = 0;
     app.PreservePlotChannelLocations = 1;
-    
+    app.PreviousThreshGridsSamplesNoNeighbour = [];
+    app.PreviousThreshGridsSamplesWithNeighbour = [];
+    app.MovieTimeToJump = 1;
+
     % first plot after loading data: max 100 channel shown
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
         app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
@@ -399,7 +413,10 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.ClimMaxValues = [];
-    
+
+    app.PreviousThreshGridsSamplesNoNeighbour = [];
+    app.PreviousThreshGridsSamplesWithNeighbour = [];
+
     if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
         app.ActiveChannel = sort(app.Data.Info.ProbeInfo.ActiveChannel);    
     else
@@ -408,13 +425,29 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.Data.Info.SpikeType = "Non";
     app.ChannelChange = "ProbeView";
+    
+    app.MovieTimeToJump = 1;
+    app.PlayedMovieBefore = 0;
+
+    if ~isempty(app.ChannelAxes)
+        for k = 1:numel(app.ChannelAxes)
+            if isvalid(app.ChannelAxes{k})  
+                delete(app.ChannelAxes{k});
+            end
+        end
+        app.ChannelAxes = [];
+    end
+    if ~isempty(app.ChannelGrid)
+        delete(app.ChannelGrid)
+        app.ChannelGrid = [];
+    end
+
     app.Grid_Traces_View_Panel.Visible                = "off";
     app.Grid_Traces_View_Panel.Enable                 = "off";
     
     app.ChannelAxes = [];
     app.ChannelGrid = [];
 
-    app.AdditionalPlotDelay = 0;
     app.PreservePlotChannelLocations = 1;
 
     % first plot after loading data: max 100 channel shown

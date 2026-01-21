@@ -191,6 +191,12 @@ elseif strcmp(ComponentToDelete,"Preprocessed")
         Data.Info = rmfield(Data.Info, fieldsToDelete);
     end
 
+    if isfield(Data.Info,'HighPassStatistics')
+        fieldsToDelete = {'HighPassStatistics'};
+        % Delete fields
+        Data.Info = rmfield(Data.Info, fieldsToDelete);
+    end
+
     if isfield(Data,'TimeDownsampled')
         % Fields to delete
         fieldsToDelete = {'TimeDownsampled'};

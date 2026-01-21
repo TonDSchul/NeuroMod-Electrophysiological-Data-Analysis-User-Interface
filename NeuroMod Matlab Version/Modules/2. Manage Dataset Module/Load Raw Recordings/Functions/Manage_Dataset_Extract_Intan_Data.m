@@ -107,9 +107,11 @@ if strcmp(Filetype,"Intan .dat")
         %% Determine samples to extract if only specific time points extracted
         SplitString = strsplit(TimeAndChannelToExtract.TimeToExtract,',');
         StartSample = round(str2double(SplitString{1}) * frequency_parameters.amplifier_sample_rate);  
+        
         if StartSample == 0
             StartSample = 1;
         end
+
         if strcmp(SplitString{2},"Inf")
             StopSample = AllChannelDataPoints;
         else

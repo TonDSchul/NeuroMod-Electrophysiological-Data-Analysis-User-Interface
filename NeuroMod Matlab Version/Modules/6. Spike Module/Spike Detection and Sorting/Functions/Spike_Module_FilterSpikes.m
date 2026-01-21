@@ -242,6 +242,9 @@ for its = 1:TotalIters
         end
     end
     
+    if size(SpikeChannel,1)<size(SpikeChannel,2)
+        SpikeChannel = SpikeChannel';
+    end
     % Remove the marked spike times and corresponding positions
     TempSpikeTimes = [TempSpikeTimes;SpikeTimes(toKeep)];
     TempSpikePositions = [TempSpikePositions;OriginalSpikePositions(toKeep)];

@@ -1,4 +1,4 @@
-function [PlotData,GridSpikeData]= Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,DataForMatrix,PlotAppearance,SpikeData,DataType,Channel_Selection)
+function [PlotData,GridSpikeData]= Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,DataForMatrix,PlotAppearance,SpikeData,DataType,Channel_Selection,Type)
 
 PlotData = [];
 GridSpikeData = [];
@@ -6,14 +6,14 @@ GridSpikeData = [];
 %% Create Data Matrix
 if strcmp(DataType,"DataMatrix")
     PlotData = nan(numel(unique(Info.ProbeInfo.ycoords)), numel(unique(Info.ProbeInfo.xcoords)));
-    
+
     LaufVariable = 1;
     for ii = 1:numel(unique(Info.ProbeInfo.ycoords))
         for jj = 1:numel(unique(Info.ProbeInfo.xcoords))
             [TempLaufVariable] = Organize_Convert_ActiveChannel_to_DataChannel(Info.ProbeInfo.ActiveChannel,LaufVariable,'MainPlot');
             if ~isempty(TempLaufVariable)
                 if sum(TempLaufVariable == Channel_Selection)>0
-                    PlotData(ii,jj) = mean(DataForMatrix(TempLaufVariable == Channel_Selection,:));
+                    PlotData(ii,jj) = sum(DataForMatrix(TempLaufVariable == Channel_Selection,:));
                 end
             end
             LaufVariable = LaufVariable + 1;

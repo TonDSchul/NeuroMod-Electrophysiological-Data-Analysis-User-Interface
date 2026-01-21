@@ -1,4 +1,4 @@
-function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues,AdditionalPlotDelay)
+function [ClimMaxValues,PreviousThreshGridsSamplesNoNeighbour,PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues,PreviousThreshGridsSamplesNoNeighbour,PreviousThreshGridsSamplesWithNeighbour,DataT2)
 
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
@@ -35,8 +35,6 @@ function ClimMaxValues = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Chann
 % 20. frameTime: double, Time in seconds of each frame based on selected
 % frame rate
 % 21. CurrentClim: double vector, lower and upper clim of max values so far
-% 22. AdditionalPlotDelay: double, number of seconds for additional plot
-% delay when movie mode is active
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -60,7 +58,7 @@ else
     Depth = 0:ChannelSpacing:(size(Data,1)-1)*ChannelSpacing;
     YMinLimitsMultipeERP = Depth(1);
     YMaxLimitsMultipeERP = Depth(end);
-    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") 
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
         ylim(UIAxis, [1,length(unique(Info.ProbeInfo.ycoords))]);
     else
         ylim(UIAxis, [Depth(1),Depth(end)]);
@@ -69,7 +67,7 @@ end
 
 %% Predefine x and y lims and title before plotting to increase performance!
 if Time(1) ~= Time(end)
-    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") 
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
         if length(unique(Info.ProbeInfo.xcoords)) > 1
             xlim(UIAxis, [1,length(unique(Info.ProbeInfo.xcoords))]);
         end
@@ -91,7 +89,7 @@ if ~strcmp(UIAxis.XLabel.String,PlotAppearance.MainWindow.Data.MainXLabel)
     xlabel(UIAxis,PlotAppearance.MainWindow.Data.MainXLabel)
 end
 % Manage Title
-if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") 
+if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
     if Preprocessed == 0
         title(UIAxis, strcat(PlotAppearance.MainWindow.Data.Title.Raw," at Time: ",num2str(Time(1)),"s"));
     elseif Preprocessed == 1 
@@ -131,6 +129,14 @@ end
 
 %% Start Plot
 % If Not movie mode:
+if isempty(PreviousThreshGridsSamplesNoNeighbour)
+    PreviousThreshGridsSamplesNoNeighbour.T1 = [];
+    PreviousThreshGridsSamplesNoNeighbour.T2 = [];
+end
+if isempty(PreviousThreshGridsSamplesWithNeighbour)
+    PreviousThreshGridsSamplesWithNeighbour.T1 = [];
+    PreviousThreshGridsSamplesWithNeighbour.T2 = [];
+end
 
 if strcmp(Type,"Static")
     % All objects being plotted are lines. The following code captures all the lines
@@ -167,10 +173,15 @@ if strcmp(Type,"Static")
         end
     end
     
-    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")
+    %% Create Surf Grid
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
         % create matrix with data for each channel at proper channel
         % location
-        [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection);       
+        [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);       
+        
+        if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+            [Data,~,~] = Module_MainWindow_Axon_Viewer(Data,Info,PreviousThreshGridsSamplesNoNeighbour.T1,PreviousThreshGridsSamplesWithNeighbour.T1,Type,PlotAppearance);
+        end
     end
 
     %% Plot Channel Data
@@ -214,7 +225,10 @@ if strcmp(Type,"Static")
     end
     
     %% Plot surf, imagsc, mesh
-    ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles);
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles);
+    end
+
     % Plot Event Indices and Label for event number
     Module_MainWindow_Plot_Events_and_Label(Info,Data,Time,EventIndicies,UIAxis,EventPlot,EventIndexNr,Eventline_handles,YMinLimitsMultipeERP,YMaxLimitsMultipeERP,Channel_Selection,PlotAppearance)
 
@@ -284,167 +298,202 @@ end
 
 
 if strcmp(Type,"Movie")
-
-    tic % Leave here for framrate!!!
-
-    %% First Check and delete unneccesary plot handles
-
-    %% First Check and delete unneccesary plot handles
-    %% First Check and delete unneccesary plot handles
-  
-    if sum(EventIndicies) == 0
-        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
-        delete(Eventline_handles(1:end));  
+    
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+        InterpolatedFrames = 3;
     else
-        Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
-        if length(Eventline_handles) > sum(EventIndicies)
-            delete(Eventline_handles(sum(EventIndicies)+1:end)); 
-            Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
-        end
+        InterpolatedFrames = 1;
     end
 
-    lineHandles = findobj(UIAxis, 'Tag', 'Data');
-    
-    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+    for nInterpolatedFrames = InterpolatedFrames
+            tic % Leave here for framrate!!!
 
-    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-        delete(lineHandles);
-        if length(ImageScChannel_handles)>1
-            delete(ImageScChannel_handles(2:end));
-            ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
-        end
-    else
-        if ~isempty(ImageScChannel_handles)
-            delete(ImageScChannel_handles);
-            ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
-        end
-    end
-    
-    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")
-        % create matrix with data for each channel at proper channel
-        % location
-        [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection);       
-    end
-
-    %% Plot Channel Data
-    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
-        if isempty(lineHandles) 
-            % Plot for the first time
-            lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
-            % ColorMap
-            for i = 1:size(Data,1)
-                lines(i).Color = colorMap(i, :);
-            end
-            UIAxis.XLabel.Color = [0 0 0];
-            UIAxis.YLabel.Color = [0 0 0];       
-            UIAxis.YColor = 'k';  
-            UIAxis.XColor = 'k';  
-            UIAxis.Title.Color = 'k';  
-        else
-            if length(lineHandles) >= size(Data,1)
-                for i = 1:size(Data,1)
-                    set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
-                end
-                delete(lineHandles(size(Data,1)+1:end));
-                % ColorMap
-                for i = 1:size(Data,1)
-                    lines(i).Color = colorMap(i, :);
-                end
-            elseif length(lineHandles) < size(Data,1)
-
-                for i = 1:length(lineHandles)
-                    set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
-                    lines(i)=lineHandles(i);
-                end
-                % Plot rest of the lines
-                lines(i+1:size(Data,1)) = line(UIAxis,Time,Data(i+1:end,:),'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
-                % ColorMap
-                for i = 1:size(Data,1)
-                    lines(i).Color = colorMap(i, :);
-                end
-            end
-        end
-    end
-    
-    %% Plot surf, imagsc, mesh
-    ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles);
-    % Plot Event Indices and Label for event number
-    Module_MainWindow_Plot_Events_and_Label(Info,Data,Time,EventIndicies,UIAxis,EventPlot,EventIndexNr,Eventline_handles,YMinLimitsMultipeERP,YMaxLimitsMultipeERP,Channel_Selection,PlotAppearance)
-
-    %% Plot Toolbox internally computed Spike Data
-    Module_MainWindow_Plot_Internal_Spikes(Data,Info,Time,SpikePlot,SpikeDatatype,SpikePlotType,SpikeData,ActiveChannel,Channel_Selection,UIAxis,ChannelSpacing,PlotAppearance)
-
-    %% Plot loaded Kilosort Spikes
-    if strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort") || strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"SpikeInterface")
-        if ~isempty(SpikeData.Indicie)
-            
-            [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
-
-            SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
-            
-            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
-                if str2double(Info.ProbeInfo.NrRows) == 1
-                    %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
-                    %range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
-                    
-                    range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
-    
-                    %% Scale and Plot Spike Positions
-                    for j = 1:numel(SpikeData.Indicie) 
-                        %To Plot sorted Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
-                        % Calculate the range of both vectors
-                        range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
-                        % Compute the scaling factor
-                        SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);                    
-                    end
-                else
-                     %% Scale and Plot Spike Positions
-                    for nspikes = 1:numel(SpikeData.Indicie) 
-                        SpikeData.Position(nspikes) = Data(SpikeData.Position(nspikes),SpikeData.Indicie(nspikes));
-                    end
-                end
-            else%imagsc plot
-                SpikeData.Position = (round(SpikeData.Position/ChannelSpacing))*ChannelSpacing;
-            end
-         
-            if isempty(SpikeHandles)
-                line(UIAxis, Time(SpikeData.Indicie), SpikeData.Position, ...
-                 'LineStyle', 'none', ...  % No connecting lines between markers
-                 'Marker', 'o', ...        % Marker type
-                 'MarkerFaceColor', PlotAppearance.MainWindow.Data.Color.MainSpikes, ...
-                 'MarkerEdgeColor', 'k', ... % Marker edge color (black)
-                 'MarkerSize', PlotAppearance.MainWindow.Data.LineWidth.MainSpikes + 1.5, ...
-                 'Tag', 'Spikes');
+            %% First Check and delete unneccesary plot handles
+          
+            if sum(EventIndicies) == 0
+                Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
+                delete(Eventline_handles(1:end));  
             else
-                if length(SpikeHandles) >= numel(SpikeData.Indicie)
-                    set(SpikeHandles(1:numel(SpikeData.Indicie)), 'XData', Time(SpikeData.Indicie), 'YData', SpikeData.Position, 'Tag', 'Spikes');
-                    delete(SpikeHandles(numel(SpikeData.Indicie)+1:end));
-                elseif length(SpikeHandles) < numel(SpikeData.Indicie)
-                    set(SpikeHandles, 'XData', Time(SpikeData.Indicie(1:length(SpikeHandles))), 'YData', SpikeData.Position(1:length(SpikeHandles)), 'Tag', 'Spikes');
-
-                    line(UIAxis, Time(SpikeData.Indicie(length(SpikeHandles)+1:end)), SpikeData.Position(length(SpikeHandles)+1:end), ...
-                     'LineStyle', 'none', ...  % No connecting lines between markers
-                     'Marker', 'o', ...        % Marker type
-                     'MarkerFaceColor', PlotAppearance.MainWindow.Data.Color.MainSpikes, ...
-                     'MarkerEdgeColor', 'k', ... % Marker edge color (black)
-                     'MarkerSize', PlotAppearance.MainWindow.Data.LineWidth.MainSpikes + 1.5, ...
-                     'Tag', 'Spikes');
+                Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
+                if length(Eventline_handles) > sum(EventIndicies)
+                    delete(Eventline_handles(sum(EventIndicies)+1:end)); 
+                    Eventline_handles = findobj(UIAxis,'Type', 'line', 'Tag', 'Events');
                 end
-            end      
-        end
-    end  
+            end
+        
+            lineHandles = findobj(UIAxis, 'Tag', 'Data');
+            
+            ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+        
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+                delete(lineHandles);
+                if length(ImageScChannel_handles)>1
+                    delete(ImageScChannel_handles(2:end));
+                    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+                end
+            else
+                if ~isempty(ImageScChannel_handles)
+                    delete(ImageScChannel_handles);
+                    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+                end
+            end
+            
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+                % create matrix with data for each channel at proper channel
+                % location
+                [DataT1,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);
+                [DataT2,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,DataT2,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);
+            end
 
-    drawnow;
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+                [DataT1,PreviousThreshGridsSamplesNoNeighbour.T1,PreviousThreshGridsSamplesWithNeighbour.T1] = Module_MainWindow_Axon_Viewer(DataT1,Info,PreviousThreshGridsSamplesNoNeighbour.T1,PreviousThreshGridsSamplesWithNeighbour.T1,Type,PlotAppearance);
+            end
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+                [DataT2,PreviousThreshGridsSamplesNoNeighbour.T2,PreviousThreshGridsSamplesWithNeighbour.T2] = Module_MainWindow_Axon_Viewer(DataT2,Info,PreviousThreshGridsSamplesNoNeighbour.T2,PreviousThreshGridsSamplesWithNeighbour.T2,Type,PlotAppearance);
+            end
 
-    % limit time for new plot so that its not updating too fast and
-    % according to framerate
-    plottime = toc;
-    pause(AdditionalPlotDelay)
-    if plottime<frameTime
-        timeremaining = frameTime-plottime;
-        pause(timeremaining);
+            %% Plot Channel Data
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+                if isempty(lineHandles) 
+                    % Plot for the first time
+                    lines = line(UIAxis,Time,Data,'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
+                    % ColorMap
+                    for i = 1:size(Data,1)
+                        lines(i).Color = colorMap(i, :);
+                    end
+                    UIAxis.XLabel.Color = [0 0 0];
+                    UIAxis.YLabel.Color = [0 0 0];       
+                    UIAxis.YColor = 'k';  
+                    UIAxis.XColor = 'k';  
+                    UIAxis.Title.Color = 'k';  
+                else
+                    if length(lineHandles) >= size(Data,1)
+                        for i = 1:size(Data,1)
+                            set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
+                        end
+                        delete(lineHandles(size(Data,1)+1:end));
+                        % ColorMap
+                        for i = 1:size(Data,1)
+                            lines(i).Color = colorMap(i, :);
+                        end
+                    elseif length(lineHandles) < size(Data,1)
+        
+                        for i = 1:length(lineHandles)
+                            set(lineHandles(i), 'XData', Time, 'YData', Data(i,:), 'Color', colorMap(i, :), 'Tag', 'Data','LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData);
+                            lines(i)=lineHandles(i);
+                        end
+                        % Plot rest of the lines
+                        lines(i+1:size(Data,1)) = line(UIAxis,Time,Data(i+1:end,:),'LineWidth',PlotAppearance.MainWindow.Data.LineWidth.MainData, 'Tag', 'Data');
+                        % ColorMap
+                        for i = 1:size(Data,1)
+                            lines(i).Color = colorMap(i, :);
+                        end
+                    end
+                end
+            end
+            
+            %% Plot surf, imagsc, mesh
+            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer") 
+                nInterp = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.TimeInterpol;
+                for nInterpolateFrames = 1:nInterp
+                    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+                    delete(ImageScChannel_handles(1:end));
+                    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+                    
+                    alpha = nInterpolateFrames / (nInterp + 1);
+                    Data = (1-alpha)*DataT1 + alpha*DataT2;
+
+                    % if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+                    %     [Data,PreviousThreshGridsSamplesNoNeighbour.T1] = Module_MainWindow_Axon_Viewer(Data,Info,PreviousThreshGridsSamplesNoNeighbour.T1,Type,PlotAppearance);
+                    % end
+
+                    ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles);
+                    pause(PlotAppearance.MainWindow.Data.AdditionalPlotDelay)
+                end
+            elseif strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc") 
+                ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles);
+            end
+
+            % Plot Event Indices and Label for event number
+            Module_MainWindow_Plot_Events_and_Label(Info,Data,Time,EventIndicies,UIAxis,EventPlot,EventIndexNr,Eventline_handles,YMinLimitsMultipeERP,YMaxLimitsMultipeERP,Channel_Selection,PlotAppearance)
+        
+            %% Plot Toolbox internally computed Spike Data
+            Module_MainWindow_Plot_Internal_Spikes(Data,Info,Time,SpikePlot,SpikeDatatype,SpikePlotType,SpikeData,ActiveChannel,Channel_Selection,UIAxis,ChannelSpacing,PlotAppearance)
+        
+            %% Plot loaded Kilosort Spikes
+            if strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Kilosort") || strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"SpikeInterface")
+                if ~isempty(SpikeData.Indicie)
+                    
+                    [SpikeData.Indicie,SpikeData.Position,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Info,SpikeData.Indicie,SpikeData.Position,ChannelSpacing,ActiveChannel,SpikeDatatype,Info.ProbeInfo.ActiveChannel);
+        
+                    SpikeHandles = findobj(UIAxis, 'Type', 'line', 'Tag', 'Spikes');
+                    
+                    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
+                        if str2double(Info.ProbeInfo.NrRows) == 1
+                            %% If for example channel 10-20 are selected, Starting depth is no longer 0. Therefore, Kilosort Spike positions have to be adjusted so that the the line plotted corresponds to 0 um depth
+                            %range_Positions = (Channel_Selection(2)*ChannelSpacing)-(Channel_Selection(1)*ChannelSpacing);
+                            
+                            range_Positions = (length(Channel_Selection)-1)*ChannelSpacing;
+            
+                            %% Scale and Plot Spike Positions
+                            for j = 1:numel(SpikeData.Indicie) 
+                                %To Plot sorted Spikes, Spike Positions are in um. So they have to be scaled to the plot (app.PlotLineSpacing)
+                                % Calculate the range of both vectors
+                                range_ScalingEachChannel = min(double(Data(:,SpikeData.Indicie(j)))) - max(double(Data(:,SpikeData.Indicie(j))));
+                                % Compute the scaling factor
+                                SpikeData.Position(j) = SpikeData.Position(j) ./ (range_Positions/range_ScalingEachChannel);                    
+                            end
+                        else
+                             %% Scale and Plot Spike Positions
+                            for nspikes = 1:numel(SpikeData.Indicie) 
+                                SpikeData.Position(nspikes) = Data(SpikeData.Position(nspikes),SpikeData.Indicie(nspikes));
+                            end
+                        end
+                    else%imagsc plot
+                        SpikeData.Position = (round(SpikeData.Position/ChannelSpacing))*ChannelSpacing;
+                    end
+                 
+                    if isempty(SpikeHandles)
+                        line(UIAxis, Time(SpikeData.Indicie), SpikeData.Position, ...
+                         'LineStyle', 'none', ...  % No connecting lines between markers
+                         'Marker', 'o', ...        % Marker type
+                         'MarkerFaceColor', PlotAppearance.MainWindow.Data.Color.MainSpikes, ...
+                         'MarkerEdgeColor', 'k', ... % Marker edge color (black)
+                         'MarkerSize', PlotAppearance.MainWindow.Data.LineWidth.MainSpikes + 1.5, ...
+                         'Tag', 'Spikes');
+                    else
+                        if length(SpikeHandles) >= numel(SpikeData.Indicie)
+                            set(SpikeHandles(1:numel(SpikeData.Indicie)), 'XData', Time(SpikeData.Indicie), 'YData', SpikeData.Position, 'Tag', 'Spikes');
+                            delete(SpikeHandles(numel(SpikeData.Indicie)+1:end));
+                        elseif length(SpikeHandles) < numel(SpikeData.Indicie)
+                            set(SpikeHandles, 'XData', Time(SpikeData.Indicie(1:length(SpikeHandles))), 'YData', SpikeData.Position(1:length(SpikeHandles)), 'Tag', 'Spikes');
+        
+                            line(UIAxis, Time(SpikeData.Indicie(length(SpikeHandles)+1:end)), SpikeData.Position(length(SpikeHandles)+1:end), ...
+                             'LineStyle', 'none', ...  % No connecting lines between markers
+                             'Marker', 'o', ...        % Marker type
+                             'MarkerFaceColor', PlotAppearance.MainWindow.Data.Color.MainSpikes, ...
+                             'MarkerEdgeColor', 'k', ... % Marker edge color (black)
+                             'MarkerSize', PlotAppearance.MainWindow.Data.LineWidth.MainSpikes + 1.5, ...
+                             'Tag', 'Spikes');
+                        end
+                    end      
+                end
+            end  
+        
+            drawnow;
+        
+            % limit time for new plot so that its not updating too fast and
+            % according to framerate
+            plottime = toc;
+            if ~strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") && ~strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") && ~strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+                pause(PlotAppearance.MainWindow.Data.AdditionalPlotDelay)
+            
+                % if plottime<frameTime
+                %     timeremaining = frameTime-plottime;
+                %     pause(timeremaining);
+                % end
+            end
     end
-    
 end
 
 

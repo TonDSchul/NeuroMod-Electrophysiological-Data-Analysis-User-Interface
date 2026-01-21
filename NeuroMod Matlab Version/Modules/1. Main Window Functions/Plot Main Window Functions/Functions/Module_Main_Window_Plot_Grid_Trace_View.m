@@ -35,6 +35,19 @@ for nChannel = 1:AllChannel
     
     StartChunk = 1;
     StopChunk = length(Time);
+    
+    if isprop(ax,'XLim')
+        PreviousXlim = ax.XLim;
+    else
+        PreviousXlim = [];
+    end
+
+    UpdateLinesAndText = 0; 
+    if ~isempty(PreviousXlim)
+        if PreviousXlim(2) ~= length(Time)
+            UpdateLinesAndText = 1;
+        end
+    end
 
     for nRows = 1:AllRows
         if sum(Laufvariable == ActiveDataChannel)>0
@@ -90,9 +103,11 @@ for nChannel = 1:AllChannel
             line(ax,[idx, idx], ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border')
         end
     else
-        for j = 1:NumberRowDataChannel
-            idx = length(Time)*j;
-            set(BorderHandles(j), 'XData', [idx, idx], 'YData', ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border');
+        if UpdateLinesAndText
+            for j = 1:NumberRowDataChannel
+                idx = length(Time)*j;
+                set(BorderHandles(j), 'XData', [idx, idx], 'YData', ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border');
+            end
         end
     end
 
@@ -110,7 +125,7 @@ for nChannel = 1:AllChannel
     drawnow;
 
     % Plot text above first axis
-    if nChannel == 1
+    if nChannel == 1 && UpdateLinesAndText
         % remove old labels if they exist
         delete(findobj(ax,'Type','text','Tag','RowLabel'))
     

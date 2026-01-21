@@ -30,8 +30,23 @@ for i = 1:numel(fields)
 
     fieldName = fields{i};
     fieldValue = TempInfo.(fieldName);
-    
+    % dont show info about these fields...too long!
     if strcmp(fieldName,'EventRelatedTime')
+        continue;
+    end
+    if strcmp(fieldName,'ChannelIDS')
+        continue;
+    end
+    if strcmp(fieldName,'ChannelToExtract')
+        continue;
+    end
+    if strcmp(fieldName,'ChannelOrder')
+        continue;
+    end
+    if strcmp(fieldName,'HighPassStatistics')
+        continue;
+    end
+    if strcmp(fieldName,'MEACoords')
         continue;
     end
 

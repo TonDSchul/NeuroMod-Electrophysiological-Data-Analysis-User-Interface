@@ -49,6 +49,15 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     %Grid plot Stuff
     PlotAppearance.MainWindow.Data.LockedClimSettings = "on";
     PlotAppearance.MainWindow.Data.GridViewWindowScaling = [-0.5 0.5];
+    
+    PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol = 2;
+    PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.TimeInterpol = 15;
+    
+    PlotAppearance.MainWindow.Data.AxonViewerSpikeThreshold = 7;
+    PlotAppearance.MainWindow.Data.AxonViewerPastSampleToSum = 12;
+    PlotAppearance.MainWindow.Data.AxonViewerAdditionalThreshold = 0;
+
+    PlotAppearance.MainWindow.Data.AdditionalPlotDelay = 0;
 end
 
 %% Main Window Time Plot

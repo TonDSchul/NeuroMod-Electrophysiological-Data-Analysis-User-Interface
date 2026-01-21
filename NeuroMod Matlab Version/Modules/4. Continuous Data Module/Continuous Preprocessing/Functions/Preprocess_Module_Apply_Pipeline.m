@@ -496,7 +496,10 @@ for i = 1:numel(fieldsStruct2)
 end
 
 
-
+% get statistics for each channnel for quick "spike detection". Used for
+% MEA grid array viewer to fig8ure out spikes and follow them through
+% space
+[Data] = Preprocess_Get_Statistics_for_Spikes(Data);
 
 
 

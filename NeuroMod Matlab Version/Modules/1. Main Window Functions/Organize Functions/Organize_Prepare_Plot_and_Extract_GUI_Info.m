@@ -31,6 +31,41 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 % which input event channel to show
 % EventPlot = "no" when checkbox disabled, "Events" when checkbox activated
 
+MainPlot = 1;
+% if main window not selected in probe view dont plot but only when user is
+% not changing time in main window plot
+if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
+    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
+        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Window") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
+            MainPlot = 0;
+        end
+    end
+end
+ExtraAnalysisWindowsType = [];
+% when user manipulates time in main window always execute -- also when
+% preprocessing, event or spike extraction occurs, bc plot has to be
+% resetted
+% For the plot, DataPlotType has to be "Movie" or "Static". Therefore its
+% set to this while saving the other selection like
+% MainWindowTimeManipulation for example for the main window analysis plots
+if strcmp(DataPlotType,"MainWindowTimeManipulation")
+    MainPlot = 1;
+    OldDataPlotName = "MainWindowTimeManipulation";
+    DataPlotType = "Static";
+elseif strcmp(DataPlotType,"MainWindowTimeManipulationMovie")
+    MainPlot = 1;
+    DataPlotType = "Movie";
+    OldDataPlotName = "MainWindowTimeManipulationMovie";
+elseif strcmp(DataPlotType,"Preprocessing") || strcmp(DataPlotType,"SpikeExtraction") || strcmp(DataPlotType,"Events")
+    ExtraAnalysisWindowsType = DataPlotType;
+    MainPlot = 1;
+    OldDataPlotName = "Static";
+    DataPlotType = "Static";
+else
+    OldDataPlotName = DataPlotType;
+end
+
+
 if strcmp(EventPlot,"Events") && isfield(app.Data,'Events')
     EventData = app.Data.Events{app.CurrentEventChannel};
 % If no events: Pass empty variable in following functions
@@ -67,7 +102,6 @@ else % If not downsampled
 end
 
 %% Extract Channel Number and set colormap
-
 if strcmp(app.ChannelChange,"EditField") && ~isempty(app.ProbeViewWindowHandle)
     if ~isempty(app.ProbeViewWindowHandle.ChannelSelectionEditField.Value)
 
@@ -177,46 +211,40 @@ end
 % for other figure objects 
 % If Preprocessed data shown (Input argument 8 in plot fct. = 1 (1 if preprocessed, 0 if not))
 
-MainPlot = 1;
-% if main window not selected in probe view dont plot but only when user is
-% not changing time in main window plot
-if ~isempty(app.ProbeViewWindowHandle) % Add option to probe view when available
-    if isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure') || isfield(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
-        if ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"Main Window") && ~strcmp(app.ProbeViewWindowHandle.ChangeforWindowDropDown.Value,"All Windows Opened")
-            MainPlot = 0;
-        end
-    end
-end
-ExtraAnalysisWindowsType = [];
-% when user manipulates time in main window always execute -- also when
-% preprocessing, event or spike extraction occurs, bc plot has to be
-% resetted
-% For the plot, DataPlotType has to be "Movie" or "Static". Therefore its
-% set to this while saving the other selection like
-% MainWindowTimeManipulation for example for the main window analysis plots
-if strcmp(DataPlotType,"MainWindowTimeManipulation")
-    MainPlot = 1;
-    OldDataPlotName = "MainWindowTimeManipulation";
-    DataPlotType = "Static";
-elseif strcmp(DataPlotType,"MainWindowTimeManipulationMovie")
-    MainPlot = 1;
-    DataPlotType = "Movie";
-    OldDataPlotName = "MainWindowTimeManipulationMovie";
-elseif strcmp(DataPlotType,"Preprocessing") || strcmp(DataPlotType,"SpikeExtraction") || strcmp(DataPlotType,"Events")
-    ExtraAnalysisWindowsType = DataPlotType;
-    MainPlot = 1;
-    OldDataPlotName = "Static";
-    DataPlotType = "Static";
-else
-    OldDataPlotName = DataPlotType;
-end
-
 if MainPlot && JustLiveWindow == 0
+    if ~strcmp(DataPlotType,"Movie")
+        app.PlayedMovieBefore = 0;
+    else
+        app.PlayedMovieBefore = 1;
+    end
     
+    if isempty(app.PreviousThreshGridsSamplesNoNeighbour)
+        app.PreviousThreshGridsSamplesNoNeighbour.T1 = [];
+        app.PreviousThreshGridsSamplesNoNeighbour.T2 = [];
+    end
+
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
         PlotData = app.Data.Preprocessed(app.Channelrange,StartIndex:StopIndex);
     elseif strcmp(app.DropDown.Value,'Raw Data')
         PlotData = app.Data.Raw(app.Channelrange,StartIndex:StopIndex);
+    end
+
+    if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Surf") && strcmp(DataPlotType,"Movie") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Mesh") && strcmp(DataPlotType,"Movie") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"AxonViewer") && strcmp(DataPlotType,"Movie")
+        if strcmp(app.DropDown.Value,'Preprocessed Data') 
+            if isfield(app.Data,'TimeDownsampeld')
+                if StopIndex+app.MovieTimeToJump>length(app.Data.TimeDownsampled)
+                    StopIndex = length(app.Data.TimeDownsampled);
+                end
+            end
+            PlotDataT2 = app.Data.Preprocessed(app.Channelrange,StartIndex+app.MovieTimeToJump:StopIndex+app.MovieTimeToJump);
+        elseif strcmp(app.DropDown.Value,'Raw Data')
+            if StopIndex+app.MovieTimeToJump>length(app.Data.Time)
+                StopIndex = length(app.Data.Time);
+            end
+            PlotDataT2 = app.Data.Raw(app.Channelrange,StartIndex+app.MovieTimeToJump:StopIndex+app.MovieTimeToJump);
+        end
+    else
+        PlotDataT2 = []; % for movie mode only to habe next time point to interpolate to
     end
     
     DataLinesGrid = 0;
@@ -234,17 +262,17 @@ if MainPlot && JustLiveWindow == 0
                 app.LastPlot = "Preprocessed";  
                 SpikeDataType = app.Data.Info.SpikeType;
                 
-                [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.AdditionalPlotDelay);
+                [app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour,PlotDataT2);
             % If Raw data has to be plotted
             else
                 app.LastPlot = "Preprocessed";
                 SpikeDataType = app.Data.Info.SpikeType;
-                [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.AdditionalPlotDelay);
+                [app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour,PlotDataT2);
             end
         elseif strcmp(app.DropDown.Value,'Raw Data')
             app.LastPlot = "Raw";
             SpikeDataType = app.Data.Info.SpikeType;
-            [app.ClimMaxValues] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.AdditionalPlotDelay);
+            [app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour,PlotDataT2);
         end
     else % if individual subplot data lines in a grid
         % initialize panel 

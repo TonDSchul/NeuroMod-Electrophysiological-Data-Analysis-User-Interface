@@ -6,6 +6,7 @@ if ~isempty(SpikeHandles)
 end
 
 NumSpikesPerChannel = zeros(1,size(Data.Info.ProbeInfo.ActiveChannel,1));
+
 if strcmp(Data.Info.SpikeType,"Internal")
 
     Costumcolormap = jet(length(unique(Data.Spikes.SpikeChannel)));
@@ -20,16 +21,14 @@ if strcmp(Data.Info.SpikeType,"Internal")
                      * (550 - 1);
 
     for nchannel = 1:length(Data.Info.ProbeInfo.ActiveChannel)
-        CuurentChannelIndicies = Data.Spikes.SpikeChannel == nchannel;
-        NumSpikesPerChannel(nchannel) = sum(CuurentChannelIndicies);
 
         LaufVariable = 1;
     
         CuurentChannelIndicies = Data.Spikes.SpikeChannel == nchannel;
         
         if sum(CuurentChannelIndicies)>0
-            ChannelSpikPos = Data.Spikes.SpikeChannel(CuurentChannelIndicies);
-            FlippedChannel = length(Data.Info.ProbeInfo.ActiveChannel)-(unique(ChannelSpikPos)-1);
+            ChannelSpikPos = Data.Info.ProbeInfo.ActiveChannel(Data.Spikes.SpikeChannel(CuurentChannelIndicies));
+            FlippedChannel = length(Data.Info.ProbeInfo.ycoords)-(unique(ChannelSpikPos)-1);
             
             if isscalar(unique(Data.Info.ProbeInfo.xcoords))
                 ClusterXSpikePosum = zeros(size(ChannelSpikPos));
@@ -40,8 +39,16 @@ if strcmp(Data.Info.SpikeType,"Internal")
             ClusterYSpikePosum = Data.Info.ProbeInfo.ycoords(FlippedChannel); 
 
             % scale spikepos to probe view plot pos
-            PreScaledX = (ProbeViewProperties.XlimsPlottedChannel(end) - ProbeViewProperties.XlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
-            PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+            if length(unique(Data.Info.ProbeInfo.xcoords)) == 2 
+                PreScaledX = (0.65 - 0.25) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
+                PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+            elseif length(unique(Data.Info.ProbeInfo.xcoords)) == 4 && Data.Info.ProbeInfo.OffSetRows == 1
+                PreScaledX = (0.83 - 0.17) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
+                PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+            else
+                PreScaledX = (ProbeViewProperties.XlimsPlottedChannel(end) - ProbeViewProperties.XlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
+                PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+            end
             
             if sum(isinf(PreScaledX))>0
                 PreScaledX = 1;
@@ -56,12 +63,18 @@ if strcmp(Data.Info.SpikeType,"Internal")
             if isscalar(unique(Data.Info.ProbeInfo.xcoords))
                 ClusterXSpikPos = 0.5;
                 ClusterYSpikPos = FullyScaledY;
+            elseif length(unique(Data.Info.ProbeInfo.xcoords))==2 
+                ClusterXSpikPos = FullyScaledX - 3.7;
+                ClusterYSpikPos = FullyScaledY;
+            elseif length(unique(Data.Info.ProbeInfo.xcoords)) == 4 && Data.Info.ProbeInfo.OffSetRows == 1
+                ClusterXSpikPos = FullyScaledX - 3.82;
+                ClusterYSpikPos = FullyScaledY;
             else
                 ClusterXSpikPos = FullyScaledX;
                 ClusterYSpikPos = FullyScaledY;
             end
        
-            scatter(Figure,ClusterXSpikPos,ClusterYSpikPos(1),round(markerSize(nchannel)),'Marker','o','Tag','SpikePositions','MarkerFaceColor', Costumcolormap(LaufVariable,:), ...
+            scatter(Figure,ClusterXSpikPos(1),ClusterYSpikPos(1),round(markerSize(nchannel)),'Marker','o','Tag','SpikePositions','MarkerFaceColor', Costumcolormap(LaufVariable,:), ...
             'MarkerEdgeColor','k','LineWidth',1.5,'MarkerFaceAlpha',0.5)
 
             drawnow
@@ -77,8 +90,13 @@ else
     % flip bc y axis is reverse
     FlippedY = max(Data.Info.ProbeInfo.ycoords) - Data.Spikes.SpikePositions(:,2);
     % scale spikepos to probe view plot pos
-    PreScaledX = (ProbeViewProperties.XlimsPlottedChannel(end) - ProbeViewProperties.XlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
-    PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+    if length(unique(Data.Info.ProbeInfo.xcoords)) == 2 || length(unique(Data.Info.ProbeInfo.xcoords)) == 4 && Data.Info.ProbeInfo.OffSetRows == 1
+        PreScaledX = (1 - 0) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
+        PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+    else
+        PreScaledX = (ProbeViewProperties.XlimsPlottedChannel(end) - ProbeViewProperties.XlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
+        PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+    end
     
     if sum(isinf(PreScaledX))>0
         PreScaledX = 0;
@@ -111,6 +129,9 @@ else
         
         if isscalar(unique(Data.Info.ProbeInfo.xcoords))
             ClusterXSpikPos = 0.5;
+            ClusterYSpikPos = median(FullyScaledY(CurrentClusterIndicie));
+        elseif length(unique(Data.Info.ProbeInfo.xcoords))==2 || length(unique(Data.Info.ProbeInfo.xcoords)) == 4 && Data.Info.ProbeInfo.OffSetRows == 1
+            ClusterXSpikPos = median(FullyScaledX(CurrentClusterIndicie)) - 4 ;
             ClusterYSpikPos = median(FullyScaledY(CurrentClusterIndicie));
         else
             ClusterXSpikPos = median(FullyScaledX(CurrentClusterIndicie));

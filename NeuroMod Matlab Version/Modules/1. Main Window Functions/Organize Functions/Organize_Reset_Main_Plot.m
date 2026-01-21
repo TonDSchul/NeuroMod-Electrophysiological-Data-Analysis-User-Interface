@@ -33,8 +33,9 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,KeepEvents,KeepSpikes,Re
 % Set standard values from Main window startup
 app.MovieFramesPerSecond = 40;
 app.CurrentTimePoints = PlotTime;
-app.MovieTimeToJump = 0.02;
-app.MovieTimeToJump = str2double(app.TimeRangeViewBox.Value(1:end-1))*app.MovieTimeToJump;
+
+app.PreviousThreshGridsSamplesNoNeighbour = [];
+app.PreviousThreshGridsSamplesWithNeighbour = [];
 
 % delte data plots
 if DeleteChannelData
