@@ -34,8 +34,7 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,KeepEvents,KeepSpikes,Re
 app.MovieFramesPerSecond = 40;
 app.CurrentTimePoints = PlotTime;
 
-app.PreviousThreshGridsSamplesNoNeighbour = [];
-app.PreviousThreshGridsSamplesWithNeighbour = [];
+app.PreviousThreshGrids = [];
 
 % delte data plots
 if DeleteChannelData

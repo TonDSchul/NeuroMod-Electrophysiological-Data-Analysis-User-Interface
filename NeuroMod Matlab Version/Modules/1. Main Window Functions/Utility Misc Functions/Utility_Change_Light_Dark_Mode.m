@@ -2113,3 +2113,35 @@ if strcmp(Window,"FieldTripEventWindow")
 
     app.CurrentlyAvailableVariablestoExportTextArea.BackgroundColor  = ComponentsInWindowColor;
 end
+
+if strcmp(Window,"AxonViewerSelectSpikes")    
+    % texts to black
+    set(findall(app.AxonViewerSpikeSelectionUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.AxonViewerSpikeSelectionUIFigure.Color  = WindowBackgroundColor;
+
+    app.ClusterDropDown.BackgroundColor   = ComponentsInWindowColor;
+    app.SpikeChannelEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.SpikeAmplitudemVempytfornonEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.SpikeNrEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+
+    app.SelectionFilterPanel.BackgroundColor   = WindowBackgroundColor;
+    app.SpikeSelectionPanel.BackgroundColor   = WindowBackgroundColor;
+
+    app.UIAxes.Title.Color = 'k';
+    app.UIAxes.XLabel.Color = 'k';
+    app.UIAxes.YLabel.Color = 'k';
+
+    app.UIAxes.Color  = ComponentsInWindowColor;
+    app.UIAxes.XColor = 'k';  
+
+    app.UIAxes.XTickLabelMode = 'auto';  
+    app.UIAxes.TickLabelInterpreter = 'none';  % Avoid LaTeX/TeX interpretation if not needed
+    
+    % Set title, xlabel, ylabel colors
+    app.UIAxes.Title.Color = 'k';
+    app.UIAxes.XLabel.Color = 'k';
+    
+    app.UIAxes.YLabel.Color = 'k';
+    app.UIAxes.YColor = 'k';
+end

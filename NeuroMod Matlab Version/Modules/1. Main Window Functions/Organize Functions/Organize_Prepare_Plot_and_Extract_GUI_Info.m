@@ -100,6 +100,8 @@ else % If not downsampled
         return;
     end
 end
+% ensure proper length according to time range
+StopIndex = StopIndex - 1;
 
 %% Extract Channel Number and set colormap
 if strcmp(app.ChannelChange,"EditField") && ~isempty(app.ProbeViewWindowHandle)
@@ -218,9 +220,14 @@ if MainPlot && JustLiveWindow == 0
         app.PlayedMovieBefore = 1;
     end
     
-    if isempty(app.PreviousThreshGridsSamplesNoNeighbour)
-        app.PreviousThreshGridsSamplesNoNeighbour.T1 = [];
-        app.PreviousThreshGridsSamplesNoNeighbour.T2 = [];
+    if isempty(app.PreviousThreshGrids)
+        app.PreviousThreshGrids.T1 = [];
+        app.PreviousThreshGrids.T2 = [];
+    else
+        if ~isfield(app.PreviousThreshGrids,'T1')
+            app.PreviousThreshGrids.T1 = [];
+            app.PreviousThreshGrids.T2 = [];
+        end
     end
 
     if strcmp(app.DropDown.Value,'Preprocessed Data') 
@@ -262,17 +269,17 @@ if MainPlot && JustLiveWindow == 0
                 app.LastPlot = "Preprocessed";  
                 SpikeDataType = app.Data.Info.SpikeType;
                 
-                [app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour,PlotDataT2);
+                [app.ClimMaxValues,app.PreviousThreshGrids,app.PlotThreshGrids] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.TimeDownsampled(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.DownsampledSampleRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGrids,PlotDataT2,app.PlotThreshGrids);
             % If Raw data has to be plotted
             else
                 app.LastPlot = "Preprocessed";
                 SpikeDataType = app.Data.Info.SpikeType;
-                [app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour,PlotDataT2);
+                [app.ClimMaxValues,app.PreviousThreshGrids,app.PlotThreshGrids] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,1,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGrids,PlotDataT2,app.PlotThreshGrids);
             end
         elseif strcmp(app.DropDown.Value,'Raw Data')
             app.LastPlot = "Raw";
             SpikeDataType = app.Data.Info.SpikeType;
-            [app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGridsSamplesNoNeighbour,app.PreviousThreshGridsSamplesWithNeighbour,PlotDataT2);
+            [app.ClimMaxValues,app.PreviousThreshGrids,app.PlotThreshGrids] = Module_MainWindow_Plot_Data(PlotData,app.Data.Info,app.UIAxes,app.Data.Time(StartIndex:StopIndex),app.Channelrange,app.PlotLineSpacing,DataPlotType,colorMap,0,EventPlot,EventData,app.Data.Info.NativeSamplingRate,Plotspikes,SpikeData,StartIndex,StopIndex,SpikeDataType,app.Data.Info.ProbeInfo.FakeSpacing,app.PlotAppearance,app.SpikePlotType,app.Channelrange,frameTime,app.ClimMaxValues,app.PreviousThreshGrids,PlotDataT2,app.PlotThreshGrids);
         end
     else % if individual subplot data lines in a grid
         % initialize panel 
@@ -284,14 +291,14 @@ if MainPlot && JustLiveWindow == 0
             if strcmp(app.DropDown.Value,'Preprocessed Data') 
                 if isfield(app.Data.Info,'DownsampleFactor') 
                     app.LastPlot = "Preprocessed";
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel)
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,app.PreservePlotChannelLocations,SpikeData)
                 else
                     app.LastPlot = "Preprocessed";
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel)
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,app.PreservePlotChannelLocations,SpikeData)
                 end
             elseif strcmp(app.DropDown.Value,'Raw Data')
                 app.LastPlot = "Raw";
-                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel)
+                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,app.PreservePlotChannelLocations,SpikeData)
             end
         end
         

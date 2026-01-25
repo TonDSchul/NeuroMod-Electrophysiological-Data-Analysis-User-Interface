@@ -29,7 +29,13 @@ function [app] = Organize_Jump_in_Time(app,Direction,TimeLimit,TimeRange,SampleR
 if strcmp(Direction,"Forward")
    
     %% Add Sample Number from Timespan showm to update what data plot shows
-    if strcmp(app.TimeSpanControlDropDown.Value,'0.01s') 
+    if strcmp(app.TimeSpanControlDropDown.Value,'0.001s') 
+        if app.CurrentTimePoints+(round(0.001*SampleRate))+TimeRange <= TimeLimit
+            app.CurrentTimePoints = app.CurrentTimePoints+round(0.001*SampleRate);
+        elseif app.CurrentTimePoints+(round(0.001*SampleRate))+TimeRange > TimeLimit
+            app.CurrentTimePoints = TimeLimit-(round(0.001*SampleRate));
+        end
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'0.01s') 
         if app.CurrentTimePoints+(round(0.01*SampleRate))+TimeRange <= TimeLimit
             app.CurrentTimePoints = app.CurrentTimePoints+round(0.01*SampleRate);
         elseif app.CurrentTimePoints+(round(0.01*SampleRate))+TimeRange > TimeLimit
@@ -53,16 +59,28 @@ if strcmp(Direction,"Forward")
         elseif app.CurrentTimePoints+(round(1*SampleRate))+TimeRange > TimeLimit
             app.CurrentTimePoints = TimeLimit-(round(1*SampleRate));
         end
+    else % if smt else
+        TimeSelected = str2double(app.TimeSpanControlDropDown.Value(1:end-1));
+        if app.CurrentTimePoints+(round(TimeSelected*SampleRate))+TimeRange <= TimeLimit
+            app.CurrentTimePoints = app.CurrentTimePoints+round(TimeSelected*SampleRate);
+        elseif app.CurrentTimePoints+(round(TimeSelected*SampleRate))+TimeRange > TimeLimit
+            app.CurrentTimePoints = TimeLimit-(round(TimeSelected*SampleRate));
+        end
     end
 
 elseif strcmp(Direction,"Backwards")
-    if strcmp(app.TimeSpanControlDropDown.Value,'0.01s') 
+    if strcmp(app.TimeSpanControlDropDown.Value,'0.001s') 
+        if app.CurrentTimePoints-round(0.001*SampleRate) >= 1
+            app.CurrentTimePoints = app.CurrentTimePoints-round(0.001*SampleRate);
+        elseif app.CurrentTimePoints-round(0.001*SampleRate) < 1
+            app.CurrentTimePoints = 1;
+        end
+    elseif strcmp(app.TimeSpanControlDropDown.Value,'0.01s') 
         if app.CurrentTimePoints-round(0.01*SampleRate) >= 1
             app.CurrentTimePoints = app.CurrentTimePoints-round(0.01*SampleRate);
         elseif app.CurrentTimePoints-round(0.01*SampleRate) < 1
             app.CurrentTimePoints = 1;
         end
-
     elseif strcmp(app.TimeSpanControlDropDown.Value,'0.1s') 
         if app.CurrentTimePoints-round(0.1*SampleRate) >= 1
             app.CurrentTimePoints = app.CurrentTimePoints-round(0.1*SampleRate);
@@ -79,6 +97,13 @@ elseif strcmp(Direction,"Backwards")
         if app.CurrentTimePoints-round(1*SampleRate) >= 1
             app.CurrentTimePoints = app.CurrentTimePoints-round(1*SampleRate);
         elseif app.CurrentTimePoints-round(1*SampleRate) < 1
+            app.CurrentTimePoints = 1;
+        end
+    else % if smt else
+        TimeSelected = str2double(app.TimeSpanControlDropDown.Value(1:end-1));
+        if app.CurrentTimePoints-round(TimeSelected*SampleRate) >= 1
+            app.CurrentTimePoints = app.CurrentTimePoints-round(TimeSelected*SampleRate);
+        elseif app.CurrentTimePoints-round(TimeSelected*SampleRate) < 1
             app.CurrentTimePoints = 1;
         end
     end

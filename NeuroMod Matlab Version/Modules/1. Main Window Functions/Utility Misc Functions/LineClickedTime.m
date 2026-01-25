@@ -20,6 +20,9 @@ function LineClickedTime(app,event)
 % Get the clicked point coordinates
 clickLine = event.IntersectionPoint;
 
+app.PreviousThreshGrids = [];
+app.PlotThreshGrids = [];
+
 % Calculate absolute differences between time_value and each element of time_vector
 if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,"Preprocessed Data")
     differences = abs(clickLine(1) - app.Data.TimeDownsampled);

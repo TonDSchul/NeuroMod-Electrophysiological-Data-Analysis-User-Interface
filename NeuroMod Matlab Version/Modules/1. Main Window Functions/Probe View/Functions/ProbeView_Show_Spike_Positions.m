@@ -7,6 +7,7 @@ end
 
 NumSpikesPerChannel = zeros(1,size(Data.Info.ProbeInfo.ActiveChannel,1));
 
+%% Plot internal spikes
 if strcmp(Data.Info.SpikeType,"Internal")
 
     Costumcolormap = jet(length(unique(Data.Spikes.SpikeChannel)));
@@ -37,7 +38,7 @@ if strcmp(Data.Info.SpikeType,"Internal")
             end
             
             ClusterYSpikePosum = Data.Info.ProbeInfo.ycoords(FlippedChannel); 
-
+        
             % scale spikepos to probe view plot pos
             if length(unique(Data.Info.ProbeInfo.xcoords)) == 2 
                 PreScaledX = (0.65 - 0.25) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
@@ -46,6 +47,9 @@ if strcmp(Data.Info.SpikeType,"Internal")
                 PreScaledX = (0.83 - 0.17) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
                 PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
             else
+                ProbeViewProperties.XlimsPlottedChannel(end) = ProbeViewProperties.XlimsPlottedChannel(end) - ((ProbeViewProperties.XlimsPlottedChannel(2)-ProbeViewProperties.XlimsPlottedChannel(1))*3);
+
+
                 PreScaledX = (ProbeViewProperties.XlimsPlottedChannel(end) - ProbeViewProperties.XlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
                 PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
             end
@@ -70,7 +74,7 @@ if strcmp(Data.Info.SpikeType,"Internal")
                 ClusterXSpikPos = FullyScaledX - 3.82;
                 ClusterYSpikPos = FullyScaledY;
             else
-                ClusterXSpikPos = FullyScaledX;
+                ClusterXSpikPos = FullyScaledX + ((ProbeViewProperties.XlimsPlottedChannel(2)-ProbeViewProperties.XlimsPlottedChannel(1))*6);
                 ClusterYSpikPos = FullyScaledY;
             end
        

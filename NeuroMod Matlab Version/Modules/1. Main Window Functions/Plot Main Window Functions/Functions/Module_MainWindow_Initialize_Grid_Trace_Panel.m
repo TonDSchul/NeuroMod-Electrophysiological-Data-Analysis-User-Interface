@@ -1,11 +1,15 @@
 function app = Module_MainWindow_Initialize_Grid_Trace_Panel(app)
 
-AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords));
-AllRows    = length(unique(app.Data.Info.ProbeInfo.xcoords));
+if app.PreservePlotChannelLocations
+    AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords(app.Data.Info.ProbeInfo.ActiveChannel(1):app.Data.Info.ProbeInfo.ActiveChannel(end))));
+else
+    AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords(app.Data.Info.ProbeInfo.ActiveChannel)));
+end
 
 % Create grid INSIDE PANEL
 app.ChannelGrid = uigridlayout(app.Grid_Traces_View_Panel, [AllChannel, 1]);
 app.ChannelGrid.RowSpacing    = 0;
+
 app.ChannelGrid.ColumnSpacing = 0;
 app.ChannelGrid.Padding = [100 0 0 30];   
 app.ChannelGrid.BackgroundColor = ...
@@ -22,7 +26,7 @@ for nChannel = 1:AllChannel
     ax.XTick = [];
     ax.YTick = [];
     ax.Box   = 'on';
-    ax.LineWidth = 1;
+    ax.LineWidth = 0.5;
 
     ax.Color  = app.PlotAppearance.MainWindow.Data.Color.MainBackground;
     ax.XColor = ax.Color;
@@ -34,7 +38,7 @@ for nChannel = 1:AllChannel
     
     ax.Box = 'on';           % keep frame
     ax.TickLength = [0 0];   % important
-    ax.LooseInset = [0 0 0 0];   % works for uiaxes (R2020b+)
+    ax.LooseInset = [0 0 0 0];  
     ax.InnerPosition = ax.OuterPosition;
 
     app.ChannelAxes{nChannel} = ax;

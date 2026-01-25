@@ -1,4 +1,4 @@
-function [ClimMaxValues,PreviousThreshGridsSamplesNoNeighbour,PreviousThreshGridsSamplesWithNeighbour] = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues,PreviousThreshGridsSamplesNoNeighbour,PreviousThreshGridsSamplesWithNeighbour,DataT2)
+function [ClimMaxValues,PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Plot_Data(Data,Info,UIAxis,Time,Channel_Selection,PlotLineSpacing,Type,colorMap,Preprocessed,EventPlot,EventData,SampleRate,SpikePlot,SpikeData,StartIndex,StopIndex,SpikeDatatype,ChannelSpacing,PlotAppearance,SpikePlotType,ActiveChannel,frameTime,ClimMaxValues,PreviousThreshGrids,DataT2,PlotThreshGrids)
 
 %________________________________________________________________________________________
 %% Function to Plot Data in the Main Window (raw data, preprocessed data, spike data and event data)
@@ -74,6 +74,12 @@ if Time(1) ~= Time(end)
     else
         xlim(UIAxis, [Time(1),Time(end)]);
     end
+else
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+        if length(unique(Info.ProbeInfo.xcoords)) > 1
+            xlim(UIAxis, [1,length(unique(Info.ProbeInfo.xcoords))]);
+        end
+    end
 end
 
 if size(Data,1)>1
@@ -129,13 +135,14 @@ end
 
 %% Start Plot
 % If Not movie mode:
-if isempty(PreviousThreshGridsSamplesNoNeighbour)
-    PreviousThreshGridsSamplesNoNeighbour.T1 = [];
-    PreviousThreshGridsSamplesNoNeighbour.T2 = [];
-end
-if isempty(PreviousThreshGridsSamplesWithNeighbour)
-    PreviousThreshGridsSamplesWithNeighbour.T1 = [];
-    PreviousThreshGridsSamplesWithNeighbour.T2 = [];
+if isempty(PreviousThreshGrids)
+    PreviousThreshGrids.T1 = [];
+    PreviousThreshGrids.T2 = [];
+else
+    if ~isfield(PreviousThreshGrids,'T1')
+        PreviousThreshGrids.T1 = [];
+        PreviousThreshGrids.T2 = [];
+    end
 end
 
 if strcmp(Type,"Static")
@@ -180,7 +187,19 @@ if strcmp(Type,"Static")
         [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);       
         
         if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-            [Data,~,~] = Module_MainWindow_Axon_Viewer(Data,Info,PreviousThreshGridsSamplesNoNeighbour.T1,PreviousThreshGridsSamplesWithNeighbour.T1,Type,PlotAppearance);
+            [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids);
+            Data = PlotThreshGrids; 
+
+            if isfield(PreviousThreshGrids,'SpikeChannelSelected')
+                % PrevValue = PreviousThreshGrids.SpikeChannelSelected;
+                % PreviousThreshGrids = [];
+                % PreviousThreshGrids.SpikeChannelSelected = PrevValue;
+            else
+                PreviousThreshGrids = [];
+                PlotThreshGrids = [];
+            end
+
+            
         end
     end
 
@@ -230,7 +249,9 @@ if strcmp(Type,"Static")
     end
 
     % Plot Event Indices and Label for event number
-    Module_MainWindow_Plot_Events_and_Label(Info,Data,Time,EventIndicies,UIAxis,EventPlot,EventIndexNr,Eventline_handles,YMinLimitsMultipeERP,YMaxLimitsMultipeERP,Channel_Selection,PlotAppearance)
+    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagsc")
+        Module_MainWindow_Plot_Events_and_Label(Info,Data,Time,EventIndicies,UIAxis,EventPlot,EventIndexNr,Eventline_handles,YMinLimitsMultipeERP,YMaxLimitsMultipeERP,Channel_Selection,PlotAppearance)
+    end
 
     %% Plot Toolbox internally computed Spike Data
     Module_MainWindow_Plot_Internal_Spikes(Data,Info,Time,SpikePlot,SpikeDatatype,SpikePlotType,SpikeData,ActiveChannel,Channel_Selection,UIAxis,ChannelSpacing,PlotAppearance)
@@ -344,14 +365,7 @@ if strcmp(Type,"Movie")
                 [DataT1,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);
                 [DataT2,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,DataT2,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);
             end
-
-            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-                [DataT1,PreviousThreshGridsSamplesNoNeighbour.T1,PreviousThreshGridsSamplesWithNeighbour.T1] = Module_MainWindow_Axon_Viewer(DataT1,Info,PreviousThreshGridsSamplesNoNeighbour.T1,PreviousThreshGridsSamplesWithNeighbour.T1,Type,PlotAppearance);
-            end
-            if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-                [DataT2,PreviousThreshGridsSamplesNoNeighbour.T2,PreviousThreshGridsSamplesWithNeighbour.T2] = Module_MainWindow_Axon_Viewer(DataT2,Info,PreviousThreshGridsSamplesNoNeighbour.T2,PreviousThreshGridsSamplesWithNeighbour.T2,Type,PlotAppearance);
-            end
-
+           
             %% Plot Channel Data
             if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Individual Lines")
                 if isempty(lineHandles) 
@@ -395,6 +409,7 @@ if strcmp(Type,"Movie")
             %% Plot surf, imagsc, mesh
             if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer") 
                 nInterp = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.TimeInterpol;
+
                 for nInterpolateFrames = 1:nInterp
                     ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
                     delete(ImageScChannel_handles(1:end));
@@ -403,13 +418,15 @@ if strcmp(Type,"Movie")
                     alpha = nInterpolateFrames / (nInterp + 1);
                     Data = (1-alpha)*DataT1 + alpha*DataT2;
 
-                    % if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-                    %     [Data,PreviousThreshGridsSamplesNoNeighbour.T1] = Module_MainWindow_Axon_Viewer(Data,Info,PreviousThreshGridsSamplesNoNeighbour.T1,Type,PlotAppearance);
-                    % end
+                    if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+                        [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids);
+                        Data = PlotThreshGrids;
+                    end
 
                     ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles);
                     pause(PlotAppearance.MainWindow.Data.AdditionalPlotDelay)
                 end
+
             elseif strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc") 
                 ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles);
             end

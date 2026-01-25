@@ -1,14 +1,56 @@
-function Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,StartIndex,PlotAppearance,ActiveDataChannel)
+function Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,StartIndex,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData)
 
 %% Setup
-AllChannel = length(unique(Data.Info.ProbeInfo.ycoords));
+
 AllRows = length(unique(Data.Info.ProbeInfo.xcoords));
 
-[PlotData, Time] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Data,PlotData,Time,ActiveDataChannel);
+[PlotData, Time] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Data,PlotData,Time,ActiveDataChannel,PreservePlotChannelLocations);
 
 %% Loop over channels
 
 Laufvariable = 1;
+
+if PreservePlotChannelLocations
+    AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords(app.Data.Info.ProbeInfo.ActiveChannel(1):app.Data.Info.ProbeInfo.ActiveChannel(end))));
+else
+    AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords(app.Data.Info.ProbeInfo.ActiveChannel)));
+end
+
+% origActiveDataChannel = ActiveDataChannel;
+ChannelBeforeActive = 0;
+if PreservePlotChannelLocations
+    if Data.Info.ProbeInfo.ActiveChannel(1)-1 ~=0
+        ChannelBeforeActive = Data.Info.ProbeInfo.ActiveChannel(1)-1;
+        ActiveDataChannel = ActiveDataChannel - (Data.Info.ProbeInfo.ActiveChannel(1)-1);
+    end
+else
+    [ActiveDataChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Data.Info.ProbeInfo.ActiveChannel,ActiveDataChannel,'MainPlot');
+end
+
+% find out gaps on the left or right of the probe to leave out
+if ~PreservePlotChannelLocations
+    if str2double(Data.Info.ProbeInfo.NrRows) == 2
+        % find gapos in active channel
+        d = diff(Data.Info.ProbeInfo.ActiveChannel);
+        breakIdx = find(d > 1);
+        run_start = [1, breakIdx + 1];
+        run_end   = [breakIdx, numel(Data.Info.ProbeInfo.ActiveChannel)];
+        gap_start_val = (Data.Info.ProbeInfo.ActiveChannel(run_end(1:end-1)) + 1) ;
+        gap_end_val   = (Data.Info.ProbeInfo.ActiveChannel(run_start(2:end)) - 1) ;
+        
+        IndicieToNotPlot = [];
+        for iii = 1:length(gap_end_val)
+            if mod(gap_end_val(iii),2)==1 % uneven
+                activeindicie = Data.Info.ProbeInfo.ActiveChannel == gap_end_val(iii)+1;
+                IndicieToNotPlot = [IndicieToNotPlot,find(activeindicie==1)];
+                ActiveDataChannel(ActiveDataChannel>=IndicieToNotPlot(end)) = ActiveDataChannel(ActiveDataChannel>=IndicieToNotPlot(end))+1;
+                %SpikeData.Position(SpikeData.Position>=IndicieToNotPlot) = SpikeData.Position(SpikeData.Position>=IndicieToNotPlot) + 1;
+            else % nothing - no gap in trace view required
+        
+            end
+        end
+    end
+end
 
 for nChannel = 1:AllChannel
 
@@ -48,7 +90,8 @@ for nChannel = 1:AllChannel
             UpdateLinesAndText = 1;
         end
     end
-
+    
+    SpikesForCurrentSubPlot = [];
     for nRows = 1:AllRows
         if sum(Laufvariable == ActiveDataChannel)>0
             if ~isempty(PlotData{nChannel,nRows})
@@ -65,6 +108,24 @@ for nChannel = 1:AllChannel
             TimeForCurrentSubPlot(StartChunk:StopChunk) = Time;
             NumberRowDataChannel = NumberRowDataChannel + 1;
         end
+        
+        %% Handle Spikes
+        if ~isempty(SpikeData)
+            if ~isempty(SpikeData.Indicie)
+                if PreservePlotChannelLocations==0
+                    if sum(Laufvariable==SpikeData.Position)
+                        SpikeIndicies = Laufvariable==SpikeData.Position;
+                        SpikesForCurrentSubPlot = [SpikesForCurrentSubPlot,SpikeData.Indicie(SpikeIndicies)' + ((nRows-1)*length(Time)+1)];
+                    end
+                else
+                    if sum(Laufvariable==ActiveDataChannel(SpikeData.Position))
+                        SpikeIndicies = Laufvariable==ActiveDataChannel(SpikeData.Position);
+                        SpikesForCurrentSubPlot = [SpikesForCurrentSubPlot,SpikeData.Indicie(SpikeIndicies)' + ((nRows-1)*length(Time)+1)];
+                    end
+                end
+            end
+        end
+        
         Laufvariable = Laufvariable+1;
         StartChunk = StopChunk + 1;
         StopChunk = StopChunk + length(Time);
@@ -89,14 +150,37 @@ for nChannel = 1:AllChannel
             delete(TraceHandles(1));
         end
     end
-
+    
     % ylim
     Center = median(DataForCurrentSubPlot,'omitnan');
     if ~isnan(Center) && app.Slider.Value ~= 0
         ylim(ax,[Center-app.Slider.Value, Center+app.Slider.Value]);
     end
 
-    % Vertical lines separating rows
+    %% Plot Spikes
+    SpikeHandles = findobj(ax, 'Tag', 'TracesSpikes');
+    if ~isempty(SpikesForCurrentSubPlot)
+        if length(SpikeHandles)>length(SpikesForCurrentSubPlot)
+            delete(SpikeHandles(length(SpikesForCurrentSubPlot)+1:end));
+            SpikeHandles = findobj(ax, 'Tag', 'TracesSpikes');
+        end
+
+        if isempty(SpikeHandles)
+            line(ax,SpikesForCurrentSubPlot,mean(DataForCurrentSubPlot),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerEdgeColor','r','MarkerSize',2,'Tag','TracesSpikes')
+        else
+            for i = 1:length(SpikesForCurrentSubPlot)
+                if i <= SpikeHandles
+                    set(SpikeHandles(i),'XData',SpikesForCurrentSubPlot(i),'YData',mean(DataForCurrentSubPlot),'LineStyle','none','Marker','MarkerFaceColor','r','MarkerEdgeColor','r','MarkerSize',3,'Tag','TracesSpikes')
+                else
+                    line(ax,SpikesForCurrentSubPlot(i),mean(DataForCurrentSubPlot),'LineStyle','none','Marker','o','MarkerFaceColor','r','MarkerEdgeColor','r','MarkerSize',3,'Tag','TracesSpikes')
+                end
+            end
+        end
+    else
+        delete(SpikeHandles);
+    end
+
+    %% Vertical lines separating rows
     if isempty(BorderHandles)
         for j = 1:NumberRowDataChannel
             idx = length(Time)*j;
@@ -117,7 +201,7 @@ for nChannel = 1:AllChannel
         ax.XColor = 'k';  % or 'none' if you want no ticks
         ax.YColor = 'k';  % tick label color
         ax.Box = 'on';
-        ax.LineWidth = 1;
+        ax.LineWidth = 0.5;
         ax.XTick = [];
     end
 
@@ -139,10 +223,14 @@ for nChannel = 1:AllChannel
         for j = 1:nBlocks
             xCenter = (j-1)*blockWidth + blockWidth/2;
             
-            Allchannelcurrently = j:length(unique(Data.Info.ProbeInfo.xcoords)):Data.Info.ProbeInfo.ActiveChannel(end);
+            if PreservePlotChannelLocations
+                Allchannelcurrently = j:length(unique(Data.Info.ProbeInfo.xcoords)):length(Data.Info.ProbeInfo.ActiveChannel);
+            else
+                Allchannelcurrently = j:length(unique(Data.Info.ProbeInfo.xcoords)):Data.Info.ProbeInfo.ActiveChannel(end);
+            end
             
             text(ax, xCenter, yText, ...
-                strcat("Ch ", num2str(j)," to ",num2str(Allchannelcurrently(end))), ...
+                strcat("Ch ", num2str(j+ChannelBeforeActive)," to ",num2str(Allchannelcurrently(end))), ...
                 'HorizontalAlignment','center', ...
                 'VerticalAlignment','bottom', ...
                 'FontSize', ScaledFontSize, ...

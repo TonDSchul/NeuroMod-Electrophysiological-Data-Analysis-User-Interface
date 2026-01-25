@@ -50,7 +50,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
         print(file_list)
     else:
         file_list = FolderName
-        file_list = [file_list]  # wrap single string into a list
+        file_list = [file_list]  
         
     # -----------------------------------------------------------------------
     ''' First Create a Save Folder to save results in for Matlab to load'''
@@ -124,7 +124,7 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
             
             # Build data matrix
             try:
-                RawDataChunk = RawDataChunk.magnitude.T  # shape will be (channels x samples)
+                RawDataChunk = RawDataChunk.magnitude.T  # shape will be channels x samples
                 Method = 1
             except Exception:
                 RawDataChunk = np.vstack([asig.magnitude.flatten() for asig in RawDataChunk]) 
@@ -188,11 +188,10 @@ if __name__ == "__main__":
     
     NEOParamsfile = sys.argv[1]
     print(NEOParamsfile)
-    # Load JSON into a Python dictionary
+    # Load JSON with gui info
     with open(NEOParamsfile, 'r') as f:
         NEOparams = json.load(f)
-        
-    # Assuming NEOparams is loaded from JSON already
+
     file_path = NEOparams['SelectedPath']
     JustLoad = int(NEOparams['JustLoadDatFile'])
     RecordingSystemSelection = NEOparams['RecordingSystemSelection']

@@ -18,65 +18,17 @@ from spikeinterface.extractors import read_maxwell
 from probeinterface.io import write_prb
 from probeinterface import Probe, ProbeGroup
 from spikeinterface.preprocessing import unsigned_to_signed
-    
-def Sanity_Plot(recording):
-    import matplotlib.pyplot as plt
-    
-    # Parameters
-    channel_id = recording.channel_ids[0]  # channel 1 (SpikeInterface uses IDs, not 1-based index)
-    fs = recording.get_sampling_frequency()
-    
-    time_windows = [
-        (0, 2),
-        (9, 11),
-        (19, 21),
-        (99, 101),
-    ]
-    
-    plt.ion()
-
-    fig, axes = plt.subplots(len(time_windows), 1, sharex=False, figsize=(10, 8))
-    
-    for ax, (t_start, t_end) in zip(axes, time_windows):
-        start_frame = int(t_start * fs)
-        end_frame = int(t_end * fs)
-    
-        trace = recording.get_traces(
-            start_frame=start_frame,
-            end_frame=end_frame,
-            channel_ids=[channel_id],
-            return_in_uV=True
-        ).squeeze() / 1e3  # µV → mV
-    
-        t = np.arange(trace.size) / fs + t_start
-    
-        ax.plot(t, trace)
-        ax.set_title(f"{t_start}–{t_end} s")
-        ax.set_xlabel("Time (s)")
-        ax.set_ylabel("mV")
-    
-        ymin, ymax = trace.min(), trace.max()
-        if ymin == ymax:  # avoid zero-height axis
-            ymin -= 1e-6
-            ymax += 1e-6
-        ax.set_ylim(ymin, ymax)
-    
-    plt.tight_layout()
-    plt.show(block=False)
-    
+        
 def create_save_folder(selected_folder):
     """
     Given a selected folder, create a sibling folder with ' Neo SaveFile' suffix.
     """
-    # Get parent dir and base folder name
     parent_dir = os.path.dirname(selected_folder)
     base_name = os.path.basename(selected_folder)
 
-    # Construct new folder name
     new_folder_name = f"{base_name} SpikeInterface SaveFile"
     new_folder_path = os.path.join(parent_dir, new_folder_name)
 
-    # Create the folder if it doesn't exist
     if not os.path.exists(new_folder_path):
         os.makedirs(new_folder_path)
         print(f"Created folder: {new_folder_path}")
@@ -89,22 +41,18 @@ def create_save_folder(selected_folder):
 def Save_MetaData_SI(recording, JustExtractingEvents,
                       SaveFileName,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract):
     
-    # Now get channel locations
+    # channel locations
     locs = recording.get_channel_locations()
 
-    #annotations = recording.annotations
-    start_sample = recording.get_annotation('acquisition_start_sample')  # fallback 0
+    start_sample = recording.get_annotation('acquisition_start_sample') 
     
     if start_sample is None:
         start_sample = 1
     
-    # sampling rate
-    sampling_rate = recording.get_sampling_frequency()  # Hz
-    # Number of channels
-    n_channels = recording.get_num_channels()  # integer
-    # Number of frames / samples
-    n_samples = recording.get_num_frames()     # integer
-    # channel info
+    sampling_rate = recording.get_sampling_frequency() 
+    n_channels = recording.get_num_channels()  
+    n_samples = recording.get_num_frames()  
+
     Origchannel_ids = recording.get_channel_ids()
     channel_ids = Origchannel_ids[channel_ids_extract]
 
@@ -116,13 +64,12 @@ def Save_MetaData_SI(recording, JustExtractingEvents,
     try:
         units = recording.get_channel_property("units")
     except:
-        units = ["mV"] * len(Origchannel_ids)  # fallback
+        units = ["mV"] * len(Origchannel_ids)
 
-    
+    # save as mat file
     if JustExtractingEvents == 0 and SaveFileName is not None:
         print("Saving Metadata to " + str(SaveFileName))
                 
-        # save .mat
         scipy.io.savemat(SaveFileName, {
             'sampling_rate': sampling_rate,
             'units': units,
@@ -139,31 +86,45 @@ def Save_MetaData_SI(recording, JustExtractingEvents,
         })
 
 def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract):
-    print("Attempting to save probe info.")
+    print("Saving probe info.")
     probe = recording.get_probe()
     channel_ids = recording.channel_ids
     channel_ids = channel_ids[channel_ids_extract]
-    print("######################")
-    print(channel_ids)
-    print("######################")
     if SaveFormat == ".prb":
+
+        pos = probe.contact_positions
         
-        # Select only the desired channels
-        sub_probe = Probe(ndim=probe.ndim)
-        sub_probe.set_contacts(
-            positions=probe.contact_positions[channel_ids],
-            shapes=np.array([probe.contact_shapes[i] for i in channel_ids]) if probe.contact_shapes is not None else None,
-            shapes_params=np.array([probe.contact_shape_params[i] for i in channel_ids]) if probe.contact_shape_params is not None else None,
-            device_channel_indices=np.array([probe.device_channel_indices[i] for i in channel_ids]),
-            # Optional: assign contact_ids as 0..n-1
-            contact_ids=np.arange(len(channel_ids))
-        )
+        n_channels = len(channel_ids_extract)
+        print(n_channels)
+        chanMap0ind = list(range(n_channels))
+        chanMap = list(range(1, n_channels + 1))
+        connected = np.ones(n_channels, dtype=bool)
+        
+        xcoords = pos[channel_ids_extract, 0]
+        ycoords = pos[channel_ids_extract, 1]
     
-        # Wrap in a ProbeGroup
-        probegroup = ProbeGroup()
-        probegroup.add_probe(sub_probe)
+        kcoords = np.ones(n_channels, dtype=np.int32)
     
-        write_prb(SaveFolder, probegroup)
+        fs = float(recording.get_sampling_frequency())
+        
+        geometry = {
+            ch: (float(x), float(y))
+            for ch, x, y in zip(chanMap0ind, xcoords, ycoords)
+        }
+        
+        channel_groups = {
+            0: {
+                'channels': chanMap0ind,
+                'geometry': geometry
+            }
+        }
+        
+        with open(SaveFolder, "w") as f:
+            f.write("channel_groups = ")
+            f.write(repr(channel_groups))
+            f.write("\n")
+    
+        #write_prb(SaveFolder, probegroup)
         print("Successfully saved probe information in " + str(SaveFolder))
     
     if SaveFormat == ".mat":
@@ -171,9 +132,9 @@ def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extr
         pos = probe.contact_positions
         
         n_channels = len(channel_ids_extract)
-    
-        chanMap0ind = channel_ids.astype(np.int32)
-        chanMap = chanMap0ind + 1  # MATLAB 1-based
+        print(n_channels)
+        chanMap0ind = list(range(n_channels))
+        chanMap = list(range(1, n_channels + 1))
         connected = np.ones(n_channels, dtype=bool)
         
         xcoords = pos[channel_ids_extract, 0]
@@ -217,24 +178,28 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         JustExtractingEvents = 0
         
     # -----------------------------------------------------------------------
-    ''' First Create a Save Folder to save results in for Matlab to load'''
+    ''' Create all save folders to load data from or save data to '''
     # -----------------------------------------------------------------------
+    
     SI_Save_Path = Path(create_save_folder(file_path))
-
-    #### ------------ Set Folder name for raw channel data ----------- ####
+    SI_Save_Path.mkdir(parents=True, exist_ok=True)
+    
+    # Channel data
     ChannelDataSaveFileName = SI_Save_Path / "SI_Saved_Channel_Data.dat"
     
-    #### ------------ Set Folder name for MetaData ----------- ####
+    # Metadata
     MetaDataSaveFileName = SI_Save_Path / "SI_Saved_MetaData.mat"
     
-    #### ------------ Set Folder name for Event Data ----------- ####
+    # Event data
     EventSaveFileName = SI_Save_Path / "SI_Saved_EventData.mat"
     
-    #### ------------ Set Folder name for ProbeInfo ----------- ####
+    # Probe info
     if SaveProbeInfoFormat == ".mat":
         ProbeSaveFileName = SI_Save_Path / "SI_Probe_Mapping.mat"
     elif SaveProbeInfoFormat == ".prb":
         ProbeSaveFileName = SI_Save_Path / "SI_Probe_Mapping.prb"
+    else:
+        raise ValueError("Unsupported SaveProbeInfoFormat")
         
     ## Actually set recording folder
     folder = Path(file_path)
@@ -254,6 +219,10 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         
     print("Loading Maxwell Recording from Path " + str(file_path))
     
+    # -----------------------------------------------------------------------
+    ''' Intitialize recording '''
+    # -----------------------------------------------------------------------
+    
     # load the recording
     recording = read_maxwell(
         file_path=RecordingFilePath,
@@ -264,20 +233,18 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         install_maxwell_plugin=True  
     )
         
-    
-    #recording = unsigned_to_signed(recording_unsigned)
-    
     channel_positions = recording.get_channel_locations()
     
-    print(channel_positions)
-    
-    # inspect basic properties
     print(recording)
     print("Sampling frequency:", recording.get_sampling_frequency())
     print("Number of channels:", recording.get_num_channels())
     print("Duration (s):", recording.get_total_duration())
     
-    # Parse time range, allow 'Inf' as end
+    # -----------------------------------------------------------------------
+    ''' Extraction parameter '''
+    # -----------------------------------------------------------------------
+    
+    ####### time range to extract ########
     t_start_str, t_end_str = TimeToExtract.split(",")
     
     t_start = float(t_start_str)
@@ -289,20 +256,17 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     fs = recording.get_sampling_frequency()
     n_frames = recording.get_num_frames()
     
-    # Convert to frame indices
+    # Convert to samples
     start_frame_extract = int(t_start * fs)
     if t_end == float("inf"):
         end_frame_extract = n_frames
     else:
         end_frame_extract = int(t_end * fs)
     
-    # Clamp to recording bounds
     start_frame_extract = max(0, start_frame_extract)
     end_frame_extract   = min(n_frames, end_frame_extract)
     
-    # Chunk parameters
     chunk_size = int(fs * 10)  # 10-second chunks
-    
     channel_ids = recording.channel_ids
     
     print(
@@ -311,9 +275,7 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         f"(frames {start_frame_extract} → {end_frame_extract})"
     )
     
-    print("Converting and saving channel data to " + str(ChannelDataSaveFileName )+ " (this might take a while)")
-    
-    # set channel to extract
+    ####### channel to extract ########
     if ChannelToExtract == "All":
         n_channels = recording.get_num_channels()  # integer
         channel_ids_extract = np.arange(n_channels)  # [0, 1, 2, ..., n_channels-1]
@@ -323,6 +285,9 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         dtype=int
         )
     
+    # -----------------------------------------------------------------------
+    ''' Save Channel Data'''
+    # -----------------------------------------------------------------------
     with open(ChannelDataSaveFileName, "wb") as f:
         for start in range(start_frame_extract, end_frame_extract, chunk_size):
             end = min(start + chunk_size, end_frame_extract)
@@ -352,16 +317,16 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
 
     if SaveProbeInfo == 1:
         Save_Probe_Info(recording,ProbeSaveFileName,SaveProbeInfoFormat,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract)
+        
     
 if __name__ == "__main__":
     
     SIParamsfile = sys.argv[1]
     print(SIParamsfile)
-    # Load JSON into a Python dictionary
+    # load JSON with infos from gui what to do
     with open(SIParamsfile, 'r') as f:
         SIparams = json.load(f)
         
-    # Assuming NEOparams is loaded from JSON already
     file_path = SIparams['SelectedPath']
     JustLoad = int(SIparams['JustLoadDatFile'])
     KeepConsoleOpen = int(SIparams['KeepPythonOpen'])
@@ -394,11 +359,10 @@ if __name__ == "__main__":
     if KeepConsoleOpen == 0:
         SIParamsfile = sys.argv[1]
         print(SIParamsfile)
-        # Load JSON into a Python dictionary
+        # load JSON with infos from gui what to do
         with open(SIParamsfile, 'r') as f:
             SIparams = json.load(f)
-            
-        # Assuming NEOparams is loaded from JSON already
+
         file_path = SIparams['SelectedPath']
         JustLoad = int(SIparams['JustLoadDatFile'])
         KeepConsoleOpen = int(SIparams['KeepPythonOpen'])

@@ -93,7 +93,7 @@ if strcmp(Type,"Initial")
     % Predefine Time Ranges
     %app.DefaultTimeRangeDataPlot = 1000; % Default time range shown in app.Data plot in amount of samples (64x1000 points plot)
     app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
-    TimeRangeText = strcat(num2str(1),"s");
+    TimeRangeText = strcat(num2str(0.5),"s");
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.CurrentTimePoints = 1; % Standard TIme in seconds
     
@@ -174,6 +174,7 @@ elseif strcmp(Type,"Loading")
     if isfield(app.Data, 'Spikes') 
         app.DropDown_2.Items{end+1} = 'Spikes';
     end
+
     %% Event trial number text area in main windwo
 
     if isfield(app.Data,'Events')
@@ -193,12 +194,24 @@ elseif strcmp(Type,"Loading")
             TimeRangeText = strcat(num2str(app.Data.Time(end)),"s");
             app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
         else
-            TimeRangeText = strcat(num2str(1),"s");
+            TimeRangeText = strcat(num2str(0.5),"s");
             app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
         end
     else
-        TimeRangeText = strcat(num2str(1),"s");
+        TimeRangeText = strcat(num2str(0.5),"s");
         app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
+    end
+
+    % Offer single sample time range
+    PrevItems = app.TimeSpanControlDropDown.Items;
+    if length(PrevItems)>5
+        PrevItems(1) = [];
+    end
+
+    app.TimeSpanControlDropDown.Items = {};
+    app.TimeSpanControlDropDown.Items{1} = strcat(num2str(1/app.Data.Info.NativeSamplingRate),'s');
+    for i = 1:length(PrevItems)
+        app.TimeSpanControlDropDown.Items{i+1} = PrevItems{i};
     end
     
     app.TimeRangeViewBox.Value = TimeRangeText;
@@ -223,9 +236,10 @@ elseif strcmp(Type,"Loading")
     end
 
     app.PreservePlotChannelLocations = 1;
-    app.PreviousThreshGridsSamplesNoNeighbour = [];
-    app.PreviousThreshGridsSamplesWithNeighbour = [];
-    app.MovieTimeToJump = 1;
+    app.PreviousThreshGrids = [];
+    app.PlotThreshGrids = [];
+
+    app.MovieTimeToJump = 30;
 
     % first plot after loading data: max 100 channel shown
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
@@ -403,20 +417,32 @@ elseif strcmp(Type,"VariableDefinition")
             TimeRangeText = strcat(num2str(app.Data.Time(end)),"s");
             app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
         else
-            TimeRangeText = strcat(num2str(1),"s");
+            TimeRangeText = strcat(num2str(0.5),"s");
             app.TimeLimit = [0.0333,app.Data.Time(end)]; % sets maximum and minimum amount of time shown in Main Window Plot
         end
     else
-        TimeRangeText = strcat(num2str(1),"s");
+        TimeRangeText = strcat(num2str(0.5),"s");
         app.TimeLimit = [0.0333,3]; % sets maximum and minimum amount of time shown in Main Window Plot
+    end
+
+    % Offer single sample time range
+    PrevItems = app.TimeSpanControlDropDown.Items;
+    if length(PrevItems)>5
+        PrevItems(1) = [];
+    end
+
+    app.TimeSpanControlDropDown.Items = {};
+    app.TimeSpanControlDropDown.Items{1} = strcat(num2str(1/app.Data.Info.NativeSamplingRate),'s');
+    for i = 1:length(PrevItems)
+        app.TimeSpanControlDropDown.Items{i+1} = PrevItems{i};
     end
 
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.ClimMaxValues = [];
 
-    app.PreviousThreshGridsSamplesNoNeighbour = [];
-    app.PreviousThreshGridsSamplesWithNeighbour = [];
-
+    app.PreviousThreshGrids = [];
+    app.PlotThreshGrids = [];
+    
     if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
         app.ActiveChannel = sort(app.Data.Info.ProbeInfo.ActiveChannel);    
     else
@@ -426,7 +452,7 @@ elseif strcmp(Type,"VariableDefinition")
     app.Data.Info.SpikeType = "Non";
     app.ChannelChange = "ProbeView";
     
-    app.MovieTimeToJump = 1;
+    app.MovieTimeToJump = 30;
     app.PlayedMovieBefore = 0;
 
     if ~isempty(app.ChannelAxes)

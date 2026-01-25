@@ -373,25 +373,36 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
 
 
     elseif strcmp(PreprocessingSteps(PPSteps),"ASR")
+        msg = sprintf('Artefact Subspace Reconstruction... (%d%% done)', round(100*(1/2)));
+        h2 = waitbar(0, 'Artefact Subspace Reconstruction...', 'Name','Preprocessing...');
+        waitbar(1/2, h2, msg);
+
         if PPSteps == 1 % If first step in pipeline: apply to raw data
-            [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Raw,PPSteps,Data,0,PreProInfo);
+            [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Raw,PPSteps,Data,0,PreProInfo);
         else % recognize already applied downsampling
             if ~isempty(find(PreprocessingSteps == "Downsampling"))
                 if find(PreprocessingSteps == "Downsampling")<PPSteps
-                    [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,1,PreProInfo);
+                    [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,1,PreProInfo);
                 else
-                    [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
+                    [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
                 end
             else
-                [cleanData] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
+                [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
             end
         end
 
-        Data.Preprocessed = cleanData;
+        msg = sprintf('Artefact Subspace Reconstruction... (%d%% done)', round(100*(1)));
+        waitbar(1, h2, msg);
+        close(h2);
+        %Data.Preprocessed = cleanData;
         clear cleanData;
 
     elseif strcmp(PreprocessingSteps(PPSteps),"Normalize")
         
+        msg = sprintf('Normalizing... (%d%% done)', round(100*(1/2)));
+        h2 = waitbar(0, 'Normalizing...', 'Name','Preprocessing...');
+        waitbar(1/2, h2, msg);
+
         if PPSteps == 1 % If first step in pipeline: apply to raw data
             % Downsampling only works with matrixes cloumn
             % wise. Therefore it is transposed to Channel as
@@ -408,14 +419,22 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
             Data.Preprocessed = Data.Preprocessed';
         end
         
+        msg = sprintf('Normalizing... (%d%% done)', round(100*(1)));
+        waitbar(1, h2, msg);
+        close(h2);
     elseif strcmp(PreprocessingSteps(PPSteps),"GrandAverage")
-
+        
+        msg = sprintf('Grand Average... (%d%% done)', round(100*(1/2)));
+        h2 = waitbar(0, 'Grand Average...', 'Name','Preprocessing...');
+        waitbar(1/2, h2, msg);
         if PPSteps == 1 % If first step in pipeline: apply to raw data
             Data.Preprocessed = bsxfun(@minus,Data.Raw,mean(Data.Raw,1,'omitnan'));
         else % If not first step in pipeline: apply to already preprocessed data
             Data.Preprocessed = bsxfun(@minus,Data.Preprocessed,mean(Data.Preprocessed,1,'omitnan'));
         end
-
+        msg = sprintf('GrandAverage... (%d%% done)', round(100*(1)));
+        waitbar(1, h2, msg);
+        close(h2);
     elseif strcmp(PreprocessingSteps(PPSteps),"Stimulation Artefact Rejection")
         if ~isempty(find(PreprocessingSteps == "Downsampling"))
             TempSR = PreProInfo.DownsampledSampleRate;
@@ -432,17 +451,35 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
         end
 
     elseif strcmp(PreprocessingSteps(PPSteps),"ChannelDeletion")
+        h2 = waitbar(0, 'Deleting Channel...', 'Name','Preprocessing...');
+        msg = sprintf('Deleting Channel... (%d%% done)', round(100*(1/2)));
+        waitbar(1/2, h2, msg);
         
         [Data] = Preprocess_Module_ChannelDeletion(Data,ChannelDeletion);
 
+        msg = sprintf('Deleting Channel... (%d%% done)', round(100*(1)));
+        waitbar(1, h2, msg);
+        close(h2);
     elseif strcmp(PreprocessingSteps(PPSteps),"CutStart")
+        h2 = waitbar(0, 'Cutting Time...', 'Name','Preprocessing...');
+        msg = sprintf('Cutting Time... (%d%% done)', round(100*(1/2)));
+        waitbar(1/2, h2, msg);
        
         [Data] = Preprocessing_Module_Cut_Time(Data,"CutStart",PreProInfo.CutStart,PreprocessingSteps,PPSteps);
         
+        msg = sprintf('Deleting Channel... (%d%% done)', round(100*(1)));
+        waitbar(1, h2, msg);
+        close(h2);
     elseif strcmp(PreprocessingSteps(PPSteps),"CutEnd")
-          
+        h2 = waitbar(0, 'Cutting Time...', 'Name','Preprocessing...');
+        msg = sprintf('Cutting Time... (%d%% done)', round(100*(1/2)));
+        waitbar(1/2, h2, msg);
+
         [Data] = Preprocessing_Module_Cut_Time(Data,"CutEnd",PreProInfo.CutEnd,PreprocessingSteps,PPSteps);
 
+        msg = sprintf('Cutting Time... (%d%% done)', round(100*(1)));
+        waitbar(1, h2, msg);
+        close(h2);
     end 
 end
 

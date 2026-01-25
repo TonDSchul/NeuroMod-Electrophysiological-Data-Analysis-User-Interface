@@ -37,7 +37,7 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
   - [How to Install Phy to Open via NeuroMod](#how-to-install-phy-to-open-via-neuromod)
 
-  - [How to Install the Decompression .dll for Maxwell Biosystems MEA .h5 files](#how-to-install-the-decompression-.dll-for-maxwell-biosystems-mea-.h5-files)	
+  - [How to load Biosystems MEA .h5 files](#how-to-load-biosystems-mea-.h5-files)	
 
   - [About Performance](#about-performance)
 
@@ -258,6 +258,8 @@ https://github.com/cortex-lab/spikes
 
 > ### **How to Install SpikeInterface for Spike Sorting in NeuroMod**
 
+*Tested and designed with SpikeInterface version 0.103.2*
+
 First you have to install Python, Anaconda and Visual Studios C++ (during that install all C++ related options). After you done this, you have to type 'Anaconda Prompt' in your windows search bar and open the prompt window. To make sure there are no permission errors, set the anaconda prompt to open always with administrator rights (right-click, properties, security tab, give full control to user OR click on the compatibility tab and enable to execute it as an administrator). **Optional:** In the Anaconda Prompt, create a custom anaconda environment to install all the necessary packages in using this command: 'conda create --name YOURENVNAME python=3.10' (replace YOURENVNAME with the actual name you want to give that environment) (for comprehensive tutorials see Youtube or https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). After creating the environment, activate it using 'conda activate <YourEnvironmentName>' and install the necessary packages using the following commands. Alternatively just copy-paste the commands in the anaconda prompt window as is, installing everything in the anaconda base environment. Which environment, the name of it and so on are not important, just that you know the name of the environment in which you installed everything.
 
 When you get the error message 'pip not found as internal command' or similar first use:
@@ -346,9 +348,11 @@ After successful installation you can now view and curate spike sorting results 
 
 **Information:** You can load spike sorting results from Mountainsort 5 and Spyking Circus 2 with the SpikeInterface GUI too. However, this is done in the 'Spike Detection and Sorting' window by changing the spike sorting parameter. Activate the checkboxes to open the SpikeInterface GUI and optionally to load spike sorting results to not have to wait for the spike sorting itself to finish again.
 
-> ### **How to Install the Decompression .dll for Maxwell Biosystems MEA .h5 files**
+> ### **How to load Biosystems MEA .h5 files**
 >
-In order to be able to extract MEA .h5 data files in any library you have to 'install' a .dll file by adding it to the environmental variables in windows. Follow the instructions provided here: https://share.mxwbio.com/d/5b5017febe354c8e942a/files/?p=%2FMxW%20-%20Installing%20the%20Decompression%20Library%20to%20load%20MaxLab%20Live%20Recordings.pdf
+In order to be able to extract MEA .h5 data files in any library you have to 'install' a .dll file provided by Maxwell biosystems by adding it to the environmental variables in windows. Follow the instructions provided here: https://share.mxwbio.com/d/5b5017febe354c8e942a/files/?p=%2FMxW%20-%20Installing%20the%20Decompression%20Library%20to%20load%20MaxLab%20Live%20Recordings.pdf
+
+Besides this you need to install SpikeInterface in an anaconda environment. Follow instructions above how to do that, it will work for Maxwell MEA data extraction as well. When you select a recording and extract it, you are being asked for the python.exe file in the anaconda environment you installed SpikeInterface in.
 
 > ### **About Performance**
 > 

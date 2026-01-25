@@ -114,11 +114,10 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
         # Plot probe with custom colors
         plot_probe(probe, with_contact_id=True, contacts_colors=colors)
         
-        # Create legend handles
+        # Create legend
         active_patch = mpatches.Patch(color='red', label='Active Channel')
         inactive_patch = mpatches.Patch(color='blue', label='Inactive Channel')
-        
-        # Add legend
+
         plt.legend(handles=[active_patch, inactive_patch], loc='upper right')
         plt.show()
             
@@ -145,18 +144,14 @@ def Preprocessing(Recording,Probe,Apply_Preprocessing):
 
 def combined_plot(recording,PreproRecording,ypitch):
    
-    # Create a figure with two subplots
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6))  # Two rows, one column
     
-    # Redirect plots to the first axes
     plt.sca(ax1)  
     sw.plot_traces(recording,  backend="matplotlib",ax=ax1,channel_ids=recording.channel_ids[:32],time_range=(0, 4.0))  
     
-    # Redirect plots to the second axes
     plt.sca(ax2) 
     sw.plot_traces(PreproRecording,  backend="matplotlib",ax=ax2,channel_ids=recording.channel_ids[:32],time_range=(0, 4.0))  
     
-    # Adjust layout to make the subplots look better
     plt.tight_layout()
     plt.show()
     
@@ -195,7 +190,7 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
     kwargs = {
         "sorter_name": "spykingcircus2",
         "recording": recording,
-        argname: Sorting_output_folder,   # dynamically insert correct key
+        argname: Sorting_output_folder, 
         "remove_existing_folder": True,
         **costum_SC2_params
     }
@@ -217,26 +212,6 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
   
     Costum_MS5_params = update_standards(default_MS5_params, SortingParameter)
     
-    """ 100 um  
-    default_MS5_params['scheme2_training_duration_sec'] = 30
-    default_MS5_params['scheme3_block_duration_sec'] = 50
-    default_MS5_params['scheme1_detect_channel_radius'] = 50
-    default_MS5_params['scheme2_phase1_detect_channel_radius'] = 100
-    default_MS5_params['scheme2_max_num_snippets_per_training_batch'] = 100
-    default_MS5_params['snippet_mask_radius'] = 50
-    """
-    
-    """50 um
-    default_MS5_params['scheme2_training_duration_sec'] = 30
-    default_MS5_params['scheme3_block_duration_sec'] = 50
-    default_MS5_params['scheme1_detect_channel_radius'] = 150
-    default_MS5_params['scheme2_phase1_detect_channel_radius'] = 200
-    default_MS5_params['scheme2_max_num_snippets_per_training_batch'] = 100
-    default_MS5_params['snippet_mask_radius'] = 50
-    default_MS5_params['filter'] = False
-    default_MS5_params['detect_threshold'] =5 
-    """
-    
     if Apply_Preprocessing == 1:
         Costum_MS5_params['filter'] = False
         print("No Prepro in MS5")
@@ -249,13 +224,12 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     
     print(Costum_MS5_params.keys())
     
-    # get the keyword for the current spikeinterface api signature
     argname = get_run_sorter_folder_arg()
 
     kwargs = {
         "sorter_name": "mountainsort5",
         "recording": recording,
-        argname: Sorting_output_folder,   # dynamically insert correct key
+        argname: Sorting_output_folder,   
         "remove_existing_folder": True,
         **Costum_MS5_params
     }
@@ -349,9 +323,9 @@ def PlotTemplatesandRaster(analyzer):
     av_templates = ext_templates.get_data(operator="average")
     
     # Calculate the number of rows and columns
-    num_elements = len(av_templates)  # Gets the total number of templates
-    num_rows = 4  # Define 4 rows
-    num_cols = (num_elements + num_rows - 1) // num_rows  # Calculate columns needed
+    num_elements = len(av_templates)  #  total number of templates
+    num_rows = 4  
+    num_cols = (num_elements + num_rows - 1) // num_rows  # columns needed
 
     fig, axes = plt.subplots(num_rows, num_cols, figsize=(15, 10), squeeze=False)
 
@@ -364,15 +338,13 @@ def PlotTemplatesandRaster(analyzer):
         ax.plot(template)  
         ax.set_title(f"Unit ID: {unit_id}")  
     
-    # Hide unused subplots
     for ax in axes_flat[num_elements:]:
         ax.axis('off')
     
-    # Adjust layout
     plt.tight_layout()
     plt.show()
     
-    time.sleep(1)    # Pause 5.5 seconds
+    time.sleep(1)
     
 def DeleteFolderContents(folder_path):
     try:
@@ -404,7 +376,6 @@ def get_all_subfolders(folder_path):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"The folder '{folder_path}' does not exist.")
     
-    # List all entries in the folder and filter only directories
     subfolders = [entry for entry in os.listdir(folder_path) 
                   if os.path.isdir(os.path.join(folder_path, entry))]
     return subfolders
@@ -417,7 +388,6 @@ def get_bin_files(folder_path):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"The folder '{folder_path}' does not exist.")
     
-    # List all files in the folder and filter for .bin files
     bin_files = [file for file in os.listdir(folder_path) if file.endswith('.bin')]
     return bin_files
 
@@ -429,7 +399,6 @@ def get_dat_files(folder_path):
     if not os.path.exists(folder_path):
         raise FileNotFoundError(f"The folder '{folder_path}' does not exist.")
     
-    # List all files in the folder and filter for .bin files
     dat_files = [file for file in os.listdir(folder_path) if file.endswith('.dat')]
     return dat_files
         
@@ -438,16 +407,13 @@ def update_standards(standsorting_parameters, sorting_parameters):
         if key in standsorting_parameters:
             # Get the type of the standard parameter value
             expected_type = type(standsorting_parameters[key])
-            
-            # Attempt to convert the value to the expected type
+
             try:
                 converted_value = expected_type(value)
             except (ValueError, TypeError):
-                # If conversion fails, skip the update and log an error
                 print(f"Warning: Could not convert value for key '{key}' to {expected_type.__name__}. Check in the conda command window to see sorting settings. KEys should be set to 'None'")
                 continue
             
-            # Update the standard dictionary only if the value has changed
             if standsorting_parameters[key] != converted_value:
                 standsorting_parameters[key] = converted_value
 

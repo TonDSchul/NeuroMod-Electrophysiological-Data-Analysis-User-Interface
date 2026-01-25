@@ -312,3 +312,13 @@ try
 catch
     app.LiveSpectrogramApp = [];
 end
+
+% Spike Selector
+try
+    if ~isempty(app.SpikeSelectorWindow)
+        delete(app.SpikeSelectorWindow);
+        app.SpikeSelectorWindow = [];
+    end
+catch
+    app.SpikeSelectorWindow = [];
+end

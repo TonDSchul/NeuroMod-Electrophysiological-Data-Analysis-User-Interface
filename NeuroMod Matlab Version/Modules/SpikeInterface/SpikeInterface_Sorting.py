@@ -44,7 +44,6 @@ def main(subfolders,file_path,GUIParamsfile):
     with open(GUIParamsfile, 'r') as f:
         GUIparams = json.load(f)
 
-    # Assuming GUIparams is loaded from JSON already
     file_path = GUIparams['file_path']
     MultipleRecordings = int(GUIparams['MultipleRecordings'])
     Sorter = GUIparams['SelectedSorter']
@@ -71,7 +70,6 @@ def main(subfolders,file_path,GUIParamsfile):
     Xcoords = GUIparams['xCoords']
     Ycoords = GUIparams['yCoords']
     
-    # Check if the file exists, then delete it
     if os.path.exists(GUIParamsfile):
         os.remove(GUIParamsfile)
         print(f"Deleted file: {GUIParamsfile}")
@@ -79,7 +77,6 @@ def main(subfolders,file_path,GUIParamsfile):
         print("File does not exist, nothing to delete.")
             
     # Read the JSON file
-    #json_file_path = sys.argv[12]  # Assume it's the last argument
     JsonFilename = os.path.join(file_path, 'sorting_parameters.json')
     with open(JsonFilename, 'r') as f:
         SortingParameter = json.load(f)
@@ -129,13 +126,14 @@ def main(subfolders,file_path,GUIParamsfile):
             BinFiles = get_bin_files(CompletePath)
                     
         PathToLoad = os.path.join(CompletePath,BinFiles[0])
-        
-        # Create Folder to temporarily save recording in
+
         PathToSaveCached = os.path.join(CompletePath, "Chached Recording")
         os.makedirs(PathToSaveCached, exist_ok=True)
+        
         # Create Folder to save results that are loaded into Matlab
         PathForPhy = os.path.join(CompletePath, "SpikeInterface_Sorting_Phy_Results", Sorter)
         os.makedirs(PathForPhy, exist_ok=True)
+        
         ### Path to save sorting results in to load later
         Save_Sorting_Folder = os.path.join(CompletePath, "SpikeInterface_Saved_Sorting", Sorter)
         if LoadSpikeSorting == 0:
@@ -266,11 +264,10 @@ if __name__ == "__main__":
     # First Load mat file with GUI params guiding execution here
     GUIParamsfile = sys.argv[1]
     print(GUIParamsfile)
-    # Load JSON into a Python dictionary
+    # Load JSON with gui info
     with open(GUIParamsfile, 'r') as f:
         GUIparams = json.load(f)
 
-    # Assuming GUIparams is loaded from JSON already
     file_path = GUIparams['file_path']
     MultipleRecordings = int(GUIparams['MultipleRecordings'])
     Sorter = GUIparams['SelectedSorter']
@@ -285,8 +282,6 @@ if __name__ == "__main__":
 
     if KeepConsoleOpen == 1:
         try:
-            # Access arguments
-
             if not pyuac.isUserAdmin():
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()

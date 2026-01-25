@@ -185,7 +185,7 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
             end
 
             set(ImageScChannel_handles(1),'CData',Data,'Tag','ImageScChannel')
-        end
+        end      
     end
     
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")
@@ -216,6 +216,7 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
         h.FaceColor = 'flat';   % or 'flat'
         h.EdgeColor = 'k';     % optional
         colormap(UIAxis, parula)   % or jet, turbo, etc.
+
     end
     
     if strcmp(PlotAppearance.MainWindow.Data.LockedClimSettings,"on")

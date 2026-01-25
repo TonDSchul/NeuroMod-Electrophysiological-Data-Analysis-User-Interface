@@ -13,7 +13,7 @@ if strcmp(DataType,"DataMatrix")
             [TempLaufVariable] = Organize_Convert_ActiveChannel_to_DataChannel(Info.ProbeInfo.ActiveChannel,LaufVariable,'MainPlot');
             if ~isempty(TempLaufVariable)
                 if sum(TempLaufVariable == Channel_Selection)>0
-                    PlotData(ii,jj) = sum(DataForMatrix(TempLaufVariable == Channel_Selection,:));
+                    PlotData(ii,jj) = (DataForMatrix(TempLaufVariable == Channel_Selection,1));
                 end
             end
             LaufVariable = LaufVariable + 1;

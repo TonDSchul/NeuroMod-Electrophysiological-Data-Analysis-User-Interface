@@ -131,15 +131,13 @@ def create_save_folder(selected_folder):
     """
     Given a selected folder, create a sibling folder with ' Neo SaveFile' suffix.
     """
-    # Get parent dir and base folder name
+
     parent_dir = os.path.dirname(selected_folder)
     base_name = os.path.basename(selected_folder)
 
-    # Construct new folder name
     new_folder_name = f"{base_name} Neo SaveFile"
     new_folder_path = os.path.join(parent_dir, new_folder_name)
 
-    # Create the folder if it doesn't exist
     if not os.path.exists(new_folder_path):
         os.makedirs(new_folder_path)
         print(f"Created folder: {new_folder_path}")
