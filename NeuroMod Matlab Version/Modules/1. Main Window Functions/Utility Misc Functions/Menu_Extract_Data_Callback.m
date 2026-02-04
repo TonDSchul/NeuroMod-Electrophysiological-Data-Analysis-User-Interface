@@ -171,8 +171,13 @@ if strcmp(Window,"ProbeLayout")
         app.SwitchLeftandRightChannelNumberCheckBox.Enable = "on";
         app.HorizontalOffsetumEditField.Enable = "on";
         app.VerticalOffsetumEditField.Enable = "on";
-        app.CheckBox.Enable = "on";
-        app.VerticalOffsetumEditField_2.Enable = "on";
+        if str2double(app.ChannelRowsDropDown.Value) > 2
+            app.CheckBox.Enable = "off";
+            app.VerticalOffsetumEditField_2.Enable = "off";
+        elseif str2double(app.ChannelRowsDropDown.Value) == 2
+            app.CheckBox.Enable = "on";
+            app.VerticalOffsetumEditField_2.Enable = "on";
+        end 
     else
         app.SwitchLeftandRightChannelNumberCheckBox.Enable = "off";
         app.HorizontalOffsetumEditField.Enable = "off";
@@ -180,6 +185,7 @@ if strcmp(Window,"ProbeLayout")
         app.CheckBox.Value = 0;
         app.CheckBox.Enable = "off";
         app.VerticalOffsetumEditField_2.Enable = "off";
+        app.VerticalOffsetumEditField_2.Value = '0';
 
         app.SwitchLeftandRightChannelNumberCheckBox.Value = 0;
         app.HorizontalOffsetumEditField.Value = "0";
@@ -222,7 +228,11 @@ if strcmp(Window,"ProbeLayout")
     app.ReverseTopandBottomChannelNumberCheckBox_2.Value = app.ProbeInfoandPath.FlipLoadedData;
 
     app.CheckBox.Value = app.ProbeInfoandPath.OffSetRows;
-    app.VerticalOffsetumEditField_2.Value = app.ProbeInfoandPath.OffSetRowsDistance;
+    if str2double(app.ChannelRowsDropDown.Value) == 2
+        app.VerticalOffsetumEditField_2.Value = app.ProbeInfoandPath.OffSetRowsDistance;
+    else
+        app.VerticalOffsetumEditField_2.Value = '0';
+    end
     app.ECoGArrayCheckBox.Value = app.ProbeInfoandPath.ECoGArray;
 
     if str2double(app.ProbeInfoandPath .NrChannel)<32

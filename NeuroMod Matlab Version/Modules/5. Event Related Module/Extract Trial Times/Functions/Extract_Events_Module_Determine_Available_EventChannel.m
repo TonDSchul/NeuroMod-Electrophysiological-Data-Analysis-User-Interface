@@ -564,4 +564,50 @@ elseif strcmp(Data.Info.RecordingType,"TDT Tank Data")
             texttoshow = "Event data of type epocs:Tick found!";
         end
     end
+
+elseif strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
+
+    [FilePaths] = Utility_Extract_Contents_of_Folder(Path);
+    
+    H5idx = endsWith(FilePaths, ".h5");
+
+    if sum(H5idx)==0
+        texttoshow = "Warning: No event data found in folder the dataset was extracted from. Please select a different folder.";
+        FileEndingsExist = 0;
+        EventInfo = [];
+    else
+        FullPath = fullfile(Path,FilePaths(H5idx));
+    end
+
+    [Events,ChannelNames,Error] = Extract_Events_Module_Maxwell_MEA(Data,FullPath,FileType,[],'Trigger Onset');
+    
+    if Error == 0
+        if ~isempty(Events)
+            if ~isempty(Events{1})
+                FileEndingsExist = 1;
+                
+                texttoshow = strcat("Finished looking for event channel from: ",Path);
+                texttoshow = [texttoshow;strcat("Found ",num2str(length(Events))," Input Channel:")];
+                
+                for ii = 1:length(Events)
+                    texttoshow = [texttoshow;strcat("Sample Times Channel: ",ChannelNames);num2str(Events{ii})];
+                end
+
+                EventInfo.EventSamples = Events;
+                EventInfo.ChannelNames = ChannelNames;
+            else
+                texttoshow = "Warning: No event data found in folder the dataset was extracted from. Please select a different folder.";
+                FileEndingsExist = 0;
+                EventInfo = [];
+            end
+        else
+            texttoshow = "Warning: No event data found in folder the dataset was extracted from. Please select a different folder.";
+            FileEndingsExist = 0;
+            EventInfo = [];
+        end
+    else
+        texttoshow = "Warning: No event data found in folder the dataset was extracted from. Please select a different folder.";
+        FileEndingsExist = 0;
+        EventInfo = [];
+    end
 end           

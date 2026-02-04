@@ -167,9 +167,28 @@ if strcmp(FunctionOrder,'Extract_Events')
                 startTimestamp = Data.Info.startTimestamp;
             end
         end
+
+        if strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
+            if isempty(EventInfo)
+                warning(strcat("Ne event data found for Maxwell MEA .h5 recording in path ",DataPath));
+                if isfield(Data,'Events')
+                    Data.Events = [];
+                end
+                return;
+            else
+                if ~isfield(EventInfo,'EventSamples')
+                    warning(strcat("Ne event data found for Maxwell MEA .h5 recording in path ",DataPath));
+                    if isfield(Data,'Events')
+                        Data.Events = [];
+                    end
+                    return;
+                end
+            end
+        end
+
         [Data,~,~,~] = Extract_Events_Module_Main_Function(Data,EventInfo,DataPath,Data.Info.RecordingType,AutorunConfig.ExtractEventDataModule.ChannelOfInterest,AutorunConfig.ExtractEventDataModule.EventSignalThreshold,InputChannelSelection,ExtractedRHDEventsFlag,TextArea,RHDAllChannelData,executableFolder,startTimestamp,TimearoundEvent,AdditionalEventInfo,EventsToCombine);
     end
-
+    
     if isfield(Data,'Events')
         %% Save event related infos for later on the fly extraction
         Data = Extract_Events_Module_Add_EventRelatedInfo(Data,AutorunConfig.ExtractEventRelatedDataModule.TimeBeforeEvent,AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent);

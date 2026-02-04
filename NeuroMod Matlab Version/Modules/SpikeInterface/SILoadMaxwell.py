@@ -13,12 +13,10 @@ import scipy.io
 from scipy.io import savemat
 from pathlib import Path
 import json
+import h5py
 
 from spikeinterface.extractors import read_maxwell
-from probeinterface.io import write_prb
-from probeinterface import Probe, ProbeGroup
-from spikeinterface.preprocessing import unsigned_to_signed
-        
+
 def create_save_folder(selected_folder):
     """
     Given a selected folder, create a sibling folder with ' Neo SaveFile' suffix.
@@ -39,18 +37,19 @@ def create_save_folder(selected_folder):
 
 
 def Save_MetaData_SI(recording, JustExtractingEvents,
-                      SaveFileName,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract):
+                      SaveFileName,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract,TimeToExtract):
     
     # channel locations
-    locs = recording.get_channel_locations()
-
+    locs_all = recording.get_channel_locations()
+    locs = locs_all[channel_ids_extract, :]
+    
     start_sample = recording.get_annotation('acquisition_start_sample') 
     
     if start_sample is None:
         start_sample = 1
     
     sampling_rate = recording.get_sampling_frequency() 
-    n_channels = recording.get_num_channels()  
+
     n_samples = recording.get_num_frames()  
 
     Origchannel_ids = recording.get_channel_ids()
@@ -60,6 +59,9 @@ def Save_MetaData_SI(recording, JustExtractingEvents,
         channel_names = [str(ch) for ch in Origchannel_ids]  # default names = IDs
     except:
         channel_names = [f"ch{i}" for i in range(len(Origchannel_ids))]
+    
+    
+    n_channels = len(channel_ids)   # number of SAVED channels
 
     try:
         units = recording.get_channel_property("units")
@@ -82,6 +84,7 @@ def Save_MetaData_SI(recording, JustExtractingEvents,
             'channel_locations': locs,
             'StartSampleToExtract': start_frame_extract,
             'StopSampleToExtract': end_frame_extract,
+            'TimeToExtract': TimeToExtract,
             'ChannelToExtract': channel_ids_extract,
         })
 
@@ -90,6 +93,7 @@ def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extr
     probe = recording.get_probe()
     channel_ids = recording.channel_ids
     channel_ids = channel_ids[channel_ids_extract]
+    
     if SaveFormat == ".prb":
 
         pos = probe.contact_positions
@@ -102,6 +106,10 @@ def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extr
         
         xcoords = pos[channel_ids_extract, 0]
         ycoords = pos[channel_ids_extract, 1]
+        
+        # for convenience, set start of x and y coords to 0  
+        #xcoords = xcoords - xcoords.min()
+        #ycoords = ycoords - ycoords.min()
     
         kcoords = np.ones(n_channels, dtype=np.int32)
     
@@ -139,7 +147,11 @@ def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extr
         
         xcoords = pos[channel_ids_extract, 0]
         ycoords = pos[channel_ids_extract, 1]
-    
+        
+        # for convenience, set start of x and y coords to 0  
+        #xcoords = xcoords - xcoords.min()
+        #ycoords = ycoords - ycoords.min()
+        
         kcoords = np.ones(n_channels, dtype=np.int32)
     
         fs = float(recording.get_sampling_frequency())
@@ -222,7 +234,7 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     # -----------------------------------------------------------------------
     ''' Intitialize recording '''
     # -----------------------------------------------------------------------
-    
+        
     # load the recording
     recording = read_maxwell(
         file_path=RecordingFilePath,
@@ -232,7 +244,7 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
         rec_name=None,         
         install_maxwell_plugin=True  
     )
-        
+    
     channel_positions = recording.get_channel_locations()
     
     print(recording)
@@ -309,14 +321,14 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     ''' Save MetaData'''
     # -----------------------------------------------------------------------
     
-    Save_MetaData_SI(recording,JustExtractingEvents,MetaDataSaveFileName,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract)
+    Save_MetaData_SI(recording,JustExtractingEvents,MetaDataSaveFileName,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract,TimeToExtract)
     
     # -----------------------------------------------------------------------
     ''' Save Probe'''
     # -----------------------------------------------------------------------
-
-    if SaveProbeInfo == 1:
-        Save_Probe_Info(recording,ProbeSaveFileName,SaveProbeInfoFormat,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract)
+    # Done in Matlab now but preserved if it should be needed
+    #if SaveProbeInfo == 1:
+    #    Save_Probe_Info(recording,ProbeSaveFileName,SaveProbeInfoFormat,channel_ids,channel_ids_extract,start_frame_extract,end_frame_extract)
         
     
 if __name__ == "__main__":

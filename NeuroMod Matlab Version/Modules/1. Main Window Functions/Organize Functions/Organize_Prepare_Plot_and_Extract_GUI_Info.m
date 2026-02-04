@@ -65,7 +65,6 @@ else
     OldDataPlotName = DataPlotType;
 end
 
-
 if strcmp(EventPlot,"Events") && isfield(app.Data,'Events')
     EventData = app.Data.Events{app.CurrentEventChannel};
 % If no events: Pass empty variable in following functions
@@ -155,19 +154,25 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
 
         UinquePos = unique(app.Data.Spikes.ChannelPosition(:,1));
     
-        if numel(UinquePos)>=2
+        if numel(UinquePos)>=2 ||  strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"DataLinesGrid")
             SpikeData.Position = app.Data.Spikes.SpikeChannel(SpikeDataIndex); 
         else
             SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
         end
+        
+        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+            [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
+    
+            SpikeData.Position = FakeDepths(SpikeData.Position);
+        end
     else
        SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
 
-       if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-           % [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
-           % 
-           % SpikeData.Position = FakeDepths(SpikeData.Position);
-       end
+       % if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+       %     [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
+       % 
+       %     SpikeData.Position = FakeDepths(SpikeData.Position);
+       % end
     end
 end
 

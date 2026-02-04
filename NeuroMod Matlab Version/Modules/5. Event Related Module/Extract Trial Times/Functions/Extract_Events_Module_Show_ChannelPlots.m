@@ -406,9 +406,7 @@ if strcmp(Data.Info.RecordingType,"NEO")
 
     % Include a specific duration of the event to make it clearly visible
     % -- 2ms standard
-    Numsamplesevent = round(Data.Info.NativeSamplingRate*0.002);
-    % Just one sample would be visibly different to others. This can be
-    % hard to see so I add 1ms to the right of the trigger 
+    Numsamplesevent = round(Data.Info.NativeSamplingRate*0.002); 
     for i = 1:length(Channel.Samples)
         if Channel.Samples(i)+Numsamplesevent<=length(EventData)
             EventData(Channel.Samples(i):Channel.Samples(i)+Numsamplesevent) = 1;
@@ -463,16 +461,14 @@ if strcmp(Data.Info.RecordingType,"Spike2")
     
     % Get the contents of the folder
     contents = dir(Folder);   
-    % Check each item in the folder
     Filenametoload = [];
     for i = 1:length(contents)
         item = contents(i);
-        
-        % Skip the current and parent directory entries
+
         if strcmp(item.name, '.') || strcmp(item.name, '..')
             continue;
         end
-        % Check if the item is a .dat file
+
         [~, ~, ext] = fileparts(item.name);
         if strcmp(ext, '.smrx')
             Filenametoload = item.name;
@@ -541,4 +537,33 @@ if strcmp(Data.Info.RecordingType,"Spike2")
     end
 
 end
-                
+
+
+if strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
+    
+    Channel.Samples(Channel.Samples<=0) = [];
+
+    EventData = zeros(1,length(Data.Time));
+    %EventData(Channel.Samples) = 1;
+
+    % Include a specific duration of the event to make it clearly visible
+    % -- 2ms standard
+    Numsamplesevent = round(Data.Info.NativeSamplingRate*0.002);
+    % Just one sample would be visibly different to others. This can be
+    % hard to see so I add 1ms to the right of the trigger 
+    for i = 1:length(Channel.Samples)
+        if Channel.Samples(i)+Numsamplesevent<=length(EventData)
+            EventData(Channel.Samples(i):Channel.Samples(i)+Numsamplesevent) = 1;
+        elseif Channel.Samples(i)+Numsamplesevent>length(EventData)
+            EventData(Channel.Samples(i):end) = 1;
+        end
+    end
+    %% Correct for time cons
+
+    [DownsampleRate] = Extract_Events_Module_Load_and_Plot_Events(EventData,[],app.UIAxes,app.FileTypeDropDown_2.Value,app.FileTypeDropDown.Value,Data,[],DownsampleRate);
+    
+    if str2double(app.DowsampledSampleRateHzEditField.Value) ~= DownsampleRate
+        app.DowsampledSampleRateHzEditField.Value = num2str(DownsampleRate);
+    end
+    
+end

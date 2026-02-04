@@ -1,102 +1,115 @@
 function Module_MainWindow_Show_Spike_Selector_Waveforms(app,PlotType)
 
-if strcmp(PlotType,"FullPlot")
-    if ~strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Data.Info.SpikeType,"Non")
-        UniqueCluster = unique(app.Mainapp.Data.Spikes.SpikeCluster);
-        for k = 1:length(UniqueCluster)
-            app.ClusterDropDown.Items{k} = num2str(UniqueCluster(k));
-        end
-        app.ClusterDropDown.Value = app.ClusterDropDown.Items{1};
-        ClustertoShow = app.ClusterDropDown;
-    else
-        app.ClusterDropDown.Enable = "off";
-        ClustertoShow.Value = 'Non';
-    end
+SelectedSpike = str2double(app.SpikeNrEditField.Value);
 
-    ChannelSelectionforPlottingEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.Raw,1)));
-    SpikeAnalysisType.Value = 'Spike Map';
-    WaveformEditField.Value = '1,10';
-    SpikeRateBinsEditField.Value = '10';
-    TimeWindowSpiketriggredLFPEditField.Value = '-0.1,0';
-    
+if ~strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Data.Info.SpikeType,"Non")
+    ClustertoShow = app.ClusterDropDown;
+    ChannelToShow = app.Mainapp.ActiveChannel;
+else
+    app.ClusterDropDown.Enable = "off";
+    ClustertoShow.Value = 'Non';
     ChannelToShow = str2double(app.SpikeChannelEditField.Value);
-    
-    [SpikeTimes,~,SpikeAmps,CluterPositions,Waveforms,~,~,~,~,ClustertoshowDropDown,~,~,WaveformChannel] = Continous_Spikes_Prepare_Plots(app.Mainapp.Data,ChannelSelectionforPlottingEditField,WaveformEditField,ClustertoShow,[],app.Mainapp.Data.Info.SpikeType,SpikeAnalysisType,SpikeRateBinsEditField,TimeWindowSpiketriggredLFPEditField,1,'',app.Mainapp.Data.Spikes.Waveforms,ChannelToShow,SpikeAnalysisType.Value,app.Mainapp.PreservePlotChannelLocations);
-    
-    if ~isempty(app.SpikeAmplitudemVempytfornonEditField.Value)
-        AmplitudeTrehshold = str2double(app.SpikeAmplitudemVempytfornonEditField.Value);
+end
 
-        IndiciesBelowAmplTresh = Waveforms <= AmplitudeTrehshold;
-        SumIndiciesBelowAmplTresh = sum(IndiciesBelowAmplTresh,1)';
+ChannelSelectionforPlottingEditField.Value = strcat('1,',num2str(size(app.Mainapp.Data.Raw,1)));
+SpikeAnalysisType.Value = 'Spike Map';
+WaveformEditField.Value = '1,10';
+SpikeRateBinsEditField.Value = '10';
+TimeWindowSpiketriggredLFPEditField.Value = '-0.1,0';
 
-        if sum(IndiciesBelowAmplTresh)==0
-            msgbox("No spikes below amplitude threshold found!");
-            return;
-        else
-            SpikeTimes(SumIndiciesBelowAmplTresh==1)=[];
-            SpikeAmps(SumIndiciesBelowAmplTresh==1)=[];
-            Waveforms(SumIndiciesBelowAmplTresh==1,:)=[];
-        end
-    end
+[SpikeTimes,~,SpikeAmps,CluterPositions,Waveforms,~,~,~,~,ClustertoshowDropDown,~,~,WaveformChannel] = Continous_Spikes_Prepare_Plots(app.Mainapp.Data,ChannelSelectionforPlottingEditField,WaveformEditField,ClustertoShow,[],app.Mainapp.Data.Info.SpikeType,SpikeAnalysisType,SpikeRateBinsEditField,TimeWindowSpiketriggredLFPEditField,1,'',app.Mainapp.Data.Spikes.Waveforms,ChannelToShow,SpikeAnalysisType.Value,app.Mainapp.PreservePlotChannelLocations);
 
-    app.SelectedSpike.SpikeTimes = SpikeTimes;
-    app.SelectedSpike.Channel = ChannelToShow;
+if isstring(SpikeTimes)
+    msgbox("No spikes with current settings found! Check if channel with the selected unit are active in the probe view window!");
+    cla(app.UIAxes)
+    app.SelectedSpike.SpikeTimes = [];
+    return;
+end
 
-    WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
-    if length(WaveformHandles)>length(SpikeTimes)
-        delete(WaveformHandles(length(SpikeTimes)+1:end));
-        WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
-    end
-    
-    title(app.UIAxes,strcat("All Waveforms Channel ",app.SpikeChannelEditField.Value))
-    xlabel(app.UIAxes,"Time [ms]")
-    ylabel(app.UIAxes,"Signal [mV]")
-    
-    TimeToPlot = 0:1/app.Mainapp.Data.Info.NativeSamplingRate:(size(Waveforms,2)-1)/app.Mainapp.Data.Info.NativeSamplingRate;
-    
-    if isempty(WaveformHandles)
-        for i = 1:length(SpikeTimes)
-            line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
-        end
-        WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
-    else
-        for i = 1:length(SpikeTimes)
-            if i <=length(WaveformHandles)
-                set(WaveformHandles(i),'XData',TimeToPlot,'YData',Waveforms(i,:),'Color','c','Tag','Waveforms')
-            else
-                line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
-            end
-        end
-    end
+if ~isempty(app.SpikeAmplitudemVempytfornonEditField.Value)
+    AmplitudeTrehshold = str2double(app.SpikeAmplitudemVempytfornonEditField.Value);
 
-    app.CurrentNumSpikes = length(SpikeTimes);
-    
-    WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
-    if str2double(app.SpikeNrEditField.Value)>length(SpikeTimes)
-        warning("Selected spike number exceeds spike number present in current selection. No spike is marked.");
-        MarkedWaveHandles = findobj(app.UIAxes,'Tag', 'MarkedWave');
-        delete(MarkedWaveHandles);
+    IndiciesBelowAmplTresh = Waveforms <= AmplitudeTrehshold;
+    SumIndiciesBelowAmplTresh = sum(IndiciesBelowAmplTresh,2)';
+
+    if sum(IndiciesBelowAmplTresh)==0
+        msgbox("No spikes below amplitude threshold found!");
         return;
     else
-        MarkedWaveHandles = findobj(app.UIAxes,'Tag', 'MarkedWave');
-        if ~isempty(MarkedWaveHandles)
-            set(MarkedWaveHandles,'Color','c','LineWidth',1)
-        end
-
-        set(WaveformHandles(str2double(app.SpikeNrEditField.Value)),'Color','r','LineWidth',3,'Tag','MarkedWave')
-        uistack(WaveformHandles(str2double(app.SpikeNrEditField.Value)),'top')
-        app.PreviouslyMarkedSpike = str2double(app.SpikeNrEditField.Value);
+        SpikeTimes(SumIndiciesBelowAmplTresh==0)=[];
+        SpikeAmps(SumIndiciesBelowAmplTresh==0)=[];
+        Waveforms(SumIndiciesBelowAmplTresh==0,:)=[];
     end
-else % Just mark a new spike
     WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
     MarkedWaveHandles = findobj(app.UIAxes,'Tag', 'MarkedWave');
-    
-    if ~isempty(MarkedWaveHandles)
-        set(MarkedWaveHandles,'Color','c','LineWidth',1)
+    delete(WaveformHandles);
+    delete(MarkedWaveHandles);
+    app.PreviouslyMarkedSpike = [];
+end
+
+%% get waveform from current spike
+
+TimeToPlot = 0:1/app.Mainapp.Data.Info.NativeSamplingRate:(size(Waveforms,2)-1)/app.Mainapp.Data.Info.NativeSamplingRate;
+
+RangeAroundSpike = (length(TimeToPlot)-1)/2; % 50 samples in total
+
+% get currently marked Wavefrm
+if ~strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Data.Info.SpikeType,"Non")
+    ClusterIndicies = CluterPositions == str2double(app.ClusterDropDown.Value);
+   
+     if sum(ClusterIndicies)==0
+        msgbox("No spikes with current settings found! Check if channel with the selected unit are active in the probe view window!");
+        return;
+    else
+        SpikeTimes(ClusterIndicies==0)=[];
+        SpikeAmps(ClusterIndicies==0)=[];
+        Waveforms(ClusterIndicies==0,:)=[];
+        WaveformChannel(ClusterIndicies==0,:)=[];
     end
-    app.PreviouslyMarkedSpike = str2double(app.SpikeNrEditField.Value);
+    app.SelectedSpike.Channel = WaveformChannel(SelectedSpike);
+else
+    app.SelectedSpike.Channel = ChannelToShow;
+end
 
-    set(WaveformHandles(str2double(app.SpikeNrEditField.Value)),'Color','r','LineWidth',3,'Tag','MarkedWave')
-    uistack(WaveformHandles(str2double(app.SpikeNrEditField.Value)),'top')
+app.SelectedSpike.SpikeTimes = SpikeTimes;
 
+SampleRate = app.Mainapp.Data.Info.NativeSamplingRate;
+WaveFormSamples = round(SpikeTimes(SelectedSpike)*SampleRate)-RangeAroundSpike:round(SpikeTimes(SelectedSpike)*SampleRate)+RangeAroundSpike;
+
+[PreproChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.SelectedSpike.Channel,'MainPlot');
+CurrentWaveform = app.Mainapp.Data.Preprocessed(PreproChannel,WaveFormSamples);
+
+WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
+if length(WaveformHandles)>length(SpikeTimes)
+    delete(WaveformHandles(length(SpikeTimes)+1:end));
+    WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
+end
+
+title(app.UIAxes,strcat("All Waveforms Channel ",app.SpikeChannelEditField.Value))
+xlabel(app.UIAxes,"Time [ms]")
+ylabel(app.UIAxes,"Signal [mV]")
+
+if isempty(WaveformHandles)
+    for i = 1:length(SpikeTimes)
+        line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+    end
+else
+    for i = 1:length(SpikeTimes)
+        if i <=length(WaveformHandles)
+            set(WaveformHandles(i),'XData',TimeToPlot,'YData',Waveforms(i,:),'Color','c','Tag','Waveforms')
+        else
+            line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+        end
+    end
+end
+
+app.CurrentNumSpikes = length(SpikeTimes);
+
+%% Plot currently selected Spike
+MarkedWaveHandles = findobj(app.UIAxes,'Tag', 'MarkedWave');
+if isempty(MarkedWaveHandles)
+    line(app.UIAxes,TimeToPlot,CurrentWaveform,'Color','r','LineWidth',3,'Tag','MarkedWave')
+else
+    set(MarkedWaveHandles(1),'XData',TimeToPlot,'YData',CurrentWaveform,'Color','r','LineWidth',3,'Tag','MarkedWave')
+    uistack(MarkedWaveHandles(1),'top')
 end

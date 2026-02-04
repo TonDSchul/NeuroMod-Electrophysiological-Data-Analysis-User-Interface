@@ -550,7 +550,31 @@ elseif strcmp(RecordingType,"NEO")
         end
         %end
     end
-    
+   
+elseif strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+    if ~isempty(EventInfo.EventSamples)
+        Data.Events = {};
+        Data.Info.EventChannelNames = {};
+        % loop over inoput channel
+        for tt = 1:length(EventInfo.EventSamples)
+            if ~isempty(EventInfo.EventSamples{tt})
+                Data.Events{end+1} = EventInfo.EventSamples{tt};
+                Data.Info.EventChannelNames{end+1} = EventInfo.ChannelNames{tt};
+
+                if contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,',')
+                    if ~contains(Data.Info.TimeAndChannelToExtract.TimeToExtract,'Inf')
+                        Timetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+                    else
+                        TempTimetoextract = str2double(strsplit(Data.Info.TimeAndChannelToExtract.TimeToExtract,','));
+                        Timetoextract(1) = TempTimetoextract(1);
+                        Timetoextract(2) = Data.Time(end); 
+                    end
+                else
+                    Timetoextract = eval(Data.Info.TimeAndChannelToExtract.TimeToExtract);
+                end
+            end
+        end
+    end
 end
 
 %% Wrap Up and Cleaning
@@ -665,7 +689,7 @@ end
 % only those formats NOT, because they already extract just the relevenat
 % time points and account for that in event data.
 % Is done for: Intan(only implemented partial reading in extract raw data),
-% TdT and Neuralynx (not tested yet! :()
+% TdT, Maxwell MEA .h5 and Neuralynx (not tested yet! :()
 if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"Spike2") && ~strcmp(Data.Info.RecordingType,"NEO") && ~contains(Data.Info.RecordingType,"Neuralynx") % done earlier in upper section
     [Data,temptexttoshow] = Extract_Events_Module_Correct_For_TimeToExtract(Data,Data.Info.TimeAndChannelToExtract);
     if ~isempty(texttoshow)

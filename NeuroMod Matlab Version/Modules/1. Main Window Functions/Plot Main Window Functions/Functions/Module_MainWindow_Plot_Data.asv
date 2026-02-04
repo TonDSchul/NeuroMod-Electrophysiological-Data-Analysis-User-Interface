@@ -184,7 +184,23 @@ if strcmp(Type,"Static")
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
         % create matrix with data for each channel at proper channel
         % location
+        [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);       
         
+        if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+            [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids);
+            Data = PlotThreshGrids; 
+
+            if isfield(PreviousThreshGrids,'SpikeChannelSelected')
+                % PrevValue = PreviousThreshGrids.SpikeChannelSelected;
+                % PreviousThreshGrids = [];
+                % PreviousThreshGrids.SpikeChannelSelected = PrevValue;
+            else
+                PreviousThreshGrids = [];
+                PlotThreshGrids = [];
+            end
+
+            
+        end
     end
 
     %% Plot Channel Data
@@ -229,27 +245,10 @@ if strcmp(Type,"Static")
     
     %% Plot surf, imagsc, mesh
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-        
-        [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);       
-        
         if ~strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
             [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,Data,Time,ActiveChannel,1,SpikeData,'JustSpikes');
         else
             SpikeDataCell = [];
-        end
-
-        if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-            [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids,SpikeDataCell);
-            Data = PlotThreshGrids; 
-
-            if isfield(PreviousThreshGrids,'SpikeChannelSelected')
-                % PrevValue = PreviousThreshGrids.SpikeChannelSelected;
-                % PreviousThreshGrids = [];
-                % PreviousThreshGrids.SpikeChannelSelected = PrevValue;
-            else
-                PreviousThreshGrids = [];
-                PlotThreshGrids = [];
-            end
         end
 
         ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles,SpikeDataCell);
@@ -428,7 +427,7 @@ if strcmp(Type,"Movie")
                     [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,Data,Time,ActiveChannel,1,SpikeData,'JustSpikes');
 
                     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-                        [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids,SpikeDataCell);
+                        [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids);
                         Data = PlotThreshGrids;
                     end
 

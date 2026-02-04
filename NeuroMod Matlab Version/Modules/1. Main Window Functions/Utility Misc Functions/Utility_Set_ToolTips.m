@@ -20,20 +20,20 @@ function [app] = Utility_Set_ToolTips(app,Activated,Window)
 if Activated
     %% Main Window
     if strcmp(Window,"MainWindow") || strcmp(Window,"All")
-        app.TimeRangeViewBox.Tooltip = "Edit to change plotted time; Format: Number followed by a 's' i.e. 1s";
-        app.Button.Tooltip = "Click to increase plotted time by the time specified in 'Time to Manipulate Main Plot' dropdown menu";
-        app.Button_2.Tooltip = "Click to decrease plotted time by the time specified in 'Time to Manipulate Main Plot' dropdown menu";
+        app.TimeRangeViewBox.Tooltip = "Edit to change plotted time; Format: Number followed by a 's' i.e. 1s.";
+        app.Button.Tooltip = "Click to increase plotted time by the time specified in 'Time to Manipulate Main Plot' dropdown menu.";
+        app.Button_2.Tooltip = "Click to decrease plotted time by the time specified in 'Time to Manipulate Main Plot' dropdown menu.";
     
-        app.Button_3.Tooltip = "Click to go forward in time by the time specified in 'Time to Manipulate Main Plot' dropdown menu";
-        app.Button_4.Tooltip = "Click to go backwards in time by the time specified in 'Time to Manipulate Main Plot' dropdown menu";
+        app.Button_3.Tooltip = "Click to go forward in time by the time specified in 'Time to Manipulate Main Plot' dropdown menu. Alternatively press the right arrow key.";
+        app.Button_4.Tooltip = "Click to go backwards in time by the time specified in 'Time to Manipulate Main Plot' dropdown menu. Alternatively press the left arrow key.";
     
         app.PlayButton.Tooltip = "Click to start play data as a movie. Right click to change plotting/playback speed.";
         app.PauseButton.Tooltip = "Click to stop playing data as a movie.";
     
-        app.OpenProbeViewButton.Tooltip = "Click to open probe view window to manipulate channel selection";
-        app.Slider.Tooltip = "Click to change spacing inbetween plotted data lines; Right click to change limits";
+        app.OpenProbeViewButton.Tooltip = "Click to open probe view window to manipulate channel selection.";
+        app.Slider.Tooltip = "Click to change spacing inbetween plotted data lines; Right click to change limits. Alternatively press the up or down arrow keys.";
     
-        app.DropDown.Tooltip = "Select data type plotted. When data was preprocessed, the option 'Preprocessed Data' will appear";
+        app.DropDown.Tooltip = "Select data type plotted. When data was preprocessed, the option 'Preprocessed Data' will appear.";
         app.DropDown_2.Tooltip = "Select addons to plot like spikes and events. These get available to select when the respective data part was extracted.";
         
         app.EventChannelDropDown.Tooltip = "Select the event channel for which trigger times are plotted in the main window. Is populated ones events are extracted.";
@@ -606,7 +606,9 @@ if Activated
             app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "Manully select the folder in which spike sorting results of one of the support sorters is saved.";
             app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "Only for Kilosort: Manully select the amplitude scaling factor .mat file created when saving data for Kilosort.";
             
-            app.LoadfromKilosortWindowWindow.CurationSoftwaretoOpenDropDown.Tooltip = "Select the software to curate and view spike sorting results.";
+            app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "Only for Kilosort: Manully select the amplitude scaling factor .mat file created when saving data for Kilosort.";
+            
+            app.LoadfromKilosortWindowWindow.SpikeChannelTypeDropDown.Tooltip = "Select how the data channel for each spike is determined. This influences waveform extraction and the ploted position in the main window plot. 'Channel closest to X and Y of respective spikes' means, that each spike channel is the channel closest to the physical position of the spike. 'Single channel for all spikes in one unit (max template channel)' means, that the channel of all spikes of a unit are set to the channel with the maximum template.";
 
             app.LoadfromKilosortWindowWindow.LoadButton.Tooltip = "Click to load sorting results with the parameters above.";
         end
@@ -620,6 +622,20 @@ if Activated
 
             app.SaveforKilosortWindowWindow.SaveFormatDropDown.Tooltip = "Select whether you want to save data for Kilosort in int16 or int32 format. No choice when saving for SpikeInterface.";
             app.SaveforKilosortWindowWindow.SelectFolderManuallyButton.Tooltip = "Manaully select a folder to save data in for spike sorting.";
+        end
+    end
+
+    %% Automaoic Unit Curation Window
+    if strcmp(Window,"UnitCurationWindow") || strcmp(Window,"All")
+        if ~isempty(app.LoadfromKilosortWindowWindow.AutomaticCurationWindow) && isvalid(app.LoadfromKilosortWindowWindow.AutomaticCurationWindow)
+            
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.SNRCheckBox.Tooltip = "Signal-to-noise ratio of the unit waveform. Higher = better.";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.FiringRangeCheckBox.Tooltip = "Dynamic range of firing rate across the recording (difference between max and min firing rate over time bins). Smaller = better";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.NoiseCutoffCheckBox.Tooltip = "How much of the spike amplitude distribution is cut off by detection threshold (unit amplitude close to threshold --> unreliable detection). Smaller = better";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.ISIViolationRatioCheckBox.Tooltip = "Fraction of spikes that violate a refractory period. Lower = better";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.NoiseRatioCheckBox.Tooltip = "Fraction of spikes with amplitudes close to noise level. Smaller = better";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.MedianAmplitudeCheckBox.Tooltip = "Median spike amplitude for each unit. Larger absolute values = better";
+            
         end
     end
 
@@ -1152,6 +1168,8 @@ else %% Not activated
             app.LoadfromKilosortWindowWindow.SelectKilosortFolderManuallyButton.Tooltip = "";
             app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "";
 
+            app.LoadfromKilosortWindowWindow.SpikeChannelTypeDropDown.Tooltip = "";
+
             app.LoadfromKilosortWindowWindow.CurationSoftwaretoOpenDropDown.Tooltip = "";
 
             app.LoadfromKilosortWindowWindow.LoadButton.Tooltip = "";
@@ -1167,5 +1185,20 @@ else %% Not activated
             app.SaveforKilosortWindowWindow.SaveFormatDropDown.Tooltip = "";
             app.SaveforKilosortWindowWindow.SelectFolderManuallyButton.Tooltip = "";
         end
-    end   
+    end  
+
+    %% Automaoic Unit Curation Window
+    if strcmp(Window,"UnitCurationWindow") || strcmp(Window,"All")
+        if ~isempty(app.LoadfromKilosortWindowWindow.AutomaticCurationWindow) && isvalid(app.LoadfromKilosortWindowWindow.AutomaticCurationWindow)
+            
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.SNRCheckBox.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.FiringRangeCheckBox.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.NoiseCutoffCheckBox.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.ISIViolationRatioCheckBox.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.NoiseRatioCheckBox.Tooltip = "";
+            app.LoadfromKilosortWindowWindow.AutomaticCurationWindow.MedianAmplitudeCheckBox.Tooltip = "";
+            
+        end
+    end
+
 end

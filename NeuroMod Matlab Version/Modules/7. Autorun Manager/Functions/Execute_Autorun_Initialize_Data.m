@@ -64,11 +64,23 @@ if ~strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
         Data.Info.ProbeInfo.ShortAreaNames = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaNamesShort;
         Data.Info.ProbeInfo.AreaDistanceFromTip = AutorunConfig.ProbeInfo.ProbeTrajectoryInfo.AreaTipDistance;
     end
+else
+    Data.Info.num_data_points = size(Data.Raw,2);
+    Data.Info.NrChannel = size(Data.Raw,1);
 end
 
 % Get True MEA Grid Locations for position related analyis
 if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
-    [Data.Info] = Manage_Dataset_MEA_Grid_Locations(Data.Info);
+    [Data] = Manage_Dataset_MEA_Grid_Locations(Data,Data.Info.MEACoords,HeaderInfo);
+    if app.ExtractDataWindow.Save_Probe_Kilosort.Value == 1
+        activechannel{1} = Data.Info.ProbeInfo.ActiveChannel;
+        DummyStruc.Raw = [];
+        DummyStruc.Info.ProbeInfo.NrChannel = Data.Info.ProbeInfo.NrChannel;
+        msgbox("Please select a location to save the probe design in.")
+        [~,~,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,app.executableFolder,Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),1);
+        disp("Succesfully saved probe design in ")
+        app.ExtractDataWindow.Save_Probe_SpikeInterface.Value;
+    end
 end
 
 % get x and y coordinates

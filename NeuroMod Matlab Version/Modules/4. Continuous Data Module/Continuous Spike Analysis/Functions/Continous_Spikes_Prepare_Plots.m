@@ -248,6 +248,7 @@ if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
     
     if ~isempty(SelectedChannelIndicies)
         SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==0);
+        WaveformChannel = Data.Spikes.SpikeChannel(SelectedChannelIndicies==0);
 
         CluterPositions = Data.Spikes.SpikeCluster(SelectedChannelIndicies==0);
         if min(Data.Spikes.SpikeCluster)==0
@@ -262,6 +263,7 @@ if strcmp(SpikeType,"Kilosort") || strcmp(SpikeType,"SpikeInterface")
         end
     else
         SpikeAmps = Data.Spikes.SpikeAmps;
+        WaveformChannel = Data.Spikes.SpikeChannel;
         CluterPositions = Data.Spikes.SpikeCluster;
 
         if min(Data.Spikes.SpikeCluster)==0
@@ -301,6 +303,7 @@ elseif strcmp(SpikeType,"Internal")
 
     if ~isempty(SelectedChannelIndicies)
         SpikeAmps = Data.Spikes.SpikeAmps(SelectedChannelIndicies==0);
+        
         ChannelPosition = Data.Spikes.ChannelPosition;
         if ndims(Waveforms)==3
             Waveforms = Waveforms(:,SelectedChannelIndicies==0,:);

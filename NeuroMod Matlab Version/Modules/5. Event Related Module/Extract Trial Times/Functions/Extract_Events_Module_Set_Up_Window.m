@@ -174,6 +174,16 @@ if strcmp(TimeOfExecution,"ChangedEventChannelType")
                 ExistChangedEventChannelType = 0;
             end
         end
+    %% MEA Recordings
+    elseif strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
+        
+        if ~isempty(EventInfo)
+            ExistChangedEventChannelType = 1;
+            NumChannel = 1;
+            app.TextArea_2.Value = texttoshow;
+        else
+
+        end
     end % loop through recording systems
 
     %% Get Channel names, channel nr. and fill into GUI
@@ -662,7 +672,35 @@ elseif strcmp(Data.Info.RecordingType,"NEO")
             ChannelSelectionToShow = [ChannelSelectionToShow, ','];
         end
     end
+
+elseif strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5") 
+    EventChannelName = 'Bits Group';
+
+    NumChannel = [];
+    Placeholder = {};
+    app.FileTypeDropDown.Items = Placeholder;
+    app.FileTypeDropDown.Items{1} = 'Bits Group';
+    app.FileTypeDropDown.Items{2} = 'Events Dataset';
+
+    ChannelRange = 1:length(app.EventInfo.EventSamples);
+    NumChannel = length(ChannelRange);
+
+     % Initialize an empty string
+    ChannelSelectionToShow = '';
+
+    % Loop through numbers from 1 to 10
+    for i = 1:NumChannel
+        % Append each number to the string
+        ChannelSelectionToShow = [ChannelSelectionToShow, num2str(ChannelRange(i))];
         
+        % If it's not the last number, add a comma
+        if i < NumChannel
+            ChannelSelectionToShow = [ChannelSelectionToShow, ','];
+        end
+    end
+    
+    app.TextArea_2.Value = texttoshow;
+    
 end
 
 app.InputChannelSelectionEditField.Value = ChannelSelectionToShow;

@@ -61,6 +61,9 @@ if strcmp(AutorunConfig.ExtractMultipleRecordings,"on")
     AutorunConfig.FolderContents = [];
     %% Extract Folder contents
     [AutorunConfig.FolderContents] = Execute_Autorun_Check_Selected_Folder(selected_folder);
+    
+    AutorunConfig.FolderContents(contains(AutorunConfig.FolderContents,"SpikeInterface SaveFile")) = [];
+    AutorunConfig.FolderContents(contains(AutorunConfig.FolderContents,"Neo SaveFile")) = [];
 
     if isempty(AutorunConfig.FolderContents)
         error("Selected folder does not contain non-empty subfolders. Please select a folder with subfolders, each containing ONE recording! Exiting")

@@ -24,7 +24,7 @@ function [AutorunConfig] = Execute_Autorun_Convert_ConfigChannel_to_ActiveChanne
 %% Function to convert channel from 1 to whatever how many channel you have to the actual active channel selected when extracting data
 
 if ~isempty(AutorunConfig.ChannelRange)
-    Ch = str2double(strsplit(AutorunConfig.ChannelRange,','));
+    Ch = AutorunConfig.ChannelRange;
 end
 
 % Cont. Power Spectrum
@@ -36,7 +36,6 @@ end
 
 % Event. Power Spectrum
 if ~isempty(AutorunConfig.ChannelRange)
-    Ch = str2double(strsplit(AutorunConfig.ChannelRange,','));
     AutorunConfig.AnalyseEventDataModule.SpectrumDepthChannel = ActiveChannel(Ch);
 else
     AutorunConfig.AnalyseEventDataModule.SpectrumDepthChannel = ActiveChannel;
@@ -44,8 +43,6 @@ end
 
 % Cont. Spikes
 if ~isempty(AutorunConfig.ChannelRange)
-    Ch = str2double(strsplit(AutorunConfig.ChannelRange,','));
-
     AutorunConfig.ContSpikeAnalysis.ChannelSelection = ActiveChannel(Ch);   
 else
     AutorunConfig.ContSpikeAnalysis.ChannelSelection = ActiveChannel;
@@ -77,9 +74,7 @@ end
 %     AutorunConfig.PreproEventDataModule.ArtefactChannelToReject(2) = length(ActiveChannel);
 % end
 % Event LFP Analyse
-if ~isempty(AutorunConfig.ChannelRange)
-    Ch = str2double(strsplit(AutorunConfig.ChannelRange,','));
-    
+if ~isempty(AutorunConfig.ChannelRange)    
     AutorunConfig.AnalyseEventDataModule.ChannelSelection = [];
     AutorunConfig.AnalyseEventDataModule.ChannelSelection = Ch;
 else
@@ -90,8 +85,6 @@ AutorunConfig.AnalyseEventDataModule.SingleERPChannel = num2str(ActiveChannel(st
 
 % Event Spike Analyse
 if ~isempty(AutorunConfig.ChannelRange)
-    Ch = str2double(strsplit(AutorunConfig.ChannelRange,','));
-
     AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot = ActiveChannel(Ch); 
 else
     AutorunConfig.AnalyseEventSpikesModule.ChanneltoPlot = ActiveChannel;

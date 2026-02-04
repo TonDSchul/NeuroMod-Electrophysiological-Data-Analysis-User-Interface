@@ -122,7 +122,7 @@ elseif strcmp(Data.Info.RecordingType,"IntanRHD")
     
     InputChannelData = InputChannelData(Timetoextract(1):Timetoextract(2));
     clear("RHDAllChannelData");
-elseif strcmp(Data.Info.RecordingType,"Open Ephys") || strcmp(Data.Info.RecordingType,"Neuralynx") || strcmp(Data.Info.RecordingType,"NEO") || strcmp(Data.Info.RecordingType,"TDT Tank Data")
+elseif strcmp(Data.Info.RecordingType,"Open Ephys") || strcmp(Data.Info.RecordingType,"Neuralynx") || strcmp(Data.Info.RecordingType,"NEO") || strcmp(Data.Info.RecordingType,"TDT Tank Data") || strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
     InputChannelData = EventInfo;
 elseif strcmp(Data.Info.RecordingType,"Spike2")
     InputChannelData = EventInfo{1};
@@ -132,7 +132,7 @@ elseif strcmp(Data.Info.RecordingType,"Spike2")
 end
 
 %% If cutstart or cutend:
-if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"TDT Tank Data") && ~contains(Data.Info.RecordingType,"NEO") % for open ephys done in Show_ChannelPlots function
+if ~strcmp(Data.Info.RecordingType,"Open Ephys") && ~strcmp(Data.Info.RecordingType,"TDT Tank Data") && ~contains(Data.Info.RecordingType,"NEO") && ~strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5") % for open ephys done in Show_ChannelPlots function
     if isfield(Data.Info,'CutStart')
         index = round(sum(Data.Info.CutStart) * Data.Info.NativeSamplingRate); % convert in samples
         InputChannelData(1:index) = [];
@@ -186,7 +186,7 @@ elseif strcmp(Data.Info.RecordingType,"Open Ephys")
     title(Figure,strcat("Simulated Signal in V with Trigger from Node ",AllChannelNames," Line ",SelectedEventChannelNames));
 elseif strcmp(Data.Info.RecordingType,"Spike2")
     title(Figure,strcat("Signal in V from Node ",AllChannelNames," Channel ",SelectedEventChannelNames));
-elseif strcmp(Data.Info.RecordingType,"Neuralynx")
+elseif strcmp(Data.Info.RecordingType,"Neuralynx") || strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
     title(Figure,strcat("Simulated Signal in V with Trigger for Channel ",SelectedEventChannelNames));
 elseif strcmp(Data.Info.RecordingType,"NEO") || strcmp(Data.Info.RecordingType,"TDT Tank Data")
     title(Figure,strcat("Simulated Signal in V with Trigger for Channel ",SelectedEventChannelNames));

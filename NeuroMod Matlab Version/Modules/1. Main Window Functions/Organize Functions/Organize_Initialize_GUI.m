@@ -391,6 +391,15 @@ elseif strcmp(Type,"VariableDefinition")
     % Get True MEA Grid Locations for position related analyis
     if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
         [app.Data] = Manage_Dataset_MEA_Grid_Locations(app.Data,app.Data.Info.MEACoords,HeaderInfo);
+        if app.ExtractDataWindow.Save_Probe_Kilosort.Value == 1
+            activechannel{1} = app.Data.Info.ProbeInfo.ActiveChannel;
+            DummyStruc.Raw = [];
+            DummyStruc.Info.ProbeInfo.NrChannel = app.Data.Info.ProbeInfo.NrChannel;
+            msgbox("Please select a location to save the probe design in.")
+            [~,~,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,app.executableFolder,app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),1);
+            disp("Succesfully saved probe design in ")
+            app.ExtractDataWindow.Save_Probe_SpikeInterface.Value;
+        end
     end
 
     % get x and y coordinates
@@ -436,6 +445,7 @@ elseif strcmp(Type,"VariableDefinition")
     for i = 1:length(PrevItems)
         app.TimeSpanControlDropDown.Items{i+1} = PrevItems{i};
     end
+    app.TimeSpanControlDropDown.Value = app.TimeSpanControlDropDown.Items{end-2};
 
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.ClimMaxValues = [];
@@ -443,7 +453,7 @@ elseif strcmp(Type,"VariableDefinition")
     app.PreviousThreshGrids = [];
     app.PlotThreshGrids = [];
     
-    if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5")
+    if strcmp(RecordingType,"SpikeInterface Maxwell MEA .h5") % take from recording, not user data
         app.ActiveChannel = sort(app.Data.Info.ProbeInfo.ActiveChannel);    
     else
         app.ActiveChannel = sort(Load_Data_Window_Info.ActiveChannel);
@@ -454,7 +464,8 @@ elseif strcmp(Type,"VariableDefinition")
     
     app.MovieTimeToJump = 30;
     app.PlayedMovieBefore = 0;
-
+    
+    % Grid traces axes panel 
     if ~isempty(app.ChannelAxes)
         for k = 1:numel(app.ChannelAxes)
             if isvalid(app.ChannelAxes{k})  

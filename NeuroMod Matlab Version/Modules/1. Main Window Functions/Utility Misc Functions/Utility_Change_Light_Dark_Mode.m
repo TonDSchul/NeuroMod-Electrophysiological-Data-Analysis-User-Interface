@@ -41,7 +41,6 @@ if strcmp(Mode,'DarkMode_Dark_Light')
 elseif strcmp(Mode,'DarkMode_Light_Dark')
     ComponentsInWindowColor = [0.8,0.8,0.8];
     WindowBackgroundColor = [0.85,0.85,0.85];
-
 elseif strcmp(Mode,'LightMode_Dark_Light')
     ComponentsInWindowColor = [0.95,0.95,0.95];
     WindowBackgroundColor = [1,1,1];
@@ -1174,7 +1173,7 @@ if strcmp(Window,"Load_Sorting_Window")
     app.LoadSpikeSortingResultsUIFigure.Color  = WindowBackgroundColor;
     app.LeftPanel.BackgroundColor  = WindowBackgroundColor;
     app.RightPanel.BackgroundColor  = WindowBackgroundColor;
-
+    
     app.LoadingOptionsPanel.BackgroundColor  = WindowBackgroundColor;
     app.LoadingOptionsPanel.ForegroundColor  = WindowBackgroundColor;
 
@@ -1183,8 +1182,9 @@ if strcmp(Window,"Load_Sorting_Window")
 
     app.GeneralOptionsPanel.BackgroundColor  = WindowBackgroundColor;
     app.GeneralOptionsPanel.ForegroundColor  = WindowBackgroundColor;
-
+    
     app.InformationTextArea.BackgroundColor = ComponentsInWindowColor;
+    app.SpikeChannelTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
 
     app.SpikeSorterDropDown.BackgroundColor = ComponentsInWindowColor;
     app.AmplitudeScalingFactorEditField.BackgroundColor = ComponentsInWindowColor;
@@ -2144,4 +2144,19 @@ if strcmp(Window,"AxonViewerSelectSpikes")
     
     app.UIAxes.YLabel.Color = 'k';
     app.UIAxes.YColor = 'k';
+end
+
+
+if strcmp(Window,"Automatic_Curation_Window")    
+    % texts to black
+    set(findall(app.AutomaticCurationWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.AutomaticCurationWindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.InformationTextArea.BackgroundColor   = ComponentsInWindowColor;
+    app.AmplitudeScalingFactorEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.AmplitudeScalingFactorEditField_2.BackgroundColor   = ComponentsInWindowColor;
+    app.AmplitudeScalingFactorEditField_3.BackgroundColor   = ComponentsInWindowColor;
+    app.AmplitudeScalingFactorEditField_4.BackgroundColor   = ComponentsInWindowColor;
+    app.AmplitudeScalingFactorEditField_5.BackgroundColor   = ComponentsInWindowColor;
+    app.AmplitudeScalingFactorEditField_6.BackgroundColor   = ComponentsInWindowColor;
 end

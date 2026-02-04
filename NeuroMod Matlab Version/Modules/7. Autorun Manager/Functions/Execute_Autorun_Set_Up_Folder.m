@@ -39,6 +39,8 @@ elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && contains(AutorunC
     SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
 elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"TDT Tank Data")
     SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
+elseif strcmp(AutorunConfig.ExtractMultipleRecordings,"on") && strcmp(AutorunConfig.ExtractRawRecording.RecordingsSystem,"SpikeInterface MEA Maxwell .h5")
+    SelectedFolder = strcat(AutorunConfig.selected_folder,"\",AutorunConfig.FolderContents{nRecordings});
 else
     SelectedFolder = AutorunConfig.selected_folder;
 end

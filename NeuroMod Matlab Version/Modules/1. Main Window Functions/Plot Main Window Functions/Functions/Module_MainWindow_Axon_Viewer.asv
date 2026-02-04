@@ -33,6 +33,7 @@ if isempty(PreviousThreshGrids.T1)
         %initialized thresholded grid
         NewPreviousThreshGrids = zeros(size(PreviousThreshGrids.T1{1}));
         % indicies of subthreshold values
+        
         SubThresholdIndicies = PreviousThreshGrids.T1{1} < Threshold;
         % save potential when below threshold
         NewPreviousThreshGrids(SubThresholdIndicies) = PreviousThreshGrids.T1{1}(SubThresholdIndicies);

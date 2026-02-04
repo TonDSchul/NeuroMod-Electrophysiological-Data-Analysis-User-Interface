@@ -47,8 +47,9 @@ elseif strcmp(Sorter,"SpyKING CIRCUS 2")
                 Text, indent, field, Spike_Module_ConverStrucToTextArea(value,Sorter));
         else
             % Format non-struct values
+            CheckNuim = str2double(value);
             if ischar(value)
-                formattedValue = sprintf("'%s'", value);
+                formattedValue = sprintf("%s", value);
             elseif isnumeric(value) || islogical(value)
                 formattedValue = mat2str(value);
             end

@@ -84,23 +84,8 @@ end
 Data.Info.ProbeInfo.ActiveChannel = ActiveChannel;
 
 %% Infer Channelorder from given channel positions >> just order MEA Coords and take order for channel too!
-[~, Data.Info.ChannelOrder] = sortrows(MEACoords, [2 1]);
+[~, Data.Info.Channelorder] = sortrows(MEACoords, [2 1]);
 
-% Other method using original channel IDS -- same result
-% xpos     = Data.Info.MEACoords(:,1);
-% ypos     = Data.Info.MEACoords(:,2);
-% coords = [xpos(:), ypos(:)];  % Nx2
-% 
-% [~,ord] = sortrows(coords, [2,1]);  % sort by y then x
-% 
-% %sortedCoords = coords(ord,:);
-% TempChannelOrder = Data.Info.ChannelIDS(ord); %zero indexed
-% TempChannelOrder = TempChannelOrder+1;
-% % convert into data channel
-% for i = 1:length(TempChannelOrder)
-%     Data.Info.ChannelOrder(i) = find(TempChannelOrder(i)==Data.Info.ChannelIDS+1);
-% end
-
-Data.Raw = Data.Raw(Data.Info.ChannelOrder,:);
+Data.Raw = Data.Raw(Data.Info.Channelorder,:);
 
 

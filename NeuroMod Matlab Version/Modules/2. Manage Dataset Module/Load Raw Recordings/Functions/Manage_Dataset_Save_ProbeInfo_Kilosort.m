@@ -1,4 +1,4 @@
-function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,VerOffsetSecondRow,VerOffsetDistanceSecondRow,VerOffsetRows,HorOffset,SaveProbe)
+function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,OffsetSecondRow,OffsetDistanceSecondRow,VerOffsetRows,HorOffset,SaveProbe)
 
 %________________________________________________________________________________________
 
@@ -83,11 +83,11 @@ if str2double(ChannelRowsDropDown) == 1
 
     kcoords = zeros(size(chanMap,1),size(chanMap,2))+1;
     
-    if ~VerOffsetSecondRow
+    if ~OffsetSecondRow
         xcoords = zeros(size(chanMap,1),size(chanMap,2));
     else
         xcoords = zeros(size(chanMap,1),size(chanMap,2));
-        xcoords(2:2:end) = 0 + VerOffsetDistanceSecondRow;
+        xcoords(2:2:end) = 0 + OffsetDistanceSecondRow;
     end
 
     % Now there can be inactive channel inbetween. So depth has to be
@@ -122,7 +122,7 @@ if str2double(ChannelRowsDropDown) == 2
     
     kcoords = zeros(size(chanMap,1),size(chanMap,2))+1;
 
-    if ~VerOffsetSecondRow
+    if ~OffsetSecondRow
         xcoords = zeros(size(chanMap,1),size(chanMap,2));
         xcoords(2:2:end) = 0 + HorOffset;
     else
@@ -139,9 +139,9 @@ if str2double(ChannelRowsDropDown) == 2
         indices = indices(indices <= length(vec));  
         ProperIndicies = vec(indices);
         
-        xcoords(ProperIndicies) = xcoords(ProperIndicies) + abs(VerOffsetDistanceSecondRow);
+        xcoords(ProperIndicies) = xcoords(ProperIndicies) + abs(OffsetDistanceSecondRow);
         
-        if VerOffsetDistanceSecondRow<0
+        if OffsetDistanceSecondRow<0
             x_new = xcoords;
             idx = 1:4:length(xcoords);
             
@@ -209,9 +209,9 @@ if str2double(ChannelRowsDropDown) > 2
     xcoordtemp = 0:HorOffset:HorOffset*str2double(ChannelRowsDropDown)-1;
     Laufvariable = 1;
     for tt = NrChannelPerRow:str2double(ChannelRowsDropDown):NrChannelPerRow*str2double(ChannelRowsDropDown)
-        if VerOffsetSecondRow == 1
+        if OffsetSecondRow == 1
             if mod(Laufvariable,2) == 0
-                xcoords = [xcoords,xcoordtemp+VerOffsetDistanceSecondRow];
+                xcoords = [xcoords,xcoordtemp+OffsetDistanceSecondRow];
             else
                 xcoords = [xcoords,xcoordtemp];
             end

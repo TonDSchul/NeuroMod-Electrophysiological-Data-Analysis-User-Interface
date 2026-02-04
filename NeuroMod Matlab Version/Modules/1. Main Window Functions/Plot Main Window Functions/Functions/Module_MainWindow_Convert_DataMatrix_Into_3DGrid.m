@@ -1,53 +1,47 @@
-function [PlotData,TimeToPlot]= Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Data,DataForMatrix,TimeToPlot,ActiveDataChannel,PreservePlotChannelLocations)
+function [PlotData,SpikeDataCell,TimeToPlot] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,DataForMatrix,TimeToPlot,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,WhatToDo)
 
-if PreservePlotChannelLocations
-    NumChannel = length(unique(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(1):Data.Info.ProbeInfo.ActiveChannel(end))));
-else
-    NumChannel = length(unique(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel)));
-end
 
-NumRows = length(unique(Data.Info.ProbeInfo.xcoords));
+[NumChannel,ActiveDataChannel,SpikeData] = Module_MainWindow_ActiveChannel_ChannerlNumber_Grid_Traces(Info,SpikeData,"All",ActiveDataChannel,PreservePlotChannelLocations);
 
-PlotData = cell(NumChannel, NumRows);
-
-if PreservePlotChannelLocations
-    if Data.Info.ProbeInfo.ActiveChannel(1)-1 ~=0
-        ActiveDataChannel = ActiveDataChannel - Data.Info.ProbeInfo.ActiveChannel(1)-1;
-    end
-else
-    [ActiveDataChannel] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ActiveDataChannel,'MainPlot');
-end
-
-if ~PreservePlotChannelLocations
-    if str2double(Data.Info.ProbeInfo.NrRows) == 2
-        % find gapos in active channel
-        d = diff(Data.Info.ProbeInfo.ActiveChannel);
-        breakIdx = find(d > 1);
-        run_start = [1, breakIdx + 1];
-        run_end   = [breakIdx, numel(Data.Info.ProbeInfo.ActiveChannel)];
-        %gap_start_val = (Data.Info.ProbeInfo.ActiveChannel(run_end(1:end-1)) + 1) ;
-        gap_end_val   = (Data.Info.ProbeInfo.ActiveChannel(run_start(2:end)) - 1) ;
-    
-        for iii = 1:length(gap_end_val)
-            if mod(gap_end_val(iii),2)==1 % uneven
-                activeindicie = Data.Info.ProbeInfo.ActiveChannel == gap_end_val(iii)+1;
-                IndicieToNotPlot = find(activeindicie==1);
-                ActiveDataChannel(ActiveDataChannel>=gap_end_val(iii)+1) = ActiveDataChannel(ActiveDataChannel>=gap_end_val(iii)+1)+1;
-            else
-    
-            end
-        end
-    end
-end
-
+%% Plot
 DataLaufVariable = 1;
 LaufVariable = 1;
 
+NumRows = length(unique(Info.ProbeInfo.xcoords));
+
+PlotData = cell(NumChannel, NumRows);
+SpikeDataCell = cell(NumChannel, NumRows);
+
 for nchannel = 1:NumChannel
     for nrows = 1:NumRows
-        if sum(LaufVariable==ActiveDataChannel)>0
-            PlotData{nchannel,nrows} = DataForMatrix(DataLaufVariable,:);
-            DataLaufVariable = DataLaufVariable+1;
+        % Save Channel Data
+        if strcmp(WhatToDo,'All') || strcmp(WhatToDo,'JustData')
+           
+            if sum(LaufVariable==ActiveDataChannel)>0
+                PlotData{nchannel,nrows} = DataForMatrix(DataLaufVariable,:);
+                DataLaufVariable = DataLaufVariable + 1;
+            end
+
+        end
+        % Save Spike Data
+        %% Handle Spikes
+        if strcmp(WhatToDo,'All') || strcmp(WhatToDo,'JustSpikes')
+            if ~isempty(SpikeData)
+                if ~isempty(SpikeData.Indicie)
+                    if PreservePlotChannelLocations==0
+                        if sum(LaufVariable==SpikeData.Position)
+                            SpikeIndicies = LaufVariable==SpikeData.Position;
+                            SpikeDataCell{nchannel,nrows} = SpikeData.Indicie(SpikeIndicies)';
+                        end
+                    else
+                        if sum(LaufVariable==SpikeData.Position)
+                            
+                            SpikeIndicies = LaufVariable==SpikeData.Position;
+                            SpikeDataCell{nchannel,nrows} = SpikeData.Indicie(SpikeIndicies)';
+                        end
+                    end
+                end
+            end
         end
         LaufVariable = LaufVariable + 1;
     end

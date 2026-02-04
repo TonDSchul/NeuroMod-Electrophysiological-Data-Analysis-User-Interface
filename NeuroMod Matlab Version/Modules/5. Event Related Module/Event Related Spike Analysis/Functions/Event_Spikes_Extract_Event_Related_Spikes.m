@@ -130,7 +130,12 @@ for i = 1:length(AllTrialIdentities)
         Data.EventRelatedSpikes.SpikePositions = [Data.EventRelatedSpikes.SpikePositions;Data.Spikes.SpikePositions(SpikeIndicieWithinCurrentEvent==1,2)];
         Data.EventRelatedSpikes.SpikeAmps = [Data.EventRelatedSpikes.SpikeAmps;Data.Spikes.SpikeAmps(SpikeIndicieWithinCurrentEvent==1)];
         Data.EventRelatedSpikes.SpikeEvents = [Data.EventRelatedSpikes.SpikeEvents;zeros(sum(SpikeIndicieWithinCurrentEvent),1)+i];
-        Data.EventRelatedSpikes.SpikeChannel = [Data.EventRelatedSpikes.SpikeChannel;Data.Spikes.SpikeChannel(SpikeIndicieWithinCurrentEvent==1)];
+        if size(Data.Spikes.SpikeChannel,1)<size(Data.Spikes.SpikeChannel,2)
+            TempSpikes = Data.Spikes.SpikeChannel';
+        else
+            TempSpikes = Data.Spikes.SpikeChannel;
+        end
+        Data.EventRelatedSpikes.SpikeChannel = [Data.EventRelatedSpikes.SpikeChannel;TempSpikes(SpikeIndicieWithinCurrentEvent==1)];
         Data.EventRelatedSpikes.SpikeWaveforms = [Data.EventRelatedSpikes.SpikeWaveforms;Data.Spikes.Waveforms(SpikeIndicieWithinCurrentEvent==1,:)];
         
         UinquePos = unique(Data.Spikes.ChannelPosition(:,1));

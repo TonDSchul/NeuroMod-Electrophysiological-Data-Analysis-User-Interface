@@ -24,15 +24,14 @@ if strcmp(Sorter,"Mountainsort 5")
     NewParameterStrcuture = struct();
 
     for i = 1:numel(Text)
-        line = strtrim(Text{i}); % Get the line and trim whitespace
+        line = strtrim(Text{i});
         if contains(line, ':')
-            % Split into key and value
+            % Get key and value
             keyValue = split(line, ':');
             if numel(keyValue) == 2
-                key = strtrim(keyValue{1}); % Extract key
-                value = strtrim(keyValue{2}); % Extract value
+                key = strtrim(keyValue{1});
+                value = strtrim(keyValue{2});
                 
-                % Convert value to appropriate type
                 if strcmpi(value, 'true')
                     value = true;
                 elseif strcmpi(value, 'false')
@@ -41,7 +40,6 @@ if strcmp(Sorter,"Mountainsort 5")
                     value = str2double(value);
                 end
                 
-                % Assign to the Struc
                 NewParameterStrcuture.(key) = value;
             end
         end
@@ -49,13 +47,13 @@ if strcmp(Sorter,"Mountainsort 5")
 
 elseif strcmp(Sorter,"SpyKING CIRCUS 2") 
 
-    NewParameterStrcuture = SC2Parameter; % Initialize updated structure
+    NewParameterStrcuture = SC2Parameter; % Initialize
 
     for i = 1:length(Text)
 
-        line = strtrim(Text{i}); % Get current line and trim whitespace
+        line = strtrim(Text{i}); 
 
-        if contains(line, ':') % Check if the line contains a ':'
+        if contains(line, ':')
             
             tokens = split(line, ':');
 
@@ -63,22 +61,31 @@ elseif strcmp(Sorter,"SpyKING CIRCUS 2")
 
                 paramName = strtrim(tokens{1}); % Name before the ':'
                 paramValueStr = strtrim(tokens{2}); % Value after the ':'
+                
+                % Remove single or double quotes
+                if (startsWith(paramValueStr, "'") && endsWith(paramValueStr, "'")) || ...
+                   (startsWith(paramValueStr, '"') && endsWith(paramValueStr, '"'))
+                    paramValueStr = paramValueStr(2:end-1);
+                end
 
-                % Convert the value to numeric if possible, otherwise leave as string
+                % Convert the value to numeric or leave as char/string
                 paramValue = str2double(paramValueStr);
-                if isnan(paramValue) % Conversion was not succesful
+                if isnan(paramValue)
                     if isstring(paramValueStr)
-                        paramValue = convertStringsToChars(paramValueStr); % Keep as string
+                        paramValue = convertStringsToChars(paramValueStr); % Keep as char
                     else
                         paramValue = paramValueStr; % Keep as string 
                     end
                 end
-
-                % Check if the parameter name exists in the structure
+                
+                if strcmp(paramName,"mode")
+                    paramName = 'whitening.mode';
+                end
+                % Check if the parameter name exists
                 if isfield(NewParameterStrcuture, paramName)
                     NewParameterStrcuture.(paramName) = paramValue;
                 else
-                    % Recursively check sub-structures
+                    % check sub-structures
                     NewParameterStrcuture = Spike_Module_updateSubStruct(NewParameterStrcuture, paramName, paramValue);
                 end
             end
@@ -87,29 +94,28 @@ elseif strcmp(Sorter,"SpyKING CIRCUS 2")
 
 elseif strcmp(Sorter,"Kilosort 4") 
     
-    % Get the current content of the TextArea
+    % content of TextArea
     lines = Text;
 
-    % Initialize the structure
+    % Initialize
     NewParameterStrcuture = struct();
 
-    % Process each line
     for i = 1:numel(lines)
-        line = strtrim(lines{i}); % Get the line and trim whitespace
-        if contains(line, ':') % Check if the line contains a colon
-            parts = split(line, ':'); % Split into name and value
-            name = strtrim(parts{1}); % Variable name
-            value = strtrim(parts{2}); % Corresponding value
+        line = strtrim(lines{i}); 
+        if contains(line, ':') 
+            parts = split(line, ':'); 
+            name = strtrim(parts{1}); 
+            value = strtrim(parts{2});
 
             % Convert the value to the appropriate type
             if strcmpi(value, 'true') || strcmpi(value, 'false')
-                NewParameterStrcuture.(name) = double(strcmpi(value, 'true')); % Logical to double
+                NewParameterStrcuture.(name) = double(strcmpi(value, 'true')); 
             elseif ~isempty(regexp(value, '^\d+(\.\d+)?$', 'once'))
-                NewParameterStrcuture.(name) = str2double(value); % Numeric
+                NewParameterStrcuture.(name) = str2double(value); 
             elseif startsWith(value, '[') && endsWith(value, ']')
-                NewParameterStrcuture.(name) = str2num(value); %#ok<ST2NM> % Convert array
+                NewParameterStrcuture.(name) = str2num(value); %#ok<ST2NM> 
             elseif strcmpi(value, 'None')
-                NewParameterStrcuture.(name) = 'None'; % Treat 'None' as empty
+                NewParameterStrcuture.(name) = 'None'; 
                 %Struc.(name) = []; % Treat 'None' as empty
             else
                 NewParameterStrcuture.(name) = value; % Leave as string

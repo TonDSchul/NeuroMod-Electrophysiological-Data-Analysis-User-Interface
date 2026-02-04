@@ -22,19 +22,10 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
 
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
         
-        if ~isempty(SpikeDataCell)
-            mask = ~cellfun(@isempty, SpikeDataCell);  
-            [SpikeRows, SpikeColumns] = find(mask);        
-        else
-            SpikeRows = [];
-            SpikeColumns = [];
-        end
-
-        if length(SpikeRows) + length(SpikeColumns) > 1
-            SpikeRows = SpikeRows + 0.5;
-            SpikeColumns = SpikeColumns + 0.5;
-        end
-
+        
+        mask = ~cellfun(@isempty, SpikeDataCell);   % true for non-empty cell
+        [SpikeRows, SpikeColumns] = find(mask);        % row and column indices
+        
         if isempty(ImageScChannel_handles)
             if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
                 [X,Y] = meshgrid(1:size(Data,2),1:size(Data,1));
@@ -58,8 +49,8 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
                 'Tag','ImageScChannel');
 
                 if length(SpikeRows) + length(SpikeColumns) > 1
-                    % SpikeRows = SpikeRows + 0.5;
-                    % SpikeColumns = SpikeColumns + 0.5;
+                    SpikeRows = SpikeRows + 0.5;
+                    SpikeColumns = SpikeColumns + 0.5;
                     scatter(UIAxis,SpikeColumns, SpikeRows,60, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'r','Tag','SurfSpikes');
                 end
             else
@@ -73,8 +64,8 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
                 'Tag','ImageScChannel');
 
                 if length(SpikeRows) + length(SpikeColumns) > 1
-                    % SpikeRows = SpikeRows + 0.5;
-                    % SpikeColumns = SpikeColumns + 0.5;
+                    SpikeRows = SpikeRows + 0.5;
+                    SpikeColumns = SpikeColumns + 0.5;
                     scatter(UIAxis,SpikeColumns, SpikeRows,60, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'r','Tag','SurfSpikes');
                 end
             end

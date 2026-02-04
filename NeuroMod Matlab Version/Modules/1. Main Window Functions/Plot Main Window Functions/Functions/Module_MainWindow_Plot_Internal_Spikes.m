@@ -25,7 +25,9 @@ if strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Internal")
                 % create matrix with data for each channel at proper channel
                 % location
                 SpikeData.Position = Info.ProbeInfo.ActiveChannel(SpikeData.Position);
-                [~,SpikeData] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"SpikeMatrix",Channel_Selection);       
+
+                
+                [~,SpikeData] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"SpikeMatrix",Channel_Selection);  
             end
 
             % INdex of SpikeData.Position in Info.ProbeInfo.ActiveChannel

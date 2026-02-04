@@ -150,13 +150,19 @@ for chunkIdx = 1:nChunks
     end
 
     Lengthcount = Lengthcount + length(chunkData);
-
-    if strcmp(Format,'int32')
-        fwrite(fidRaw,chunkData,'*int32');
-    elseif strcmp(Format,'int16')
-        fwrite(fidRaw,chunkData,'*int16');
-    else
-        fwrite(fidRaw,chunkData,'*double');
+    
+    try
+        if strcmp(Format,'int32')
+            fwrite(fidRaw,chunkData,'*int32');
+        elseif strcmp(Format,'int16')
+            fwrite(fidRaw,chunkData,'*int16');
+        else
+            fwrite(fidRaw,chunkData,'*double');
+        end
+    catch
+        msgbox("Could not access file location to save in. Make sure the recording folder still exists and there isnt already a file saved for sorting (at the same location) that is opened in external programs like the external Kilosort GUI or Phy.")
+        warning("Could not access file location to save in. Make sure the recording folder still exists and there isnt already a file saved for sorting (at the same location) that is opened in external programs like the external Kilosort GUI or Phy.")
+        return;
     end
 end
 

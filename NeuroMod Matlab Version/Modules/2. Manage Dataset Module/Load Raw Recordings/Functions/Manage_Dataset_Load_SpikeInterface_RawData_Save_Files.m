@@ -73,6 +73,7 @@ DatLocation = strcat(ModifiedSaveFile,'\SI_Saved_Channel_Data.dat');
         return;
     end
     
+    
     HeaderInfo.NeoSaveFolder = SISaveFolder;
     HeaderInfo.FileType = "Maxwell MEA .h5";
     
@@ -80,11 +81,11 @@ DatLocation = strcat(ModifiedSaveFile,'\SI_Saved_Channel_Data.dat');
     %HeaderInfo.MEACoords = channel_locations(HeaderInfo.ChannelIDS+1,:);
     HeaderInfo.MEACoords = channel_locations;
     % Infer num time and num samples from custom time and channel entry
-    TimeToExtract = str2double(strsplit(TimeAndChannelToExtract.TimeToExtract,','));
-    if TimeToExtract(2) == Inf
+    MatTimeToExtract = str2double(strsplit(TimeToExtract,','));
+    if MatTimeToExtract(2) == Inf
         %n_samples
     else
-        n_samples = TimeToExtract(2)*sampling_rate - (TimeToExtract(1)*sampling_rate);
+        n_samples = MatTimeToExtract(2)*sampling_rate - (MatTimeToExtract(1)*sampling_rate);
     end
     if strcmp(ChannelToExtract,"All")
 
@@ -96,7 +97,7 @@ DatLocation = strcat(ModifiedSaveFile,'\SI_Saved_Channel_Data.dat');
     
     SampleRate = sampling_rate;
     HeaderInfo.ChannelToExtract = ChannelToExtract;
-    HeaderInfo.TimeToExtract = TimeToExtract;
+    HeaderInfo.TimeToExtract = MatTimeToExtract;
 
     texttoshow = "Loaded metadata from Maxwell MEA .h5 recording.";
 

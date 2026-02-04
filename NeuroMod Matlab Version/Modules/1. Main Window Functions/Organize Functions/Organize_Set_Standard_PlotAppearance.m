@@ -51,15 +51,17 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     PlotAppearance.MainWindow.Data.GridViewWindowScaling = [-0.5 0.5];
     
     PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol = 2;
-    PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.TimeInterpol = 15;
+    PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.TimeInterpol = 3;
     
     PlotAppearance.MainWindow.Data.AxonViewerSpikeThreshold = 1;
     PlotAppearance.MainWindow.Data.AxonViewerPastSampleToSum = 500;
     PlotAppearance.MainWindow.Data.AxonViewerAdditionalThreshold = 0;
     PlotAppearance.MainWindow.Data.AxonViewerShowTrails = 0;
     PlotAppearance.MainWindow.Data.AxonViewerOnlyOnes = 0;
+    PlotAppearance.MainWindow.Data.TakeSpikeAsSeed = 0;
 
     PlotAppearance.MainWindow.Data.AdditionalPlotDelay = 0;
+
 end
 
 %% Main Window Time Plot

@@ -21,7 +21,7 @@ texttoshow = [];
 for i = 1:length(Data.Events)
     IndiciesToDelete = Data.Events{i}<Timetoextract(1);
     IndiciesToDelete = IndiciesToDelete + Data.Events{i}>Timetoextract(2);
-
+    
     IndiciesToDelete(IndiciesToDelete>1) = 1;
     Data.Events{i}(IndiciesToDelete==1) = [];
     Data.Events{i} = Data.Events{i} - (Timetoextract(1) - 1);
@@ -31,11 +31,11 @@ for i = 1:length(Data.Events)
     
     if sum(IndiciesToDelete)+sum(deletedbcsmaller0)>0
         if ~strcmp(Data.Info.RecordingType,"Open Ephys")
-            disp(strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," events from event channel ",Data.Info.EventChannelNames{i}," due to time being extracted from the recording is smaller than the whole recording duration."));
-            texttoshow = [texttoshow;strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," events from event channel ",Data.Info.EventChannelNames{i}," due to time being extracted from the recording is smaller than the whole recording duration.")];
+            disp(strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," events from event channel ",Data.Info.EventChannelNames{i}," due event samples numubers being bigger than the extracted recording time."));
+            texttoshow = [texttoshow;strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," events from event channel ",Data.Info.EventChannelNames{i}," due event samples numubers being bigger than the extracted recording time.")];
         else
-            disp(strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," events because time being extracted from the recording is smaller than the whole recording duration."));
-            texttoshow = [texttoshow;strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," events because time being extracted from the recording is smaller than the whole recording duration.")];
+            disp(strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," due event samples numubers being bigger than the extracted recording time."));
+            texttoshow = [texttoshow;strcat("Deleted ",num2str(sum(IndiciesToDelete)+sum(deletedbcsmaller0))," due event samples numubers being bigger than the extracted recording time.")];
         end
     end
 end
@@ -58,8 +58,9 @@ if isempty(Data.Events)
         Data = rmfield(Data, 'Events');
     end
 end
+
 if isempty(texttoshow)
     texttoshow = "No event trigger violate time constraints.";
 else
-    texttoshow = [texttoshow;"All trigger had to be deleted due to time violations. No event data remaining."];
+    texttoshow = [texttoshow;"This is due to recording time extracted is not the original recording time."];
 end

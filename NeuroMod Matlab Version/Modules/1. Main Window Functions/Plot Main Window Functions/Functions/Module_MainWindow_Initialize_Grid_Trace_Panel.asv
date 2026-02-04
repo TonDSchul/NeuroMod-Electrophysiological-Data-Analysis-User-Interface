@@ -1,6 +1,13 @@
 function app = Module_MainWindow_Initialize_Grid_Trace_Panel(app)
 
-[AllChannel,~,~] = Module_MainWindow_ActiveChannel_ChannerlNumber_Grid_Traces(app.Data.Info,[],"NumChan",app.Data.Info.ProbeInfo.ActiveChannel,app.PreservePlotChannelLocations);
+if app.PreservePlotChannelLocations
+    AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords(app.Data.Info.ProbeInfo.ActiveChannel(1):app.Data.Info.ProbeInfo.ActiveChannel(end))));
+else
+    AllChannel = length(unique(app.Data.Info.ProbeInfo.ycoords(app.Data.Info.ProbeInfo.ActiveChannel)));
+    if str2double(app.Data.Info.ProbeInfo.NrRows)==2
+        AllChannel = round()
+    end
+end
 
 % Create grid INSIDE PANEL
 app.ChannelGrid = uigridlayout(app.Grid_Traces_View_Panel, [AllChannel, 1]);

@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor,KSVersion)
+function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor,KSVersion,DeleteMUA)
 
 %________________________________________________________________________________________
 
@@ -25,6 +25,7 @@ function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,Select
 % spikes from kilosort
 % 5. KSVersion: string, either "Kilosort 4 external GUI" or "Kilosort 3
 % external GUI" to set which version should be loaded
+% 6. DeleteMUA: logical one or zero whether to delete kept_spikes == 0
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -223,74 +224,62 @@ for i = 1:length(fileNames)
         Data.Spikes.pc_feature_ind = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i},'kept_spikes.npy')
         Data.Spikes.kept_spikes = readNPY(fullfile(folderPath,fileNames{i}));
+    elseif strcmp(fileNames{i},'cluster_KSLabel.tsv')
+        Data.Spikes.cluster_KSLabel = readtable(fullfile(folderPath,fileNames{i}), 'FileType', 'text', 'Delimiter', '\t');
     end
 end
 
 [~, ~ , ~, ~ ,Data.Spikes.BiggestAmplWaveform, ~] = ksDriftmap(folderPath,KSversion);
 
-%% Extract Waveforms
-% For Kilosort we dont have channel information to extract from raw or
-% preprocessed data --> Therefore we take channel closest to position
+%% ChannelPosition have to be full (not only active channel)
+xcoords = Data.Info.ProbeInfo.xcoords;
+ycoords = Data.Info.ProbeInfo.ycoords;
+
+Data.Spikes.ChannelPosition = zeros(length(xcoords),2);
+Data.Spikes.ChannelPosition(:,1) = xcoords';
+Data.Spikes.ChannelPosition(:,2) = ycoords';
+
+if Data.Spikes.OrigChannelPosition(1,1) ~= 0 || Data.Spikes.OrigChannelPosition(1,2)~= 0
+    Data.Spikes.SpikePositions(:,1) = Data.Spikes.SpikePositions(:,1) - double(min(Data.Spikes.OrigChannelPosition(:,1)));
+    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - double(min(Data.Spikes.OrigChannelPosition(:,2)));
+    if sum(min(Data.Spikes.SpikePositions))~=0
+        Mins = min(Data.Spikes.SpikePositions);
+        Data.Spikes.SpikePositions(:,1) = Data.Spikes.SpikePositions(:,1) - Mins(1);
+        Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Mins(2);
+    end
+end
+
+if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
+    msgbox("Error: Loaded spike data contains more channel than current probe design does. This can be due to channel deletion conducted after sorting or loading the wrong sorting data.")
+    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
+    if isfield(Data.Info,'Sorter')
+        Data.Info = rmfield(Data.Info, {'Sorter','SorterPath'});
+    end
+    Data.Info.SpikeType = 'Non';
+    return;
+end
+
+UinquePos = unique(Data.Spikes.OrigChannelPosition(:,2));
+PosDiff = UinquePos(2)-UinquePos(1);
+
+% Chekc if active channel islands
+bad_idx = find(diff(Data.Info.ProbeInfo.ActiveChannel) ~= 1);     
+is_violation = ~isempty(bad_idx); 
+
+if str2double(Data.Info.ProbeInfo.VertOffset) == 0 && is_violation==0
+    if PosDiff ~= Data.Info.ChannelSpacing
+        msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
+        warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
+    end
+end
+
+if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
+    msgbox("Warning: Loaded sorting data seems to have a different channelconfiguration than GUI data has. Check whether the correct output folder was selected.");
+    disp("Warning: Loaded sorting data seems to have a different channelconfiguration than GUI data has. Check whether the correct output folder was selected.");
+end
 
 %% Get Channel number corresponding to depth in um
-if str2double(Data.Info.ProbeInfo.NrRows) == 1
-
-    SpikePositions = (Data.Spikes.SpikePositions(:,2))./Data.Info.ChannelSpacing;
-    Data.Spikes.SpikeChannel = round(SpikePositions)+1;
-    
-    % runs through always when testes, follwoing not needed just there as
-    % failsave .. if found channel not part of activechannel bc right at
-    % the border to an inactive
-    NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
-    % Get the spikes that are NOT in ActiveChannel
-    ZeroIndex = find(NonExistent==0);
-    
-    for i = 1:length(ZeroIndex)
-        CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
-        
-        % take nearest channel. If two nearest, take the smaller one
-        [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
-        
-        %if multiple have same distance, pick the lower one
-        nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
-        Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
-    end
-else %% Two or more channel rows
-        %% Depth can be the smae. Therefore we need the x position as well
-    
-    for i = 1:length(Data.Spikes.SpikePositions(:,2))
-        % find closes y values (multiple)
-        distances = abs(Data.Info.ProbeInfo.ycoords - Data.Spikes.SpikePositions(i,2));
-        minDist = min(distances);
-        % indice of all channel matching depth -- two if same channel
-        % depths for both rows
-        Yidx = find(distances == minDist);
-        
-        % find closest x value (only one)
-
-        [~, Xidx] = min(abs(Data.Info.ProbeInfo.xcoords(Yidx) - Data.Spikes.SpikePositions(i,1))); 
-        
-        Data.Spikes.SpikeChannel(i) = Yidx(round(Xidx));
-    end
-    
-    % runs through always when testes, follwoing not needed just there as
-    % failsave .. if found channel not part of activechannel bc right at
-    % the border to an inactive
-    NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
-    % Get the spikes that are NOT in ActiveChannel
-    ZeroIndex = find(NonExistent==0);
-    
-    for i = 1:length(ZeroIndex)
-        CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
-        % take nearest channel. If two nearest, take the smaller one (bc round() was used)
-        [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
-        
-        % Handle ties: if multiple channels have same distance, pick the lower one
-        nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
-        Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
-    end 
-
-end
+Data = Spike_Module_Get_Spike_Channel(Data);
 
 if size(Data.Spikes.SpikeChannel,1)<size(Data.Spikes.SpikeChannel,2)
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
@@ -306,35 +295,6 @@ if KSversion == 3
     end
 end
 
-
-%% ChannelPosition have to be full (not only active channel)
-xcoords = Data.Info.ProbeInfo.xcoords;
-ycoords = Data.Info.ProbeInfo.ycoords;
-
-Data.Spikes.ChannelPosition = zeros(length(xcoords),2);
-Data.Spikes.ChannelPosition(:,1) = xcoords';
-Data.Spikes.ChannelPosition(:,2) = ycoords';
-
-UinquePos = unique(Data.Spikes.OrigChannelPosition(:,2));
-PosDiff = UinquePos(2)-UinquePos(1);
-if str2double(Data.Info.ProbeInfo.VertOffset) == 0
-    if PosDiff ~= Data.Info.ChannelSpacing
-        msgbox("Warning: Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.")
-        warning("Channelspacing of probe design used for Kilosort different to channelspacing of this recording! Channel positions of spikes will be shifted!.");
-    end
-end
-
-if KSversion == 4
-    if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,1) < size(Data.Raw,1)
-        msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
-        disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
-    end
-elseif KSversion == 3
-    if size(Data.Spikes.ChannelMap,2) > size(Data.Raw,1) || size(Data.Spikes.ChannelMap,2) < size(Data.Raw,1)
-        msgbox("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
-        disp("Warning: Loaded Kilosort data seems to have a different channelconfiguration than GUI data has. Check whether correct kilosort data was selected.");
-    end
-end
 
 %% If no KilosortData found: Spike Field is emptyx but has to be deleted
 if isempty(Data.Spikes)
@@ -373,14 +333,35 @@ if sum(SpikeTimesSmaller0)>0
     msgbox("Warning: spike time(s) smaller or equal to 0 found and deleted. This is a known behavior fixed in newer Kilosort 4 versions." )
 end
 
-if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
-    msgbox("Error: Loaded spike data contains more channel than current probe design does. This can be due to channel deletion conducted after sorting or loading the wrong sorting data.")
-    [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
-    if isfield(Data.Info,'Sorter')
-        Data.Info = rmfield(Data.Info, {'Sorter','SorterPath'});
+if sum(isnan(Data.Spikes.SpikePositions(:,2)))>0
+    Data.Spikes.SpikeTimes(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+    Data.Spikes.SpikePositions(isnan(Data.Spikes.SpikePositions(:,2)),:) = [];
+    Data.Spikes.SpikeAmps(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+    Data.Spikes.SpikeCluster(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+    Data.Spikes.SpikeChannel(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+    Data.Spikes.SpikeTemplates(SpikeTimesSmaller0==1) = [];
+end
+
+if DeleteMUA
+
+    MUADesignation = string(Data.Spikes.cluster_KSLabel{:,2});
+    MuaIndicies = find(MUADesignation=='mua');
+
+    if ~isempty(MuaIndicies)
+        CurrentClusterIndicies = zeros(size(Data.Spikes.SpikeTimes));
+        for kk = 1:length(MuaIndicies)
+            CurrentClusterIndicies = CurrentClusterIndicies + (Data.Spikes.SpikeCluster == MuaIndicies(kk));
+        end
+        CurrentClusterIndicies(CurrentClusterIndicies>1)=1;
+
+        Data.Spikes.SpikeTimes(CurrentClusterIndicies==1) = [];
+        Data.Spikes.SpikePositions(CurrentClusterIndicies==1,:) = [];
+        Data.Spikes.SpikeAmps(CurrentClusterIndicies==1) = [];
+        Data.Spikes.SpikeChannel(CurrentClusterIndicies==1) = [];
+        Data.Spikes.SpikeCluster(CurrentClusterIndicies==1) = [];
+        Data.Spikes.SpikeTemplates(CurrentClusterIndicies==1) = [];
     end
-    Data.Info.SpikeType = 'Non';
-    return;
+    
 end
 
 %% Now extract Waveforms
@@ -407,7 +388,7 @@ if sum(SpikesWithWaveform)>0
     Data.Spikes.Waveforms = Data.Spikes.Waveforms(SpikesWithWaveform==1,:);
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel(SpikesWithWaveform==1); 
     Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster(SpikesWithWaveform==1);
-    Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
+    %Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
 end
 
 if min(Data.Spikes.SpikeCluster)==0

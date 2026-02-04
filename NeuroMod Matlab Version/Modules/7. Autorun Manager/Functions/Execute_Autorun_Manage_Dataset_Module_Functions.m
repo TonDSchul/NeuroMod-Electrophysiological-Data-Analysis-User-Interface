@@ -96,7 +96,7 @@ if strcmp(FunctionOrder,'Extract_Raw_Recording')
         elseif strcmp(AutorunConfig.ExtractRawRecording.LibraryToUse,"SpikeInterface Python Library") % If SpikeInterface data extraction
                     
             % Open extra window, get more settings, start SpikeInterface python
-            [Success] = Manage_Dataset_Module_Start_SpikeInterface(SelectedFolder,executableFolder,AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording,AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen,AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat,AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab);
+            [Success] = Manage_Dataset_Module_Start_SpikeInterface(SelectedFolder,executableFolder,AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording,AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen,AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat,AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab,AutorunConfig.ExtractRawRecording.SaveProbe,AutorunConfig.ExtractRawRecording.SaveProbe_Format,AutorunConfig.ExtractRawRecording.TimeToExtract,AutorunConfig.ExtractRawRecording.ChannelToExtract);
             if Success == 0
                 return;
             end

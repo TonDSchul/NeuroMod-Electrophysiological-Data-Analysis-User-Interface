@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,CurrentSorter)
+function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,CurrentSorter,SelectedCurationMethods)
 
 %________________________________________________________________________________________
 
@@ -14,6 +14,8 @@ function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,Select
 % 2. SelectedFolder: char, folder location containing spike results
 % 4. CurrentSorter: char, name of the sorter to load, used for
 % Data.Info.Sorter, either 'Mountainsort5' or 'Spykingcircus2' or 'SpikeInterface Kilosort'
+% 5. SelectedCurationMethods: quality metrics and thresholds selected by
+% user
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -144,15 +146,6 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i}(1:end-4),'amplitudes')
         Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
         Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
-    elseif strcmp(fileNames{i}(1:end-4),'cluster_isi_violations_ratio')
-        Tempcluster_isi_violations_ratio = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
-        Data.Spikes.cluster_isi_violations_ratio = table2array(Tempcluster_isi_violations_ratio);
-    elseif strcmp(fileNames{i}(1:end-4),'cluster_isi_violations_count')
-        TempIsiviolations = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
-        Data.Spikes.cluster_isi_violations_count = table2array(TempIsiviolations);
-    elseif strcmp(fileNames{i}(1:end-4),'amplitude')
-        Data.Spikes.SpikeAmps = readNPY(fullfile(SelectedFolder,fileNames{i}));
-        Data.Spikes.SpikeAmps = double(Data.Spikes.SpikeAmps);
     elseif strcmp(fileNames{i}(1:end-4),'channel_groups')
         Data.Spikes.SpikeTemplates = readNPY(fullfile(SelectedFolder,fileNames{i}));
         Data.Spikes.SpikeTemplates = double(Data.Spikes.SpikeTemplates);
@@ -175,8 +168,41 @@ for i = 1:length(fileNames)
         Data.Spikes.pc_features = readNPY(fullfile(SelectedFolder,fileNames{i}));
     elseif strcmp(fileNames{i}(1:end-4),'pc_feature_ind')
         Data.Spikes.pc_feature_ind = readNPY(fullfile(SelectedFolder,fileNames{i}));
-    elseif strcmp(fileNames{i}(1:end-4),'kept_spikes')
-        Data.Spikes.kept_spikes = readNPY(fullfile(SelectedFolder,fileNames{i}));
+
+    %% Quality metrics!
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_isi_violations_ratio')
+        Tempcluster_isi_violations_ratio = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.ISIViolationRatio = table2array(Tempcluster_isi_violations_ratio);
+        Data.Spikes.ISIViolationRatio(:,1) = Data.Spikes.ISIViolationRatio(:,1) + 1; %zero indexed to 1 indexed
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_isi_violations_count')
+        TempIsiviolations = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.cluster_isi_violations_count = table2array(TempIsiviolations);
+        Data.Spikes.cluster_isi_violations_count(:,1) = Data.Spikes.cluster_isi_violations_count(:,1) + 1; %zero indexed to 1 indexed
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_snr')
+        ClusterSNR = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.ClusterSNR = table2array(ClusterSNR);
+        Data.Spikes.ClusterSNR(:,1) = Data.Spikes.ClusterSNR(:,1) + 1; %zero indexed to 1 indexed
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_firing_range')
+        Cluster_Firing_Range = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.Cluster_Firing_Range = table2array(Cluster_Firing_Range);
+        Data.Spikes.Cluster_Firing_Range(:,1) = Data.Spikes.Cluster_Firing_Range(:,1) + 1; %zero indexed to 1 indexed
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_noise_ratio')
+        Cluster_Noise_Ratio = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.Cluster_Noise_Ratio = table2array(Cluster_Noise_Ratio);
+        Data.Spikes.Cluster_Noise_Ratio(:,1) = Data.Spikes.Cluster_Noise_Ratio(:,1) + 1; %zero indexed to 1 indexed
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_noise_cutoff')
+        Cluster_Noise_Cutoff = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.Cluster_Noise_Cutoff = table2array(Cluster_Noise_Cutoff);
+        Data.Spikes.Cluster_Noise_Cutoff(:,1) = Data.Spikes.Cluster_Noise_Cutoff(:,1) + 1; %zero indexed to 1 indexed
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_rp_violations')
+        Cluster_Rp_Violations = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.Cluster_Rp_Violations = table2array(Cluster_Rp_Violations);
+        Data.Spikes.Cluster_Rp_Violations(:,1) = Data.Spikes.Cluster_Rp_Violations(:,1) + 1; %zero indexed to 1 indexed
+    elseif strcmp(fileNames{i}(1:end-4),'cluster_amplitude_median')
+        Cluster_Amplitude_Median = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
+        Data.Spikes.Cluster_Amplitude_Median = table2array(Cluster_Amplitude_Median);
+        Data.Spikes.Cluster_Amplitude_Median(:,1) = Data.Spikes.Cluster_Amplitude_Median(:,1) + 1; %zero indexed to 1 indexed
+
     end
 end
 
@@ -268,69 +294,8 @@ if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.Channel
     disp("Warning: Loaded sorting data seems to have a different channelconfiguration than GUI data has. Check whether the correct output folder was selected.");
 end
 
-%% Extract Waveforms
-% For Kilosort we dont have channel information to extract from raw or
-% preprocessed data --> Therefore we take channel closest to position
-
 %% Get Channel number corresponding to depth in um
-if str2double(Data.Info.ProbeInfo.NrRows) == 1
-
-    SpikePositions = (Data.Spikes.SpikePositions(:,2))./Data.Info.ChannelSpacing;
-    Data.Spikes.SpikeChannel = round(SpikePositions)+1;
-    
-    % runs through always when testes, follwoing not needed just there as
-    % failsave .. if found channel not part of activechannel bc right at
-    % the border to an inactive
-    NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
-    % Get the spikes that are NOT in ActiveChannel
-    ZeroIndex = find(NonExistent==0);
-    
-    for i = 1:length(ZeroIndex)
-        CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
-        
-        % take nearest channel. If two nearest, take the smaller one
-        [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
-        
-        %if multiple have same distance, pick the lower one
-        nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
-        Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
-    end
-else %% Two or more channel rows
-        %% Depth can be the smae. Therefore we need the x position as well
-    
-    for i = 1:length(Data.Spikes.SpikePositions(:,2))
-        % find closes y values (multiple)
-        distances = abs(Data.Info.ProbeInfo.ycoords - Data.Spikes.SpikePositions(i,2));
-        minDist = min(distances);
-        % indice of all channel matching depth -- two if same channel
-        % depths for both rows
-        Yidx = find(distances == minDist);
-        
-        % find closest x value (only one)
-
-        [~, Xidx] = min(abs(Data.Info.ProbeInfo.xcoords(Yidx) - Data.Spikes.SpikePositions(i,1))); 
-        
-        Data.Spikes.SpikeChannel(i) = Yidx(round(Xidx));
-    end
-    
-    % runs through always when testes, follwoing not needed just there as
-    % failsave .. if found channel not part of activechannel bc right at
-    % the border to an inactive
-    NonExistent = ismember(Data.Spikes.SpikeChannel, Data.Info.ProbeInfo.ActiveChannel);
-    % Get the spikes that are NOT in ActiveChannel
-    ZeroIndex = find(NonExistent==0);
-    
-    for i = 1:length(ZeroIndex)
-        CurrentChannel = Data.Spikes.SpikeChannel(ZeroIndex(i));
-        % take nearest channel. If two nearest, take the smaller one (bc round() was used)
-        [minDist, minIdx] = min(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel));
-        
-        % Handle ties: if multiple channels have same distance, pick the lower one
-        nearestChannels = Data.Info.ProbeInfo.ActiveChannel(abs(Data.Info.ProbeInfo.ActiveChannel - CurrentChannel) == minDist);
-        Data.Spikes.SpikeChannel(ZeroIndex(i)) = min(nearestChannels);  % pick lower one
-    end 
-
-end
+Data = Spike_Module_Get_Spike_Channel(Data);
 
 if size(Data.Spikes.SpikeChannel,1)<size(Data.Spikes.SpikeChannel,2)
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
@@ -343,8 +308,8 @@ if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     Data.Spikes.SpikeTimes(SpikeAboveTime==1) = [];
     Data.Spikes.SpikePositions(SpikeAboveTime==1,:) = [];
     Data.Spikes.SpikeAmps(SpikeAboveTime==1) = [];
-    Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
     Data.Spikes.SpikeChannel(SpikeAboveTime==1) = [];
+    Data.Spikes.SpikeCluster(SpikeAboveTime==1) = [];
 
     msgbox("Warning: spike time(s) bigger than maximum time found an deleted. Please check whether you loaded the correct output folder." )
 end
@@ -367,6 +332,11 @@ if sum(isnan(Data.Spikes.SpikePositions(:,2)))>0
     Data.Spikes.SpikeAmps(isnan(Data.Spikes.SpikePositions(:,2))) = [];
     Data.Spikes.SpikeCluster(isnan(Data.Spikes.SpikePositions(:,2))) = [];
     Data.Spikes.SpikeChannel(isnan(Data.Spikes.SpikePositions(:,2))) = [];
+end
+
+%% Delete Units violating sorting metrics
+if ~isempty(SelectedCurationMethods)
+    Data = Spike_Module_Apply_SpikeInterface_Quality_Metrics(Data,SelectedCurationMethods);
 end
 
 %% Get Waveforms

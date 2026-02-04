@@ -54,22 +54,7 @@ def Load_Binary_In_SpikeInterface(file_path,sampling_frequency,num_channels,Sort
 def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRows,HorChannelOffset,VerChannelOffset,Recording,AllChannel,ActiveChannel,Xcoords,Ycoords,RecordingType):
         
     print("Creating and attaching Probe")
-    '''
-    if RecordingType == "SpikeInterface Maxwell MEA .h555":
-        xcoordsvec = np.array([float(v) for v in Xcoords.split(',')])
-        ycoordsvec = np.array([float(v) for v in Ycoords.split(',')])
-        total_nb_channels = len(xcoordsvec)
-        
-        # Create probe object
-        probe = Probe(si_units='um')
-                
-        # Add all contacts at once using numpy arrays
-        positions = np.column_stack((xcoordsvec, ycoordsvec))  # x, y, z=0
-        probe.set_contacts(positions=positions, shapes='circle', shape_params={'radius': 10})
-        probe.set_device_channel_indices(np.arange(len(xcoordsvec)))
-        
-    else:
-    '''
+
     positions = np.zeros((AllChannel * NumberRows, 2))
     
     xcoordsvec = np.array([float(v) for v in Xcoords.split(',')])
@@ -131,9 +116,10 @@ def Create_Probe(num_elec,ypitch,PlotTraces,RowOffsetDistance,RowOffset,NumberRo
 """ ################################################################ Preprocessing ####### """
 def Preprocessing(Recording,Probe,Apply_Preprocessing):
     
-    PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=3000, dtype=np.float64)
-    PreProRecording = spre.common_reference(recording=PreProRecording, dtype=np.float64)
-                
+    PreProRecording = spre.bandpass_filter(recording=Recording, freq_min=300, freq_max=6000, dtype=np.float32)
+    PreProRecording = spre.common_reference(recording=PreProRecording, dtype=np.float32)
+    PreProRecording = spre.whiten(recording=PreProRecording, dtype=np.float32)
+    
     PreProRecording = PreProRecording.set_probe(Probe)
     
     PreProRecording.annotate(is_filtered=True)
@@ -158,22 +144,15 @@ def combined_plot(recording,PreproRecording,ypitch):
 """ ################################################################ SpikingCircus2 ####### """
 def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,SortingParameter):
     
-    print("Starting Spike Sorting with SpikingCircus 2")
+    print("Starting Spike Sorting with SpykingCircus 2")
     
     """"Parallel Processing"""
-    global_job_kwargs = dict(n_jobs=4, chunk_duration="1s")
+    global_job_kwargs = dict(n_jobs=1, chunk_duration="1s")
     si.set_global_job_kwargs(**global_job_kwargs)
 
     default_SC2_params = ss.Spykingcircus2Sorter.default_params()
         
     costum_SC2_params = update_standards(default_SC2_params, SortingParameter)
-    
-    # If it exists inside 'merging', remove it
-    if 'merging' in costum_SC2_params and 'auto_merge' in costum_SC2_params['merging']:
-        del costum_SC2_params['merging']['auto_merge']
-
-    if 'merging' in costum_SC2_params and 'correlograms_kwargs' in costum_SC2_params['merging']:
-        del costum_SC2_params['merging']['correlograms_kwargs']
     
     if Apply_Preprocessing == 1:
         costum_SC2_params['apply_preprocessing'] = False
@@ -182,20 +161,20 @@ def SortWithSpikingCircus(recording,Sorting_output_folder,Apply_Preprocessing,So
         costum_SC2_params['apply_preprocessing'] = True
         print("Prepro in SC2")
     
+    if isinstance(costum_SC2_params["cleaning"]["sparsify_threshold"], str) and costum_SC2_params["cleaning"]["sparsify_threshold"] == "None":
+        costum_SC2_params["cleaning"]["sparsify_threshold"] = None
+            
     print("Costum_SC2_params:")
+       
     print(costum_SC2_params)
     
-    argname = get_run_sorter_folder_arg()
-
-    kwargs = {
-        "sorter_name": "spykingcircus2",
-        "recording": recording,
-        argname: Sorting_output_folder, 
-        "remove_existing_folder": True,
-        **costum_SC2_params
-    }
-    
-    sorting_SC = ss.run_sorter(**kwargs)
+    sorting_SC = ss.run_sorter(
+        sorter_name="spykingcircus2",
+        recording=recording,
+        folder=Sorting_output_folder,
+        remove_existing_folder=True,
+        **costum_SC2_params,
+        verbose=True)
     
     return sorting_SC 
 
@@ -218,12 +197,23 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     else:
         Costum_MS5_params['filter'] = True
         print("Prepro in MS5")
+    
+    # comes in as empty from matlab
+    if isinstance(Costum_MS5_params["mp_context"], str) and Costum_MS5_params["mp_context"] == "None":
+        Costum_MS5_params["mp_context"] = None
         
     print("Costum_MS5_params:")
     print(Costum_MS5_params)
     
-    print(Costum_MS5_params.keys())
+    sorting_MS5 = ss.run_sorter(
+        sorter_name="mountainsort5",
+        recording=recording,
+        folder=Sorting_output_folder,
+        remove_existing_folder=True,
+        **Costum_MS5_params,
+        verbose=True)
     
+    '''
     argname = get_run_sorter_folder_arg()
 
     kwargs = {
@@ -235,7 +225,8 @@ def SortWithMountainSort(recording,Sorting_output_folder,Apply_Preprocessing,Sor
     }
     
     sorting_MS5 = ss.run_sorter(**kwargs)
-
+    '''
+    
     return sorting_MS5
 
 """ ################################################################ Kilosort 4 ####### """
@@ -303,7 +294,7 @@ def CreateSortingAnalyzer(recording,sorting,Save_Sorting_Folder,LoadRecording):
             'spike_locations':{},
             'isi_histograms':{},
             'principal_components':{},
-            'quality_metrics':{'metric_names': ['snr', 'firing_rate','isi_violation']},
+            'quality_metrics':{'metric_names': None},
             'template_similarity':{}
         }
     
@@ -402,7 +393,21 @@ def get_dat_files(folder_path):
     dat_files = [file for file in os.listdir(folder_path) if file.endswith('.dat')]
     return dat_files
         
-def update_standards(standsorting_parameters, sorting_parameters):
+def update_standards(defaults, user):
+    for k, v in user.items():
+        if k not in defaults:
+            continue
+
+        if isinstance(defaults[k], dict) and isinstance(v, dict):
+            update_standards(defaults[k], v)
+        else:
+            try:
+                defaults[k] = type(defaults[k])(v)
+            except Exception:
+                defaults[k] = v  # let SpikeInterface validate
+
+    return defaults
+    '''
     for key, value in sorting_parameters.items():
         if key in standsorting_parameters:
             # Get the type of the standard parameter value
@@ -418,6 +423,7 @@ def update_standards(standsorting_parameters, sorting_parameters):
                 standsorting_parameters[key] = converted_value
 
     return standsorting_parameters
+    '''
 
 def get_run_sorter_folder_arg():
     sig = inspect.signature(ss.run_sorter)

@@ -47,19 +47,6 @@ ActiveChannel = sprintf('%d,', Data.Info.ProbeInfo.ActiveChannel - 1);
 ActiveChannel(end) = [];  % remove final comma
 AllChannel = str2double(Data.Info.ProbeInfo.NrChannel);
 
-% if strcmp(Data.Info.RecordingType,"SpikeInterface Maxwell MEA .h5")
-%     TempCoords = Data.Info.MEACoords;
-%     TempCoords(:,1) = TempCoords(:,1) - min(TempCoords(:,1));%set to start = 0
-%     TempCoords(:,2) = TempCoords(:,2) - min(TempCoords(:,2));%set to start = 0
-%     yCoords = sprintf('%d,', TempCoords(:,2)');
-%     xCoords = sprintf('%d,', TempCoords(:,1)');
-%     if yCoords(end)==','
-%         yCoords(end) = [];
-%     end
-%     if xCoords(end)==','
-%         xCoords(end) = [];
-%     end
-% else
 yCoords = sprintf('%d,', Data.Info.ProbeInfo.ycoords);
 xCoords = sprintf('%d,', Data.Info.ProbeInfo.xcoords);
 if yCoords(end)==','

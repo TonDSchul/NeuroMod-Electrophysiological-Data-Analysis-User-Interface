@@ -154,15 +154,15 @@ def main(subfolders,file_path,GUIParamsfile):
         
         if LoadSpikeSorting == 0: 
             if Sorter in ['Kilosort 4']:
-                CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4, overwrite=True)
+                CachedRecording = Recording.save(format='binary', dtype = 'float32',folder=PathToSaveCached, n_jobs = 4, chunk_duration="1s", overwrite=True)
                 CachedRecording.annotate(is_filtered=False)
                 CachedRecording = CachedRecording.set_probe(Probe)
             if Sorter in ['SpyKING CIRCUS 2']:
-                CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
+                CachedRecording = Recording.save(format='binary', dtype = 'float32', folder=PathToSaveCached, n_jobs = 4, chunk_duration="1s",overwrite=True)
                 CachedRecording.annotate(is_filtered=False)
                 CachedRecording = CachedRecording.set_probe(Probe)
             if Sorter in ['Mountainsort 5']:
-                CachedRecording = Recording.save(format='binary', dtype = 'float64', folder=PathToSaveCached, n_jobs = 4, overwrite=True)
+                CachedRecording = Recording.save(format='binary', dtype = 'float32', folder=PathToSaveCached, n_jobs = 4, chunk_duration="1s",overwrite=True)
                 CachedRecording.annotate(is_filtered=False)
                 CachedRecording = CachedRecording.set_probe(Probe)
         else:
