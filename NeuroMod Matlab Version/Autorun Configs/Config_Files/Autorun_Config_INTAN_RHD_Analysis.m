@@ -49,7 +49,7 @@ AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","
 AutorunConfig.PreservePlotChannelLocations = 1;
 
 % Channel and Events to Analyze
-AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise char, '1','2','3','4','5','6'...; Range is from 1 to NrChannel (NOT based on active channel names but number of available channel number!) --> '1,2,3' means first three active channel
+AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise Matlab expression; Note: Not active Channel! Put in incdicie of active channel. If Probe starts with active channel 5,6,7 and you specify channel 1,2 here, it means channel 5,6 are selected.
 
 % General Information
 AutorunConfig.StartFromFolder = 1; % specify 2 to skip the first folder in directory selected
@@ -93,6 +93,8 @@ AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = 
 AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen = 1; % Only when "SpikeInterface Python Library"; Either 1 or 0. specify whteher python console opening to show progress of SpikeInterface data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording = 0; % Only when "SpikeInterface Python Library"; Either 1 or 0, whether to load the files SpikeInterface saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
 AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat = "SpikeInterface MEA Maxwell"; % Only when "SpikeInterface Python Library"; Only "SpikeInterface MEA Maxwell" available, loading .h5 files saved by Maxwell MaxOne 
+AutorunConfig.ExtractRawRecording.SaveProbe = 0; % Whether to save the probe design in a file to manually load into Kilosort or Spikeinterface
+AutorunConfig.ExtractRawRecording.SaveProbe_Format = ".mat"; % Which format the probe design is saved in, Options: ".mat" OR ".prb"
 
 AutorunConfig.ExtractRawRecording.ChannelToExtract = 'All'; % char, channel to extract from recordings. Either 'All' for all channel or matlab expressions as a char like '1:10' or '[1,2,3,5,6]'
 AutorunConfig.ExtractRawRecording.TimeToExtract = '0,Inf'; % char, timerange of recording to extract data from. Either '0,Inf' for the whole recording time or comma separated numbers like 0,10 for the first 10 seconds.
@@ -356,19 +358,19 @@ AutorunConfig.LoadfromSpikeSorting.DeleteMUA = 1; % ONLY FOR KILOSORT: 1 or 0 wh
 % the following values to 1 to enable curation with that quality metric
 % based on the threshold entered in the block after. See tooltips in the respective GUI
 % window (in the 'Load Sorting' Window) for more information
-AutorunConfig.LoadfromSpikeSorting.SISNR = 0;
-AutorunConfig.LoadfromSpikeSorting.SIFiringRate = 0;
-AutorunConfig.LoadfromSpikeSorting.SINoiseCutoff = 0;
-AutorunConfig.LoadfromSpikeSorting.SIISIViolationRatio = 0;
-AutorunConfig.LoadfromSpikeSorting.SINoiseRatio = 0;
-AutorunConfig.LoadfromSpikeSorting.SIMedianAmplitude = 0;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SISNR = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIFiringRate = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseCutoff = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIISIViolationRatio = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseRatio = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIMedianAmplitude = 1;
 
-AutorunConfig.LoadfromSpikeSorting.SISNRValue = '<3';
-AutorunConfig.LoadfromSpikeSorting.SIFiringRateValue = '<0.05';
-AutorunConfig.LoadfromSpikeSorting.SINoiseCutoffValue = '>0.5';
-AutorunConfig.LoadfromSpikeSorting.SIISIViolationRatioValue = '>0.5';
-AutorunConfig.LoadfromSpikeSorting.SINoiseRatioValue = '>0.6';
-AutorunConfig.LoadfromSpikeSorting.SIMedianAmplitudeValue = '>-0.001';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SNR = '<3';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.FiringRange = '<0.05';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseCutOff = '>0.5';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.ISIViolationRatio = '>0.5';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseRatio = '>0.6';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.MedianAmplitude = '>-0.001';
 
 % Wrap up by correcting dimensions to show in textarea of autorun window
 if strcmp(DisplayOrder,"Get Settings")
@@ -404,7 +406,7 @@ AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5 = struct('scheme', '2', 
                       'mp_context', 'None', ...
                       'max_threads_per_process', 1);
 %% SpykingCircus 2
-AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = sstruct( ...
+AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = struct( ...
                         'general', struct( ...
                             'ms_before', 0.5, ...
                             'ms_after', 1.5, ...

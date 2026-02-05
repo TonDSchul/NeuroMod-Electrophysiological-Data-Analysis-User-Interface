@@ -57,7 +57,8 @@ else
     DataTimeToExtract(2) = round(str2double(SelectedTimeandChannel.TimeToExtract(2)) * SampleRate);
 end
 
-Data = SGLX_readMeta.ReadBin(DataTimeToExtract(1), DataTimeToExtract(2), HeaderInfo,FileName, SelectedFolder);
+nSamp = (DataTimeToExtract(2) - DataTimeToExtract(1))-1;
+Data = SGLX_readMeta.ReadBin(DataTimeToExtract(1), nSamp, HeaderInfo,FileName, SelectedFolder);
 
 % convert into mV
 fI2V = SGLX_readMeta.Int2Volts(HeaderInfo);
@@ -68,5 +69,20 @@ if streamIndex== 1 %LFP
 else
     Data = single(Data * fI2V / APgain(1)) ./ 1000;
 end
+
+% now get rid of reference channel
+if isfield(HeaderInfo,'snsApLfSy')
+    commaindicie = find(HeaderInfo.snsApLfSy==',');
+    if ~isempty(commaindicie)
+        referenchannel = str2double(HeaderInfo.snsApLfSy(commaindicie(end)+1:end));
+        Data(referenchannel,:) = [];
+        disp("Delete reference channel from dataset.");
+    else
+        warning("Could not read reference channel! It cannot be deleted from the dataset, so there will be one additional channel.");
+    end
+else
+    disp("No info about reference channel found.");
+end
+
 
 RecordingType = "SpikeGLX NP";

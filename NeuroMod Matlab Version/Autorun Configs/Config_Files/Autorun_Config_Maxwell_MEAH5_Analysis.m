@@ -43,7 +43,7 @@ function [AutorunConfig] = Autorun_Config_Maxwell_MEAH5_Analysis(DisplayOrder)
 AutorunConfig.MEA_Analysis = 1;
 
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Save_for_SpikeSorting"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Load_from_SpikeSorting","Open_in_Phy"];
 
 % Whether true relations between active channel are display in analysis
 % plots. This becomes relevant when you have inactive channel islands
@@ -106,8 +106,9 @@ AutorunConfig.ExtractRawRecording.TimeToExtract = '0,Inf'; % char, timerange of 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "SpikeInterface MEA Maxwell .h5"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "MEA .h5 file"; % "TDT .sev"
 
+%%%% Do not edit ChannelToExtract for MEA recordings!
 AutorunConfig.ExtractRawRecording.ChannelToExtract = 'All'; % char, channel to extract from recordings. Either 'All' for all channel or matlab expressions as a char like '1:10' or '[1,2,3,5,6]'
-AutorunConfig.ExtractRawRecording.TimeToExtract = '0,Inf'; % char, timerange of recording to extract data from. Either '0,Inf' for the whole recording time or comma separated numbers like 0,10 for the first 10 seconds.
+AutorunConfig.ExtractRawRecording.TimeToExtract = '0,30'; % char, timerange of recording to extract data from. Either '0,Inf' for the whole recording time or comma separated numbers like 0,10 for the first 10 seconds.
 
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
@@ -335,7 +336,7 @@ AutorunConfig.InternalSpikeDetection.FilterSpikeinSameWaveform = true; % false f
 AutorunConfig.InternalSpikeDetection.TimeSpantoCombineIndices = '0.001'; % in s
 
 %% Spike Sorting
-AutorunConfig.CreateSpikeSorting.Sorter = 'SpyKING CIRCUS 2'; % which Spike sorter was used to analyze your data? Options: 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
+AutorunConfig.CreateSpikeSorting.Sorter = 'SpyKING CIRCUS 2'; % which spike sorter is used to analyze your data? Options: 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
 AutorunConfig.CreateSpikeSorting.OpenSpikeInterface = '1';
 AutorunConfig.CreateSpikeSorting.Preprocess = '1';
 AutorunConfig.CreateSpikeSorting.PlotTraces = '0';
@@ -353,7 +354,7 @@ AutorunConfig.SaveforSpikeSorting.SaveFormat = 'double'; % 'int32' or 'int16' fo
 AutorunConfig.SaveforSpikeSorting.Dataset = 'Raw Data'; %'Raw Data' OR 'Preprocessed Data' to determine which part of the dataset is saved
 %% 5.2 Load from SpikeSorting
 %______________________________________________________________________________________________________
-AutorunConfig.LoadfromSpikeSorting.Sorter = 'Mountainsort 5'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
+AutorunConfig.LoadfromSpikeSorting.Sorter = 'Kilosort 4 external GUI'; % which Spike sorter was used to analyze your data? Options: 'Kilosort 4 external GUI' OR 'Kilosort 3 external GUI' OR 'Mountainsort 5' OR 'SpyKING CIRCUS 2' OR 'WaveClus 3'
 % If you know the sclaing factor, specify here - if not leave empty (recommended). The scalingfactor will be
 % automatically created and applied when you saved data for kilosort before.
 AutorunConfig.LoadfromSpikeSorting.ScalingFactor = []; % ONLY FOR KILOSORT: char, This is the 'int16' scaling factor for conversion of kilosort amplitudes represented as integers back to mV. 
@@ -366,19 +367,19 @@ AutorunConfig.LoadfromSpikeSorting.DeleteMUA = 1; % ONLY FOR KILOSORT: 1 or 0 wh
 % the following values to 1 to enable curation with that quality metric
 % based on the threshold entered in the block after. See tooltips in the respective GUI
 % window (in the 'Load Sorting' Window) for more information
-AutorunConfig.LoadfromSpikeSorting.SISNR = 0;
-AutorunConfig.LoadfromSpikeSorting.SIFiringRate = 0;
-AutorunConfig.LoadfromSpikeSorting.SINoiseCutoff = 0;
-AutorunConfig.LoadfromSpikeSorting.SIISIViolationRatio = 0;
-AutorunConfig.LoadfromSpikeSorting.SINoiseRatio = 0;
-AutorunConfig.LoadfromSpikeSorting.SIMedianAmplitude = 0;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SISNR = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIFiringRate = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseCutoff = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIISIViolationRatio = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseRatio = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIMedianAmplitude = 1;
 
-AutorunConfig.LoadfromSpikeSorting.SISNRValue = '<3';
-AutorunConfig.LoadfromSpikeSorting.SIFiringRateValue = '<0.05';
-AutorunConfig.LoadfromSpikeSorting.SINoiseCutoffValue = '>0.5';
-AutorunConfig.LoadfromSpikeSorting.SIISIViolationRatioValue = '>0.5';
-AutorunConfig.LoadfromSpikeSorting.SINoiseRatioValue = '>0.6';
-AutorunConfig.LoadfromSpikeSorting.SIMedianAmplitudeValue = '>-0.001';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SNR = '<3';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.FiringRange = '<0.05';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseCutOff = '>0.5';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.ISIViolationRatio = '>0.5';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseRatio = '>0.6';
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.MedianAmplitude = '>-0.001';
 
 % Wrap up by correcting dimensions to show in textarea of autorun window
 if strcmp(DisplayOrder,"Get Settings")
@@ -414,7 +415,7 @@ AutorunConfig.CreateSpikeSorting.ParameterStructure.MS5 = struct('scheme', '2', 
                       'mp_context', 'None', ...
                       'max_threads_per_process', 1);
 %% SpykingCircus 2
-AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = sstruct( ...
+AutorunConfig.CreateSpikeSorting.ParameterStructure.SC2 = struct( ...
                         'general', struct( ...
                             'ms_before', 0.5, ...
                             'ms_after', 1.5, ...

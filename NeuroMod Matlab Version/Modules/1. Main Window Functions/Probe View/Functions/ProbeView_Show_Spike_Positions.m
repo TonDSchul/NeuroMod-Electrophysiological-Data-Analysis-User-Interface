@@ -112,7 +112,8 @@ if strcmp(Data.Info.SpikeType,"Internal")
     scatter(Figure, Xall, Yall, Sall, Call, ...
     'Marker','o','Tag','SpikePositions','MarkerFaceColor', Costumcolormap(LaufVariable,:), ...
              'MarkerEdgeColor','k','LineWidth',1.5,'MarkerFaceAlpha',0.5);
-  
+
+%% Spike Sorting
 else
    
     Xall = [];
@@ -124,11 +125,18 @@ else
     Costumcolormap = jet(length(unique(Data.Spikes.SpikeCluster)));
     
     % flip bc y axis is reverse
-    FlippedY = max(Data.Info.ProbeInfo.ycoords) - Data.Spikes.SpikePositions(:,2);
+    if length(unique(Data.Info.ProbeInfo.xcoords)) > 2 && Data.Info.ProbeInfo.OffSetRows == 0
+        FlippedY = (max(Data.Info.ProbeInfo.ycoords) - Data.Spikes.SpikePositions(:,2)) - (Data.Info.ChannelSpacing/4);
+    else
+        FlippedY = (max(Data.Info.ProbeInfo.ycoords) - Data.Spikes.SpikePositions(:,2)); 
+    end
     % scale spikepos to probe view plot pos
     if length(unique(Data.Info.ProbeInfo.xcoords)) == 2 || length(unique(Data.Info.ProbeInfo.xcoords)) == 4 && Data.Info.ProbeInfo.OffSetRows == 1
         PreScaledX = (1 - 0) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
         PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));
+    elseif length(unique(Data.Info.ProbeInfo.xcoords)) > 2 && Data.Info.ProbeInfo.OffSetRows == 0
+        PreScaledX = (ProbeViewProperties.XlimsPlottedChannel(end) - ProbeViewProperties.XlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
+        PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords - (Data.Info.ChannelSpacing)) - min(Data.Info.ProbeInfo.ycoords));
     else
         PreScaledX = (ProbeViewProperties.XlimsPlottedChannel(end) - ProbeViewProperties.XlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.xcoords) - min(Data.Info.ProbeInfo.xcoords));
         PreScaledY = (ProbeViewProperties.YlimsPlottedChannel(end) - ProbeViewProperties.YlimsPlottedChannel(1)) / (max(Data.Info.ProbeInfo.ycoords) - min(Data.Info.ProbeInfo.ycoords));

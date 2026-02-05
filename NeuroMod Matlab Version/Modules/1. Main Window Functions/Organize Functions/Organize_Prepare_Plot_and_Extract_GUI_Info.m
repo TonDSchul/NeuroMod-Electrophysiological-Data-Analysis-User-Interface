@@ -27,6 +27,13 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 
 %________________________________________________________________________________________
 
+PreserveChannelSpacing = app.PreservePlotChannelLocations;
+if strcmp(app.Data.Info.RecordingType,"SpikeGLX NP") || app.Data.Info.ProbeInfo.OffSetRows
+    if PreserveChannelSpacing == 1
+        PreserveChannelSpacing = 0;
+    end
+end
+
 % If events addon selected in main window (events added to plot) select
 % which input event channel to show
 % EventPlot = "no" when checkbox disabled, "Events" when checkbox activated
@@ -160,11 +167,11 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
             SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
         end
         
-        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-            [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
-    
-            SpikeData.Position = FakeDepths(SpikeData.Position);
-        end
+        % if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        %     [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,PreserveChannelSpacing,app.Data.Info.ProbeInfo.ActiveChannel);
+        % 
+        %     SpikeData.Position = FakeDepths(SpikeData.Position);
+        % end
     else
        SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
 
@@ -296,14 +303,14 @@ if MainPlot && JustLiveWindow == 0
             if strcmp(app.DropDown.Value,'Preprocessed Data') 
                 if isfield(app.Data.Info,'DownsampleFactor') 
                     app.LastPlot = "Preprocessed";
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,app.PreservePlotChannelLocations,SpikeData)
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData)
                 else
                     app.LastPlot = "Preprocessed";
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,app.PreservePlotChannelLocations,SpikeData)
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData)
                 end
             elseif strcmp(app.DropDown.Value,'Raw Data')
                 app.LastPlot = "Raw";
-                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,app.PreservePlotChannelLocations,SpikeData)
+                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData)
             end
         end
         

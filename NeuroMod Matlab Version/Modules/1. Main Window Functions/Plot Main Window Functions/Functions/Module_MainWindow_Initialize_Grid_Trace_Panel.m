@@ -1,6 +1,13 @@
 function app = Module_MainWindow_Initialize_Grid_Trace_Panel(app)
 
-[AllChannel,~,~] = Module_MainWindow_ActiveChannel_ChannerlNumber_Grid_Traces(app.Data.Info,[],"NumChan",app.Data.Info.ProbeInfo.ActiveChannel,app.PreservePlotChannelLocations);
+PreserveChannelSpacing = app.PreservePlotChannelLocations;
+if strcmp(app.Data.Info.RecordingType,"SpikeGLX NP") || app.Data.Info.ProbeInfo.OffSetRows
+    if PreserveChannelSpacing == 1
+        PreserveChannelSpacing = 0;
+    end
+end
+
+[AllChannel,~,~] = Module_MainWindow_ActiveChannel_ChannerlNumber_Grid_Traces(app.Data.Info,[],"NumChan",app.Data.Info.ProbeInfo.ActiveChannel,PreserveChannelSpacing);
 
 % Create grid INSIDE PANEL
 app.ChannelGrid = uigridlayout(app.Grid_Traces_View_Panel, [AllChannel, 1]);

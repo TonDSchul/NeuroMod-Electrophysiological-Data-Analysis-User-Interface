@@ -30,7 +30,7 @@ function [Waveforms,BiggestSpikeIndicies] = Spikes_Module_Get_Waveforms(Data,Spi
 %%
 
 % Rough automatic num samples for spikes
-TimePoints = Data.Info.NativeSamplingRate/1000;
+TimePoints = round(Data.Info.NativeSamplingRate/1000);
 
 % If weird circumstances ensure minimum
 if TimePoints*2+1 < 50

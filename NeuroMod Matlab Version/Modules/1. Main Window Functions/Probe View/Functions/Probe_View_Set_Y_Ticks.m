@@ -41,14 +41,3 @@ if ~isequal(yTickLabels{end}, '0') || CreateProbeWindow && isempty(ChannelClicke
 else
     %disp('YTickLabel "0" is already at the ymax position. No update required.');
 end
-
-% % Calculate 5 equally spaced values between yMin and yMax
-% numTicks = 5;
-% yTicks = linspace(yMin, yMax, numTicks);
-% 
-% % Reverse the labels to display them in the desired order
-% yTickLabels = flip(arrayfun(@num2str, yTicks, 'UniformOutput', false));
-% 
-% % Set y ticks and y tick labels
-% Figure.YTick = yTicks;         % Tick positions in ascending order
-% Figure.YTickLabel = yTickLabels; % Reversed labels

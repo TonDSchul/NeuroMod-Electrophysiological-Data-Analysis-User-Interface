@@ -94,6 +94,16 @@ if ~isempty(DatatoSave)
         app.ProbeInfoandPath .ActiveChannel = sort(str2double(strsplit(app.ProbeInfoandPath .ActiveChannel,',')));
     end
 
+    if str2double(app.ProbeInfoandPath.NumberChannelRows)==2
+        app.CheckBox.Enable = "on";
+        app.VerticalOffsetumEditField_2.Enable = "on";
+    else
+        app.CheckBox.Value = 0;
+        app.CheckBox.Enable = "off";
+        app.VerticalOffsetumEditField_2.Enable = "off";
+        app.VerticalOffsetumEditField_2.Value = "0";
+    end
+
     disp(strcat("Saved probe information in ",fileNames ," succesfully loaded!"));
 
 else

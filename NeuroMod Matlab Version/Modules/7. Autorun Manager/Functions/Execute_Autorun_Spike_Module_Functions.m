@@ -274,15 +274,15 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") 
-        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"Mountainsort5");
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"Mountainsort5",AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods);
     end
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpyKING CIRCUS 2")
-        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"SpykingCircus2");
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"SpykingCircus2",AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods);
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 4 external GUI") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 3 external GUI")
         % Function to load all relevant npy and .mat files Kilosort outputs
-        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,AutorunConfig.LoadfromSpikeSorting.Sorter);
+        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,AutorunConfig.LoadfromSpikeSorting.Sorter,AutorunConfig.LoadfromSpikeSorting.DeleteMUA);
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")

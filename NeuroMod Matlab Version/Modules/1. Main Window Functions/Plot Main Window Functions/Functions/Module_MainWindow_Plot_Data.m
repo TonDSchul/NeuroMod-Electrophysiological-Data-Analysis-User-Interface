@@ -230,8 +230,10 @@ if strcmp(Type,"Static")
     %% Plot surf, imagsc, mesh
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
         
-        [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);       
-        
+        if ~strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+            [Data,~] = Module_MainWindow_Convert_DataMatrix_Into_Grid(Info,Data,PlotAppearance,SpikeData,"DataMatrix",Channel_Selection,Type);       
+        end
+
         if ~strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
             [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,Data,Time,ActiveChannel,1,SpikeData,'JustSpikes');
         else
@@ -293,6 +295,13 @@ if strcmp(Type,"Static")
                     end
                 end
             else%imagsc plot
+                if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+                    FakeData.Info = Info;
+                    [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(FakeData,0,Info.ProbeInfo.ActiveChannel);
+
+                    SpikeData.Position = FakeDepths(SpikeData.Position);
+                end
+
                 SpikeData.Position = (round(SpikeData.Position/ChannelSpacing))*ChannelSpacing;
             end
          

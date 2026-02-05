@@ -259,7 +259,7 @@ def SortWithKilosort(recording,Sorting_output_folder,Apply_Preprocessing,Sorting
     return sortingKS4
     
 """ ################################################################ Sorting Analyzer ####### """
-def CreateSortingAnalyzer(recording,sorting,Save_Sorting_Folder,LoadRecording):
+def CreateSortingAnalyzer(recording,sorting,Save_Sorting_Folder,LoadRecording,PathForPhy):
     
     analyzer = si.create_sorting_analyzer(sorting=sorting, recording=recording, format="memory", folder='None')
     print(analyzer)

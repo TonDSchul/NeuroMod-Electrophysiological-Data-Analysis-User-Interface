@@ -1,4 +1,4 @@
-function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,OffsetSecondRow,OffsetDistanceSecondRow,VerOffsetRows,HorOffset,SaveProbe)
+function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data,executableFolder,ChannelRowsDropDown,NrChannelEditField,ChannelSpacingumEditField,ActiveChannelField,OffsetSecondRow,OffsetDistanceSecondRow,VerOffsetRows,HorOffset,SaveProbe,SaveFormat)
 
 %________________________________________________________________________________________
 
@@ -234,20 +234,29 @@ end
 
 if SaveProbe
     
+    % Prompt user for file save location and name
     PathToSave = (strcat(executableFolder,'\Probe Layouts\Kilosort Channelmaps\'));
 
-    % Prompt user for file save location and name
-    if ~isfolder(PathToSave)
-        [file, path] = uiputfile('*.mat', 'Save as');
+    if strcmp(SaveFormat,".mat")
+        if ~isfolder(PathToSave)
+            [file, path] = uiputfile('*.mat', 'Save as');
+        else
+            [file, path] = uiputfile(fullfile(PathToSave, '*.mat'), 'Save as');
+        end
     else
-        [file, path] = uiputfile(fullfile(PathToSave, '*.mat'), 'Save as');
+        if ~isfolder(PathToSave)
+            [file, path] = uiputfile('*.prb', 'Save as');
+        else
+            [file, path] = uiputfile(fullfile(PathToSave, '*.prb'), 'Save as');
+        end
     end
+
     
     if isequal(file,0) || isequal(path,0)
         disp('User canceled the operation.');
         return;
     end
-    
+
     % Reconfigure for kilosort. Dont do inactive/dissconnected channel
     xcoords = xcoords(AllActiveChannel);
     ycoords = ycoords(AllActiveChannel);
@@ -256,11 +265,46 @@ if SaveProbe
     chanMap0ind = (1:length(xcoords))-1;
     connected = true(1,length(xcoords));
     kcoords = zeros(1,length(xcoords))+1;
-    
-    % Construct the full file path
-    filepath = fullfile(path, file);
-    % Save the variables to the .mat file
-    save(filepath, 'chanMap', 'chanMap0ind', 'connected', 'kcoords', 'xcoords', 'ycoords');
-    stringtoshow = ['Kilosort channel map saved to: ' filepath];
-    msgbox(stringtoshow);
+
+    if strcmp(SaveFormat,".mat")
+        
+        % Construct the full file path
+        filepath = fullfile(path, file);
+        % Save the variables to the .mat file
+        save(filepath, 'chanMap', 'chanMap0ind', 'connected', 'kcoords', 'xcoords', 'ycoords');
+        stringtoshow = ['Kilosort channel map saved to: ' filepath];
+        msgbox(stringtoshow);
+    else % save as .prb
+        % Construct full path, replace .mat with .prb
+        filepath_prb = (fullfile(path,file));
+        % filepath_prb = [filepath_prb '.prb'];
+        
+        fid = fopen(filepath_prb, 'w');
+        assert(fid ~= -1, 'Could not open PRB file for writing');
+        
+        fprintf(fid, 'channel_groups = {\n');
+        fprintf(fid, '    1: {\n');
+        
+        % Channels (0-indexed)
+        fprintf(fid, '        ''channels'': [');
+        fprintf(fid, '%d, ', chanMap0ind(1:end-1));
+        fprintf(fid, '%d],\n', chanMap0ind(end));
+        
+        % Geometry
+        fprintf(fid, '        ''geometry'': {\n');
+        for i = 1:length(chanMap0ind)
+            fprintf(fid, '            %d: (%g, %g),\n', ...
+                chanMap0ind(i), xcoords(i), ycoords(i));
+        end
+        fprintf(fid, '        }\n');
+        
+        fprintf(fid, '    }\n');
+        fprintf(fid, '}\n');
+        
+        fclose(fid);
+        
+        stringtoshow = ['Kilosort channel map saved to: ' filepath_prb];
+        msgbox(stringtoshow);
+
+    end
 end

@@ -224,6 +224,7 @@ for i = 1:length(fileNames)
         % Max channel per cluster
         [~, Data.Spikes.Cluster_Max_Template_Channel] = max(PeaktoPeak, [], 2);
 
+
     elseif strcmp(fileNames{i},'spike_detection_templates.npy')
         Data.Spikes.spike_detection_templates = readNPY(fullfile(folderPath,fileNames{i}));
     elseif strcmp(fileNames{i},'pc_features.npy')
@@ -294,7 +295,7 @@ end
 if strcmp(SpikeChannelType,"Channel closest to X and Y of respective spikes")
     Data = Spike_Module_Get_Spike_Channel(Data);
 else
-    Data = Spike_Module_Get_Spike_Channel_Max_Template(Data,"Kilosort");
+    Data = Spike_Module_Get_Spike_Channel_Max_Template(Data);
 end
 
 if size(Data.Spikes.SpikeChannel,1)<size(Data.Spikes.SpikeChannel,2)

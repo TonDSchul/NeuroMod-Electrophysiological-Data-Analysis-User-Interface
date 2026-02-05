@@ -301,15 +301,14 @@ if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.Channel
     disp("Warning: Loaded sorting data seems to have a different channelconfiguration than GUI data has. Check whether the correct output folder was selected.");
 end
 
-%% Get Channel number corresponding to depth in um ot
+%% Get Channel number corresponding to depth in um
 if strcmp(SpikeChannelType,"Channel closest to X and Y of respective spikes")
     Data = Spike_Module_Get_Spike_Channel(Data);
 else
     if isfield(Data.Spikes,'Cluster_Max_Template_Channel')
         Data = Spike_Module_Get_Spike_Channel_Max_Template(Data,"SpikeInterface");
     else
-        warning("Output file Cluster_Max_Template_Channel.npy was not found in the sorting output folder! Calculating spike data channel based on channel closest to physical spike coordinates. It is saved during spike sorting with NeuroMod and saved there 'manually' by extracting template information from the SpikeInterface sorting analyzer and determining the maximum template channel for each cluster. If you use your own sorting pipeline reffer to the function 'NeuroMod Matlab Version\Modules\SpikeInterface\SpikeInterface_Sorting.py' below the 'export_to_phy' function");
-        msgbox("Output file Cluster_Max_Template_Channel.npy was not found in the sorting output folder! Calculating spike data channel based on channel closest to physical spike coordinates. It is saved during spike sorting with NeuroMod and saved there 'manually' by extracting template information from the SpikeInterface sorting analyzer and determining the maximum template channel for each cluster. If you use your own sorting pipeline reffer to the function 'NeuroMod Matlab Version\Modules\SpikeInterface\SpikeInterface_Sorting.py' below the 'export_to_phy' function");
+        warning("Output file Cluster_Max_Template_Channel.npy was not found in the sorting output folder! It is saved during spike sorting with NeuroMod and saved there 'manually' by extracting template information from the SpikeInterface sorting analyzer and determining the maximum template channel for each cluster. If oyu use ");
         Data = Spike_Module_Get_Spike_Channel(Data);
     end
 end

@@ -396,7 +396,7 @@ elseif strcmp(Type,"VariableDefinition")
             DummyStruc.Raw = [];
             DummyStruc.Info.ProbeInfo.NrChannel = app.Data.Info.ProbeInfo.NrChannel;
             msgbox("Please select a location to save the probe design in.")
-            [~,~,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,app.executableFolder,app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),1);
+            [~,~,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,app.executableFolder,app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),1,app.ExtractDataWindow.Save_Probe_SpikeInterface.Value);
             disp("Succesfully saved probe design in ")
             app.ExtractDataWindow.Save_Probe_SpikeInterface.Value;
         end
@@ -407,7 +407,7 @@ elseif strcmp(Type,"VariableDefinition")
     DummyStruc.Raw = [];
     DummyStruc.Info.ProbeInfo.NrChannel = app.Data.Info.ProbeInfo.NrChannel;
     
-    [app.Data.Info.ProbeInfo.xcoords,app.Data.Info.ProbeInfo.ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),0);
+    [app.Data.Info.ProbeInfo.xcoords,app.Data.Info.ProbeInfo.ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",app.Data.Info.ProbeInfo.NrRows,app.Data.Info.ProbeInfo.NrChannel,num2str(app.Data.Info.ChannelSpacing),activechannel,app.Data.Info.ProbeInfo.OffSetRows,str2double(app.Data.Info.ProbeInfo.OffSetRowsDistance),str2double(app.Data.Info.ProbeInfo.VertOffset),str2double(app.Data.Info.ProbeInfo.HorOffset),0,app.ExtractDataWindow.Save_Probe_SpikeInterface.Value);
     
     if str2double(app.Data.Info.ProbeInfo.VertOffset) ~= 0
         app.Data.Info.ProbeInfo.FakeSpacing = unique(diff(app.Data.Info.ProbeInfo.ycoords));

@@ -12,6 +12,9 @@ from spikeinterface import load
 
 from spikeinterface.exporters import export_to_phy
 import shutil
+from pathlib import Path
+
+import numpy as np
 
 from SpikeInterface_FunctionDeclaration import Load_Binary_In_SpikeInterface
 from SpikeInterface_FunctionDeclaration import Create_Probe
@@ -211,7 +214,7 @@ def main(subfolders,file_path,GUIParamsfile):
         
         """ ################################################################ Create Analyzer ###################################################################### """
         
-        Analyzer = CreateSortingAnalyzer(DumpedRecording,sorting,Save_Sorting_Folder,LoadSpikeSorting)
+        Analyzer = CreateSortingAnalyzer(DumpedRecording,sorting,Save_Sorting_Folder,LoadSpikeSorting,PathForPhy)
         
         """ ################################################################ Plot Sorting ###################################################################### """
         if Plot_Results == 1:
@@ -246,6 +249,15 @@ def main(subfolders,file_path,GUIParamsfile):
                 print(f"An error occurred: {e}")
                
             export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=False)
+            
+            ## save max template channel for neuromod to laod as option
+            templates = Analyzer.get_extension("templates").get_data()
+            # shape: (n_units, n_samples, n_channels)
+            PeakToPeak = templates.ptp(axis=1)              # (n_units, n_channels)
+            max_chan_idx = np.argmax(PeakToPeak, axis=1)    # index in recording channel order
+            PathForPhy = Path(PathForPhy)
+
+            np.save(PathForPhy / "max_template_channel_index.npy", max_chan_idx)
     
         """ ################################################################ Save SpikePositions as .mat###################################################################### """
         if LoadSpikeSorting == 0:

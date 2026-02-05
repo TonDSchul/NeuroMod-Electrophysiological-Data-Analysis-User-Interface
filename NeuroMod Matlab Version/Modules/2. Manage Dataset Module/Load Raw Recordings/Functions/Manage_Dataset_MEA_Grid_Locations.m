@@ -58,7 +58,7 @@ activechannel{1} = 1:size(MEACoords,1);
 DummyStruc.Raw = [];
 DummyStruc.Info.ProbeInfo.NrChannel = Data.Info.ProbeInfo.NrChannel;
 
-[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0);
+[xcoords,ycoords,~] = Manage_Dataset_Save_ProbeInfo_Kilosort(DummyStruc,"",Data.Info.ProbeInfo.NrRows,Data.Info.ProbeInfo.NrChannel,num2str(Data.Info.ChannelSpacing),activechannel,Data.Info.ProbeInfo.OffSetRows,str2double(Data.Info.ProbeInfo.OffSetRowsDistance),str2double(Data.Info.ProbeInfo.VertOffset),str2double(Data.Info.ProbeInfo.HorOffset),0,"");
 xcoords = xcoords + min(MEACoords(:,1));
 ycoords = ycoords + min(MEACoords(:,2));
 
