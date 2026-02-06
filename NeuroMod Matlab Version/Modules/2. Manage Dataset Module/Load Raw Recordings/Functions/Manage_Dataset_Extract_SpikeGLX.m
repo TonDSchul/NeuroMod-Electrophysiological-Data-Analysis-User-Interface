@@ -61,13 +61,27 @@ nSamp = (DataTimeToExtract(2) - DataTimeToExtract(1))-1;
 Data = SGLX_readMeta.ReadBin(DataTimeToExtract(1), nSamp, HeaderInfo,FileName, SelectedFolder);
 
 % convert into mV
+chans = SGLX_readMeta.OriginalChans(HeaderInfo);
+
 fI2V = SGLX_readMeta.Int2Volts(HeaderInfo);
 [APgain,LFgain] = SGLX_readMeta.ChanGainsIM(HeaderInfo);
 
 if streamIndex== 1 %LFP
-    Data = single(Data * fI2V / LFgain(1)) ./ 1000;
+    try
+        for kk = 1:size(Data,1)
+            Data(kk,:) = single(Data(kk,:) * fI2V / LFgain(chans(kk))) ./ 1000;
+        end
+    catch
+        Data = single(Data * fI2V / LFgain(1)) ./ 1000;
+    end
 else
-    Data = single(Data * fI2V / APgain(1)) ./ 1000;
+    try
+        for kk = 1:size(Data,1)
+            Data(kk,:) = single(Data(kk,:) * fI2V / APgain(chans(kk))) ./ 1000;
+        end
+    catch
+        Data = single(Data * fI2V / APgain(1)) ./ 1000;
+    end
 end
 
 % now get rid of reference channel

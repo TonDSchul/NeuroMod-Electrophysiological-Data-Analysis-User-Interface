@@ -303,14 +303,14 @@ if MainPlot && JustLiveWindow == 0
             if strcmp(app.DropDown.Value,'Preprocessed Data') 
                 if isfield(app.Data.Info,'DownsampleFactor') 
                     app.LastPlot = "Preprocessed";
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData)
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,0)
                 else
                     app.LastPlot = "Preprocessed";
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData)
+                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,0)
                 end
             elseif strcmp(app.DropDown.Value,'Raw Data')
                 app.LastPlot = "Raw";
-                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData)
+                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,0)
             end
         end
         

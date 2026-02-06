@@ -919,6 +919,9 @@ if strcmp(Window,"EventERP")
     app.ERPAnalysisSettingsPanel.BackgroundColor  = WindowBackgroundColor;
     app.ERPAnalysisSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
+    app.Grid_Traces_View_Panel.BackgroundColor  = WindowBackgroundColor;
+    app.Grid_Traces_View_Panel.ForegroundColor  = WindowBackgroundColor;
+
     app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.ChannelSelectionDropDown_2.BackgroundColor  = ComponentsInWindowColor;
     app.EventNumberSelectionEditField.BackgroundColor  = ComponentsInWindowColor;

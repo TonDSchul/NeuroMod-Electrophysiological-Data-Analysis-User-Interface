@@ -36,7 +36,7 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
         end
 
         if isempty(ImageScChannel_handles)
-            if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
+            if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.EnableSpaceInterpol && PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
                 [X,Y] = meshgrid(1:size(Data,2),1:size(Data,1));
                 scale = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol;
                 xq = linspace(1,size(Data,2),size(Data,2)*scale);
@@ -83,7 +83,7 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
                 delete(ImageScChannel_handles(2:end))
             end
 
-            if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
+            if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.EnableSpaceInterpol && PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
                 [X,Y] = meshgrid(1:size(Data,2),1:size(Data,1));
                 scale = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol;
                 xq = linspace(1,size(Data,2),size(Data,2)*scale);
@@ -105,7 +105,7 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
     end
     
     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh")
-        if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
+        if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.EnableSpaceInterpol && PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol > 1
             [X,Y] = meshgrid(1:size(Data,2),1:size(Data,1));
             scale = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol;
             xq = linspace(1,size(Data,2),size(Data,2)*scale);

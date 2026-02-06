@@ -70,6 +70,11 @@ elseif length(PreviousThreshGrids.T1)==2
     % replace in cell array because it becomes the next previous grid
     PreviousThreshGrids.T1{end} = NewPreviousThreshGrids;  
 
+    % % Find new sources
+    % NewSourceThreshGrids = zeros(size(PreviousThreshGrids.T1{end}));
+    % % indicies of subthreshold va lues
+    % NewSourceThreshGrids = PreviousThreshGrids.T1{end} < Threshold;
+
     clear NewPreviousThreshGrids;
 
 elseif length(PreviousThreshGrids.T1)==1
@@ -107,60 +112,6 @@ filteredGrid = zeros(size(PreviousThreshGrids.T1{end}));
 keepIdx = (PreviousThreshGrids.T1{end} ~= 0) & reachableMask;
 
 filteredGrid(keepIdx) = PreviousThreshGrids.T1{end}(keepIdx);
-
-% %% Allow for new Seeds
-% %% From here on allow new seeds
-% if ~isfield(PreviousThreshGrids,'NewOrigin')
-%     PreviousThreshGrids.NewOrigin = {};
-% end
-% if PreviousThreshGrids.T1PlotFrames > 3
-% 
-%     if isempty(PreviousThreshGrids.NewOrigin)
-%         PreviousThreshGrids.NewOrigin{1} = zeros(size(PreviousThreshGrids.T1{2}));
-%         PreviousThreshGrids.NewOrigin{1}(~keepIdx) = PreviousThreshGrids.T1{2}(~keepIdx);
-%     else
-%         if length(PreviousThreshGrids.NewOrigin) == 1
-%             PreviousThreshGrids.NewOrigin{2} = zeros(size(PreviousThreshGrids.T1{2}));
-%             PreviousThreshGrids.NewOrigin{2}(~keepIdx) = PreviousThreshGrids.T1{2}(~keepIdx);
-%         else
-%             TempPrevGrid = PreviousThreshGrids.NewOrigin{2};
-%             PreviousThreshGrids.NewOrigin{1} = TempPrevGrid;
-%             PreviousThreshGrids.NewOrigin{2} = zeros(size(PreviousThreshGrids.T1{2}));
-%             PreviousThreshGrids.NewOrigin{2}(~keepIdx) = PreviousThreshGrids.T1{2}(~keepIdx);
-%         end
-%     end
-% end
-% 
-% if numel(PreviousThreshGrids.NewOrigin) == 2 && PreviousThreshGrids.T1PlotFrames > 3
-% 
-%     % Binary mask derived from sum
-%     prevMaskNO = PreviousThreshGrids.NewOrigin{1} ~= 0;
-% 
-%     % Dilate previous mask by distance
-%     seNO = strel('square', 2*minDist + 1);
-%     reachableMaskNO = imdilate(prevMaskNO, seNO);
-% 
-%     % Keep current values within distance
-%     filteredGridNO = zeros(size(PreviousThreshGrids.NewOrigin{end}));
-%     keepIdxNO = (PreviousThreshGrids.NewOrigin{end} ~= 0) & reachableMaskNO;
-% 
-%     filteredGridNO(keepIdxNO) = PreviousThreshGrids.NewOrigin{end}(keepIdxNO);
-% 
-%     PreviousThreshGrids.NewOrigin{end} = filteredGridNO;
-% 
-%     % add to plotted main grid if there are new origins
-%     if ~isempty(PreviousThreshGrids.NewOrigin) 
-%         if ~isempty(PreviousThreshGrids.NewOrigin{end})
-%             %T1grid = PreviousThreshGrids.T1{end};
-%             % T1 is zero AND NewOrigin is non-zero
-%             replaceIdx = (PreviousThreshGrids.T1{end} == 0) & (PreviousThreshGrids.NewOrigin{end} ~= 0);
-%             if sum(sum(replaceIdx)) ~=0
-%                 disp("a");
-%             end
-%             PreviousThreshGrids.T1{end}(replaceIdx) = PreviousThreshGrids.NewOrigin{end}(replaceIdx);
-%         end
-%     end
-% end
 
 PreviousThreshGrids.T1{end} = filteredGrid;
 

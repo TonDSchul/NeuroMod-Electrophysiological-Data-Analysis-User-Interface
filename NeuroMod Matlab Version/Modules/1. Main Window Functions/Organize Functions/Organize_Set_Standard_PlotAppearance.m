@@ -50,6 +50,9 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     PlotAppearance.MainWindow.Data.LockedClimSettings = "on";
     PlotAppearance.MainWindow.Data.GridViewWindowScaling = [-0.5 0.5];
     
+    PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.EnableSpaceInterpol = 1;
+    PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.EnableTimeInterpol = 1;
+
     PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.SpaceInterpol = 2;
     PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.TimeInterpol = 3;
     
@@ -103,6 +106,8 @@ end
 
 %% ERP Window
 if strcmp(Type,"ERPPlot") || strcmp(Type,"All") 
+    % Plot Type
+    PlotAppearance.ERPWindow.PlotType = "IndividualLines";
     % Lables and Fontsize
     PlotAppearance.ERPWindow.SingleERP.XLabel = "Time [s]";
     PlotAppearance.ERPWindow.SingleERP.YLabel = "Signal [mV]";

@@ -1,4 +1,4 @@
-function Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,StartIndex,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData)
+function Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,StartIndex,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP)
 
 %% Setup
 
@@ -28,6 +28,7 @@ for nChannel = 1:AllChannel
     
     TraceHandles = findobj(ax, 'Type', 'line', 'Tag', 'Traces');
     BorderHandles = findobj(ax, 'Type', 'line', 'Tag', 'Border');
+    EventHandles = findobj(ax, 'Type', 'line', 'Tag', 'Events');
 
     if length(TraceHandles)>1
         delete(TraceHandles(2:end));
@@ -36,6 +37,10 @@ for nChannel = 1:AllChannel
     if length(BorderHandles)>AllRows
         delete(BorderHandles(AllRows+1:end));
         BorderHandles = findobj(ax, 'Type', 'line', 'Tag', 'Border');
+    end
+    if length(EventHandles)>AllRows
+        delete(EventHandles(AllRows+1:end));
+        EventHandles = findobj(ax, 'Type', 'line', 'Tag', 'Events');
     end
     
     StartChunk = 1;
@@ -104,9 +109,16 @@ for nChannel = 1:AllChannel
     
     % ylim
     Center = median(DataForCurrentSubPlot,'omitnan');
-    if ~isnan(Center) && app.Slider.Value ~= 0
-        ylim(ax,[Center-app.Slider.Value, Center+app.Slider.Value]);
-    end
+    ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
+    % if EventERP == 0
+    %     Center = median(DataForCurrentSubPlot,'omitnan');
+    %     if ~isnan(Center) && app.Slider.Value ~= 0
+    %         ylim(ax,[Center-app.Slider.Value, Center+app.Slider.Value]);
+    %     end
+    % else
+    %     Center = median(DataForCurrentSubPlot,'omitnan');
+    %     ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
+    % end
 
     %% Plot Spikes
     SpikeHandles = findobj(ax, 'Tag', 'TracesSpikes');
@@ -210,6 +222,25 @@ for nChannel = 1:AllChannel
             'Color', 'k', ...
             'Clipping','off', ...
             'Tag','LeftAxisLabel');
+    end
+    
+    %% If event realted ERP: Plot event trigger time
+    if EventERP == 1
+        NumSamplesEventTimeBefore = find(Data.Info.EventRelatedTime==0)-1;
+        %% Vertical lines for events
+        if isempty(EventHandles)
+            for j = 1:NumberRowDataChannel
+                Index = NumSamplesEventTimeBefore + ((j-1)*length(Data.Info.EventRelatedTime));
+                line(ax,[Index, Index], ax.YLim, 'LineWidth', 1, 'Color', 'r', 'Tag', 'Events')
+            end
+        else
+            if UpdateLinesAndText
+                for j = 1:NumberRowDataChannel
+                    Index = NumSamplesEventTimeBefore + ((j-1)*length(Data.Info.EventRelatedTime));
+                    set(EventHandles(j), 'XData', [Index, Index], 'YData', ax.YLim, 'LineWidth', 1, 'Color', 'r', 'Tag', 'Events');
+                end
+            end
+        end
     end
 
 

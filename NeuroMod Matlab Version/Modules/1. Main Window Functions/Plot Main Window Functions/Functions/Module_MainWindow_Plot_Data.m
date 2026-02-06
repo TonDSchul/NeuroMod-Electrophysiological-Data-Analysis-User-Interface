@@ -425,19 +425,31 @@ if strcmp(Type,"Movie")
             %% Plot surf, imagsc, mesh
             if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer") 
                 nInterp = PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.TimeInterpol;
+                                
+                % if time interpolation
+                if PlotAppearance.MainWindow.Data.TimeAndSpaceInterpolation.EnableTimeInterpol
+                    for nInterpolateFrames = 1:nInterp
+                        ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+                        delete(ImageScChannel_handles(1:end));
+                        ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
+                        
+                        alpha = nInterpolateFrames / (nInterp + 1);
+                        Data = (1-alpha)*DataT1 + alpha*DataT2;
+                        
+                        [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,Data,Time,ActiveChannel,1,SpikeData,'JustSpikes');
 
-                for nInterpolateFrames = 1:nInterp
-                    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
-                    delete(ImageScChannel_handles(1:end));
-                    ImageScChannel_handles = findobj(UIAxis,'Tag', 'ImageScChannel');
-                    
-                    alpha = nInterpolateFrames / (nInterp + 1);
-                    Data = (1-alpha)*DataT1 + alpha*DataT2;
-                    
-                    [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,Data,Time,ActiveChannel,1,SpikeData,'JustSpikes');
-
+                        if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+                            [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids,SpikeDataCell);
+                            Data = PlotThreshGrids;
+                        end
+    
+                        ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles,SpikeDataCell);
+                        pause(PlotAppearance.MainWindow.Data.AdditionalPlotDelay)
+                    end
+                else % No time interpolation
                     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-                        [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids,SpikeDataCell);
+                        [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,DataT1,Time,ActiveChannel,1,SpikeData,'JustSpikes');
+                        [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(DataT1,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids,SpikeDataCell);
                         Data = PlotThreshGrids;
                     end
 
