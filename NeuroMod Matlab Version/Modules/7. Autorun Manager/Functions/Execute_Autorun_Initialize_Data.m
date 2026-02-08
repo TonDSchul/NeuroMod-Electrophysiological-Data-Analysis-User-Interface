@@ -105,25 +105,3 @@ Data.Info.ProbeInfo.YLabels = arrayfun(@(yy, xx) sprintf('%.0f (%.0f µm)', yy, 
     
 Data.Info.SpikeType = "Non";
 
-TempSelectedCurationMethods = [];
-% transform in correct struc
-if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SISNR
-    TempSelectedCurationMethods.SNR = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SNR;
-end
-if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIFiringRate
-    TempSelectedCurationMethods.FiringRange = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.FiringRange;
-end
-if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseCutoff
-    TempSelectedCurationMethods.NoiseCutOff = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseCutOff;
-end
-if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIISIViolationRatio
-    TempSelectedCurationMethods.ISIViolationRatio = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.ISIViolationRatio;
-end
-if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseRatio
-    TempSelectedCurationMethods.NoiseRatio = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseRatio;
-end
-if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIMedianAmplitude
-    TempSelectedCurationMethods.MedianAmplitude = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.MedianAmplitude;
-end
-
-AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods = TempSelectedCurationMethods;

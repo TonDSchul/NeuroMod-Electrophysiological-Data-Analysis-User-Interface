@@ -272,17 +272,47 @@ if strcmp(FunctionOrder,'Load_from_SpikeSorting')
     else
         ScalingFactor = [];
     end
+    
+    if isempty(SelectedFolder)
+        warning("No folder with saved channel data for spike sorting found. Please use the 'Save for Spike Sorting' function first! Skipping step.");
+        return;
+    end
+    %% get automatic curation struc right
+    if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5")  || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpyKING CIRCUS 2")
+        TempSelectedCurationMethods = [];
+        % transform in correct struc
+        if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SISNR
+            TempSelectedCurationMethods.SNR = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SNR;
+        end
+        if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIFiringRate
+            TempSelectedCurationMethods.FiringRange = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.FiringRange;
+        end
+        if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseCutoff
+            TempSelectedCurationMethods.NoiseCutOff = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseCutOff;
+        end
+        if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIISIViolationRatio
+            TempSelectedCurationMethods.ISIViolationRatio = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.ISIViolationRatio;
+        end
+        if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseRatio
+            TempSelectedCurationMethods.NoiseRatio = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.NoiseRatio;
+        end
+        if AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIMedianAmplitude
+            TempSelectedCurationMethods.MedianAmplitude = AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.MedianAmplitude;
+        end
+        
+        AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods = TempSelectedCurationMethods;
+    end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Mountainsort 5") 
-        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"Mountainsort5",AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods);
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"Mountainsort5",AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods,AutorunConfig.LoadfromSpikeSorting.SpikeChannelType);
     end
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"SpyKING CIRCUS 2")
-        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"SpykingCircus2",AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods);
+        [Data,~] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,"SpykingCircus2",AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods,AutorunConfig.LoadfromSpikeSorting.SpikeChannelType);
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 4 external GUI") || strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"Kilosort 3 external GUI")
         % Function to load all relevant npy and .mat files Kilosort outputs
-        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,AutorunConfig.LoadfromSpikeSorting.Sorter,AutorunConfig.LoadfromSpikeSorting.DeleteMUA);
+        [Data,~] = Spike_Module_Load_Kilosort_Data(Data,"No",SelectedFolder,ScalingFactor,AutorunConfig.LoadfromSpikeSorting.Sorter,AutorunConfig.LoadfromSpikeSorting.DeleteMUA,AutorunConfig.LoadfromSpikeSorting.SpikeChannelType);
     end
 
     if strcmp(AutorunConfig.LoadfromSpikeSorting.Sorter,"WaveClus 3")

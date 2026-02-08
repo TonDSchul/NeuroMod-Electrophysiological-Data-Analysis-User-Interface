@@ -108,6 +108,8 @@ end
 if strcmp(Type,"ERPPlot") || strcmp(Type,"All") 
     % Plot Type
     PlotAppearance.ERPWindow.PlotType = "IndividualLines";
+    PlotAppearance.ERPWindow.GridPlotType = "EventWindowLines";
+
     % Lables and Fontsize
     PlotAppearance.ERPWindow.SingleERP.XLabel = "Time [s]";
     PlotAppearance.ERPWindow.SingleERP.YLabel = "Signal [mV]";

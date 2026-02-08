@@ -13,15 +13,25 @@ from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
 import spikeinterface.sorters as ss
 
+
+# This function loads data in a Spikeinterface compatible format saved within Neuromod. It expects a .bin file containing
+# amplifier channel data as well as a Meta_Data.json file with meta data (samplerate, event trigger times) and a probe.json containing information about probe geometry.
+# specify the paths to those variables and execute this script in a environment in which spikeinterface is installed.
+# Upon execution this script plots the probe desing with spikeinterface as well as the raw data trace overlayed by event trigger time points if present
+
+Meta_Data_Path = "Path_to_your_file/Meta_Data.json";
+Probe_Path = "Path_to_your_file/probe.json"
+ChannelDataBinPath = "Path_to_your_file/SITest.bin";
+
 '''
 ######################### Load Channel Data and Meta Data #########################
 '''
 
-with open("C:/Users/tonyd/Desktop/Meta_Data.json") as f:
+with open(Meta_Data_Path) as f:
     metadata = json.load(f)
 
 recording = si.read_binary(
-    file_paths="C:/Users/tonyd/Desktop/TestSpikeInterface.bin",
+    file_paths=ChannelDataBinPath,
     sampling_frequency=metadata["SampleRate"],
     num_channels=metadata["num_channels"],
     dtype=metadata["dtype"]
@@ -42,7 +52,7 @@ if "EventStruct" in metadata:
 ######################### Load Probe Data #########################
 '''
 # Load probe
-probe_group = pi.read_probeinterface("C:/Users/tonyd/Desktop/probe.json")
+probe_group = pi.read_probeinterface(Probe_Path)
 
 # If you only have one probe, extract it
 probe = probe_group.probes[0]
@@ -56,11 +66,11 @@ plt.show()
 '''
 ######################### Plot Data (first channel, all time points) #########################
 '''
-y = recording.get_traces(channel_ids=[0]).flatten()  # shape (num_samples,)
+PlotData = recording.get_traces(channel_ids=[0]).flatten()  # shape (num_samples,)
 
 # Plot signal
 plt.figure(figsize=(12, 4))
-plt.plot(y, label="Signal", color="blue")
+plt.plot(PlotData, label="Signal", color="blue")
 
 if "EventStruct" in metadata:
     # Extract EventStruct
@@ -77,11 +87,11 @@ if "EventStruct" in metadata:
         raise ValueError("Unexpected EventStruct format!")
 
     # Plot events as vertical lines
-    plt.vlines(event_times, ymin=min(y), ymax=max(y), color="red", alpha=0.6, label=f"Events: {event_name}")
+    plt.vlines(event_times, ymin=min(PlotData), ymax=max(PlotData), color="red", alpha=0.6, label=f"Events: {event_name}")
 
 plt.xlabel("Sample index")
 plt.ylabel("Amplitude")
-plt.title("Signal with Events (if present)")
+plt.title("Signal Channel 1 with Events (if present)")
 plt.legend()
 plt.show()
 

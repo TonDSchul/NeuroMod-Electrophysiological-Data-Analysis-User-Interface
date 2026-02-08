@@ -96,12 +96,13 @@ if ~isfield(Data,'Events') && SaveEvents
         OpenEventDataBrowser = 0;
     end
 end
-if SaveEvents == 0
+
+if SaveEvents == 0 && OpenEventDataBrowser==1
     warning("Selected to open event data in FieldTrip data browser without event data saved. Data browser is not opened with event data!")
     OpenEventDataBrowser = 0;
 end
 
-if isfield(Data,'Events') && SaveEvents
+if isfield(Data,'Events') && SaveEvents && ~isempty(EventDataType)
     % If more than one event: select which one to save
     if length(Data.Events)>1 && isempty(EventChannel)
         AppAskForEventWindow = Select_Event_Window(Data);

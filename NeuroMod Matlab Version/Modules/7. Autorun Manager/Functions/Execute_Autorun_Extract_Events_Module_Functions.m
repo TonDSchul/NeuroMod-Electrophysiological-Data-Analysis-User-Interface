@@ -224,7 +224,7 @@ if strcmp(FunctionOrder,'Extract_Events')
     end
 end
 
-% 4.2 Extract Events and Data
+% 4.2 Import Events
 %______________________________________________________________________________________________________
 
 ImportEventInfo = [];
@@ -297,16 +297,27 @@ if isfield(Data,'Events')
     
             %% -------------------- Populate event channel selection -------------------- 
             if strcmp(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze,'All')
-                numtrig = 1:size(Data.EventRelatedData,2);
-                charStr = sprintf('%g,', numtrig);
-                charStr(end) = [];   % remove the last comma
-                TriggerToAnayze = charStr;
+                TriggerToAnayze = 1:size(Data.EventRelatedData,2);
+                % charStr = sprintf('%g,', numtrig);
+                % charStr(end) = [];   % remove the last comma
+                % TriggerToAnayze = charStr;
             else
-                TriggerToAnayze = AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze;
+                try
+                    TriggerToAnayze = eval(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze);
+                catch
+                    warning("Format of trigger to analyze in event related data wrong! Please enter only Matlab expressions as a char or 'All' for all trigger. Taking all available trigger!")
+                    TriggerToAnayze = 1:size(Data.EventRelatedData,2);
+                end
+                if length(TriggerToAnayze)>size(Data.EventRelatedData,2) || TriggerToAnayze(end)>size(Data.EventRelatedData,2)
+                    warning("Number of trigger entered or trigger indicies exceed maximum amount of trigger. Taking all available trigger!")
+                    TriggerToAnayze = 1:size(Data.EventRelatedData,2);
+                end
+
             end
-            [TriggerToAnayze] = Event_Module_Check_EventInput(TriggerToAnayze,Data,AutorunConfig.AnalyseEventDataModule.EventChannelSelection,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,1);
+
+            %[TriggerToAnayze] = Event_Module_Check_EventInput(TriggerToAnayze,Data,AutorunConfig.AnalyseEventDataModule.EventChannelSelection,AutorunConfig.AnalyseEventDataModule.EventRelatedDataType,1);
             
-            EventNr = sort(eval(TriggerToAnayze));
+            EventNr = sort(TriggerToAnayze);
     
             if strcmp(AutorunConfig.AnalyseEventDataModule.ERPPlotType,'ImageSC')
                 SingleChannelPlotType = 1;
@@ -317,8 +328,7 @@ if isfield(Data,'Events')
             % ERP
             if strcmp(FunctionOrder,'Event_Analysis_ERP')
 
-                
-
+ 
                
                 ERPFigure = figure();
                 UIAxes = subplot(2,1,1);
@@ -435,11 +445,7 @@ if isfield(Data,'Events')
     
                         UIAxes.YScale = 'linear';
                                
-                        if strcmp(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze,'All')
-                            SelectedEvents = 1:size(Data.EventRelatedData,2);
-                        else
-                            SelectedEvents = str2double(split(AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze,','))';
-                        end
+                        SelectedEvents = EventNr;
             	        
                         DepthChannel = Data.Info.ProbeInfo.ActiveChannel(AutorunConfig.AnalyseEventDataModule.ChannelSelection);
                         

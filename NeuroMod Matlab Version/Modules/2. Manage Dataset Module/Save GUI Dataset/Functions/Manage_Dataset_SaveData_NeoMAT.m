@@ -150,7 +150,7 @@ for segmentnr = 1:1
     
 end
 
-save(PathToSave,'block',"-v7.3")
+save(PathToSave,'block',"-v6")
 
 msg = sprintf('Saving Data as .mat for NEO... (%d%% done)', round(100));     
 waitbar(100, h, msg);

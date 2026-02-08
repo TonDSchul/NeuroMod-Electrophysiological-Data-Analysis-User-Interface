@@ -245,6 +245,17 @@ elseif strcmp(Type,"Loading")
     if length(app.Data.Info.ProbeInfo.ActiveChannel) > 100
         app.ActiveChannel = app.Data.Info.ProbeInfo.ActiveChannel(1:100);
     end
+
+    if str2double(app.Data.Info.ProbeInfo.VertOffset) ~= 0
+        app.Data.Info.ProbeInfo.FakeSpacing = unique(diff(app.Data.Info.ProbeInfo.ycoords));
+        if length(app.Data.Info.ProbeInfo.FakeSpacing)>1 && str2double(app.Data.Info.ProbeInfo.VertOffset) > 0 % just take first distance, other distances are 'skipped'
+            app.Data.Info.ProbeInfo.FakeSpacing = abs(app.Data.Info.ProbeInfo.FakeSpacing(1));
+        end
+    else
+        app.Data.Info.ProbeInfo.FakeSpacing = app.Data.Info.ChannelSpacing;
+    end
+
+    %app.Data.Info.ProbeInfo.ECoGArray = 0;
     
     datapointsforstd = round(str2double(app.TimeRangeViewBox.Value(1:end-1)) * app.Data.Info.NativeSamplingRate);
     
@@ -386,6 +397,14 @@ elseif strcmp(Type,"VariableDefinition")
     else
         app.Data.Info.num_data_points = size(app.Data.Raw,2);
         app.Data.Info.NrChannel = size(app.Data.Raw,1);
+    end
+
+    if strcmp(RecordingType,"Spike2")
+        if size(app.Data.Raw,1)<length(app.Data.Info.ProbeInfo.ActiveChannel)
+            msgbox("Less channel found in recording than specified as active channel. This can occur if you specify channel as event channel or selected the wrong probe design.");
+            app.Data = [];
+            return;
+        end
     end
 
     % Get True MEA Grid Locations for position related analyis

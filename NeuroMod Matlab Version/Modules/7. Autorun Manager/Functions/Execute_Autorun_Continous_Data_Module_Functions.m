@@ -100,8 +100,7 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
         end
         
         if strcmp(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),"ChannelDeletion")
-            AutorunConfig.PreprocessCont.DeleteChannel = str2double(strsplit(AutorunConfig.PreprocessCont.DeleteChannel,','));
-            PreproInfo.ChannelDeletion = AutorunConfig.PreprocessCont.DeleteChannel;
+            PreproInfo.ChannelDeletion = eval(AutorunConfig.PreprocessCont.DeleteChannel);
         end
 
         [PreproInfo,PreprocessingSteps,~] = Preprocess_Module_Construct_Pipeline(AutorunConfig.PreprocessCont.PreproMethod{Data.CurrentPreproNr}(i),PreproInfo,PreprocessingSteps,0,AutorunConfig.PreprocessCont.FilterMethod{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterType{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.CuttoffFrequency{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterDirection{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.FilterOrder{Data.CurrentPreproNr},AutorunConfig.PreprocessCont.DownsampleRate,Data.Info.NativeSamplingRate,ArtefactRejectionInfo);

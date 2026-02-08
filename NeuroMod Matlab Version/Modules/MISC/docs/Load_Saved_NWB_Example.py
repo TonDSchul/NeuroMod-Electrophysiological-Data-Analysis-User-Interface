@@ -2,8 +2,11 @@ from pynwb import NWBHDF5IO
 import matplotlib.pyplot as plt
 import numpy as np
 
-nwb_path = "C:/Users/tonyd/Desktop/NWBTEST.nwb"
+# Script to load a .nwb file saved in NeuroMod. using pynwb. Signal and (if present) event data is plotted 
+# just exchange this path with the path to your .nwb file and execute the script in an environment in which pynwb was installed
+# with: python Load_Saved_NWB_Example.py
 
+nwb_path = "Your_Path/NeuroMod_NWB_File.nwb"
 
 with NWBHDF5IO(nwb_path, 'r') as io:
     '''

@@ -1,4 +1,4 @@
-function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance,ERPChannel,DataType,SingleChannelPlotType,EventNr,PreservePlotChannelLocations,BaselineNormalize,NormalizationWindow,GeneralPlotType)
+function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(Data,Figure,Figure2,EventRelatedData,EventTime,DataChannelSelected,CSD,rgbcolormap,PlotLineSpacing,Type,TwoORThreeD,CurrentPlotData,PlotAppearance,ERPChannel,DataType,SingleChannelPlotType,EventNr,PreservePlotChannelLocations,BaselineNormalize,NormalizationWindow)
 
 %________________________________________________________________________________________
 %% Function to calculate and plot ERP and CSD for event analysis windows
@@ -47,8 +47,6 @@ function [CSDClim,Trialplot,Meanplot,Eventplot,CurrentPlotData] = Event_Module_C
 % 19. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
 % 20. NormalizationWindow: comma separated char, from to like '-0.2,0' in
 % seconds
-% 21. GeneralPlotType: char, if individual lines or gird trace view is
-% plotted
 
 % Outputs:
 % 1. CSDClim
@@ -84,20 +82,14 @@ if isempty(CSD)
         end
     end
 
-    if strcmp(GeneralPlotType,"IndividualLines")
-        if strcmp(Type,'SingleERPOnly') || strcmp(Type,'All')
-            CurrentPlotData = Event_Module_ERP_IndividualLines(Data,EventRelatedData,EventNr,EventTime,Figure,DataType,ERPChannel,SingleChannelPlotType,PlotAppearance,CurrentPlotData);
-        end
-        if strcmp(Type,'MultipleERPOnly') || strcmp(Type,'All')
-            CurrentPlotData = Event_Module_ERP_MultipleLines(Data,EventRelatedData,PlotLineSpacing,EventTime,Figure2,Type,DataChannelSelected,rgbcolormap,PlotAppearance,CurrentPlotData);
-        end
-    else
-        
+    if strcmp(Type,'SingleERPOnly') || strcmp(Type,'All')
+        CurrentPlotData = Event_Module_ERP_IndividualLines(Data,EventRelatedData,EventNr,EventTime,Figure,DataType,ERPChannel,SingleChannelPlotType,PlotAppearance,CurrentPlotData);
     end
-
+    if strcmp(Type,'MultipleERPOnly') || strcmp(Type,'All')
+        CurrentPlotData = Event_Module_ERP_MultipleLines(Data,EventRelatedData,PlotLineSpacing,EventTime,BaselineNormalize,NormalizationWindow,Figure2,Type,DataChannelSelected,rgbcolormap,PlotAppearance,CurrentPlotData);
+    end
 %% Plot CSD
 else
-
     if strcmp(TwoORThreeD,"ThreeD")
         cla(Figure);
     end

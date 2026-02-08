@@ -33,13 +33,14 @@ function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,Select
 
 SorterData = find(stringArray == "params.py");
 
+SaveFilter = "No";
+
 if isempty(SorterData)
     msgbox("No SpikeInterface sorting output found. Please export your Sorting Analyzer object for phy first and select the correct output folder")
     return;
 end
 
 %% Check for existing spike data
-SaveFilter = "No";
 
 if isfield(Data,'Spikes')
     msgbox("Warning: Spike data already part of the dataset. Exisitng data will be removed.");

@@ -1,4 +1,4 @@
-function CurrentPlotData = Event_Module_ERP_MultipleLines(Data,EventRelatedData,PlotLineSpacing,EventTime,Figure2,Type,DataChannelSelected,rgbcolormap,PlotAppearance,CurrentPlotData)
+function CurrentPlotData = Event_Module_ERP_MultipleLines(Data,EventRelatedData,PlotLineSpacing,EventTime,BaselineNormalize,NormalizationWindow,Figure2,Type,DataChannelSelected,rgbcolormap,PlotAppearance,CurrentPlotData)
 
 %% Plot ERP for all Channel
 adjustedcolormap = rgbcolormap(DataChannelSelected,:);

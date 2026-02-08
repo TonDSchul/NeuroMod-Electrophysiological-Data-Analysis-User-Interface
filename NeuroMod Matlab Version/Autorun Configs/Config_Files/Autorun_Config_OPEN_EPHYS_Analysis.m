@@ -41,7 +41,7 @@ function [AutorunConfig] = Autorun_Config_OPEN_EPHYS_Analysis(DisplayOrder)
 % 'Export_Dataset_Components' NOTE: If you want to export event related data or event related spikes, you have to do it after one of the analysis options of event related data (for example Event_Analysis_ERP) for which you specify the event channel and trial numbers. 
 
 % What to execute
-AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD","Export_Dataset_Components"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Preprocess_Continous_Data","Extract_Events","Event_Analysis_ERP","Event_Analysis_CSD","Event_Static_Power_Spectrum"];
 
 % Whether true relations between active channel are display in analysis
 % plots. This becomes relevant when you have inactive channel islands
@@ -82,7 +82,7 @@ end
 %% 1.1 Extract Data from Raw Recordings
 %______________________________________________________________________________________________________
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
-AutorunConfig.ExtractRawRecording.LibraryToUse = "NeuralEnsemble NEO Python Library"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library" OR "SpikeInterface Python Library"
+AutorunConfig.ExtractRawRecording.LibraryToUse = "NeuroMod Matlab"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library" OR "SpikeInterface Python Library"
 
 AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen = 1; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0. specify whteher python console opening to show progress of NEO data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.NEOJustLoadRecording = 0; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0, whether to load the files NEO saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
@@ -100,22 +100,35 @@ AutorunConfig.ExtractRawRecording.RecordingsSystem = "Open Ephys"; % Recoring sy
 AutorunConfig.ExtractRawRecording.FileType = "Record Node 104"; % "Record Node 104" or whatever node you want to extract!
 
 AutorunConfig.ExtractRawRecording.ChannelToExtract = 'All'; % char, channel to extract from recordings. Either 'All' for all channel or matlab expressions as a char like '1:10' or '[1,2,3,5,6]'
-AutorunConfig.ExtractRawRecording.TimeToExtract = '30,40'; % char, timerange of recording to extract data from. Either '0,Inf' for the whole recording time or comma separated numbers like 0,10 for the first 10 seconds.
+AutorunConfig.ExtractRawRecording.TimeToExtract = '0,Inf'; % char, timerange of recording to extract data from. Either '0,Inf' for the whole recording time or comma separated numbers like 0,10 for the first 10 seconds.
 
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
-AutorunConfig.LoadData.Format = 'Saved NWB format'; % 'Saved NeuroMod format' OR 'Saved Neo readable .mat file' OR 'Saved NWB format' OR 'Saved SpikeInterface format'
+AutorunConfig.LoadData.Format = 'Saved NeuroMod format'; % 'Saved NeuroMod format' OR 'Saved Neo readable .mat file' OR 'Saved NWB format' OR 'Saved SpikeInterface format'
 %______________________________________________________________________________________________________
 %% 1.3 Save data loaded in GUI
 %______________________________________________________________________________________________________
-AutorunConfig.SaveData.SaveFor = 'Other'; % 'NeuroMod' OR 'NEO' OR 'Other'
-AutorunConfig.SaveData.SaveAs = 'NWB File (Neuroscience Without Borders)'; % '.dat' (NeuroMod) OR 'Neo Compatible .mat File' OR 'SpikeInterface Compatible Binary File' OR 'NWB File (Neuroscience Without Borders)'
+AutorunConfig.SaveData.SaveAs = '.dat'; % '.dat' (NeuroMod) OR 'Neo Compatible .mat File' ('NEO') OR 'SpikeInterface Compatible Binary File' OR 'NWB File (Neurodata Without Borders)' ('Other') OR 'FieldTrip Compatible .mat File' 
 
-AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 6 numbers being either a 1 or a 0. Each
+% Only if saved as fieldtrip compatible file. If event data is saved, this
+% sepcifies from which event channel since only one can be saved at a time.
+AutorunConfig.SaveData.FieldTrip.EventChannelToUse = 'DIN-04'; % char with the name of the event channel you want to save event related data for like 'DIN-04'; empty if no events
+AutorunConfig.SaveData.FieldTrip.EventRelatedDataType = 'Raw Event Related Data'; % char with type of event related data you want to save. Either 'Raw Event Related Data' or 'Preprocessed Event Related Data'
+
 % indicie of the vector stands for a component of the dataset. A 1 indicates, that this component
 % should be save. Components in the correct order are:
 % [Raw,Preprocessed,Events,Spikes,EventrelatedData,PreprocessedEventrelatedData] --> [1,1,1,0,0,0] saves raw data, preprocessed data and event time points
+AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 6 numbers being either a 1 or a 0. Each
+
+% Do not change!
+if strcmp(AutorunConfig.SaveData.SaveAs,'.dat')
+    AutorunConfig.SaveData.SaveFor = 'NeuroMod';
+elseif strcmp(AutorunConfig.SaveData.SaveAs,'Neo Compatible .mat File')
+    AutorunConfig.SaveData.SaveFor = 'NEO';
+else
+    AutorunConfig.SaveData.SaveFor = 'Other';
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 3. Continous Data Module
@@ -157,7 +170,7 @@ AutorunConfig.PreprocessCont.DownsampleRate = "1000"; % New downsampled sampling
 AutorunConfig.PreprocessCont.CutTimeFromStart = '200'; % How much time in seconds should be cut from the start. Char, '10' will delete the first 10 seconds of the recording
 AutorunConfig.PreprocessCont.CutTimeFromEnd = '100'; % How much time in seconds should be cut from the end. Char, '10' will delete the last 10 seconds of the recording
 % Only if "ChannelDeletion" is selected as one of the PreproMethods
-AutorunConfig.PreprocessCont.DeleteChannel = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'; % Which channel should be deleted. Char, '1,2,3' means that the first three active channel get deleted. Same format as AutorunConfig.ChannelRange
+AutorunConfig.PreprocessCont.DeleteChannel = '1:32'; % Which channel should be deleted. Matlab expr3ession as char, '[1,2,4]' means that the first two and active channel 4 get deleted. Same format as AutorunConfig.ChannelRange
 % Only if "StimArtefactRejection" is selected as one of the PreproMethods
 AutorunConfig.PreprocessCont.ArtefactRejetction.StimArtefactChannel = "DIN-04"; % Event channel which holds the time points of the stimulation. These are equal to the artefact time points
 AutorunConfig.PreprocessCont.ArtefactRejetction.TimeAroundArtefact = "-0.05,0.3"; % Time around the artefact for which you want to correct (interpolate) data; in seconds
@@ -176,7 +189,7 @@ AutorunConfig.StaticPowerSpectrum.DataSource = "Raw Data"; % "Raw Data" or "Prep
 AutorunConfig.StaticPowerSpectrum.FrequencyRange = '0,1000'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
 AutorunConfig.StaticPowerSpectrum.Channel = '5'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 AutorunConfig.StaticPowerSpectrum.UseCostumeWindowSize = 0; % 1 or 0 whether to use costume windowsize for pwelch 
-AutorunConfig.StaticPowerSpectrum.WindowSize = 25000; % Only if UseCostumeWindowSize == 1; Window size for pwelch
+AutorunConfig.StaticPowerSpectrum.WindowSize = '20000'; % Only if UseCostumeWindowSize == 1; Window size for pwelch
 
 %% 3.3 Analyse Spike Data
 %______________________________________________________________________________________________________
@@ -216,7 +229,7 @@ AutorunConfig.ContinousUnitAnalysis.UnitsPlot2 = '4,5,6';
 % Warning: ChannelOfInterest is the kind of event channel to extract from.
 % 'DIN Inputs' only works for .dat Intan files, not .rhd files. If you have
 % -rhd files and DIN Inputs, use the "Digital Inputs" argument
-AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'NEO IO Trigger Channel'; % When using Matlab to extract data: Record node of your recording like 'Record Node 104'; When using NEO: 'NEO IO Trigger Channel'
+AutorunConfig.ExtractEventDataModule.ChannelOfInterest = 'Record Node 104'; % When using Matlab to extract data: Record node of your recording like 'Record Node 104'; When using NEO: 'NEO IO Trigger Channel'
 AutorunConfig.ExtractEventDataModule.TriggerType = ''; % state, eirther 1 or 0 for rising and falling edge
 AutorunConfig.ExtractEventDataModule.EventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventDataModule.EventSignalThreshold = '1'; % state, either 1 or 0 for rising and falling edge
@@ -234,11 +247,10 @@ AutorunConfig.ExtractEventRelatedDataModule.LoadCosutmeTriggerIdentity = '0'; % 
 AutorunConfig.ExtractEventDataModule.ImportEventChannelSelection = '1'; %Determines How many and which event channel of the type specified above should be analysed. If you record 5 event channel but only three of them hold data, specify as char i.e '1,2,3' 
 AutorunConfig.ExtractEventRelatedDataModule.ImportTimeBeforeEvent = '0.3'; %Time in seconds extracted before events (HAS TO BE POSITIVE!) as char
 AutorunConfig.ExtractEventRelatedDataModule.ImportTimeAfterEvent = '0.6'; %Time in seconds extracted after events as char
-AutorunConfig.ExtractEventRelatedDataModule.EventNames = 'Event TTL Nr.1,Event TTL Nr.2'; % Name of the event channel you import. One name for each channel, format: comma separated within char like 'Event TTL Nr.1,Event TTL Nr.2'
 
 %% 4.3 Prepro event related data
 %______________________________________________________________________________________________________
-AutorunConfig.PreproEventDataModule.EventChannelSelection = 'DIN-04'; % Event Channel for which you want to apply preprocessing
+AutorunConfig.PreproEventDataModule.EventChannelSelection = 'Event Input Line 1'; % Event Channel for which you want to apply preprocessing like 'Event Input Line 1'
 % Trial/Event Deletion
 AutorunConfig.PreproEventDataModule.TrialRejection = false; % false if you dont want this step to be executed
 AutorunConfig.PreproEventDataModule.TrialsToReject = '1:48'; % Matlab expression as char, specify events/trials to be deleted, i.e. '1:49' for trigger 1 to 49
@@ -250,7 +262,7 @@ AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expre
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
-AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Event Ch 1'; % Event Channel name shown in Main Window of GUI after extracting events. When using Matlab to extract data: 'Event Input Line 1' or whatever event input channel number was selected; When using NEO to extract data: Event Ch 1 or whatever input event channel numbers where seleted
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Event Input Line 1'; % Event Channel name shown in Main Window of GUI after extracting events. When using Matlab to extract data: 'Event Input Line 1' or whatever event input channel number was selected; When using NEO to extract data: 'Event Ch 1' or whatever input event channel numbers where seleted
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
 AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
 
@@ -260,6 +272,8 @@ AutorunConfig.AnalyseEventDataModule.BaselineWindow = '-0.2,0'; % start and stop
 % ERP Settings
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
 AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '1'; % How much is CSD data smoothed in time and space domain? Format: Char
+AutorunConfig.AnalyseEventDataModule.ERPPlotType = "IndividualLines"; % how to visualize results. "IndividualLines" for the classic channel wise data plot only one supported so far
+
 % CSD Settings
 AutorunConfig.AnalyseEventDataModule.CSDHammWindow = '7'; % How much is CSD data smoothed in time and space domain? Format: Char
 AutorunConfig.AnalyseEventDataModule.tempcolorMap = "parula"; 
@@ -333,7 +347,7 @@ AutorunConfig.CreateSpikeSorting.Preprocess = '1';
 AutorunConfig.CreateSpikeSorting.PlotTraces = '0';
 AutorunConfig.CreateSpikeSorting.PlotSortingResults = '0';
 AutorunConfig.CreateSpikeSorting.LoadSorting = '0';
-AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = '1';
+AutorunConfig.CreateSpikeSorting.KeepConsoleOpen = '0';
 %%%%%%%%%%%%%%%%%%%%%%%%%%% For Spike Sorting Settings see below!! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % JUST for WaveClus 3!!!!!
 AutorunConfig.InternalSpikeDetection.WaveClus3_SpikeSortingType = 'AllChannelTogether'; %% 'AllChannelTogether' OR IndividualChannel
@@ -358,12 +372,12 @@ AutorunConfig.LoadfromSpikeSorting.DeleteMUA = 1; % ONLY FOR KILOSORT: 1 or 0 wh
 % the following values to 1 to enable curation with that quality metric
 % based on the threshold entered in the block after. See tooltips in the respective GUI
 % window (in the 'Load Sorting' Window) for more information
-AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SISNR = 1;
-AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIFiringRate = 1;
-AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseCutoff = 1;
-AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIISIViolationRatio = 1;
-AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseRatio = 1;
-AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIMedianAmplitude = 1;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SISNR = 0;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIFiringRate = 0;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseCutoff = 0;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIISIViolationRatio = 0;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SINoiseRatio = 0;
+AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SIMedianAmplitude = 0;
 
 AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.SNR = '<3';
 AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.FiringRange = '<0.05';

@@ -106,33 +106,13 @@ metadata.dtype = 'float64'; % double in python = float64
 metadata.time_axis = 'samples';
 metadata.channel_ids = 1:nChannels;
 metadata.channel_groups = ones(1,nChannels);
+metadata.Info = Data.Info;
+
+metadata.Info.Data_Path = strrep(metadata.Info.Data_Path, '\', '/');
+
 ModifiedPath = Data.Info.Data_Path;
 ModifiedPath(find(Data.Info.Data_Path == '\')) = '/';
 metadata.Path = ModifiedPath;
-metadata.RecordingType = convertStringsToChars(Data.Info.RecordingType);
-metadata.ChannelSpacing = Data.Info.ChannelSpacing;
-metadata.num_data_points = num2str(Data.Info.num_data_points);
-metadata.startTimestamp = Data.Info.startTimestamp;
-metadata.Channelorder = Data.Info.Channelorder;
-% Probe Info
-metadata.NrChannel = Data.Info.ProbeInfo.NrChannel;
-metadata.NrRows = Data.Info.ProbeInfo.NrRows;
-metadata.VertOffset = Data.Info.ProbeInfo.VertOffset;
-metadata.HorOffset = Data.Info.ProbeInfo.HorOffset;
-metadata.ActiveChannel = Data.Info.ProbeInfo.ActiveChannel ;
-
-metadata.SwitchTopBottomChannel = Data.Info.ProbeInfo.SwitchTopBottomChannel;
-metadata.SwitchLeftRightChannel = Data.Info.ProbeInfo.SwitchLeftRightChannel;
-metadata.FlipLoadedData = Data.Info.ProbeInfo.FlipLoadedData;
-
-metadata.OffSetRows = Data.Info.ProbeInfo.OffSetRows;
-metadata.OffSetRowsDistance = Data.Info.ProbeInfo.OffSetRowsDistance;
-
-if isfield(Data.Info.ProbeInfo,'CompleteAreaNames')
-    metadata.CompleteAreaNames = Data.Info.ProbeInfo.CompleteAreaNames;
-    metadata.ShortAreaNames = Data.Info.ProbeInfo.ShortAreaNames;
-    metadata.AreaDistanceFromTip = Data.Info.ProbeInfo.AreaDistanceFromTip;
-end
 
 if SaveEvents
     if isfield(Data,'Events')

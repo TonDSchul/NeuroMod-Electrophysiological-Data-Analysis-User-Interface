@@ -418,7 +418,7 @@ if strcmp(FunctionOrder,'Save_Data')
         if strcmp(AutorunConfig.SaveData.SaveFor,"NeuroMod")
             [filepath,Error] = Manage_Dataset_Module_SaveData(Data,AutorunConfig.SaveData.SaveAs,AutorunConfig.SaveData.Whattosave,executableFolder,AutorunDetection,FullPath);
         elseif strcmp(AutorunConfig.SaveData.SaveFor,"Other")
-            if strcmp(AutorunConfig.SaveData.SaveAs,"NWB File (Neuroscience Without Borders)")
+            if strcmp(AutorunConfig.SaveData.SaveAs,"NWB File (Neurodata Without Borders)")
                 
                 dashindex = find(Data.Info.Data_Path=='/');
                 if isempty(dashindex)
@@ -442,6 +442,13 @@ if strcmp(FunctionOrder,'Save_Data')
                     [filepath] = Manage_Dataset_SaveData_SpikeInterfaceNumpy(Data,"Raw Data",AutorunConfig.SaveData.Whattosave(3),AutorunDetection,FullPath);
                 else
                     [filepath] = Manage_Dataset_SaveData_SpikeInterfaceNumpy(Data,"Preprocessed Data",AutorunConfig.SaveData.Whattosave(3),AutorunDetection,FullPath);
+                end
+            elseif strcmp(AutorunConfig.SaveData.SaveAs,"FieldTrip Compatible .mat File")
+                
+                if AutorunConfig.SaveData.Whattosave(1)==1 
+                    [Error,filepath] = Manage_Dataset_SaveData_FieldTrip(Data,"Raw Data",AutorunConfig.SaveData.Whattosave(3),1,0,0,AutorunDetection,FullPath,AutorunConfig.SaveData.FieldTrip.EventChannelToUse,AutorunConfig.SaveData.FieldTrip.EventRelatedDataType);
+                else
+                    [Error,filepath] = Manage_Dataset_SaveData_FieldTrip(Data,"Preprocessed Data",AutorunConfig.SaveData.Whattosave(3),1,0,0,AutorunDetection,FullPath,AutorunConfig.SaveData.FieldTrip.EventChannelToUse,AutorunConfig.SaveData.FieldTrip.EventRelatedDataType);
                 end
             end
         elseif strcmp(AutorunConfig.SaveData.SaveFor,"NEO")

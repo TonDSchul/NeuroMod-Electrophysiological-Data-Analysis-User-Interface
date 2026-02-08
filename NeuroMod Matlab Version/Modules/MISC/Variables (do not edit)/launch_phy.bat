@@ -1,5 +1,5 @@
 @echo off
 call "C:\Users\tonyd\anaconda3\condabin\conda.bat" activate phy2
-cd /d "F:\Fake_Desktop\MEAData\20240826\R3\Kilosort\kilosort4"
+cd /d "F:\Fake_Desktop\Raw Recordings\Intan\.dat\230510_mtl_230510_201202\SpikeInterface\SpikeInterface_Sorting_Phy_Results\SpyKING CIRCUS 2"
 phy template-gui params.py
 pause

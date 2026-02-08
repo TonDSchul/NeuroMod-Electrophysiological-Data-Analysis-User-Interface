@@ -18,11 +18,33 @@ function [app] = Utility_ProbeChange_Plot_EventRelatedLFP(app,Window)
 
 if strcmp(Window,"ERP")
     EventNr = eval(app.Mainapp.EventLFPERP.EventNumberSelectionEditField.Value);
-            
-    if strcmp(app.Mainapp.EventLFPERP.DataTypeDropDown.Value,'Raw Event Related Data')
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value,[],EventNr,app.Mainapp.PreservePlotChannelLocations,app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPERP.EventNumberSelectionEditField_3.Value);
-    else
-        [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value,[],EventNr,app.Mainapp.PreservePlotChannelLocations,app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPERP.EventNumberSelectionEditField_3.Value);
+    % Grid Trace view
+    if strcmp(app.Mainapp.PlotAppearance.ERPWindow.PlotType,"GridTraceView")
+
+        if app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value == 1
+            EventRelatedData = Event_Module_Baseline_Normalize(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.EventLFPERP.EventNumberSelectionEditField_3.Value,app.Mainapp.Data.Info.EventRelatedTime,"ERP");
+        else
+            EventRelatedData = app.Mainapp.Data.EventRelatedData(:,EventNr,:);
+        end
+        % get mean erp over trigger selected
+        if size(EventRelatedData,2)>1
+            EventRelatedData = squeeze(mean(EventRelatedData,2))';
+        else
+            EventRelatedData = squeeze(EventRelatedData);
+        end
+
+        [Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.Mainapp.ActiveChannel,'MainPlot');
+
+        EventRelatedData = EventRelatedData(Channelrange,:);
+
+        % EventRelatedData is channel by time
+        Module_Main_Window_Plot_Grid_Trace_View(app.Mainapp.EventLFPERP,app.Mainapp.Data,EventRelatedData,app.Mainapp.Data.Info.EventRelatedTime,1,app.Mainapp.PlotAppearance,app.Mainapp.ActiveChannel,app.Mainapp.PreservePlotChannelLocations,[],app.Mainapp.PlotAppearance.ERPWindow.GridPlotType,0);
+    else %% Individual ERP Lines
+        if strcmp(app.Mainapp.EventLFPERP.DataTypeDropDown.Value,'Raw Event Related Data')
+            [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value,[],EventNr,app.Mainapp.PreservePlotChannelLocations,app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPERP.EventNumberSelectionEditField_3.Value);
+        else
+            [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.PreprocessedEventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value,[],EventNr,app.Mainapp.PreservePlotChannelLocations,app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPERP.EventNumberSelectionEditField_3.Value);
+        end
     end
 end
 

@@ -52,6 +52,11 @@ for i = 1:length(Data.Info.EventChannelNames)
     end
 end
 
+if isempty(EventChannelNr)
+    warning("Selected event channel was not found!");
+    return;
+end
+
 if isempty(Data.Events{EventChannelNr})
     msgbox("No Events found for this channel");
     return;

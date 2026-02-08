@@ -1,4 +1,4 @@
-function Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,StartIndex,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP)
+function Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,StartIndex,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP,MainPlot)
 
 %% Setup
 
@@ -12,12 +12,17 @@ ChannelBeforeActive = 0;
 
 %% Loop over channels
 
+%Which rows affected?
+[MatrixIndexedActiveDataChannel, ~] = deal( ceil(ActiveDataChannel/size(PlotData,2)), mod(ActiveDataChannel-1,size(PlotData,2))+1 );
+MatrixIndexedActiveDataChannel = unique(MatrixIndexedActiveDataChannel);
+
 Laufvariable = 1;
 
-for nChannel = 1:AllChannel
+for NActive = 1:length(MatrixIndexedActiveDataChannel)
 
     % Create one axes for this channel
-
+    
+    nChannel = MatrixIndexedActiveDataChannel(NActive);
     ax = app.ChannelAxes{nChannel};
     hold(ax,'on')
     
@@ -29,6 +34,7 @@ for nChannel = 1:AllChannel
     TraceHandles = findobj(ax, 'Type', 'line', 'Tag', 'Traces');
     BorderHandles = findobj(ax, 'Type', 'line', 'Tag', 'Border');
     EventHandles = findobj(ax, 'Type', 'line', 'Tag', 'Events');
+    ImageSCHandles = findobj(ax, 'Tag', 'ImagSCPlot');
 
     if length(TraceHandles)>1
         delete(TraceHandles(2:end));
@@ -41,6 +47,10 @@ for nChannel = 1:AllChannel
     if length(EventHandles)>AllRows
         delete(EventHandles(AllRows+1:end));
         EventHandles = findobj(ax, 'Type', 'line', 'Tag', 'Events');
+    end
+
+    if ~strcmp(EventERP,"EventWindowpcolor")
+        delete(ImageSCHandles)
     end
     
     StartChunk = 1;
@@ -92,16 +102,36 @@ for nChannel = 1:AllChannel
     % ax = subplot(AllChannel, 1, nChannel);
     hold(ax,'on')
     firsttimeindicator = 0;
+
     if isempty(TraceHandles)
         firsttimeindicator = 1;
         if sum(isnan(DataForCurrentSubPlot))<length(DataForCurrentSubPlot)
-            line(ax,1:length(DataForCurrentSubPlot), DataForCurrentSubPlot, 'Color', 'b','LineWidth',1.5, 'Tag', 'Traces')
+            if strcmp(EventERP,"EventWindowpcolor")
+                v2d = DataForCurrentSubPlot(:)';   
+                v2d = [v2d; v2d];                 
+                
+                imagesc(ax, v2d,'Tag','ImagSCPlot');           
+                shading(ax, 'flat'); 
+                ylim(ax,[1,2])
+            else
+                line(ax,1:length(DataForCurrentSubPlot), DataForCurrentSubPlot, 'Color', 'b','LineWidth',1.5, 'Tag', 'Traces')
+            end
         else
             %line(ax,1,1, 'Tag', 'Traces')
         end
     else
         if sum(isnan(DataForCurrentSubPlot))<length(DataForCurrentSubPlot)
-            set(TraceHandles(1), 'XData', 1:length(DataForCurrentSubPlot), 'YData', DataForCurrentSubPlot, 'Tag', 'Traces');
+            if strcmp(EventERP,"EventWindowpcolor")
+                v2d = DataForCurrentSubPlot(:)';   
+                v2d = [v2d; v2d];                  
+                
+                set(ax,'CData',v2d,'Tag','ImagSCPlot')
+                %imagesc(ax, v2d,'Tag','ImagSCPlot');           
+                %shading(ax, 'flat');   
+                ylim(ax,[1,2])
+            else
+                set(TraceHandles(1), 'XData', 1:length(DataForCurrentSubPlot), 'YData', DataForCurrentSubPlot, 'Tag', 'Traces');
+            end
         else
             delete(TraceHandles(1));
         end
@@ -109,18 +139,17 @@ for nChannel = 1:AllChannel
     
     % ylim
     Center = median(DataForCurrentSubPlot,'omitnan');
-    ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
-    % if EventERP == 0
-    %     Center = median(DataForCurrentSubPlot,'omitnan');
-    %     if ~isnan(Center) && app.Slider.Value ~= 0
-    %         ylim(ax,[Center-app.Slider.Value, Center+app.Slider.Value]);
-    %     end
-    % else
-    %     Center = median(DataForCurrentSubPlot,'omitnan');
-    %     ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
-    % end
-
+    
+    MinYV = min(DataForCurrentSubPlot) -app.Slider.Value; 
+    MaxYV= max(DataForCurrentSubPlot)+app.Slider.Value;
+    
+    if strcmp(EventERP,"EventWindowLines") || MainPlot
+        if sum(isnan([MinYV,MaxYV])) == 0 && ~isempty([MinYV,MaxYV])%%&& MinYV>0 && MinYV~=MaxYV
+            ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
+        end
+    end
     %% Plot Spikes
+    
     SpikeHandles = findobj(ax, 'Tag', 'TracesSpikes');
     delete(SpikeHandles)
     SpikeHandles = findobj(ax, 'Tag', 'TracesSpikes');
@@ -146,16 +175,31 @@ for nChannel = 1:AllChannel
     end
 
     %% Vertical lines separating rows
+    Plotobject = [];
     if isempty(BorderHandles)
         for j = 1:NumberRowDataChannel
             idx = length(Time)*j;
             line(ax,[idx, idx], ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border')
         end
     else
-        if UpdateLinesAndText
-            for j = 1:NumberRowDataChannel
-                idx = length(Time)*j;
-                set(BorderHandles(j), 'XData', [idx, idx], 'YData', ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border');
+        if strcmp(EventERP,"EventWindowAll") || strcmp(EventERP,"EventWindowLines") || MainPlot
+            if UpdateLinesAndText
+                for j = 1:NumberRowDataChannel
+                    idx = length(Time)*j;
+                    if sum(BorderHandles(j).XData == idx)<2
+                        set(BorderHandles(j), 'XData', [idx, idx], 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border');
+                    end
+                    if sum(BorderHandles(j).YData == ax.YLim)<2
+                        set(BorderHandles(j), 'YData', ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border');
+                    end
+
+                    if strcmp(EventERP,"EventWindowpcolor")
+                        if ~isempty(BorderHandles) && length(BorderHandles)<=NumberRowDataChannel
+                            uistack(BorderHandles(j), 'top')
+                        end
+                    end
+
+                end
             end
         end
     end
@@ -169,50 +213,18 @@ for nChannel = 1:AllChannel
         ax.LineWidth = 0.5;
         ax.XTick = [];
     end
-
+    
     xlim(ax,[1, length(DataForCurrentSubPlot)]);
-
-    % Plot text above first axis
-    if nChannel == 1 %&& UpdateLinesAndText
-        % remove old labels if they exist
-        delete(findobj(ax,'Type','text','Tag','RowLabel'))
-    
-        nBlocks = NumberRowDataChannel;
-        blockWidth = length(Time);
-    
-        yText = ax.YLim(2) + 0.05 * range(ax.YLim);  % slightly above axis
-        
-        ScaledFontSize = -0.27778 * nBlocks + 15.556;
-    
-        for j = 1:nBlocks
-            xCenter = (j-1)*blockWidth + blockWidth/2;
-            
-            if PreservePlotChannelLocations
-                Allchannelcurrently = j:length(unique(Data.Info.ProbeInfo.xcoords)):Data.Info.ProbeInfo.ActiveChannel(end);
-            else
-                Allchannelcurrently = j:length(unique(Data.Info.ProbeInfo.xcoords)):length(Data.Info.ProbeInfo.ActiveChannel);
-            end
-            
-            text(ax, xCenter, yText, ...
-                strcat("Ch ", num2str(j+ChannelBeforeActive)," to ",num2str(Allchannelcurrently(end))), ...
-                'HorizontalAlignment','center', ...
-                'VerticalAlignment','bottom', ...
-                'FontSize', ScaledFontSize, ...
-                'Color', 'k', ...
-                'Clipping','off', ...     
-                'Tag','RowLabel');
-        end
-    end
 
     % remove old labels if they exist
     delete(findobj(ax,'Type','text','Tag','LeftAxisLabel'))
-    
+
     % horizontal offset (to the left of axis)
     xOffset = -0.05 * range(ax.XLim);  
-    
+
     % vertical position: middle of the axis
     yText = mean(ax.YLim, 'omitnan');
-    
+
     if ~isnan(Center-app.Slider.Value) && ~isnan(Center+app.Slider.Value)
         text(ax, 1, yText, ...
             strcat("Signal from ",num2str(Center-app.Slider.Value)," to ",num2str(Center+app.Slider.Value)," mV"), ...             
@@ -225,22 +237,24 @@ for nChannel = 1:AllChannel
     end
     
     %% If event realted ERP: Plot event trigger time
-    if EventERP == 1
-        NumSamplesEventTimeBefore = find(Data.Info.EventRelatedTime==0)-1;
-        %% Vertical lines for events
-        if isempty(EventHandles)
-            for j = 1:NumberRowDataChannel
-                Index = NumSamplesEventTimeBefore + ((j-1)*length(Data.Info.EventRelatedTime));
-                line(ax,[Index, Index], ax.YLim, 'LineWidth', 1, 'Color', 'r', 'Tag', 'Events')
-            end
-        else
-            if UpdateLinesAndText
+    if strcmp(EventERP,"EventWindowAll") || strcmp(EventERP,"EventWindowLines") || strcmp(EventERP,"EventWindowpcolor") 
+        if firsttimeindicator || isempty(EventHandles)
+            NumSamplesEventTimeBefore = find(Data.Info.EventRelatedTime==0)-1;
+            %% Vertical lines for events
+            if isempty(EventHandles)
                 for j = 1:NumberRowDataChannel
                     Index = NumSamplesEventTimeBefore + ((j-1)*length(Data.Info.EventRelatedTime));
-                    set(EventHandles(j), 'XData', [Index, Index], 'YData', ax.YLim, 'LineWidth', 1, 'Color', 'r', 'Tag', 'Events');
+                    line(ax,[Index, Index], ax.YLim, 'LineWidth', 1, 'Color', 'r', 'Tag', 'Events')
+                end
+            else
+                if UpdateLinesAndText
+                    for j = 1:NumberRowDataChannel
+                        Index = NumSamplesEventTimeBefore + ((j-1)*length(Data.Info.EventRelatedTime));
+                        set(EventHandles(j), 'XData', [Index, Index], 'YData', ax.YLim, 'LineWidth', 1, 'Color', 'r', 'Tag', 'Events');
+                    end
                 end
             end
-        end
+       end
     end
 
 
