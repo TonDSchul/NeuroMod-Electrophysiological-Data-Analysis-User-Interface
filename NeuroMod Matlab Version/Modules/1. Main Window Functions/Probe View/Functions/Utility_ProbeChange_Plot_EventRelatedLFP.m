@@ -28,7 +28,7 @@ if strcmp(Window,"ERP")
         end
         % get mean erp over trigger selected
         if size(EventRelatedData,2)>1
-            EventRelatedData = squeeze(mean(EventRelatedData,2))';
+            EventRelatedData = squeeze(mean(EventRelatedData,2));
         else
             EventRelatedData = squeeze(EventRelatedData);
         end
@@ -38,7 +38,7 @@ if strcmp(Window,"ERP")
         EventRelatedData = EventRelatedData(Channelrange,:);
 
         % EventRelatedData is channel by time
-        Module_Main_Window_Plot_Grid_Trace_View(app.Mainapp.EventLFPERP,app.Mainapp.Data,EventRelatedData,app.Mainapp.Data.Info.EventRelatedTime,1,app.Mainapp.PlotAppearance,app.Mainapp.ActiveChannel,app.Mainapp.PreservePlotChannelLocations,[],app.Mainapp.PlotAppearance.ERPWindow.GridPlotType,0);
+        app.Mainapp.YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app.Mainapp.EventLFPERP,app.Mainapp.Data,EventRelatedData,app.Mainapp.Data.Info.EventRelatedTime,app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value,app.Mainapp.PlotAppearance,app.Mainapp.ActiveChannel,app.Mainapp.PreservePlotChannelLocations,[],app.Mainapp.PlotAppearance.ERPWindow.GridPlotType,0,app.Mainapp.YlimMaxVlaues);
     else %% Individual ERP Lines
         if strcmp(app.Mainapp.EventLFPERP.DataTypeDropDown.Value,'Raw Event Related Data')
             [~,~,~,~,app.Mainapp.CurrentPlotData] = Event_Module_Compute_and_Plot_ERP_CSD(app.Mainapp.Data,app.Mainapp.EventLFPERP.UIAxes,app.Mainapp.EventLFPERP.UIAxes_2,app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.Data.Info.EventRelatedTime, app.Mainapp.ActiveChannel,[],app.Mainapp.EventLFPERP.colorMap,app.Mainapp.EventLFPERP.Slider.Value,'MultipleERPOnly',[],app.Mainapp.CurrentPlotData, app.Mainapp.PlotAppearance,app.Mainapp.EventLFPERP.ChannelSelectionDropDown_2.Value,app.Mainapp.EventLFPERP.DataTypeDropDown.Value,[],EventNr,app.Mainapp.PreservePlotChannelLocations,app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPERP.EventNumberSelectionEditField_3.Value);

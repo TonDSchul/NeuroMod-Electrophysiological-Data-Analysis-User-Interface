@@ -312,7 +312,7 @@ if strcmp(FunctionOrder,'Load_Data')
                     [Data] = Manage_Dataset_Module_Load_NeuroModData(AutorunConfig.LoadData.Format,FullPathData,FullPathInfo,PlaceholderTextbox);
                 elseif strcmp(AutorunConfig.LoadData.Format,"Saved Neo readable .mat file")
                     
-                    [Data,~] = Manage_Dataset_Module_Load_NeoMatData(FullPathData,FullInfoPath);
+                    [Data,~] = Manage_Dataset_Module_Load_NeoDatData(FullPathData,FullInfoPath);
     
                 elseif strcmp(AutorunConfig.LoadData.Format,"Saved NWB format")
                     
@@ -454,12 +454,12 @@ if strcmp(FunctionOrder,'Save_Data')
         elseif strcmp(AutorunConfig.SaveData.SaveFor,"NEO")
             if strcmp(AutorunConfig.SaveData.SaveAs,"Neo Compatible .mat File")
                 if AutorunConfig.SaveData.Whattosave(1) == 1
-                    [filepath,Error] = Manage_Dataset_SaveData_NeoMAT(Data,Data.Info.NativeSamplingRate,"Raw Data",AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),Data.Time,AutorunDetection,FullPath);
+                    [filepath,Error] = Manage_Dataset_SaveData_NeoDat(Data,Data.Info.NativeSamplingRate,"Raw Data",AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),Data.Time,AutorunDetection,FullPath);
                 else
                     if isfield(Data.Info,'DownsampledSampleRate')
-                        [filepath,Error] = Manage_Dataset_SaveData_NeoMAT(Data,Data.Info.DownsampledSampleRate,"Preprocessed Data",AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),Data.TimeDownsampled,AutorunDetection,FullPath);
+                        [filepath,Error] = Manage_Dataset_SaveData_NeoDat(Data,Data.Info.DownsampledSampleRate,"Preprocessed Data",AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),Data.TimeDownsampled,AutorunDetection,FullPath);
                     else
-                        [filepath,Error] = Manage_Dataset_SaveData_NeoMAT(Data,Data.Info.NativeSamplingRate,"Preprocessed Data",AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),Data.Time,AutorunDetection,FullPath);
+                        [filepath,Error] = Manage_Dataset_SaveData_NeoDat(Data,Data.Info.NativeSamplingRate,"Preprocessed Data",AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),Data.Time,AutorunDetection,FullPath);
                     end
                 end
             end

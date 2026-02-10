@@ -181,12 +181,12 @@ if ~isnan(NrChannel) && ~isnan(ChannelSpacing)
     
     if ECogArray == 0
         if yLimits(2)>=yLimitBracktes(2)
-            ylim(Figure,[yPoint yLimits(2)])
+            ylim(Figure,[yPoint yLimits(2)]);
         else
-            ylim(Figure,[yPoint yLimitBracktes(2)])
+            ylim(Figure,[yPoint yLimitBracktes(2)]);
         end
     else
-        ylim(Figure,[yPos(1) yPos(end) + squareHeight])
+        ylim(Figure,[yPos(1) yPos(end) + squareHeight]);
     end
 
     %% Plot Brain Areas

@@ -24,11 +24,6 @@ function [Data] = Spike_Module_Save_for_Kilosort(Data,Autorun,SelectedFolder,For
 
 %________________________________________________________________________________________
 
-%% When just converting double to int. values very close to each other get rounded to the same number. Also, if values are close to 0, every value gets rounded to 0.
-% Therefore, signal has to be scaled using the full range of int32 or int 16 to
-% ensure the maximum resolution
-% Alternative: When data format = Intan: Gain value (0.000195) can be used to convert data into integers by dividing by the raw signal by the gain value.
-
 if strcmp(Format,'int16') || strcmp(Format,'int32')
     if strcmp(Format,'int16')
         % Define the range of int16
@@ -99,7 +94,7 @@ else
     end
 end
 
-%% Save Raw data in chunks (increases performane)
+%% Save Raw data
 % Initiate Progressbar
 h = waitbar(0, 'Saving data...', 'Name','Saving data...');
 

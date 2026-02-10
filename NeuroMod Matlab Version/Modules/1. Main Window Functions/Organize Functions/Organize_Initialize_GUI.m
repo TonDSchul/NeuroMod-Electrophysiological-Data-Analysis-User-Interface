@@ -216,7 +216,8 @@ elseif strcmp(Type,"Loading")
     
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.ClimMaxValues = [];
-    
+    app.YlimMaxVlaues = [];
+
     app.PlayedMovieBefore = 0;
 
     app.ChannelChange = "ProbeView";
@@ -269,6 +270,7 @@ elseif strcmp(Type,"Loading")
     app.PowerSpecResults = [];
 
     channelnr = size(app.Data.Raw,1);
+    
 
     % Pick Colormap based on what the user selected (default = parula)
     app.tempcolorMapset = eval(strcat(app.tempcolorMap,"(channelnr)")); 
@@ -468,6 +470,7 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.TimeRangeViewBox.Value = TimeRangeText;
     app.ClimMaxValues = [];
+    app.YlimMaxVlaues = [];
 
     app.PreviousThreshGrids = [];
     app.PlotThreshGrids = [];
@@ -555,6 +558,7 @@ elseif strcmp(Type,"Preprocessing")
 
     [app] = Organize_Set_MainWindow_Dropdown(app,app.Data);
     app.ClimMaxValues = [];
+    app.YlimMaxVlaues = [];
     % if strcmp(app.DropDown.Value,'Raw Data')
     %     app.ChannelSelectionEditField.Value = strcat("1,",num2str(size(app.Data.Raw,1)));
     % elseif strcmp(app.DropDown.Value,'Preprocessed Data')

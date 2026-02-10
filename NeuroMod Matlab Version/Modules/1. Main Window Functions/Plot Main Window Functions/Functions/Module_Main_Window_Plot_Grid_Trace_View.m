@@ -1,4 +1,4 @@
-function Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,StartIndex,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP,MainPlot)
+function YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,BaselineNorm,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP,MainPlot,YlimMaxVlaues)
 
 %% Setup
 
@@ -137,17 +137,6 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
         end
     end
     
-    % ylim
-    Center = median(DataForCurrentSubPlot,'omitnan');
-    
-    MinYV = min(DataForCurrentSubPlot) -app.Slider.Value; 
-    MaxYV= max(DataForCurrentSubPlot)+app.Slider.Value;
-    
-    if strcmp(EventERP,"EventWindowLines") || MainPlot
-        if sum(isnan([MinYV,MaxYV])) == 0 && ~isempty([MinYV,MaxYV])%%&& MinYV>0 && MinYV~=MaxYV
-            ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
-        end
-    end
     %% Plot Spikes
     
     SpikeHandles = findobj(ax, 'Tag', 'TracesSpikes');
@@ -172,6 +161,25 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
         end
     else
         delete(SpikeHandles);
+    end
+    
+    %% ylim   
+    if app.Slider.Value == 0
+        app.Slider.Value = 0.000001;
+    end
+
+    if ~strcmp(EventERP,"EventWindowpcolor")
+        if BaselineNorm == 1
+            ylim(ax,[-app.Slider.Value, app.Slider.Value]);
+        else
+            ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
+        end
+    else
+        if BaselineNorm == 1
+            clim(ax,[-app.Slider.Value, app.Slider.Value]);
+        else
+            clim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
+        end
     end
 
     %% Vertical lines separating rows
@@ -215,7 +223,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     end
     
     xlim(ax,[1, length(DataForCurrentSubPlot)]);
-
+    
     % remove old labels if they exist
     delete(findobj(ax,'Type','text','Tag','LeftAxisLabel'))
 
@@ -224,10 +232,19 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
 
     % vertical position: middle of the axis
     yText = mean(ax.YLim, 'omitnan');
-
-    if ~isnan(Center-app.Slider.Value) && ~isnan(Center+app.Slider.Value)
+    
+    if ~strcmp(EventERP,"EventWindowpcolor")
         text(ax, 1, yText, ...
-            strcat("Signal from ",num2str(Center-app.Slider.Value)," to ",num2str(Center+app.Slider.Value)," mV"), ...             
+            strcat("Signal from ",num2str(ax.YLim(1))," to ",num2str(ax.YLim(2))," mV"), ...             
+            'HorizontalAlignment','right', ...
+            'VerticalAlignment','middle', ...
+            'FontSize', 6, ...
+            'Color', 'k', ...
+            'Clipping','off', ...
+            'Tag','LeftAxisLabel');
+    else
+        text(ax, 1, yText, ...
+            strcat("Signal from ",num2str(ax.CLim(1))," to ",num2str(ax.CLim(2))," mV"), ...             
             'HorizontalAlignment','right', ...
             'VerticalAlignment','middle', ...
             'FontSize', 6, ...
@@ -238,7 +255,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     
     %% If event realted ERP: Plot event trigger time
     if strcmp(EventERP,"EventWindowAll") || strcmp(EventERP,"EventWindowLines") || strcmp(EventERP,"EventWindowpcolor") 
-        if firsttimeindicator || isempty(EventHandles)
+        %if firsttimeindicator || isempty(EventHandles)
             NumSamplesEventTimeBefore = find(Data.Info.EventRelatedTime==0)-1;
             %% Vertical lines for events
             if isempty(EventHandles)
@@ -254,9 +271,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
                     end
                 end
             end
-       end
+       %end
     end
-
-
 end
 

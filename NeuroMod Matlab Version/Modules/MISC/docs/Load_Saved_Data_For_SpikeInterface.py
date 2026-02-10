@@ -6,13 +6,10 @@ Created on Sat Aug 16 16:32:17 2025
 """
 
 import json
-import numpy as np
 import spikeinterface.full as si
 import probeinterface as pi
 from probeinterface.plotting import plot_probe
 import matplotlib.pyplot as plt
-import spikeinterface.sorters as ss
-
 
 # This function loads data in a Spikeinterface compatible format saved within Neuromod. It expects a .bin file containing
 # amplifier channel data as well as a Meta_Data.json file with meta data (samplerate, event trigger times) and a probe.json containing information about probe geometry.
@@ -29,16 +26,18 @@ ChannelDataBinPath = "Path_to_your_file/SITest.bin";
 
 with open(Meta_Data_Path) as f:
     metadata = json.load(f)
+    
+SamplingRate = metadata["SampleRate"]
 
 recording = si.read_binary(
     file_paths=ChannelDataBinPath,
-    sampling_frequency=metadata["SampleRate"],
+    sampling_frequency=SamplingRate,
     num_channels=metadata["num_channels"],
     dtype=metadata["dtype"]
 )
 
 '''
-######################### Load Event Data If  Present #########################
+######################### Load Event Data If Present #########################
 '''
 # --- Attach event data ---
 if "EventStruct" in metadata:

@@ -113,6 +113,9 @@ metadata.Info.Data_Path = strrep(metadata.Info.Data_Path, '\', '/');
 ModifiedPath = Data.Info.Data_Path;
 ModifiedPath(find(Data.Info.Data_Path == '\')) = '/';
 metadata.Path = ModifiedPath;
+metadata.Info.DataType = DatasetType;
+
+metadata = Manage_Dataset_SaveData_Reset_Slashes(metadata);
 
 if SaveEvents
     if isfield(Data,'Events')
@@ -132,7 +135,7 @@ if SaveEvents
 end
 
 % actually save metadata
-MetaDataPath = strcat(filepath,'/Meta_Data.json');
+MetaDataPath = strcat(filepath,'/',filename(1:end-4),'_Meta_Data.json');
 fid = fopen(MetaDataPath,'w');
 fprintf(fid, jsonencode(metadata));
 fclose(fid);
@@ -142,7 +145,7 @@ fclose(fid);
 Probe = Manage_Dataset_SavedData_ExportProbeToJSON(Data);
 
 json_text = jsonencode(Probe);
-ProbeDataPath = strcat(filepath,'/probe.json');
+ProbeDataPath = strcat(filepath,'/',filename(1:end-4),'_probe.json');
 fid = fopen(ProbeDataPath,'w');
 fwrite(fid, json_text, 'char');
 fclose(fid);

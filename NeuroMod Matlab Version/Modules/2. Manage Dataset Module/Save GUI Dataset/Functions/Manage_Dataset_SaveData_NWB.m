@@ -56,7 +56,7 @@ msg = sprintf('Saving Data as .nwb... (%d%% done)', round(0));
 waitbar(0, h, msg);
 
 SaveLocationNWB = SavePath;
-MatInfofile = strcat(file(1:end-4),'_Info.mat');
+MatInfofile = strcat(file(1:end-4),'_NWB_Info.mat');
 
 %% ----------------- Initialize and Set general Information -----------------
 generateCore()

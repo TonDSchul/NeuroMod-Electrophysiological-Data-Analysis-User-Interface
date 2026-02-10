@@ -1,15 +1,17 @@
-function [Data] = Manage_Dataset_Module_Load_SpikeInterface(DataPath)
+function [Data,Textbox] = Manage_Dataset_Module_Load_NeoDatData(FullDataPath,FullPathInfo)
 
 %________________________________________________________________________________________
 
-%% This function loads NeuroMod data back that was earlier saved in a spikeinterface compatible format 
+%% This function loads data saved in NeuroMod in a NEO compatible .mat file (can be loaded with NEO.io)
 
 % Input:
-% 1. DataPath: char, path to the folder containing the saved spikeinterface
-% data
+% 1. FullDataPath: char, path to the .mat file with NEO data
+% 2. FullPathInfo: char, path to the .mat file containing the Data.Info
+% structure to load back into Neuromod with all necessary info
 
 % Output: 
-% 1. Data: app.Data structure holding all relevant data components
+% 1. Data: main app data structure holding all relevant data components
+% 2. Textbox: char, result to show in the app text area. 
 
 %% Note: searches for Meta_Data.json, probe.json and the channel data bin file
 
@@ -18,22 +20,29 @@ function [Data] = Manage_Dataset_Module_Load_SpikeInterface(DataPath)
 
 %________________________________________________________________________________________
 
-dashindex = find(DataPath=='\');
+Textbox = [];
+Data = [];
 
-GeneralPath = strcat(DataPath(1:dashindex(end)-1));
+%% ------------------------------ Load MetaData ------------------------------
+    
+h = waitbar(0, 'Loading Neo .dat files...', 'Name','Loading Neo .dat files...');
+msg = sprintf('Loading Neo .dat files... (%d%% done)', 25);
+waitbar(25, h, msg);
 
-Filename = strcat(DataPath(dashindex(end)+1:end-4));
+dashindex = find(FullDataPath=='\');
 
-MetaDataPath = strcat(GeneralPath,'\',Filename,'_Meta_Data.json');
+GeneralPath = strcat(FullDataPath(1:dashindex(end)-1));
+
+Filename = strcat(FullDataPath(dashindex(end)+1:end-4));
+
+MetaDataPath = strcat(GeneralPath,'\',Filename,'_NEO_dat_Info.json');
 
 %% -------------------- Load Meta Data --------------------
 jsonText = fileread(MetaDataPath);
 MetaDataStruct = jsondecode(jsonText);
 
-ModifiedPath = MetaDataStruct.Path;
-ModifiedPath(find(ModifiedPath == '/')) = '\';
-
 Data.Info = MetaDataStruct.Info;
+
 
 Data.Time = 0:1/Data.Info.NativeSamplingRate:(double(Data.Info.num_data_points)-1)*(1/Data.Info.NativeSamplingRate);
 
@@ -56,6 +65,7 @@ if isfield(MetaDataStruct, 'EventStruct') && ~isempty(MetaDataStruct.EventStruct
     end
 end
 
+
 if isfield(Data,'Spikes')
     fieldsToDelete = {'Spikes'};
     % Delete fields
@@ -66,17 +76,17 @@ Data.Info.Sorter = 'Non';
 
 %% Load Data
 % initialize
-
+ScalingFactor = MetaDataStruct.ScalingFactor;
 Data.Raw = NaN(Data.Info.NrChannel,Data.Info.num_data_points);
 % load
-mmf = memmapfile(DataPath, ...
-    'Format', {'double', [Data.Info.NrChannel Data.Info.num_data_points], 'x'});
+mmf = memmapfile(FullDataPath, ...
+    'Format', {'int16', [Data.Info.NrChannel Data.Info.num_data_points], 'x'});
 
-Data.Raw = mmf.Data(1).x;
+Data.Raw = single(mmf.Data(1).x)./ScalingFactor;
 
-if isa(Data.Raw,"double")
-    Data.Raw = single(Data.Raw);
-end
+% if isa(Data.Raw,"double")
+%     Data.Raw = single(Data.Raw);
+% end
 
 if isfield(Data,'Events')
     if isempty(Data.Events)
@@ -85,3 +95,11 @@ if isfield(Data,'Events')
         Data = rmfield(Data, fieldsToDelete);
     end
 end
+
+if isfield(Data.Info,'ScalingFactor')
+    fieldsToDelete = {'ScalingFactor'};
+    % Delete fields
+    Data.Info = rmfield(Data.Info, fieldsToDelete);
+end
+
+close(h);

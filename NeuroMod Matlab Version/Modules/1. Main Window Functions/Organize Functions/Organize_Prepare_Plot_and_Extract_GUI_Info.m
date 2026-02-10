@@ -166,20 +166,8 @@ elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
         else
             SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
         end
-        
-        % if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-        %     [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,PreserveChannelSpacing,app.Data.Info.ProbeInfo.ActiveChannel);
-        % 
-        %     SpikeData.Position = FakeDepths(SpikeData.Position);
-        % end
     else
        SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
-
-       % if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
-       %     [~,~,~,FakeDepths] = Spike_Module_Analysis_Determine_Depths(app.Data,0,app.ActiveChannel);
-       % 
-       %     SpikeData.Position = FakeDepths(SpikeData.Position);
-       % end
     end
 end
 
@@ -305,15 +293,15 @@ if MainPlot && JustLiveWindow == 0
                 if isfield(app.Data.Info,'DownsampleFactor') 
                     app.LastPlot = "Preprocessed";
                     
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1)
+                    app.YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1,app.YlimMaxVlaues);
                 else
                     app.LastPlot = "Preprocessed";
-                    Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1)
+                    app.YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1,app.YlimMaxVlaues);
                 end
             elseif strcmp(app.DropDown.Value,'Raw Data')
                 app.UIAxes.Title.String = 'Raw Data';
                 app.LastPlot = "Raw";
-                Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),StartIndex,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1)
+                app.YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1,app.YlimMaxVlaues);
             end
         end
         

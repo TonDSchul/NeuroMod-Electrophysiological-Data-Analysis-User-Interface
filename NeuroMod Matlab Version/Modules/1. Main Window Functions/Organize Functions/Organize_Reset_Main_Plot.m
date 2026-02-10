@@ -35,6 +35,8 @@ app.MovieFramesPerSecond = 40;
 app.CurrentTimePoints = PlotTime;
 
 app.PreviousThreshGrids = [];
+app.YlimMaxVlaues = [];
+app.ClimMaxValues = [];
 
 % delte data plots
 if DeleteChannelData

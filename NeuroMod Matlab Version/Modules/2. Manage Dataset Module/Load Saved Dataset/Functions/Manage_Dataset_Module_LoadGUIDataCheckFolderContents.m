@@ -1,4 +1,4 @@
-function [SelectedFolder,DataMatfileindex,DataDATfileindex,Infofileindex,InfoFiletoLoad,Formatsfound,DropDownMenuChar,DropDownMenu_2Char,stringArray] = Manage_Dataset_Module_LoadGUIDataCheckFolderContents(executableFolder,NewFolderSelection)
+function [SelectedFolder,DataMatfileindex,DataDATfileindex,NEODatIndex,NEOTags,Infofileindex,InfoFiletoLoad,Formatsfound,DropDownMenuChar,DropDownMenu_2Char,stringArray] = Manage_Dataset_Module_LoadGUIDataCheckFolderContents(executableFolder,NewFolderSelection)
 
 %________________________________________________________________________________________
 
@@ -37,7 +37,11 @@ DataMatfileindex = [];
 DataDATfileindex = [];
 DataBINfileindex = [];
 DataNWBfileindex = [];
+DataMATfileindex = [];
+DataJSONfileindex = [];
 Infofileindex = [];
+NEODatIndex = [];
+NEOTags = [];
 InfoFiletoLoad = [];
 DropDownMenuChar = {};
 DropDownMenu_2Char = {};
@@ -72,7 +76,7 @@ end
 
 %% Loop through files types supported and determine whether they are part of the folder
 % Use regular expression to extract filenames ending with '.smrx'
-AllFormats = [".dat'";".mat'";".bin'";".nwb'"];
+AllFormats = [".dat'";".mat'";".bin'";".nwb'";".json'"];
 
 Formatsfound = [];
 
@@ -99,38 +103,6 @@ matfilecount = 0;
 for i = 1:length(stringArray)
     if ~strcmp(stringArray(i),"") && contains(stringArray(i),'.')
         currentstring = convertStringsToChars(stringArray(i));
-        if length(currentstring) >=4
-            if strcmp(currentstring(end-3:end),".mat") && ~contains(currentstring,"Info")
-                %% Check if selected mat file contains correct variable
-                variableName = 'Raw';  % Variable you want to load
-                
-                % Get the list of variables in the file
-                variablesInFile = who('-file', strcat(SelectedFolder,'\',currentstring));
-                
-                % Check if the desired variable exists
-                if ~ismember(variableName, variablesInFile)
-
-                    %% Check if selected mat file contains correct variable
-                    variableName = 'block';  % Variable you want to load
-                    
-                    % Get the list of variables in the file
-                    variablesInFile = who('-file', strcat(SelectedFolder,'\',currentstring));
-                    
-                    if ~ismember(variableName, variablesInFile)
-                        %msgbox(strcat("Variable ", variableName," does not exist in the manually selected file ",ScalingFactorPath32));
-                        continue;  % Exit if the variable does not exist
-                    else
-                        matfilecount = matfilecount + 1;
-                        DataMatfileindex = [DataMatfileindex,i];
-                    end
-        
-
-                else
-                    matfilecount = matfilecount + 1;
-                    DataMatfileindex = [DataMatfileindex,i];
-                end
-            end
-        end
 
         if strcmp(currentstring(end-3:end),".dat")
             DataDATfileindex = [DataDATfileindex,i];
@@ -144,7 +116,15 @@ for i = 1:length(stringArray)
             DataNWBfileindex = [DataNWBfileindex,i];
         end
 
-        % No data mat file
+        if strcmp(currentstring(end-4:end),".json")
+            DataJSONfileindex = [DataJSONfileindex,i];
+        end
+
+        if strcmp(currentstring(end-3:end),".mat")
+            DataMATfileindex = [DataMATfileindex,i];
+        end
+
+        % Info mat file
         if length(currentstring) >=8
             if strcmp(currentstring(end-3:end),".mat") && strcmp(currentstring(end-7:end-4),"Info")
                 %% Check if selected mat file contains correct variable
@@ -160,9 +140,7 @@ for i = 1:length(stringArray)
                 else
                     CheckJustInfo = CheckJustInfo +1;
                     Infofileindex = [Infofileindex,i];
-                end
-
-                
+                end  
             end
         end
     end
@@ -174,20 +152,52 @@ Index = 1;
 DropDownMenuChar = cell(1,1);
 DropDownMenu_2Char = cell(1,1);
 
-if ~isempty(DataDATfileindex)
-    DropDownMenu_2Char = cell(1,length(DataDATfileindex));
-else
-    if ~isempty(DataMatfileindex)
-        DropDownMenu_2Char = cell(1,length(DataDATfileindex));
-    end
-end
-
+NEOTags = [];
+%% Now .dat can be neuromod intern or for NEO -- if for NEO, Info file will have name
 if find(Formatsfound == ".dat'")
-    DropDownMenuChar{Index} = '.dat';
-    for i = 1:length(DataDATfileindex)
-        DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataDATfileindex(i)));
+    %% NM
+    if find(Formatsfound == ".mat'")
+        for i = 1:length(DataDATfileindex)
+            FilenameMatInfo = convertStringsToChars(stringArray(DataDATfileindex(i)));
+            FilenameMatInfo = strcat(FilenameMatInfo(1:end-4),'_Info');
+
+            for jj = 1:length(DataMATfileindex)
+                Cfilename = convertStringsToChars(stringArray(DataMATfileindex(jj)));
+                if strcmp(FilenameMatInfo,Cfilename(1:end-4))
+                    DropDownMenuChar{Index} = 'NeuroMod .dat';
+                    for iii = 1:length(DataDATfileindex)
+                        DropDownMenu_2Char{iii} = convertStringsToChars(stringArray(DataDATfileindex(iii)));
+                    end
+                    Index = Index+1;
+                end
+            end
+        end        
     end
-    Index = Index+1;
+
+    %% NEO
+    if isempty(DataJSONfileindex)
+        
+    else
+        for i = 1:length(DataDATfileindex)
+            for jj = 1:length(DataJSONfileindex)
+                JSONFilename = convertStringsToChars(stringArray(DataJSONfileindex(jj)));
+                if contains(JSONFilename,'NEO_dat_Info')
+                    DatFilename = convertStringsToChars(stringArray(DataDATfileindex(i)));
+                    DotIndex = find(DatFilename=='.');
+                    if contains(JSONFilename,DatFilename(1:DotIndex(end)-1))
+                        DropDownMenuChar{Index} = 'NEO .dat';
+                        DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataDATfileindex(i)));
+                        NEODatIndex = [NEODatIndex,DataDATfileindex(i)];
+                        NEOTags = [NEOTags;string(stringArray(DataDATfileindex(i)))];
+                    end
+                end
+            end           
+        end
+        if isempty(NEODatIndex)
+            DataDATfileindex(NEODatIndex)=[];
+        end
+        Index = Index+1;
+    end
 end
 
 if find(Formatsfound == ".bin'")
@@ -214,18 +224,18 @@ if find(Formatsfound == ".nwb'")
     Index = Index+1;
 end
 
-if ~isempty(DataMatfileindex)
-    DropDownMenuChar{Index} = '.mat';
-    if Index > 1
-        for i = 1:length(DataMatfileindex)
-            DropDownMenu_2Char{end+1} = convertStringsToChars(stringArray(DataMatfileindex(i)));
-        end
-    else
-        for i = 1:length(DataMatfileindex)
-            DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataMatfileindex(i)));
-        end
-    end
-end
+% if ~isempty(DataMatfileindex)
+%     DropDownMenuChar{Index} = '.mat';
+%     if Index > 1
+%         for i = 1:length(DataMatfileindex)
+%             DropDownMenu_2Char{end+1} = convertStringsToChars(stringArray(DataMatfileindex(i)));
+%         end
+%     else
+%         for i = 1:length(DataMatfileindex)
+%             DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataMatfileindex(i)));
+%         end
+%     end
+% end
 
 %% Save info files (.mat files) seperately. Each info file corresponds to a data file with the same name!
 if find(Formatsfound == ".dat'")

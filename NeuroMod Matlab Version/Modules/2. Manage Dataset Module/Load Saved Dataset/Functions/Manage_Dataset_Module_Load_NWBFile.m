@@ -31,7 +31,7 @@ msg = sprintf('Loading .nwb file... (%d%% done)', 50);
 waitbar(50, h, msg);
 %% Load Info mat file
 
-MatInfoFolder = strcat(FullDataPath(1:end-4),'_Info.mat');
+MatInfoFolder = strcat(FullDataPath(1:end-4),'_NWB_Info.mat');
 
 if isfile(MatInfoFolder)
     load(MatInfoFolder)
