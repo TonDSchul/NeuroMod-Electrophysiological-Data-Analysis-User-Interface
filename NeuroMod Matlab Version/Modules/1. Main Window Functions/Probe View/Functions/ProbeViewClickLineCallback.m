@@ -751,7 +751,7 @@ if ProbeViewWindow
         BrainAreaInfo = [];
     end
 
-    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField_2.Value),ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[],app.CheckBox.Value,[],app.ReverseTopandBottomChannelNumberCheckBox.Value,app.SwitchLeftandRightChannelNumberCheckBox.Value,app.ECoGArrayCheckBox.Value)
+    Utility_Plot_Interactive_Probe_View(app.UIAxes,str2double(app.ChannelSpacingumEditField.Value),str2double(app.NrChannelEditField.Value),str2double(app.ChannelRowsDropDown.Value),str2double(app.HorizontalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField.Value),str2double(app.VerticalOffsetumEditField_2.Value),ActiveChannel,app.FirstZoomChannel,0,BrainAreaInfo,ActiveChannel,app.ShowChannelSpacingCheckBox.Value,1,0,[],app.CheckBox.Value,[],app.ReverseTopandBottomChannelNumberCheckBox.Value,app.SwitchLeftandRightChannelNumberCheckBox.Value,app.ECoGArrayCheckBox.Value);
 
 %% Main Window probe view_____if clicked on a line but not on a channel on the right side --> not to change channel selection
 elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDirection]) < 2 && ClickedOnChannelYDirection == 0 || ClickedOnChannelXDirection == 0 && sum([ClickedOnChannelYDirection,ClickedRightSide])<2 && sum([ClickedOnChannelYDirection,ClickedLeftSide])<2 && TwoRowOffsetDesignHit == 0 % no change when user clicked on a channel square in the right
@@ -802,6 +802,6 @@ elseif ~ProbeViewWindow && sum([ClickedOnChannelXDirection,ClickedOnChannelYDire
         AllActiveChannel = app.Mainapp.Data.Info.ProbeInfo.ActiveChannel;
         ActiveChannel = app.Mainapp.ActiveChannel;
        
-        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.ProbeInfo.OffSetRowsDistance,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray)
+        Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.ProbeInfo.OffSetRowsDistance,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,0,[],app.Mainapp.Data.Info.ProbeInfo.OffSetRows,[],app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
     end
 end

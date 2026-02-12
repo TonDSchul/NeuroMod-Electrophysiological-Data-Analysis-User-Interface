@@ -28,6 +28,8 @@ else
         TempSpikeSortinBinPath = SpikeSortinBinPath(1:dashindex(end)-1);
         file_path = TempSpikeSortinBinPath;
     else
+        dashindex = find(SpikeSortinBinPath=='\');
+        TempSpikeSortinBinPath = SpikeSortinBinPath(1:dashindex(end)-1);
         file_path = SpikeSortinBinPath;
     end
 end

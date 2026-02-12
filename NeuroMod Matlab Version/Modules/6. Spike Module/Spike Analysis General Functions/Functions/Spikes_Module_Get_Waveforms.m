@@ -80,7 +80,7 @@ if strcmp(WaveFormType,"AverageWaveforms")
         end
     end
 
-%% Normal Waveforms
+%% Normal Waveforms - min peak location approach
 else
     % Otherwise just extract waveform from the corresponding Channel it was
     % found in

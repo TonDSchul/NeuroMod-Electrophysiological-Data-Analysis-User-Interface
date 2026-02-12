@@ -11,12 +11,8 @@ from neo.io import RawBinarySignalIO
 from neo.core import SpikeTrain
 import quantities as pq
 
-Meta_Data_Path = 'C:/Users/tonyd/Desktop/BLABLA_NEO_dat_Info.json';
-Channel_DataBin_Path = 'C:/Users/tonyd/Desktop/BLABLA.dat';
-'''
 Meta_Data_Path = 'Path_To_Saved_Recording/Filename_NEO_dat_Info.json';
-Channel_DataBin_Path = 'Path_To_Saved_Recording/Filename.dat';
-'''
+Channel_DataBin_Path = 'Path_To_Saved_Recording/Filename.dat';7
 
 '''
 ######################### Load Meta Data #########################
@@ -56,8 +52,11 @@ if "EventStruct" in metadata:
 ######################### Load Spike Data If Present #########################
 ''' 
 # --- Attach event data ---
+
 if "SpikeTimes" in metadata:
     spike_samples = np.asarray(metadata["SpikeTimes"])
+    spike_channel = np.asarray(metadata["SpikeChannel"])
+    
     spike_times = spike_samples / metadata["Info"]["NativeSamplingRate"]
     # create SpikeTrain
     NEOSpikeTrain = SpikeTrain(
@@ -68,6 +67,13 @@ if "SpikeTimes" in metadata:
     
     segment = block.segments[0]
     segment.spiketrains.append(NEOSpikeTrain)
+    
+    plt.figure()
+    plt.scatter(spike_times, spike_channel, s=5)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Channel")
+    plt.title("Spike Raster")
+    plt.show()
 
     print("Loaded spikes times.")
     
@@ -76,6 +82,7 @@ if "SpikeTimes" in metadata:
 '''
 
 DataOneChannel = np.asarray(signal[:, 0])
+
 TimeToPlot = np.arange(len(DataOneChannel)) / SamplingRate
 
 # Plot signal

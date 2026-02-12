@@ -44,7 +44,7 @@ else
     end
     dashindex = find(FolderToSave=='\');
     path = convertStringsToChars(FolderToSave);
-    file = convertStringsToChars(strcat("NEO_",FolderToSave(dashindex(end-2)+1:dashindex(end-1)-1),".dat"));
+    file = convertStringsToChars(strcat("NEO_",FolderToSave(dashindex(end-2)+1:dashindex(end-1)-1),".nwb"));
     
     SavePath = fullfile(path,file);
 end
@@ -157,7 +157,6 @@ if SaveSpikes
     if isfield(Data,'Spikes')
         % Create a cell array instead of struct array
         metadata.SpikeTimes = Data.Spikes.SpikeTimes';  % save as cell array
-        metadata.SpikeChannel = Data.Spikes.SpikeChannel';  % save as cell array
         disp("Spike data was added to the Meta_Data.json file!")
     else
         disp("No spike data was found to add to .json file!")

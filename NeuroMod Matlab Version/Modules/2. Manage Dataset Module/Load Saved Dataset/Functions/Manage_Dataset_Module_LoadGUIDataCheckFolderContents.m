@@ -189,6 +189,7 @@ if find(Formatsfound == ".dat'")
                         DropDownMenu_2Char{i} = convertStringsToChars(stringArray(DataDATfileindex(i)));
                         NEODatIndex = [NEODatIndex,DataDATfileindex(i)];
                         NEOTags = [NEOTags;string(stringArray(DataDATfileindex(i)))];
+                        Index = Index+1;
                     end
                 end
             end           
@@ -196,7 +197,6 @@ if find(Formatsfound == ".dat'")
         if isempty(NEODatIndex)
             DataDATfileindex(NEODatIndex)=[];
         end
-        Index = Index+1;
     end
 end
 

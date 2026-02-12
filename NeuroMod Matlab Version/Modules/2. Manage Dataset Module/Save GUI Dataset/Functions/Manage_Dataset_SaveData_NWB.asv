@@ -250,63 +250,95 @@ if SaveSpikes
     else % sorting
         disp("Saving spike sorted spikes.");
 
-        % Extract info
-        all_spike_times = Data.Spikes.SpikeTimes;          % in samples
-        all_spike_channels = Data.Spikes.SpikeChannel(:);  % 1-based MATLAB channel
-        all_spike_clusters = Data.Spikes.SpikeCluster(:); % cluster IDs (integers)
-        
-        unit_ids = unique(all_spike_clusters);
-        num_units = length(unit_ids);
-        
-        units = types.core.Units('description', 'Spike sorted units');
+        disp("Saving spike sorted units from clusters...");
 
-        % IDs
-        units.id = types.hdmf_common.ElementIdentifiers('data', int64(0:num_units-1)');
+% Extract info
+all_spike_times = Spikes.SpikeTimes;          % in samples
+all_spike_channels = Spikes.SpikeChannel(:);  % 1-based MATLAB channel
+all_spike_clusters = Spikes.SpikesCluster(:); % cluster IDs (integers)
+
+% Unique clusters
+unit_ids = unique(all_spike_clusters);
+num_units = length(unit_ids);
+
+units = types.core.Units('description', 'Spike sorted units');
+
+% Required unit IDs (0-based)
+units.id = types.hdmf_common.ElementIdentifiers('data', int64(0:num_units-1)');
+
+%% Build spike_times ragged array
+all_times_sec = [];
+spike_times_index = zeros(num_units,1);
+
+for u = 1:num_units
+    clust_id = unit_ids(u);
+    
+    % select spikes belonging to this cluster
+    sel = all_spike_clusters == clust_id;
+    st = double(all_spike_times(sel)) ./ sampling_rate;  % convert to seconds
+    
+    all_times_sec = [all_times_sec; st(:)];
+    
+    spike_times_index(u) = length(all_times_sec);
+end
+
+units.spike_times = types.hdmf_common.VectorData( ...
+    'data', all_times_sec, ...
+    'description', 'Spike times in seconds');
+
+units.spike_times_index = types.hdmf_common.VectorIndex( ...
+    'data', int64(spike_times_index), ...
+    'target', types.untyped.ObjectView('/units/spike_times'));
+
+%% Link each unit to its main electrode
+% Here we take the most frequent channel for that cluster
+unit_channels = zeros(num_units,1);
+
+for u = 1:num_units
+    clust_id = unit_ids(u);
+    sel = all_spike_clusters == clust_id;
+    chans = all_spike_channels(sel);
+    
+    % Take most frequent channel (mode)
+    unit_channels(u) = mode(chans);
+end
+
+% Convert to 0-based (must match electrodes_table.id)
+unit_channels = int64(unit_channels - 1);
+
+units.electrodes = types.hdmf_common.DynamicTableRegion( ...
+    'table', types.untyped.ObjectView('/general/extracellular_ephys/electrodes'), ...
+    'data', unit_channels, ...
+    'description', 'Main electrode for each unit');
+
+%% Optional: add cluster ID as quality label
+units.vectordata.set('cluster_id', ...
+    types.hdmf_common.VectorData('data', int64(unit_ids), ...
+    'description', 'Original cluster ID'));
+
+%% Attach to NWB
+nwb.units = units;
         
-        % Concatenate all spike times and build spike_times_index
-        all_times_sec = [];
-        spike_times_index = zeros(num_units,1);
-        
-        for u = 1:num_units
-            sel = all_spike_clusters == unit_ids(u);
-            st = double(all_spike_times(sel)) / sampling_rate;
-            all_times_sec = [all_times_sec; st(:)];
-            spike_times_index(u) = length(all_times_sec);
-        end
-        
-        units.spike_times = types.hdmf_common.VectorData( ...
-            'data', all_times_sec, ...
-            'description', 'Spike times in seconds');
-        
-        units.spike_times_index = types.hdmf_common.VectorIndex( ...
-            'data', int64(spike_times_index), ...
-            'target', types.untyped.ObjectView('/units/spike_times'), ...
-            'description', 'Index into spike_times for each unit');
-        
-        % Map units to electrodes
-        unit_channels = zeros(num_units,1);
-        for u = 1:num_units
-            sel = all_spike_clusters == unit_ids(u);
-            unit_channels(u) = mode(all_spike_channels(sel));
-        end
-        
-        units.electrodes = types.hdmf_common.DynamicTableRegion( ...
-            'table', types.untyped.ObjectView('/general/extracellular_ephys/electrodes'), ...
-            'data', int64(unit_channels-1), ...
-            'description', 'Main electrode for each unit');
-        
-        % Optional cluster ID
-        units.vectordata.set('cluster_id', ...
-            types.hdmf_common.VectorData('data', int64(unit_ids), ...
-            'description', 'Original cluster ID from spike sorting'));
-        
-        % Set colnames (required)
-        units.colnames = {'spike_times', 'spike_times_index', 'electrodes', 'cluster_id'};
-        
-        % Attach to NWB
-        nwb.units = units;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     end
 end
+
 
 %% ---------------------------- Actuall Export to NWB file ----------------------------
 nwbExport(nwb, SavePath, 'overwrite');

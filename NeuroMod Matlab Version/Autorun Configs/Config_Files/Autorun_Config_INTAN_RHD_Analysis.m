@@ -104,11 +104,11 @@ AutorunConfig.ExtractRawRecording.TimeToExtract = '0,Inf'; % char, timerange of 
 %______________________________________________________________________________________________________
 %% 1.2 Load data saved with GUI
 %______________________________________________________________________________________________________
-AutorunConfig.LoadData.Format = 'Saved NeuroMod format'; % 'Saved NeuroMod format' OR 'Saved Neo readable .mat file' OR 'Saved NWB format' OR 'Saved SpikeInterface format'
+AutorunConfig.LoadData.Format = 'Saved NeuroMod format'; % 'Saved NeuroMod format' OR 'Saved Neo readable .dat File' OR 'Saved NWB format' OR 'Saved SpikeInterface format'
 %______________________________________________________________________________________________________
 %% 1.3 Save data loaded in GUI
 %______________________________________________________________________________________________________
-AutorunConfig.SaveData.SaveAs = '.dat'; % '.dat' (NeuroMod) OR 'Neo Compatible .mat File' ('NEO') OR 'SpikeInterface Compatible Binary File' OR 'NWB File (Neurodata Without Borders)' ('Other') OR 'FieldTrip Compatible .mat File' 
+AutorunConfig.SaveData.SaveAs = '.dat'; % '.dat' (NeuroMod) OR 'Neo Compatible .dat File' ('NEO') OR 'SpikeInterface Compatible Binary File' OR 'NWB File (Neurodata Without Borders)' ('Other') OR 'FieldTrip Compatible .mat File' 
 
 % Only if saved as fieldtrip compatible file. If event data is saved, this
 % sepcifies from which event channel since only one can be saved at a time.
@@ -123,7 +123,7 @@ AutorunConfig.SaveData.Whattosave = [1,1,1,1,1,0]; % 3. Whattosave: vector with 
 % Do not change!
 if strcmp(AutorunConfig.SaveData.SaveAs,'.dat')
     AutorunConfig.SaveData.SaveFor = 'NeuroMod';
-elseif strcmp(AutorunConfig.SaveData.SaveAs,'Neo Compatible .mat File')
+elseif strcmp(AutorunConfig.SaveData.SaveAs,'Neo Compatible .dat File')
     AutorunConfig.SaveData.SaveFor = 'NEO';
 else
     AutorunConfig.SaveData.SaveFor = 'Other';

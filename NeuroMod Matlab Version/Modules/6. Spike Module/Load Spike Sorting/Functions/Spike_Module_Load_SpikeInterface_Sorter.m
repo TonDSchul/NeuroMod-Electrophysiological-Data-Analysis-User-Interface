@@ -47,7 +47,7 @@ if isfield(Data,'Spikes')
     [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
 end     
 
-% extracted every time analysis ios plotted, so removing is not really
+% overwritten every time analysis is done, so removing is not really
 % necessary, but for good measure
 if isfield(Data,'EventRelatedSpikes')
     fieldsToDelete = {'EventRelatedSpikes'};
@@ -55,7 +55,7 @@ if isfield(Data,'EventRelatedSpikes')
     Data = rmfield(Data, fieldsToDelete);
 end
 
-% initiate field
+% Tnitiate
 Data.Spikes = [];
 
 %% Take folder from above, get folder contents, loop through them and load the npy file
@@ -77,7 +77,7 @@ Data.Info.SpikeType = 'SpikeInterface';
 Data.Info.Sorter = CurrentSorter;
 Data.Info.SorterPath = SelectedFolder;
 
-%% Data needs to be high pass filtered! Otherwise waveforms are weird. Recommended is also grand average
+%% Data needs to be at least high pass filtered
 % Detect high pass filter
 HigPassFiltered = 1;
 TempData = [];
@@ -174,7 +174,7 @@ for i = 1:length(fileNames)
     elseif strcmp(fileNames{i}(1:end-4),'max_template_channel_index')
         Data.Spikes.Cluster_Max_Template_Channel = readNPY(fullfile(SelectedFolder,fileNames{i}));
 
-    %% Quality metrics!
+    %% Quality metrics
     elseif strcmp(fileNames{i}(1:end-4),'cluster_isi_violations_ratio')
         Tempcluster_isi_violations_ratio = readtable(fullfile(SelectedFolder,fileNames{i}), "FileType","text",'Delimiter', '\t');
         Data.Spikes.ISIViolationRatio = table2array(Tempcluster_isi_violations_ratio);
@@ -210,7 +210,7 @@ for i = 1:length(fileNames)
     end
 end
 
-if min(Data.Spikes.SpikeCluster)==0
+if min(Data.Spikes.SpikeCluster)==0 % form 0 to 1 - indexed
     Data.Spikes.SpikeCluster = Data.Spikes.SpikeCluster + 1;
 end
 
@@ -232,6 +232,7 @@ if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
     return;
 end
 
+%% Load spike positions saved as .mat file in spikeinterface script
 UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
 
 for i = 1:length(fileNames)
@@ -302,7 +303,7 @@ if size(Data.Spikes.ChannelMap,1) > size(Data.Raw,1) || size(Data.Spikes.Channel
     disp("Warning: Loaded sorting data seems to have a different channelconfiguration than GUI data has. Check whether the correct output folder was selected.");
 end
 
-%% Get Channel number corresponding to depth in um ot
+%% Get Channel number corresponding to depth in um or max template channel
 if strcmp(SpikeChannelType,"Channel closest to X and Y of respective spikes")
     Data = Spike_Module_Get_Spike_Channel(Data);
 else
@@ -360,7 +361,7 @@ end
 %% Get Waveforms
 if isempty(TempData)
     [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(Data,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
-else
+else % when temporarily preprocessed
     [Data.Spikes.Waveforms,SpikesWithWaveform] = Spikes_Module_Get_Waveforms(TempData,Data.Spikes.SpikeTimes,Data.Spikes.SpikeChannel,"NormalWaveforms");
 end
 
@@ -379,9 +380,9 @@ if sum(SpikesWithWaveform)>0
     %Data.Spikes.SpikeTemplates = Data.Spikes.SpikeTemplates(SpikesWithWaveform==1);
 end
 
-% Now if we have two rows we have to adjust the actual channel to a data
-% channel which goes from 1 to 64. This ensures porper scaling in the main
-% window plot, but is not valid for any computations down the line!
+% Now if we have two or more rows we have to adjust the actual channel to a data
+% channel which goes from 1 to 64 or whatever. This ensures proper scaling in the main
+% window plot
 
 UinquePos = unique(Data.Spikes.ChannelPosition(:,1));
 

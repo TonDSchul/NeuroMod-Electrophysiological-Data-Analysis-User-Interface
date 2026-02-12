@@ -193,12 +193,27 @@ if strcmp(FunctionOrder,'Load_Data')
         if strcmp(AutorunConfig.LoadData.Format,"Saved NeuroMod format")
             [stringArray] = Utility_Extract_Contents_of_Folder(path);
             % Use endsWith to create a logical array indicating which elements end with '.dat'
-            isDatFile = endsWith(stringArray, '.dat');
+            isDatFile = find(endsWith(stringArray, '.dat')==1);
+            isMatFile = find(endsWith(stringArray, '.mat')==1);
             
-            % Find the indices of .dat files
-            datFileIndices = find(isDatFile);
+            TrueInternDatFile = [];
+            TrueInternMatFile = [];
+            if ~isempty(isMatFile)
+                for i = 1:length(isDatFile)
+                    FilenameMatInfo = convertStringsToChars(stringArray(isDatFile(i)));
+                    FilenameMatInfo = strcat(FilenameMatInfo(1:end-4),'_Info');
         
-            if isempty(datFileIndices) || length(datFileIndices) > 1
+                    for jj = 1:length(isMatFile)
+                        Cfilename = convertStringsToChars(stringArray(isMatFile(jj)));
+                        if strcmp(FilenameMatInfo,Cfilename(1:end-4))
+                            TrueInternDatFile = [TrueInternDatFile,i];
+                            TrueInternMatFile = [TrueInternMatFile,jj];
+                        end
+                    end
+                end        
+            end
+       
+            if isempty(TrueInternDatFile) || length(TrueInternDatFile) > 1
                 error("Error: No .dat file or more than one .dat files found.");
             end
         
@@ -207,55 +222,40 @@ if strcmp(FunctionOrder,'Load_Data')
             FullPathInfo = convertStringsToChars(fullfile(path,InfoleFile));
             FullPathData = convertStringsToChars(fullfile(path,file));
 
-        elseif strcmp(AutorunConfig.LoadData.Format,"Saved Neo readable .mat file")
+        elseif strcmp(AutorunConfig.LoadData.Format,"Saved Neo readable .dat File")
             [stringArray] = Utility_Extract_Contents_of_Folder(path);
             % Use endsWith to create a logical array indicating which elements end with '.dat'
-            isMatFile = endsWith(stringArray, '.mat');
+            isDatFile = find(endsWith(stringArray, '.dat')==1);
+            isJSONFile = find(endsWith(stringArray, '.json')==1);
             
-            NEOMatfileindex = [];
-            if sum(isMatFile)>0
-                AllMatFiles = stringArray(isMatFile);
+            TrueInternDatFile = [];
+            TrueInternJsonFile = [];
+            %% NEO
+            if isempty(isJSONFile)
+                
             else
-                disp("No readable .mat file found!")
-                return
-            end
-            
-            for i = 1:length(AllMatFiles)
-                currentstring = AllMatFiles(i);
-                %% Check if selected mat file contains correct variable
-                variableName = 'Raw';  % Variable you want to load
-                
-                % Get the list of variables in the file
-                variablesInFile = who('-file', fullfile(path,currentstring));
-                
-                % Check if the desired variable exists
-                if ~ismember(variableName, variablesInFile)
-                    %% Check if selected mat file contains correct variable
-                    variableName = 'block';  % Variable you want to load
-                    
-                    % Get the list of variables in the file
-                    variablesInFile = who('-file', fullfile(path,currentstring));
-                    
-                    if ismember(variableName, variablesInFile)
-                        NEOMatfileindex = [NEOMatfileindex,i];
-                    else % neo file
-                        % No neo file
-                        continue;  % Exit if the variable does not exist
-                    end
+                for i = 1:length(isDatFile)
+                    for jj = 1:length(isJSONFile)
+                        JSONFilename = convertStringsToChars(stringArray(isJSONFile(jj)));
+                        if contains(JSONFilename,'NEO_dat_Info')
+                            DatFilename = convertStringsToChars(stringArray(isDatFile(i)));
+                            DotIndex = find(DatFilename=='.');
+                            if contains(JSONFilename,DatFilename(1:DotIndex(end)-1)) && contains(DatFilename,'NEO')
+                                TrueInternDatFile = [TrueInternDatFile,i];
+                                TrueInternJsonFile = [TrueInternJsonFile,jj];
+                            end
+                        end
+                    end           
                 end
             end
             
-            if isempty(NEOMatfileindex)
+            if isempty(TrueInternDatFile) || isempty(TrueInternJsonFile)
                 disp("No readable NEO .mat file found!")
                 return
             end
 
-            File = convertStringsToChars(AllMatFiles(NEOMatfileindex));
-            dotindex = find(File=='.');
-            InfoFile = strcat(File(1:dotindex(end)-1),'_Info.mat');
-            
-            FullPathData = convertStringsToChars(fullfile(path,File));
-            FullInfoPath = convertStringsToChars(fullfile(path,InfoFile));
+            FullPathData = convertStringsToChars(fullfile(path,stringArray(isDatFile(TrueInternDatFile))));
+            FullInfoPath = convertStringsToChars(fullfile(path,stringArray(isJSONFile(TrueInternJsonFile))));
 
             if ~isfile(FullInfoPath)
                 disp("No Info .mat file found for readable NEO .mat file!")
@@ -310,7 +310,7 @@ if strcmp(FunctionOrder,'Load_Data')
 
                 if strcmp(AutorunConfig.LoadData.Format,"Saved NeuroMod format")
                     [Data] = Manage_Dataset_Module_Load_NeuroModData(AutorunConfig.LoadData.Format,FullPathData,FullPathInfo,PlaceholderTextbox);
-                elseif strcmp(AutorunConfig.LoadData.Format,"Saved Neo readable .mat file")
+                elseif strcmp(AutorunConfig.LoadData.Format,"Saved Neo readable .dat File")
                     
                     [Data,~] = Manage_Dataset_Module_Load_NeoDatData(FullPathData,FullInfoPath);
     
@@ -427,12 +427,12 @@ if strcmp(FunctionOrder,'Save_Data')
                 OriginalfolderName = Data.Info.Data_Path(dashindex(end)+1:end); 
 
                 if AutorunConfig.SaveData.Whattosave(1)==1 
-                    [filepath,Error] = Manage_Dataset_SaveData_NWB(Data,AutorunConfig.SaveData.Whattosave(3),"Raw Data",Data.Info.NativeSamplingRate,OriginalfolderName,AutorunDetection,FullPath);
+                    [filepath,Error] = Manage_Dataset_SaveData_NWB(Data,AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),"Raw Data",Data.Info.NativeSamplingRate,OriginalfolderName,AutorunDetection,FullPath);
                 else
                     if isfield(Data.Info,'DownsampledSampleRate')
-                        [filepath,Error] = Manage_Dataset_SaveData_NWB(Data,AutorunConfig.SaveData.Whattosave(3),"Preprocessed Data",Data.Info.DownsampledSampleRate,OriginalfolderName,AutorunDetection,FullPath);
+                        [filepath,Error] = Manage_Dataset_SaveData_NWB(Data,AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),"Preprocessed Data",Data.Info.DownsampledSampleRate,OriginalfolderName,AutorunDetection,FullPath);
                     else
-                        [filepath,Error] = Manage_Dataset_SaveData_NWB(Data,AutorunConfig.SaveData.Whattosave(3),"Preprocessed Data",Data.Info.NativeSamplingRate,OriginalfolderName,AutorunDetection,FullPath);
+                        [filepath,Error] = Manage_Dataset_SaveData_NWB(Data,AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),"Preprocessed Data",Data.Info.NativeSamplingRate,OriginalfolderName,AutorunDetection,FullPath);
                     end
                 end
             elseif strcmp(AutorunConfig.SaveData.SaveAs,"SpikeInterface Compatible Binary File")
@@ -443,7 +443,7 @@ if strcmp(FunctionOrder,'Save_Data')
                 else
                     [filepath] = Manage_Dataset_SaveData_SpikeInterfaceNumpy(Data,"Preprocessed Data",AutorunConfig.SaveData.Whattosave(3),AutorunDetection,FullPath);
                 end
-            elseif strcmp(AutorunConfig.SaveData.SaveAs,"FieldTrip Compatible .mat File")
+            elseif strcmp(AutorunConfig.SaveData.SaveAs,"FieldTrip Compatible .dat File")
                 
                 if AutorunConfig.SaveData.Whattosave(1)==1 
                     [Error,filepath] = Manage_Dataset_SaveData_FieldTrip(Data,"Raw Data",AutorunConfig.SaveData.Whattosave(3),1,0,0,AutorunDetection,FullPath,AutorunConfig.SaveData.FieldTrip.EventChannelToUse,AutorunConfig.SaveData.FieldTrip.EventRelatedDataType);
@@ -452,7 +452,7 @@ if strcmp(FunctionOrder,'Save_Data')
                 end
             end
         elseif strcmp(AutorunConfig.SaveData.SaveFor,"NEO")
-            if strcmp(AutorunConfig.SaveData.SaveAs,"Neo Compatible .mat File")
+            if strcmp(AutorunConfig.SaveData.SaveAs,"Neo Compatible .dat File")
                 if AutorunConfig.SaveData.Whattosave(1) == 1
                     [filepath,Error] = Manage_Dataset_SaveData_NeoDat(Data,Data.Info.NativeSamplingRate,"Raw Data",AutorunConfig.SaveData.Whattosave(3),AutorunConfig.SaveData.Whattosave(4),Data.Time,AutorunDetection,FullPath);
                 else
@@ -467,35 +467,7 @@ if strcmp(FunctionOrder,'Save_Data')
 
         %% Check if Saving was succesfull.
         if ~isempty(filepath) && Error == 0
-            if strcmp(AutorunConfig.SaveData.SaveFor,"NEO")
-                disp("Attempting to save Probe Information.");
-                try
-                    dashindex = find(filepath=='\');
-                    filepathProbe = filepath(1:dashindex(end)-1);
-                    filename = filepath(dashindex(end)+1:end);
-                    
-                    dotindice = find(filename=='.');
-                    
-                    if ~isempty(dotindice)
-                        filename(dotindice:end) = [];
-                    end
-                    
-                    Info = Data.Info;
-
-                    filepathProbe = strcat(filepathProbe,"\",filename,"_Info.mat");
-                    save(filepathProbe,'Info')
-                catch
-                    msgbox("Probe information could not be saved! When loading this dataset, you are being asked to specify the probe layout again!")
-                    warning("Probe information could not be saved! When loading this dataset, you are being asked to specify the probe layout again!")
-                end
-
-                disp(convertStringsToChars(strcat("Data was succesfully saved to: ",filepath)));
-
-            elseif strcmp(AutorunConfig.SaveData.SaveFor,"Other")
-                disp(convertStringsToChars(strcat("Data was succesfully saved to: ",filepath)));
-            else
-                disp(convertStringsToChars(strcat("Data was succesfully saved to: ",filepath)));
-            end
+            disp(convertStringsToChars(strcat("Data was succesfully saved to: ",filepath)));
         else
             disp(convertStringsToChars("Saving Data failed. Check that you selected a proper save location and have permissions to create and write in files in that location!"));
         end

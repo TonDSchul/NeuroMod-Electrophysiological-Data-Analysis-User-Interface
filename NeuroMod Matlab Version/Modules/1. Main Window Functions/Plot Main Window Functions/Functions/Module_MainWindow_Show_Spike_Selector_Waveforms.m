@@ -65,6 +65,7 @@ if ~strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Da
         SpikeAmps(ClusterIndicies==0)=[];
         Waveforms(ClusterIndicies==0,:)=[];
         WaveformChannel(ClusterIndicies==0,:)=[];
+        CluterPositions(ClusterIndicies==0,:)=[];
     end
     app.SelectedSpike.Channel = WaveformChannel(SelectedSpike);
 else
@@ -77,6 +78,7 @@ SampleRate = app.Mainapp.Data.Info.NativeSamplingRate;
 WaveFormSamples = round(SpikeTimes(SelectedSpike)*SampleRate)-RangeAroundSpike:round(SpikeTimes(SelectedSpike)*SampleRate)+RangeAroundSpike;
 
 [PreproChannel] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.SelectedSpike.Channel,'MainPlot');
+
 CurrentWaveform = app.Mainapp.Data.Preprocessed(PreproChannel,WaveFormSamples);
 
 WaveformHandles = findobj(app.UIAxes,'Tag', 'Waveforms');
@@ -89,27 +91,66 @@ title(app.UIAxes,strcat("All Waveforms Channel ",app.SpikeChannelEditField.Value
 xlabel(app.UIAxes,"Time [ms]")
 ylabel(app.UIAxes,"Signal [mV]")
 
+% spike sorting waveforms are not extracted at the exact time point of the
+% spike, but rather for the minimum peak around that location to time lock
+% all saveforms to the negative peak. So extracting on the fly without those
+% "fake times" is not possible --> thats why internal and sorting data are
+% handled differently
+
 if isempty(WaveformHandles)
     for i = 1:length(SpikeTimes)
-        line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+        if ~strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Data.Info.SpikeType,"Non")
+            if i ~= SelectedSpike
+                line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+            else
+                line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','r','LineWidth',3,'Tag','MarkedWave')
+            end
+        else
+            line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+        end
     end
 else
     for i = 1:length(SpikeTimes)
-        if i <=length(WaveformHandles)
-            set(WaveformHandles(i),'XData',TimeToPlot,'YData',Waveforms(i,:),'Color','c','Tag','Waveforms')
+        if ~strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Data.Info.SpikeType,"Non")
+            if i <=length(WaveformHandles)
+                if i ~= SelectedSpike
+                    set(WaveformHandles(i),'XData',TimeToPlot,'YData',Waveforms(i,:),'Color','c','Tag','Waveforms')
+                else
+                    set(WaveformHandles(i),'XData',TimeToPlot,'YData',Waveforms(i,:),'Color','r','LineWidth',3,'Tag','MarkedWave')
+                end
+            else
+                if i ~= SelectedSpike
+                    line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+                else
+                    line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','r','LineWidth',3,'Tag','MarkedWave')
+                end
+            end
+
         else
-            line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+            if i <=length(WaveformHandles)
+                set(WaveformHandles(i),'XData',TimeToPlot,'YData',Waveforms(i,:),'Color','c','Tag','Waveforms')
+            else
+                line(app.UIAxes,TimeToPlot,Waveforms(i,:),'Color','c','Tag','Waveforms')
+            end
         end
     end
 end
 
 app.CurrentNumSpikes = length(SpikeTimes);
 
-%% Plot currently selected Spike
-MarkedWaveHandles = findobj(app.UIAxes,'Tag', 'MarkedWave');
-if isempty(MarkedWaveHandles)
-    line(app.UIAxes,TimeToPlot,CurrentWaveform,'Color','r','LineWidth',3,'Tag','MarkedWave')
+
+if strcmp(app.Mainapp.Data.Info.SpikeType,"Internal")
+    %% Plot currently selected Spike
+    MarkedWaveHandles = findobj(app.UIAxes,'Tag', 'MarkedWave');
+    if isempty(MarkedWaveHandles)
+        line(app.UIAxes,TimeToPlot,CurrentWaveform,'Color','r','LineWidth',3,'Tag','MarkedWave')
+    else
+        set(MarkedWaveHandles(1),'XData',TimeToPlot,'YData',CurrentWaveform,'Color','r','LineWidth',3,'Tag','MarkedWave')
+        uistack(MarkedWaveHandles(1),'top')
+    end
 else
-    set(MarkedWaveHandles(1),'XData',TimeToPlot,'YData',CurrentWaveform,'Color','r','LineWidth',3,'Tag','MarkedWave')
-    uistack(MarkedWaveHandles(1),'top')
+    MarkedWaveHandles = findobj(app.UIAxes,'Tag', 'MarkedWave');
+    if ~isempty(MarkedWaveHandles)
+        uistack(MarkedWaveHandles, 'top') 
+    end
 end
