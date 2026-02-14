@@ -360,23 +360,22 @@ if Activated
             
             app.EventLFPTF.DataSourceDropDown.Tooltip = "Select whether time frequency power is calculate for raw or preprocessed event related data.";
             app.EventLFPTF.EventNumberSelectionEditField.Tooltip = "Specify trigger (trials) for which time frequency power is computed.";
-            app.EventLFPTF.FrequencyRangeminmaxstepsEditField.Tooltip = "Change frequency range and number of steps inbetween range limits for which time frequency power is computed. Format: [LowerLimit,Steps,UpperLimit]";
-            app.EventLFPTF.CycleWidthfromto23EditField.Tooltip = "Time frequency power is computed with varying cycle widths of moorlet wavelets to tackle the time frequency tradeoff (the higher the frequency, the better the time resolution). Specify range of cycles. The higher the cycle width, the higher the frequency resolution.";
+            app.EventLFPTF.FrequencyRangeminmaxstepsEditField.Tooltip = "Change frequency range and number of steps inbetween range limits for which time frequency power is computed. Format: [LowerLimit,Steps,UpperLimit]. NOTE: For Wavelet Coherence, Steps represent 'VoicesPerOctave' and determine the density of frequencies. There are min and max values possible to compute with, depending on duration and sampling frequency of event related data! If you get an error, check the limit it displays!";
+            app.EventLFPTF.CycleWidthfromto23EditField.Tooltip = "Set the window length to divide the signal into segments. In samples, must be smaller than amount of data points in the current analysis time window.";
             app.EventLFPTF.ClimminmaxEditField.Tooltip = "Specify the color plot limits. Format: [LowerLimit,UpperLimit]";
             app.EventLFPTF.AutoClimButton.Tooltip = "Click the restore the default color plot limits.";
             
-            app.EventLFPTF.WaveletTypeDropDown.Tooltip = "Currently only Moorlet wavelets available.";
-            
-            app.EventLFPTF.BaselineNormalizeCheckBox.Tooltip = "Select whether to perform baseline normalization with the time specified in the baseline window text field. ";
+            app.EventLFPTF.BaselineNormalizeCheckBox.Tooltip = "Select whether to perform baseline normalization with the time specified in the baseline window text field.";
             app.EventLFPTF.EventNumberSelectionEditField_3.Tooltip = "Select the baseline time window used to baseline normalize; Format: comma separated numbers like '-0.2,0'.";
             app.EventLFPTF.EventNumberSelectionEditField_2.Tooltip = "Info field showing the total number of trigger for the currently selected trigger channel.";
-
-            app.EventLFPTF.TimeFrequencyCheckBox.Tooltip = "If checkbox is activated, time frequency power is plotted across all selected trial.";
-            app.EventLFPTF.IntertrialPhaseClusteringCheckBox.Tooltip = "If checkbox is activated, intertrial phase clustering is plotted across all selected trials.";
-
-            app.EventLFPTF.PhaseindependentCheckBox.Tooltip = "If checkbox is activated, time frequency power is computed for phase locked and non-phase locked components. For this, all trials are concatonated to a supertrial to avoid averaging out the non-phase locked components across trials.";
-            app.EventLFPTF.PhaselockedCheckBox.Tooltip = "If checkbox is activated, time frequency power for all phase locked components is computed, i.e. over the ERP.";
-            app.EventLFPTF.NonphaselockedCheckBox.Tooltip = "If checkbox is activated, time frequency power for all non-phase locked components is computed, i.e. all components minus phase locked components.";
+        
+            app.EventLFPTF.CoherencebetweenTrialsCheckBox.Tooltip = "If active, wavelet coherence between trials specified in the 'Trigger To Compare (comma separated)' field is computed. 'Trigger Number  Selection' field becomes unnecessary.";
+            app.EventLFPTF.CoherencebetweenChannelCheckBox.Tooltip = "If active, wavelet coherence between channel specified in the 'Channel To Compare (comma separated)' field is computed. 'Channel to Analyze' field becomes unnecessary."; 
+            app.EventLFPTF.FrequencyRangeminmaxstepsEditField_2.Tooltip = "Enter two comma separated numbers specifying either trials or channel you want to compute wavelet coherence for.";
+            app.EventLFPTF.SmoothingEditField_2.Tooltip = "Determines smoothing of wavelet coherence plot. The higher, the more result is smoothed but the lower the low-frequency resolution. Min and max values possible depend (among others) on signal length of event related data. If you get an error, check the limit it displays!";
+            
+            app.EventLFPTF.DataSourceDropDown_3.Tooltip = "Select whether to conduct time frequency power analysis for a single channel or wavelet coherence between two channel seelcted in the 'Channel To Compare' field.";
+            
         end
     end
 
@@ -567,6 +566,11 @@ if Activated
             app.LiveSpectrogramApp.LockCLimCheckBox.Tooltip = "Click to lock the clim of the lower plot to the max value.";
             app.LiveSpectrogramApp.TimeWindowfromtoinsEditField.Tooltip = "Enter the time range for analysis when the 'Couple Time to Main Window' checkbox is deactivated. Format: comma separated numbers like 0,10 for the first ten seconds of the recording.";
             app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Tooltip = "Select whether time range for the analysis is coupled to the main window data plot or to the 'Time Range' edit field in this window.";
+        
+            app.LiveSpectrogramApp.SmoothingEditField.Tooltip = "Determines smoothing of wavelet coherence plot. The higher, the more result is smoothed but the lower the low-frequency resolution. Min and max values possible depend (among others) on signal length of event related data. If you get an error, check the limit it displays!";
+            app.LiveSpectrogramApp.FrequencyRangeminmaxstepsEditField.Tooltip = "Enter two comma separated numbers specifying the channel you want to compute wavelet coherence for.";
+            app.LiveSpectrogramApp.AnalysisTypeDropDown.Tooltip = "Select whether to conduct time frequency power analysis for a single channel or wavelet coherence between two channel seelcted in the 'Channel To Compare' field.";
+            
         end
     end
     

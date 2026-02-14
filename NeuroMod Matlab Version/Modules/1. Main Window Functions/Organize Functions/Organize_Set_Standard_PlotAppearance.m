@@ -163,8 +163,8 @@ if strcmp(Type,"TFPlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.TFWindow.XLabel = "Time [s]";
     PlotAppearance.TFWindow.YLabel = "Frequency [Hz]";
-    PlotAppearance.TFWindow.CLabel = "dB Power";
-    PlotAppearance.TFWindow.FontSize = 11;
+    PlotAppearance.TFWindow.CLabel = "Power/Frequency [dB/Hz]";
+    PlotAppearance.TFWindow.FontSize = 12;
     
     % LineWidth
     PlotAppearance.TFWindow.TriggerLineWidth = 2; % 

@@ -6,8 +6,7 @@ function [CurrentClim,CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram2(D
 
 % Input Arguments:
 % 1. Data: mian window data structure
-% 2. DataToShow: char, either "Raw Data" or "Preprocessed Data" depending
-% on what to show the analysis for
+% 2. DataToShow: channel by time matrix with data to analyze
 % 3. EventsToShow: double vector with event indicies i9n currently selected
 % time window
 % 4. ChannelToPlot: char, number of channel to analyze
@@ -39,30 +38,32 @@ function [CurrentClim,CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram2(D
 
 %________________________________________________________________________________________
 
+%% Define spec parameter
 Window = str2double(Window);
 Window = round(Window);
+wspec = hamming(Window);
+Noverlap = Window/2;
+FrequencyRange = str2double(strsplit(FrequencyRange,','));
+Freqs = linspace(FrequencyRange(1),FrequencyRange(3),FrequencyRange(2));
+
 OriginalChannel = ChannelToPlot;
 ChannelToPlot = str2double(ChannelToPlot);
 [ChannelToPlot] = Organize_Convert_ActiveChannel_to_DataChannel(Data.Info.ProbeInfo.ActiveChannel,ChannelToPlot,'MainPlot');
 
-nfft = 2^nextpow2(Window);   % good default
-noverlap = round(0.75 * Window);
-FrequencyRange = str2double(strsplit(FrequencyRange,','));
-
 SpectroData = DataToShow(ChannelToPlot,:);
 
-[S,F,T] = spectrogram(SpectroData, Window, noverlap, nfft, SampleRate);   % compute values
+%% Spec and conversion
+[Magni,TFFreqs,TFTime] = spectrogram(SpectroData, wspec, Noverlap, Freqs, SampleRate);   % compute magnitude in Hz
+SPower = abs(Magni).^2;
+SdB = 10*log10(SPower + eps); % in db
 
-if length(T)<=1
+TimeToPlot = linspace(Time(1), Time(end), length(TFTime));
+
+if length(TFTime)<=1
     msgbox("Window length too big for amount of time analysed!")
     warning("Window length too big. ")
     return;
 end
-
-TimeToPlot = linspace(Time(1), Time(end), length(T));
-
-[~,ClosestFreqs(1)] = min(abs(F-FrequencyRange(1)));
-[~,ClosestFreqs(2)] = min(abs(F-FrequencyRange(2)));
 
 SpectroHandle = findobj(Figure, 'Tag', 'SpectroImsc');
 
@@ -73,12 +74,12 @@ if strcmp(TwoORThreeD,"ThreeD")
 
     if isempty(SpectroHandle)
         % First-time creation
-        surf(Figure, TimeToPlot, F(ClosestFreqs(1):ClosestFreqs(2))', 20*log10(abs(S(ClosestFreqs(1):ClosestFreqs(2),:))),'EdgeColor', 'none', 'Tag', 'SpectroImsc');
+        surf(Figure, TimeToPlot, TFFreqs', SdB,'EdgeColor', 'none', 'Tag', 'SpectroImsc');
     else
         % Update existing image
         set(SpectroHandle, 'XData', TimeToPlot, ...
-                  'YData', F(ClosestFreqs(1):ClosestFreqs(2)), ...
-                  'CData', 20*log10(abs(S(ClosestFreqs(1):ClosestFreqs(2),:))));
+                  'YData', TFFreqs(ClosestFreqs(1):ClosestFreqs(2)), ...
+                  'CData', SdB);
     end
     view(Figure,45,45);
     box(Figure, 'off');
@@ -86,25 +87,25 @@ if strcmp(TwoORThreeD,"ThreeD")
 else
     if isempty(SpectroHandle)
         % First-time creation
-        imagesc(Figure, TimeToPlot, F(ClosestFreqs(1):ClosestFreqs(2)), 20*log10(abs(S(ClosestFreqs(1):ClosestFreqs(2),:))), 'Tag', 'SpectroImsc');
+        imagesc(Figure, TimeToPlot, TFFreqs, SdB, 'Tag', 'SpectroImsc');
     else
         % Update existing image
         set(SpectroHandle, 'XData', TimeToPlot, ...
-                  'YData', F(ClosestFreqs(1):ClosestFreqs(2)), ...
-                  'CData', 20*log10(abs(S(ClosestFreqs(1):ClosestFreqs(2),:))));
+                  'YData', TFFreqs, ...
+                  'CData', SdB);
     end
 end
 
 axis(Figure, 'xy');% correct orientation
 
 xlim(Figure,[TimeToPlot(1) TimeToPlot(end)])
-ylim(Figure,[FrequencyRange(1),FrequencyRange(2)]);
+ylim(Figure,[FrequencyRange(1),FrequencyRange(3)]);
 xlabel(Figure, PlotAppearance.LiveSpectrogramWindow.XLabel);
 ylabel(Figure, PlotAppearance.LiveSpectrogramWindow.YLabel);
 title(Figure, strcat(DataType," ",PlotAppearance.LiveSpectrogramWindow.Title," ",OriginalChannel));
 
-Currentmin = min(20*log10(abs(S)),[],'all');
-Currentmax = max(20*log10(abs(S)),[],'all');
+Currentmin = min(SdB(~isinf(SdB)),[],'all');
+Currentmax = max(SdB(~isinf(SdB)),[],'all');
 
 if ~isempty(CurrentClim)
     if LockCLim
@@ -124,7 +125,7 @@ end
 
 %% --------------- Handle Events ---------------
 if strcmp(PlotEvent,'Events')
-    Analyse_Main_Window_Plot_Events(Figure,Data,Time,EventsToShow,FrequencyRange(1),FrequencyRange(2),SampleRate,CurrentEventChannel)
+    Analyse_Main_Window_Plot_Events(Figure,Data,Time,EventsToShow,FrequencyRange(1),FrequencyRange(3),SampleRate,CurrentEventChannel)
 else
     Eventline_handles = findobj(Figure,'Type', 'line', 'Tag', 'Events');
     delete(Eventline_handles); 
@@ -132,7 +133,7 @@ end
 
 % Save data for export
 CurrentPlotData.LiveSpectroXData = TimeToPlot;
-CurrentPlotData.LiveSpectroYData = F;
-CurrentPlotData.LiveSpectroCData = 20*log10(abs(S));
+CurrentPlotData.LiveSpectroYData = TFFreqs;
+CurrentPlotData.LiveSpectroCData = 20*log10(abs(SdB));
 CurrentPlotData.LiveSpectroType = "Live Main Window Spectrogram";
 CurrentPlotData.LiveSpectroXTicks = Figure.XTickLabel;

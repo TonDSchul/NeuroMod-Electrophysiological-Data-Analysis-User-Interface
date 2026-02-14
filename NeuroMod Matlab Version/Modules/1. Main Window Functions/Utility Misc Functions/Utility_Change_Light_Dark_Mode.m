@@ -1020,11 +1020,8 @@ if strcmp(Window,"EventTF")
     app.EventandChannelSelectionPanel.BackgroundColor  = WindowBackgroundColor;
     app.EventandChannelSelectionPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.WaveletAnalysisParameterPanel_2.BackgroundColor  = WindowBackgroundColor;
-    app.WaveletAnalysisParameterPanel_2.ForegroundColor  = WindowBackgroundColor;
-
-    app.AnalysisTypePanel.BackgroundColor  = WindowBackgroundColor;
-    app.AnalysisTypePanel.ForegroundColor  = WindowBackgroundColor;
+    app.AnalysisParameterPanel.BackgroundColor  = WindowBackgroundColor;
+    app.AnalysisParameterPanel.ForegroundColor  = WindowBackgroundColor;
 
     app.DataToExtractFromDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.EventTriggerChannel.BackgroundColor  = ComponentsInWindowColor;
@@ -1039,9 +1036,12 @@ if strcmp(Window,"EventTF")
     app.EventNumberSelectionEditField_3.BackgroundColor = ComponentsInWindowColor;
 
     app.ClimminmaxEditField.BackgroundColor  = ComponentsInWindowColor;
-    app.WaveletTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.CycleWidthfromto23EditField.BackgroundColor  = ComponentsInWindowColor;
-    
+    app.DataSourceDropDown_3.BackgroundColor  = ComponentsInWindowColor;
+    app.DataSourceDropDown_2.BackgroundColor  = ComponentsInWindowColor;
+    app.SmoothingEditField_2.BackgroundColor  = ComponentsInWindowColor;
+
+    app.FrequencyRangeminmaxstepsEditField_2.BackgroundColor  = ComponentsInWindowColor;
 
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.TFWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
@@ -1320,6 +1320,10 @@ if strcmp(Window,'LiveSpectrogramWindow')
     
     app.TimeWindowfromtoinsEditField.BackgroundColor   = ComponentsInWindowColor;
 
+    app.SmoothingEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.FrequencyRangeminmaxstepsEditField.BackgroundColor   = ComponentsInWindowColor;
+    app.AnalysisTypeDropDown.BackgroundColor   = ComponentsInWindowColor;
+            
     app.UIAxes.Color  = app.Mainapp.PlotAppearance.LiveSpectrogramWindow.BackgroundColor;
     app.UIAxes.XColor = 'k';  
     app.UIAxes.YColor = 'k';  

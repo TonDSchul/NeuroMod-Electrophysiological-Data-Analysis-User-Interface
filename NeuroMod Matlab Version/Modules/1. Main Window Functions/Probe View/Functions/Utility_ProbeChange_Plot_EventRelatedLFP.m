@@ -104,36 +104,37 @@ if strcmp(Window,"EventSpectrum")
     end
 end
 
-if strcmp(Window,"TF")
-% Extract Cell with eventindicies of selected event channel
-    spaceindicie = find(app.Mainapp.Data.Info.EventRelatedDataTimeRange == ' ');
-    Timearoundevent(1) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)));
-    Timearoundevent(2) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
-    
-    [~,DataChannelSelected,EventNrRange,~,TF] = Event_Module_Organize_TF_Window_Inputs(app.Mainapp.Data,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.ActiveChannel,app.Mainapp.EventLFPTF.EventNumberSelectionEditField.Value,app.Mainapp.EventLFPTF.FrequencyRangeminmaxstepsEditField.Value,app.Mainapp.EventLFPTF.CycleWidthfromto23EditField.Value,[],[]);
-    
-    if strcmp(app.Mainapp.EventLFPTF.DataToExtractFromDropDown.Value,'Raw Data')                
-        if strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Raw Event Related Data")
-            [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
-        elseif strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Preprocessed Event Related Data")
-            [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.PreprocessedEventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
-        end
-    else
-        if isfield(app.Mainapp.Data.Info,"DownsampleFactor")
-            if strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Raw Event Related Data")
-                [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
-            elseif strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Preprocessed Event Related Data")
-                [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.PreprocessedEventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
-            end
-        else
-            if strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Raw Event Related Data")
-                [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
-            elseif strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Preprocessed Event Related Data")
-                [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.PreprocessedEventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
-            end
-        end
-    end
-end
+% if strcmp(Window,"TF")
+% % Extract Cell with eventindicies of selected event channel
+%     spaceindicie = find(app.Mainapp.Data.Info.EventRelatedDataTimeRange == ' ');
+%     Timearoundevent(1) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(1:spaceindicie(1)));
+%     Timearoundevent(2) = str2double(app.Mainapp.Data.Info.EventRelatedDataTimeRange(spaceindicie(1)+1:end));
+% 
+% 
+%     [~,DataChannelSelected,EventNrRange,~,TF] = Event_Module_Organize_TF_Window_Inputs(app.Mainapp.Data,app.Mainapp.EventLFPTF.DataSourceDropDown_2.Value,app.Mainapp.EventLFPTF.DataSourceDropDown_3.Value,app.Mainapp.ActiveChannel,app.Mainapp.EventLFPTF.EventNumberSelectionEditField.Value,app.Mainapp.EventLFPTF.FrequencyRangeminmaxstepsEditField.Value,app.Mainapp.EventLFPTF.CycleWidthfromto23EditField.Value,app.Mainapp.EventLFPTF.FrequencyRangeminmaxstepsEditField_2.Value,app.Mainapp.EventLFPTF.CoherencebetweenTrialsCheckBox.Value,app.Mainapp.EventLFPTF.CoherencebetweenChannelCheckBox.Value,app.Mainapp.EventLFPTF.SmoothingEditField_2.Value);
+% 
+%     if strcmp(app.Mainapp.EventLFPTF.DataToExtractFromDropDown.Value,'Raw Data')                
+%         if strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Raw Event Related Data")
+%             [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
+%         elseif strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Preprocessed Event Related Data")
+%             [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.PreprocessedEventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
+%         end
+%     else
+%         if isfield(app.Mainapp.Data.Info,"DownsampleFactor")
+%             if strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Raw Event Related Data")
+%                 [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
+%             elseif strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Preprocessed Event Related Data")
+%                 [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.PreprocessedEventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.DownsampledSampleRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
+%             end
+%         else
+%             if strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Raw Event Related Data")
+%                 [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
+%             elseif strcmp(app.Mainapp.EventLFPTF.DataSourceDropDown.Value,"Preprocessed Event Related Data")
+%                 [app.Mainapp.EventLFPTF.climsTF,app.Mainapp.CurrentPlotData] = Event_Module_Time_Frequency_Main(app.Mainapp.Data,app.Mainapp.Data.PreprocessedEventRelatedData,app.Mainapp.EventLFPTF.UIAxes,app.Mainapp.Data.Info.NativeSamplingRate,DataChannelSelected,EventNrRange,app.Mainapp.EventLFPTF.TFInfos.Timearoundevent,TF,app.Mainapp.EventLFPTF.TFInfos.PlottedData,app.Mainapp.EventLFPTF.TFInfos.Addons,app.Mainapp.EventLFPTF.WaveletTypeDropDown.Value,app.Mainapp.EventLFPTF.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPTF.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPTF.EventNumberSelectionEditField_3.Value);
+%             end
+%         end
+%     end
+% end
 
 if strcmp(Window,"PhaseSync")
 

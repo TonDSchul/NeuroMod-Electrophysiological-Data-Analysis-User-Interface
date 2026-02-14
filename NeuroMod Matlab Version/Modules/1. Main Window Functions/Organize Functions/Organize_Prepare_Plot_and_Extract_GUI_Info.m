@@ -623,9 +623,22 @@ if isprop(app.LiveSpectrogramApp,'ExistflagLiveSpectogram')
                     [a,b,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveSpectrogramApp.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"Spectrogram",app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Value);
                 end
             end
-
-            [app.LiveSpectrogramApp.CurrentClim,app.CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram2(app.Data,TempDatatoPlot,EventData,app.LiveSpectrogramApp.ChannelToPlotDropDown.Value,app.LiveSpectrogramApp.WindowsEditField.Value,app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Value,app.LiveSpectrogramApp.LockCLimCheckBox.Value,app.LiveSpectrogramApp.DataTypeDropDown.Value,app.LiveSpectrogramApp.CurrentClim,app.LiveSpectrogramApp.UIAxes,TempSamplefrequency,app.PlotAppearance,TempTime,app.CurrentEventChannel,EventPlot,app.CurrentPlotData,app.LiveSpectrogramApp.TwoORThreeD);
             
+            if strcmp(app.LiveSpectrogramApp.AnalysisTypeDropDown.Value,"Single Channel ERP Spectogram")
+                [app.LiveSpectrogramApp.CurrentClim,app.CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram2(app.Data,TempDatatoPlot,EventData,app.LiveSpectrogramApp.ChannelToPlotDropDown.Value,app.LiveSpectrogramApp.WindowsEditField.Value,app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Value,app.LiveSpectrogramApp.LockCLimCheckBox.Value,app.LiveSpectrogramApp.DataTypeDropDown.Value,app.LiveSpectrogramApp.CurrentClim,app.LiveSpectrogramApp.UIAxes,TempSamplefrequency,app.PlotAppearance,TempTime,app.CurrentEventChannel,EventPlot,app.CurrentPlotData,app.LiveSpectrogramApp.TwoORThreeD);
+            else
+                TF.AnalysisType = app.LiveSpectrogramApp.AnalysisTypeDropDown.Value;
+                TF.ChannelTriggerToCompare = str2double(strsplit(app.LiveSpectrogramApp.FrequencyRangeminmaxstepsEditField.Value,','));
+                TF.NumScales = str2double(app.LiveSpectrogramApp.SmoothingEditField.Value);
+                %% Get Info of Wavelet Cycles from GUI
+                TF.SingleChannelSelected = str2double(app.LiveSpectrogramApp.ChannelToPlotDropDown.Value);
+                
+                % Get Info of Frequency Range from GUI
+                TF.FreqRange = str2double(strsplit(app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Value,','));
+                
+                [app.LiveSpectrogramApp.CurrentClim,app.CurrentPlotData] = Analyse_Main_Window_Wavelet_Coherence(app.Data,TempDatatoPlot(TF.ChannelTriggerToCompare(1),:),TempDatatoPlot(TF.ChannelTriggerToCompare(2),:),TF,app.LiveSpectrogramApp.CurrentClim,app.LiveSpectrogramApp.UIAxes,TempSamplefrequency,app.PlotAppearance,TempTime,app.CurrentPlotData,app.LiveSpectrogramApp.TwoORThreeD,EventPlot,EventData,app.CurrentEventChannel,StartIndex);
+            end
+
             clear TempDatatoPlot TempTime TempSamplefrequency
         end
     end

@@ -63,7 +63,7 @@ end
 
 if sum(EventIndicies) > 0
     Eventline_handles = findobj(Figure,'Type', 'line', 'Tag', 'Events');
-
+    
     %% Plot events
     if length(Eventline_handles) > sum(EventIndicies)
         delete(Eventline_handles(sum(EventIndicies)+1:end)); 
@@ -75,6 +75,14 @@ if sum(EventIndicies) > 0
         eventTimes = Time(EventIndicies == 1);
         numEvents = length(eventTimes);
         
+        % if present its wavelet coherence in live spectro --> minus Time(1)
+        % because plot there cant show real time
+        Quiverline_handles = findobj(Figure,'Type', 'quiver');
+        if ~isempty(Quiverline_handles)
+            eventTimes = eventTimes-Time(1);
+            MinValue = MinValue-1;
+        end
+
         % Prepare xData and yData without redundant calculations
         xData = [eventTimes; eventTimes];
         yData = [MinValue; MaxValue];
@@ -87,6 +95,14 @@ if sum(EventIndicies) > 0
         % Pre-calculate values used multiple times
         eventTimes = Time(EventIndicies == 1);
         numEvents = length(eventTimes);
+
+        % if present its wavelet coherence in live spectro --> minus Time(1)
+        % because plot there cant show real time
+        Quiverline_handles = findobj(Figure,'Type', 'quiver');
+        if ~isempty(Quiverline_handles)
+            eventTimes = eventTimes-Time(1);
+        end
+
         % Number of existing lines
         numHandles = length(Eventline_handles);
         
