@@ -216,7 +216,7 @@ if Activated
     if strcmp(Window,"ConStaticSpectrum") || strcmp(Window,"All")
         if ~isempty(app.ContStaticSpectrumWindow) && isvalid(app.ContStaticSpectrumWindow)
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
-            app.ContStaticSpectrumWindow.AnalysisDropDown.Tooltip = "Change the type of analysis shown. 'Band Power Individual Channel' shows the pwelch spectrum for a single channel (or mean over all data channel), while 'Band Power over Depth' shows the pwelch spectrum over all data channel.";
+        
             app.ContStaticSpectrumWindow.ChannelDropDown.Tooltip = "Change the channel for which the spectrum is shown. This is only enable when 'Band Power Individual Channel' is selected as analysis type. When spectrum over depth is plotted, channel selection in the 'Probe View window is applied!'";
             app.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Tooltip = "Change frequency range for which spectrum is shown. Format [1,100] for 1 to 100Hz.";
 
@@ -342,7 +342,6 @@ if Activated
             app.EventLFPSSP.EventNumberSelectionEditField_2.Tooltip = "Info field showing the total number of trigger for the currently selected trigger channel.";
             
             app.EventLFPSSP.EventSelectionEditField.Tooltip = "Specify trigger (trials) over which the ERP is computed to compute the static spectrum.";
-            app.EventLFPSSP.AnalysisDropDown.Tooltip = "Change the type of analysis shown. 'Band Power Individual Channel' shows the pwelch spectrum for a single channel (or mean over all data channel), while 'Band Power over Depth' shows the pwelch spectrum over all data channel.";
             app.EventLFPSSP.ChannelDropDown.Tooltip = "Change the channel for which the spectrum is shown. This is only enable when 'Band Power Individual Channel' is selected as analysis type. When spectrum over depth is plotted, channel selection in the 'Probe View window is applied!'";
             app.EventLFPSSP.FrequencyRangeHzEditField.Tooltip = "Change frequency range for which spectrum is shown. Format [1,100] for 1 to 100Hz.";
 
@@ -832,7 +831,6 @@ else %% Not activated
     if strcmp(Window,"ConStaticSpectrum") || strcmp(Window,"All")
         if ~isempty(app.ContStaticSpectrumWindow) && isvalid(app.ContStaticSpectrumWindow)
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "";
-            app.ContStaticSpectrumWindow.AnalysisDropDown.Tooltip = "";
             app.ContStaticSpectrumWindow.ChannelDropDown.Tooltip = "";
             app.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Tooltip = "";
 
@@ -944,7 +942,6 @@ else %% Not activated
             app.EventLFPSSP.EventTriggerChannel.Tooltip = "";
     
             app.EventLFPSSP.EventSelectionEditField.Tooltip = "";
-            app.EventLFPSSP.AnalysisDropDown.Tooltip = "";
             app.EventLFPSSP.ChannelDropDown.Tooltip = "";
             app.EventLFPSSP.FrequencyRangeHzEditField.Tooltip = "";
     

@@ -42,7 +42,7 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 %% Note: Those header infos HAVE to be present! Othwerwise Aurorun Manager wont work properly
 % What to execute
 
-AutorunConfig.FunctionOrder = ["Load_Data","Static_Power_Spectrum"];
+AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Extract_Events","Event_Analysis_ERP","Export_Analysis_Results"];
 
 % Whether true relations between active channel are display in analysis
 % plots. This becomes relevant when you have inactive channel islands
@@ -265,17 +265,13 @@ AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related D
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
 AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'DIN-04'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or matlab expressions as a char, like '1:10' or '[1,5,7,9]'
-AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
-
 AutorunConfig.AnalyseEventDataModule.BaselineNormalize = 0; % either 0 to not baseline normalize or 1 to do so.
 AutorunConfig.AnalyseEventDataModule.BaselineWindow = '-0.2,0'; % start and stop time in seconds to use as baseline window. char, like '-0.2,0' to use 200ms pretrigger period as baseline
 
 % ERP Settings
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
-AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '1'; % How much is CSD data smoothed in time and space domain? Format: Char
-
-AutorunConfig.AnalyseEventDataModule.ERPPlotType = "IndividualLines"; % how to visualize results. "IndividualLines" for the classic channel wise data plot only one supported so far
-
+AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '1'; % Which channel to analyze on top of the ERP analysis plot?
+AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'Grid Lines'; % Either 'ImageSC' OR 'Lines' OR 'Grid Lines' OR 'Grid Color' to set plot type
 % CSD Settings
 AutorunConfig.AnalyseEventDataModule.CSDHammWindow = '5'; % How much is CSD data smoothed in time and space domain? Format: Char
 AutorunConfig.AnalyseEventDataModule.tempcolorMap = "parula"; 
@@ -285,11 +281,17 @@ AutorunConfig.AnalyseEventDataModule.SpectrumDataType = "Channel Individually"; 
 AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange = '0,500'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
 AutorunConfig.AnalyseEventDataModule.SpectrumChannel = '1'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 % Time Freqency Power Settings
-AutorunConfig.AnalyseEventDataModule.TFFrequencyRange = '2,120,120'; % Frequency range being displayed, input as char in the format: Lowest Frequency, Highest Frequency, Steps
-AutorunConfig.AnalyseEventDataModule.TFChannelSelection = '10'; % char, channel to show the Time freuency power plot for
-AutorunConfig.AnalyseEventDataModule.TFCycleWidth = '5,9'; % Cycle width as char in format : Lowest Width, Highest Width
-AutorunConfig.AnalyseEventDataModule.TFPlotType = ["TF","ITPC"]; % 'Time Frequency' OR 'Intertrial Phase Clustering'; If just one: format is char!
-AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonPhaseLocked"]; % 'Phase independent' OR 'Phase locked' OR 'Non-phase locked'; If just one: format is char!
+%% NOTE: FOR WAVELET COHERENCE, Frequency range only allowed with up to 32 steps. Not more!
+AutorunConfig.AnalyseEventDataModule.TFFrequencyRange = '1,32,32'; % Frequency range being displayed, input as char in the format: Lowest Frequency, Steps, Highest Frequency. The more steps the more resolution in frequency domain. For wavelet coherence it cant be bigger than 32 (equal to VoicesPerOctave parameter)!
+AutorunConfig.AnalyseEventDataModule.TFChannelSelection = '1'; % char, channel to show the Time freuency power plot for
+AutorunConfig.AnalyseEventDataModule.WindowSize = '100'; % char, Window size in samples for TF analysis. Has to be smaller than all samples in analysed data
+AutorunConfig.AnalyseEventDataModule.CoherenceSmoothing = '9';% char, determines smoothing of wavelet coherence plot. Equal to NR of scales parameter
+
+AutorunConfig.AnalyseEventDataModule.CoherenceAnalysis = "Channel To Compare"; % char, either "Channel To Compare" or "Trigger To Compare"
+AutorunConfig.AnalyseEventDataModule.ChannelTriggerToCompare = "1,2"; % string with comma separated trials or channel to compare depending on what is selcted above
+
+AutorunConfig.AnalyseEventDataModule.TFPlotType = ["Single Channel ERP Spectogram","Time Varying Wavelet Coherence"]; % char or string array for multiple; 'Classic TF' OR 'Wavelet Coherence'; 
+
 %% 4.5 Analyse event related spikes
 %______________________________________________________________________________________________________
 % Standard Settings

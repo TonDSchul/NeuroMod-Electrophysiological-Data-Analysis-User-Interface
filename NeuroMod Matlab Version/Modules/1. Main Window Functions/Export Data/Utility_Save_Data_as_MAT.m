@@ -209,44 +209,79 @@ if contains(Analysis,"Plot") && ~contains(Analysis,"Spectrogram")
 
 end
 
-if contains(Analysis,"Event Related") || contains(Analysis,"Current")
-
-    if contains(Analysis,"Potential") && contains(Analysis,"Events")
-        DataToSave.ERPoverEventsType =  PlottedData.ERPoverEventsType;
-        DataToSave.ERPoverEventsXData =  PlottedData.ERPoverEventsXData;
-        DataToSave.ERPoverEventsYData =  PlottedData.ERPoverEventsYData;
-        %No CData
-        DataToSave.ERPoverEventsXTicks =  PlottedData.ERPoverEventsXTicks;
+if contains(Analysis,"Event Related") || contains(Analysis,"Current") 
+    if ~contains(Analysis,"ERP Spectogram") && ~contains(Analysis,"Time Varying Wavelet Coherence") && ~contains(Analysis,"Grid")
+        if contains(Analysis,"Potential") && contains(Analysis,"Events")
+            DataToSave.ERPoverEventsType =  PlottedData.ERPoverEventsType;
+            DataToSave.ERPoverEventsXData =  PlottedData.ERPoverEventsXData;
+            DataToSave.ERPoverEventsYData =  PlottedData.ERPoverEventsYData;
+            %No CData
+            DataToSave.ERPoverEventsXTicks =  PlottedData.ERPoverEventsXTicks;
+        
+        elseif contains(Analysis,"Potential") && contains(Analysis,"Channel") && ~contains(Analysis,"Spectrum")
+            DataToSave.ERPoverChannelType =  PlottedData.ERPoverChannelType;
+            DataToSave.ERPoverChannelXData =  PlottedData.ERPoverChannelXData;
+            DataToSave.ERPoverChannelYData =  PlottedData.ERPoverChannelYData;
+            %No CData
+            DataToSave.ERPoverChannelXTicks =  PlottedData.ERPoverChannelXTicks;
     
-    elseif contains(Analysis,"Potential") && contains(Analysis,"Channel")
-        DataToSave.ERPoverChannelType =  PlottedData.ERPoverChannelType;
-        DataToSave.ERPoverChannelXData =  PlottedData.ERPoverChannelXData;
-        DataToSave.ERPoverChannelYData =  PlottedData.ERPoverChannelYData;
-        %No CData
-        DataToSave.ERPoverChannelXTicks =  PlottedData.ERPoverChannelXTicks;
-
-    elseif contains(Analysis,"Current")
-        DataToSave.CSDType =  PlottedData.CSDType;
-        DataToSave.CSDXData =  PlottedData.CSDXData;
-        DataToSave.CSDYData =  PlottedData.CSDYData;
-        DataToSave.CSDCData =  PlottedData.CSDCData;
-        DataToSave.CSDXTicks =  PlottedData.CSDXTicks;
-    elseif contains(Analysis,"Static Spectrum Individual Channel")
-        DataToSave.CSDType =  PlottedData.EventSpectrumType;
-        DataToSave.CSDXData =  PlottedData.EventSpectrumXData;
-        DataToSave.CSDYData =  PlottedData.EventSpectrumYData;
-        % DataToSave.CSDCData =  PlottedData.CSDCData;
-        DataToSave.CSDXTicks =  PlottedData.EventSpectrumXTicks;
-    elseif contains(Analysis,"Static Spectrum over Depth")
-        DataToSave.CSDType =  PlottedData.EventSpectrumDepthType;
-        DataToSave.CSDXData =  PlottedData.EventSpectrumDepthXData;
-        DataToSave.CSDYData =  PlottedData.EventSpectrumDepthYData;
-        DataToSave.CSDCData =  PlottedData.EventSpectrumDepthCData;
-        DataToSave.CSDXTicks =  PlottedData.EventSpectrumDepthXTicks;
+        elseif contains(Analysis,"Current")
+            DataToSave.CSDType =  PlottedData.CSDType;
+            DataToSave.CSDXData =  PlottedData.CSDXData;
+            DataToSave.CSDYData =  PlottedData.CSDYData;
+            DataToSave.CSDCData =  PlottedData.CSDCData;
+            DataToSave.CSDXTicks =  PlottedData.CSDXTicks;
+        elseif contains(Analysis,"Static Spectrum Individual Channel")
+            DataToSave.CSDType =  PlottedData.EventSpectrumType;
+            DataToSave.CSDXData =  PlottedData.EventSpectrumXData;
+            DataToSave.CSDYData =  PlottedData.EventSpectrumYData;
+            % DataToSave.CSDCData =  PlottedData.CSDCData;
+            DataToSave.CSDXTicks =  PlottedData.EventSpectrumXTicks;
+        elseif contains(Analysis,"Static Spectrum over Depth")
+            DataToSave.CSDType =  PlottedData.EventSpectrumDepthType;
+            DataToSave.CSDXData =  PlottedData.EventSpectrumDepthXData;
+            DataToSave.CSDYData =  PlottedData.EventSpectrumDepthYData;
+            DataToSave.CSDCData =  PlottedData.EventSpectrumDepthCData;
+            DataToSave.CSDXTicks =  PlottedData.EventSpectrumDepthXTicks;
+        end
+    end
+    %% ERP GRID STUFF
+    if contains(Analysis,"Grid")
+        if contains(Analysis,"Potential")
+            DataToSave.ERPoverEventsType =  PlottedData.ERPGridType;
+            DataToSave.ERPoverEventsXData =  PlottedData.ERPGridXData;
+            DataToSave.ERPoverEventsYData =  PlottedData.ERPGridYData;
+            %No CData
+            DataToSave.ERPoverEventsXTicks =  PlottedData.ERPGridXTicks;
+        elseif contains(Analysis,"Event Related Spectrum over Grid")
+            DataToSave.ERPoverEventsType =  PlottedData.SpectrumGridType;
+            DataToSave.ERPoverEventsXData =  PlottedData.SpectrumGridXData;
+            DataToSave.ERPoverEventsYData =  PlottedData.SpectrumGridYData;
+            %No CData
+            DataToSave.ERPoverEventsXTicks =  PlottedData.SpectrumGridXTicks;
+        elseif contains(Analysis,"Current")
+            DataToSave.CSDType =  PlottedData.CSDType;
+            DataToSave.CSDXData =  PlottedData.CSDXData;
+            DataToSave.CSDYData =  PlottedData.CSDYData;
+            DataToSave.CSDCData =  PlottedData.CSDCData;
+            DataToSave.CSDXTicks =  PlottedData.CSDXTicks;
+        elseif contains(Analysis,"Static Spectrum Individual Channel")
+            DataToSave.CSDType =  PlottedData.EventSpectrumType;
+            DataToSave.CSDXData =  PlottedData.EventSpectrumXData;
+            DataToSave.CSDYData =  PlottedData.EventSpectrumYData;
+            % DataToSave.CSDCData =  PlottedData.CSDCData;
+            DataToSave.CSDXTicks =  PlottedData.EventSpectrumXTicks;
+        elseif contains(Analysis,"Static Spectrum over Depth")
+            DataToSave.CSDType =  PlottedData.EventSpectrumDepthType;
+            DataToSave.CSDXData =  PlottedData.EventSpectrumDepthXData;
+            DataToSave.CSDYData =  PlottedData.EventSpectrumDepthYData;
+            DataToSave.CSDCData =  PlottedData.EventSpectrumDepthCData;
+            DataToSave.CSDXTicks =  PlottedData.EventSpectrumDepthXTicks;
+        end
     end
 end
 
-if contains(Analysis,"Phase") && ~ contains(Analysis,"Instantaneous")
+if contains(Analysis,"Phase") && ~ contains(Analysis,"Instantaneous") || contains(Analysis,"ERP Spectogram") || contains(Analysis,"Time Varying Wavelet Coherence")
     DataToSave.TFPowerType =  PlottedData.TFPowerType;
     DataToSave.TFPowerXData =  PlottedData.TFPowerXData;
     DataToSave.TFPowerYData =  PlottedData.TFPowerYData;
@@ -255,3 +290,4 @@ if contains(Analysis,"Phase") && ~ contains(Analysis,"Instantaneous")
 end
 
 save(Fullsavefile,"DataToSave");
+

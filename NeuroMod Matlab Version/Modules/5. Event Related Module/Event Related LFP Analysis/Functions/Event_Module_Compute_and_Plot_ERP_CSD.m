@@ -220,7 +220,7 @@ else
     % Add legend only once
     if isempty(findobj(Figure, 'Type', 'legend'))
         % Create legend with imagesc and event line
-        legendHandle = legend(eventLine, {'Trigger'});
+        legendHandle = legend(eventLine, {'Event Trigger'});
         set(legendHandle, 'HandleVisibility', 'off');
     end
 

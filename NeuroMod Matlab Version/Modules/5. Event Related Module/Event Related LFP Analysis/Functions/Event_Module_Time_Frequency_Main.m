@@ -1,4 +1,4 @@
-function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,EventRelatedData,Figure,SampleRate,TimearoundEvent,TF,Window,TwoORThreeD,CurrentPlotData,PlotAppearance,BaselineNormalize,NormalizationWindow)
+function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,DataType,EventDataType,Figure,TF,Window,TwoORThreeD,CurrentPlotData,PlotAppearance,BaselineNormalize,NormalizationWindow)
 
 %________________________________________________________________________________________
 %% Main Function to call correct TF analysis and plotting functions with correct event related data portion based on input in app window
@@ -46,6 +46,34 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,Event
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
+if strcmp(DataType,'Raw Data')    
+    SampleRate = Data.Info.NativeSamplingRate;
+
+    if strcmp(EventDataType,"Raw Event Related Data")
+        EventRelatedData = Data.EventRelatedData;
+    elseif strcmp(EventDataType,"Preprocessed Event Related Data")
+        EventRelatedData = Data.PreprocessedEventRelatedData;
+    end
+else
+    if isfield(Data.Info,"DownsampleFactor")
+        SampleRate = Data.Info.DownsampledSampleRate;
+
+        if strcmp(EventDataType,"Raw Event Related Data")
+            EventRelatedData = Data.EventRelatedData;
+        elseif strcmp(EventDataType,"Preprocessed Event Related Data")
+            EventRelatedData = Data.PreprocessedEventRelatedData;
+        end
+    else
+        SampleRate = Data.Info.NativeSamplingRate;
+
+        if strcmp(EventDataType,"Raw Event Related Data")
+            EventRelatedData = Data.EventRelatedData;
+        elseif strcmp(EventDataType,"Preprocessed Event Related Data")
+            EventRelatedData = Data.PreprocessedEventRelatedData;
+        end
+    end
+end
+
 %% Get data
 if strcmp(TF.AnalysisType,'Single Channel ERP Spectogram')
     EventRelatedData = squeeze(EventRelatedData(TF.SingleChannelSelected,TF.EventNrRange,:));
@@ -58,7 +86,6 @@ if strcmp(TF.AnalysisType,'Single Channel ERP Spectogram')
     end
 
 else
-%elseif strcmp(TF.AnalysisType,'Time Varying Wavelet Coherence')
     if TF.ChannelTriggerToCompareType(1)==1 %1 = trigger
         % trigger 1
         EventRelatedData1 = squeeze(EventRelatedData(TF.SingleChannelSelected,TF.ChannelTriggerToCompare(1),:));
@@ -94,8 +121,8 @@ else
             EventRelatedData2 = mean(EventRelatedData2,1);
         end
     end
-
 end
+
 
 %% Call respective function
 if strcmp(TF.AnalysisType,'Time Varying Wavelet Coherence')
@@ -107,13 +134,29 @@ elseif strcmp(TF.AnalysisType,'Wavelet Coherence')
 elseif strcmp(TF.AnalysisType,'Single Channel ERP Spectogram')
     [climsTF,CurrentPlotData] = Event_Module_Spectrogram2(Data,EventRelatedData,Window,BaselineNormalize,NormalizationWindow,TF,[],Figure,SampleRate,PlotAppearance,Data.Info.EventRelatedTime,CurrentPlotData,TwoORThreeD);
 end
-
-
-
-
-
-
-
+ 
+% if ~strcmp(PlotAppearance.TFWindow.PlotType,"OverFrequencies")
+% 
+%     CurrentPlotData.TFPowerXData;
+%     CurrentPlotData.TFPowerYData;
+%     CurrentPlotData.TFPowerCData;
+% 
+% 
+%     Freqs = str2double(strsplit(app.FrequencyRangeHzEditField.Value,','));
+%     [~,FreqsIndicie(1)] = min(abs(app.BandPower.F - Freqs(1)));
+%     [~,FreqsIndicie(2)] = min(abs(app.BandPower.F - Freqs(2)));
+% 
+%     EventRelatedSpectrum = app.BandPower.allPowerEst(:,FreqsIndicie(1):FreqsIndicie(2));
+% 
+%     [Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.Mainapp.ActiveChannel,'MainPlot');
+%     EventRelatedSpectrum = EventRelatedSpectrum(Channelrange,:);
+% 
+%     Ylims = [min(EventRelatedSpectrum,[],'all') max(EventRelatedSpectrum,[],'all')];
+% 
+%     % EventRelatedData is channel by time
+%     Module_Main_Window_Plot_Grid_Trace_View(app,app.Mainapp.Data,EventRelatedSpectrum,app.BandPower.F(FreqsIndicie(1):FreqsIndicie(2))',0,app.Mainapp.PlotAppearance,app.Mainapp.ActiveChannel,app.Mainapp.PreservePlotChannelLocations,[],app.Mainapp.PlotAppearance.SpectrumWindow.GridPlotType,0,Ylims);
+% 
+% end
 
 %[CurrentClim,CurrentPlotData] = Analyse_Main_Window_Event_Spectrogram2(Data,DataToShow,EventsToShow,ChannelToPlot,Window,FrequencyRange,LockCLim,DataType,CurrentClim,Figure,SampleRate,PlotAppearance,Time,CurrentEventChannel,PlotEvent,CurrentPlotData,TwoORThreeD);
 

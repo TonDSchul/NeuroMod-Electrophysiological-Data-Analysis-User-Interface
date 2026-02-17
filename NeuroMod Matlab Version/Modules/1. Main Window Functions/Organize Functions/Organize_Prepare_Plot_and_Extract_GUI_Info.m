@@ -284,7 +284,7 @@ if MainPlot && JustLiveWindow == 0
     else % if individual subplot data lines in a grid
         % initialize panel 
         if isempty(app.ChannelAxes)
-            app = Module_MainWindow_Initialize_Grid_Trace_Panel(app);
+            app = Module_MainWindow_Initialize_Grid_Trace_Panel(app,app,"MainWindow");
         end
 
         if ~isempty(app.ChannelAxes)
@@ -293,15 +293,15 @@ if MainPlot && JustLiveWindow == 0
                 if isfield(app.Data.Info,'DownsampleFactor') 
                     app.LastPlot = "Preprocessed";
                     
-                    app.YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1,app.YlimMaxVlaues);
+                    [app.YlimMaxVlaues,app.CurrentPlotData] = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.TimeDownsampled(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,"MainPlot",1,[min(PlotData,[],"all") max(PlotData,[],"all")],app.CurrentPlotData);
                 else
                     app.LastPlot = "Preprocessed";
-                    app.YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1,app.YlimMaxVlaues);
+                    [app.YlimMaxVlaues,app.CurrentPlotData] = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,"MainPlot",1,[min(PlotData,[],"all") max(PlotData,[],"all")],app.CurrentPlotData);
                 end
             elseif strcmp(app.DropDown.Value,'Raw Data')
                 app.UIAxes.Title.String = 'Raw Data';
                 app.LastPlot = "Raw";
-                app.YlimMaxVlaues = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,[],1,app.YlimMaxVlaues);
+                [app.YlimMaxVlaues,app.CurrentPlotData] = Module_Main_Window_Plot_Grid_Trace_View(app,app.Data,PlotData,app.Data.Time(StartIndex:StopIndex),0,app.PlotAppearance,app.ActiveChannel,PreserveChannelSpacing,SpikeData,"MainPlot",1,[min(PlotData,[],"all") max(PlotData,[],"all")],app.CurrentPlotData);
             end
         end
         

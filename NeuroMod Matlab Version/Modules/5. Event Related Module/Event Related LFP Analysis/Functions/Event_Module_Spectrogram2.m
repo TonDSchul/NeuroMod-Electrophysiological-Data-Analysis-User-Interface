@@ -53,6 +53,10 @@ Freqs = linspace(TF.FreqRange(1),TF.FreqRange(3),TF.FreqRange(2));
 SPower = abs(Magni).^2;
 SdB = 10*log10(SPower + eps); % in db
 
+if length(TFTime)==1
+    warning("Window very big! Only one time point in spectrogram is plotted. If you want higher temporal resolution, decrease window length.")
+end
+
 TimeToPlot = linspace(Time(1), Time(end), length(TFTime));
 
 %% Baseline Norm.

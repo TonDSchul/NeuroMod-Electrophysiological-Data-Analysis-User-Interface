@@ -66,13 +66,21 @@ if contains(CurrentAnalysisWindow,"Continuous Unit")
     end
 end
 
-if contains(CurrentAnalysisWindow,"Event ERP")  
+if contains(CurrentAnalysisWindow,"Event ERP") && ~contains(CurrentAnalysisWindow,"Grid") 
     TimeRangePlot = Data.Info.EventRelatedDataTimeRange(end);
     StartTime = 0;
     
     Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format, executableFolder,TimeRangePlot,StartTime,"Event Related Potential over Events",1);
     Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format, executableFolder,TimeRangePlot,StartTime,"Event Related Potential over Channel",1);
 end
+
+if contains(CurrentAnalysisWindow,"Event ERP") && contains(CurrentAnalysisWindow,"Grid") 
+    TimeRangePlot = Data.Info.EventRelatedDataTimeRange(end);
+    StartTime = 0;
+    
+    Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format, executableFolder,TimeRangePlot,StartTime,"Event Related Potential over Grid",1);
+end
+
 
 if contains(CurrentAnalysisWindow,"Event CSD")  
     TimeRangePlot = Data.Info.EventRelatedDataTimeRange(end);
@@ -101,19 +109,15 @@ if contains(CurrentAnalysisWindow,"Event TF")
              
     StartTime = 0;
     
-    if ~contains(PlotMethods(1),"ITPC")
-        AddonName = "Time Frequency Power";
+    if contains(PlotMethods,"Single Channel ERP Spectogram")
+        AddonName = "Event Related Single Channel ERP Spectogram";
     else
-        AddonName = "Intertrial Phase Clustering";
+        AddonName = strcat("Event Related Time Varying Wavelet Coherence"," ",AutorunConfig.AnalyseEventDataModule.CoherenceAnalysis);
     end
     
-    if contains(PlotMethods(2),"Total")
-        AddonName = strcat("Phase Independent ",AddonName);
-    elseif contains(PlotMethods(2),"PhaseLocked") && ~contains(PlotMethods(2),"NonPhaseLocked")
-        AddonName = strcat("Phase Locked ",AddonName);
-    elseif contains(PlotMethods(2),"NonPhaseLocked")
-        AddonName = strcat("Non Phase Locked ",AddonName);
-    end
+    % if contains(PlotMethods(1),"Time Varying")
+    %     AddonName = strcat(AddonName," ",AutorunConfig.AnalyseEventDataModule.CoherenceAnalysis);
+    % end
 
     Utility_Get_Plot_Data(CurrentPlotData,Data,AutorunConfig.Export.Format,executableFolder,TimeRangePlot,StartTime,AddonName,1);
 

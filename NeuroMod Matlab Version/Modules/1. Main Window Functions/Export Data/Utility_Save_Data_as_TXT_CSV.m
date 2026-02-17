@@ -511,11 +511,22 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
     if contains(Analysis,"Potential") && contains(Analysis,"Events")
         TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.ERPoverEventsType) ' *****'];
         XData = PlottedData.ERPoverEventsXData;
-        YData = PlottedData.ERPoverEventsYData;
+        YData = [];
         XTick = PlottedData.ERPoverEventsXTicks;
-        CData = YData';
+        CData = PlottedData.ERPoverEventsYData';
         % No CData
-        
+    elseif contains(Analysis,"Grid") && ~contains(Analysis,"Spectrum")
+        TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.ERPGridType) ' *****'];
+        XData = PlottedData.ERPGridXData;
+        YData = [];
+        XTick = PlottedData.ERPGridXTicks;
+        CData = PlottedData.ERPGridYData';
+    elseif contains(Analysis,"Grid") && contains(Analysis,"Spectrum")
+        TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.SpectrumGridType) ' *****'];
+        XData = PlottedData.SpectrumGridXData;
+        YData = [];
+        XTick = PlottedData.SpectrumGridXTicks;
+        CData = PlottedData.SpectrumGridYData';
     elseif contains(Analysis,"Potential") && contains(Analysis,"Channel")
         TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.ERPoverChannelType) ' *****'];
         XData = PlottedData.ERPoverChannelXData;
@@ -574,7 +585,9 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         else
             valStr = '<non-displayable>';
         end
-        TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+        if any(size(valStr,1:2) == 1) && all(size(valStr,1:2) < 1000)
+            TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+        end
     end
     
     TextInfos{end+1} = '';
@@ -605,10 +618,14 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         elseif contains(Analysis,"Time Frequency Power")
             fprintf(fid, '\n***** Time x Frequency Matrix (each new line is a new row, column entries for a row are comma separated!) *****\n');
         else
-            if size(PlottedData.CData,1)>size(PlottedData.CData,2)
-                fprintf(fid, '\n***** C_Data Matrix (Channel x Time) (each new line is a new row, column entries for a row are comma separated!) *****\n');
+            if contains(Analysis,"Grid")
+                fprintf(fid, '\n*****  Grid Data Matrix. Each excel sheet row is a probe column and contains data of all probe rows. In the Grid Plot, rows are demarcated using plotted lines after as many samples as one ERP takes (see event related time and sample frequency). *****\n');
             else
-                fprintf(fid, '\n***** C_Data Matrix (Time x Channel) (each new line is a new row, column entries for a row are comma separated!) *****\n');
+                if size(PlottedData.CData,1)>size(PlottedData.CData,2)
+                    fprintf(fid, '\n***** C_Data Matrix (Channel x Time) (each new line is a new row, column entries for a row are comma separated!) *****\n');
+                else
+                    fprintf(fid, '\n***** C_Data Matrix (Time x Channel) (each new line is a new row, column entries for a row are comma separated!) *****\n');
+                end
             end
         end
         

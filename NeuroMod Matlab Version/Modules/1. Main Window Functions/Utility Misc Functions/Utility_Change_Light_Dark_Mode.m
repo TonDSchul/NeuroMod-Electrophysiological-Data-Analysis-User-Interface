@@ -605,7 +605,6 @@ if strcmp(Window,"ContSpectrum")
     app.TextArea_2.BackgroundColor  = WindowBackgroundColor;
     
 
-    app.AnalysisDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.ChannelDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.FrequencyRangeHzEditField_2.BackgroundColor  = ComponentsInWindowColor;
     app.FrequencyRangeHzEditField.BackgroundColor  = ComponentsInWindowColor;
@@ -1076,7 +1075,6 @@ if strcmp(Window,"EventSpectrum")
     app.AnalysisSettingsPanel.BackgroundColor  = WindowBackgroundColor;
     app.AnalysisSettingsPanel.ForegroundColor  = WindowBackgroundColor;
 
-    app.AnalysisDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.ChannelDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.DataTypeDropDown.BackgroundColor  = ComponentsInWindowColor;
     app.FrequencyRangeHzEditField.BackgroundColor  = ComponentsInWindowColor;

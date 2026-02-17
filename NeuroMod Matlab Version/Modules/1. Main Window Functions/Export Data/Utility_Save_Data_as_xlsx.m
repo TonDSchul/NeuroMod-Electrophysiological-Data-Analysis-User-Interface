@@ -436,11 +436,22 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
     if contains(Analysis,"Potential") && contains(Analysis,"Events")
         TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.ERPoverEventsType) ' *****'];
         XData = PlottedData.ERPoverEventsXData;
-        YData = PlottedData.ERPoverEventsYData;
+        YData = NaN(size(XData));
         XTick = PlottedData.ERPoverEventsXTicks;
-        CData = YData';
+        CData = PlottedData.ERPoverEventsYData';
         % No CData
-        
+    elseif contains(Analysis,"Grid") && ~contains(Analysis,"Spectrum")
+        TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.ERPGridType) ' *****'];
+        XData = PlottedData.ERPGridXData;
+        YData = NaN(size(XData));
+        XTick = PlottedData.ERPGridXTicks;
+        CData = PlottedData.ERPGridYData';
+    elseif contains(Analysis,"Grid") && contains(Analysis,"Spectrum")
+        TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.SpectrumGridType) ' *****'];
+        XData = PlottedData.SpectrumGridXData;
+        YData = NaN(size(XData));
+        XTick = PlottedData.SpectrumGridXTicks;
+        CData = PlottedData.SpectrumGridYData';
     elseif contains(Analysis,"Potential") && contains(Analysis,"Channel")
         TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.ERPoverChannelType) ' *****'];
         XData = PlottedData.ERPoverChannelXData;
@@ -448,7 +459,7 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         XTick = PlottedData.ERPoverChannelXTicks;
         CData = PlottedData.ERPoverChannelYData';
         % No CData
-        
+    
     elseif contains(Analysis,"Current")
         TextInfos{end+1} = ['***** ' convertStringsToChars(PlottedData.CSDType) ' *****'];
         XData = PlottedData.CSDXData;
@@ -494,7 +505,9 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         else
             valStr = '<non-displayable>';
         end
-        TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+        if any(size(valStr,1:2) == 1) && all(size(valStr,1:2) < 1000)
+            TextInfos{end+1,1} = ['***** Meta Data: ' fn{k} ' = ' valStr ' *****'];
+        end
     end
     
     % Write to Excel (column E, starting at row 1)
@@ -532,10 +545,14 @@ if contains(Analysis,"Event Related") || contains(Analysis,"Current")
         elseif contains(Analysis,"Time Frequency Power")
             writecell({"***** Time x Frequency Matrix *****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
         else
-            if size(PlottedData.CData,1)>size(PlottedData.CData,2)
-                writecell({"***** C_Data (Channel x Time)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+            if contains(Analysis,"Grid")
+                writecell({"***** Grid Data Matrix. Each Excel sheet row is a probe column and contains data of all probe rows. In the Grid Plot, rows are demarcated using plotted lines after as many samples as one ERP takes (see event related time and sample frequency)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
             else
-                writecell({"***** C_Data (Time x Channel)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+                if size(PlottedData.CData,1)>size(PlottedData.CData,2)
+                    writecell({"***** C_Data (Channel x Time)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+                else
+                    writecell({"***** C_Data (Time x Channel)*****"}, Fullsavefile, 'Sheet', 1, 'Range', ['D' num2str(tableStartRow)]);
+                end
             end
         end
     end

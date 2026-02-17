@@ -20,6 +20,8 @@ if strcmp(Window,"ERP")
     EventNr = eval(app.Mainapp.EventLFPERP.EventNumberSelectionEditField.Value);
     % Grid Trace view
     if strcmp(app.Mainapp.PlotAppearance.ERPWindow.PlotType,"GridTraceView")
+        
+        
 
         if app.Mainapp.EventLFPERP.BaselineNormalizeCheckBox.Value == 1
             EventRelatedData = Event_Module_Baseline_Normalize(app.Mainapp.Data,app.Mainapp.Data.EventRelatedData(:,EventNr,:),app.Mainapp.EventLFPERP.EventNumberSelectionEditField_3.Value,app.Mainapp.Data.Info.EventRelatedTime,"ERP");
@@ -73,7 +75,7 @@ if strcmp(Window,"CSD")
 end
 
 if strcmp(Window,"EventSpectrum")
-    if strcmp(app.Mainapp.EventLFPSSP.AnalysisDropDown.Value,"Band Power Individual Channel ")
+    if strcmp(app.Mainapp.PlotAppearance.SpectrumWindow.PlotType,"Band Power Individual Channel ")
         app.Mainapp.EventLFPSSP.ChannelDropDown.Enable = "on";
         app.Mainapp.EventLFPSSP.DataTypeDropDown.Enable = "on";
         app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Enable = "on";
@@ -86,7 +88,7 @@ if strcmp(Window,"EventSpectrum")
 
         [~,app.Mainapp.EventLFPSSP.BandPower,~] = Event_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.EventLFPSSP.DataSourceDropDown.Value,app.Mainapp.EventLFPSSP.BandPower,app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,app.Mainapp.EventLFPSSP.UIAxes,app.Mainapp.EventLFPSSP.UIAxes_2,app.Mainapp.EventLFPSSP.TextArea,'Just Frequency Bands',app.Mainapp.EventLFPSSP.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.EventLFPSSP.SelectedEvents,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.EventLFPSSP.DataToExtractFromDropDown.Value,app.Mainapp.PreservePlotChannelLocations,app.Mainapp.EventLFPSSP.BaselineNormalizeCheckBox.Value,app.Mainapp.EventLFPSSP.EventNumberSelectionEditField.Value);
 
-    elseif strcmp(app.Mainapp.EventLFPSSP.AnalysisDropDown.Value,"Band Power over Depth")
+    elseif strcmp(app.Mainapp.PlotAppearance.SpectrumWindow.PlotType,"Band Power over Depth")
         app.Mainapp.EventLFPSSP.ChannelDropDown.Enable = "off";
         app.Mainapp.EventLFPSSP.DataTypeDropDown.Enable = "off";
         app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Enable = "on";
@@ -101,6 +103,21 @@ if strcmp(Window,"EventSpectrum")
         cb.Label.Rotation = 270;
         %cb.FontSize =  app.Mainapp.PlotAppearance.SpectrumWindow.Data.TimeFontSize;
         cb.Label.Color = 'k';        % Sets the color of the label text
+    elseif strcmp(app.Mainapp.PlotAppearance.SpectrumWindow.PlotType,"Band Power Across Grid")  
+
+        Freqs = str2double(strsplit(app.Mainapp.EventLFPSSP.FrequencyRangeHzEditField.Value,','));
+        [~,FreqsIndicie(1)] = min(abs(app.Mainapp.EventLFPSSP.BandPower.F - Freqs(1)));
+        [~,FreqsIndicie(2)] = min(abs(app.Mainapp.EventLFPSSP.BandPower.F - Freqs(2)));
+
+        EventRelatedSpectrum = app.Mainapp.EventLFPSSP.BandPower.allPowerEst(:,FreqsIndicie(1):FreqsIndicie(2));
+
+        [Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.Mainapp.ActiveChannel,'MainPlot');
+        EventRelatedSpectrum = EventRelatedSpectrum(Channelrange,:);
+        
+        Ylims = [min(EventRelatedSpectrum,[],'all') max(EventRelatedSpectrum,[],'all')];
+
+        % EventRelatedData is channel by time
+        Module_Main_Window_Plot_Grid_Trace_View(app.Mainapp.EventLFPSSP,app.Mainapp.Data,EventRelatedSpectrum,app.Mainapp.EventLFPSSP.BandPower.F(FreqsIndicie(1):FreqsIndicie(2))',app.Mainapp.EventLFPSSP.BaselineNormalizeCheckBox.Value,app.Mainapp.PlotAppearance,app.Mainapp.ActiveChannel,app.Mainapp.PreservePlotChannelLocations,[],app.Mainapp.PlotAppearance.SpectrumWindow.GridPlotType,0,Ylims);
     end
 end
 

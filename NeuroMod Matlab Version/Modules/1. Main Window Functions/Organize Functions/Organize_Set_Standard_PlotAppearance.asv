@@ -28,7 +28,7 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     % Lables and Fontsize
     PlotAppearance.MainWindow.Data.Title.Raw = "Raw Data";
     PlotAppearance.MainWindow.Data.Title.Preprocessed = "Preprocessed Data";
-    PlotAppearance.MainWindow.Data.Plottype = "Individual Lines"; 
+    PlotAppearance.MainWindow.Data.Plottype = "Individual Lines"; % Alternative: "Imagesc"
     PlotAppearance.MainWindow.Data.MainXLabel = "";
     PlotAppearance.MainWindow.Data.MainYLabel = "";
     PlotAppearance.MainWindow.Data.MainFontSize = 12;
@@ -41,17 +41,11 @@ if strcmp(Type,"MainDataPlot") || strcmp(Type,"All")
     PlotAppearance.MainWindow.Data.Color.MainSpikes = [1,0,0]; % red
     PlotAppearance.MainWindow.Data.Color.MainEvents = [0,0,0]; % black
     PlotAppearance.MainWindow.Data.Color.MainBackground = StandardBackgroundColor; % grey
-
-    PlotAppearance.MainWindow.Data.Color.GridTraceDataColor = [0,0,1]; % blue
-    PlotAppearance.MainWindow.Data.Color.GridTraceEventColor = [0,0,1]; % blue
-
+    PlotAppearance.MainWindow.Data.Color.GridTraceDataColor
     % LineWidths
     PlotAppearance.MainWindow.Data.LineWidth.MainSpikes = 2.5;
     PlotAppearance.MainWindow.Data.LineWidth.MainEvents = 2.5;
     PlotAppearance.MainWindow.Data.LineWidth.MainData = 1.5;
-
-    PlotAppearance.MainWindow.Data.LineWidth.GridTraceData = 1.5;
-    PlotAppearance.MainWindow.Data.LineWidth.GridTraceEvents = 1;
 
     %Grid plot Stuff
     PlotAppearance.MainWindow.Data.LockedClimSettings = "on";
@@ -108,15 +102,11 @@ if strcmp(Type,"SpectrumPlot") || strcmp(Type,"All")
     PlotAppearance.SpectrumWindowOverDepth.Data.YLabel = "Channel Position [Depth (Width)] in µm";
 
     % LineWidth
-    PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth = 1.5; 
-    PlotAppearance.SpectrumWindow.Data.GridTraceDataWidth = 1.5; 
-    PlotAppearance.SpectrumWindow.Data.GridTraceEventWidth = 1; 
+    PlotAppearance.SpectrumWindow.Data.SpectrumLinwWidth = 1.5; % blue
+
     % Color
     PlotAppearance.SpectrumWindow.Data.SpectrumBackgroundColor = StandardBackgroundColor; % grey
-    PlotAppearance.SpectrumWindow.Data.SpectrumColor = [0,0.447058823529412,0.741176470588235]; %blue
-
-    PlotAppearance.SpectrumWindow.Data.GridTraceDataColor = [0,0.447058823529412,0.741176470588235]; %blue
-    PlotAppearance.SpectrumWindow.Data.GridTraceEventColor = [0,0.447058823529412,0.741176470588235]; %blue
+    PlotAppearance.SpectrumWindow.Data.SpectrumColor = [0,0.447058823529412,0.741176470588235]; % blue
 end
 
 %% ERP Window
@@ -134,18 +124,12 @@ if strcmp(Type,"ERPPlot") || strcmp(Type,"All")
     PlotAppearance.ERPWindow.SingleERP.EventLineWidth = 1; % 
     PlotAppearance.ERPWindow.SingleERP.MeanLineWidth = 2; % 
     PlotAppearance.ERPWindow.SingleERP.TriggerLineWidth = 2; % 
-    
-    PlotAppearance.ERPWindow.Grid.GridDataLineWidth = 1.5; % 
-    PlotAppearance.ERPWindow.Grid.GridEventLineWidth = 1; % 
 
     % Color
     PlotAppearance.ERPWindow.SingleERP.EventColor = [0.75,0.75,0.75]; % grey
     PlotAppearance.ERPWindow.SingleERP.MeanColor = [0,0,0]; % black
     PlotAppearance.ERPWindow.SingleERP.TriggerColor = [1,0,0]; % red
     PlotAppearance.ERPWindow.SingleERP.BackgroundColor = StandardBackgroundColor; % grey
-    
-    PlotAppearance.ERPWindow.Grid.GridDataColor = [0,0,1]; % blue
-    PlotAppearance.ERPWindow.Grid.GridEventColor = [1,0,0]; % red
 
     % Multiple ERPs (for each channel)
     % Lables and Fontsize
@@ -181,9 +165,6 @@ end
 
 %% TF Window
 if strcmp(Type,"TFPlot") || strcmp(Type,"All") 
-    PlotAppearance.TFWindow.PlotType = "OverFrequencies";
-    PlotAppearance.TFWindow.GridPlotType = "EventWindowLines";
-
     % Lables and Fontsize
     PlotAppearance.TFWindow.XLabel = "Time [s]";
     PlotAppearance.TFWindow.YLabel = "Frequency [Hz]";

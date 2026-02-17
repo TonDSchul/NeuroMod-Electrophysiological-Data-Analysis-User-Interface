@@ -18,7 +18,7 @@ TimeToPlot = Time;
 
 [CoherenceC,~,Freqs,coi] = wcoherence(ChannelData1, ChannelData2, SampleRate,...
     'VoicesPerOctave', TF.FreqRange(2),'FrequencyLimits', [TF.FreqRange(1) TF.FreqRange(3)],...
-    'NumScales',TF.NumScales);
+    'NumScales',TF.NumScales, 'PhaseDisplayThreshold',PlotAppearance.LiveSpectrogramWindow.PhaseDisplayThreshold);
 
 cla(Figure)
 % Actual Plot
@@ -26,7 +26,7 @@ figTemp = figure('Visible','off');  % invisible figure
 
 wcoherence(ChannelData1, ChannelData2, SampleRate,...
     'VoicesPerOctave', TF.FreqRange(2),'FrequencyLimits', [TF.FreqRange(1) TF.FreqRange(3)],...
-    'NumScales',TF.NumScales);
+    'NumScales',TF.NumScales, 'PhaseDisplayThreshold',PlotAppearance.LiveSpectrogramWindow.PhaseDisplayThreshold);
 
 axTemp = gca;  % get axes from temporary figure
 

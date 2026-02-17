@@ -625,12 +625,29 @@ if ProbeViewWindow == 0
                 if ~isempty(app.Mainapp.ContStaticSpectrumWindow)
                     if isvalid(app.Mainapp.ContStaticSpectrumWindow)
                         Utility_Plot_Interactive_Probe_View(app.UIAxes,app.Mainapp.Data.Info.ChannelSpacing,str2double(app.Mainapp.Data.Info.ProbeInfo.NrChannel),str2double(app.Mainapp.Data.Info.ProbeInfo.NrRows),str2double(app.Mainapp.Data.Info.ProbeInfo.HorOffset),str2double(app.Mainapp.Data.Info.ProbeInfo.VertOffset),app.Mainapp.Data.Info.ProbeInfo.OffSetRowsDistance,ActiveChannel,app.FirstZoomChannel,1,BrainAreaInfo,AllActiveChannel,app.ShowChannelSpacingCheckBox.Value,0,1,ChannelClicked,app.Mainapp.Data.Info.ProbeInfo.OffSetRows,TwoRowOffsetDesignHit,app.Mainapp.Data.Info.ProbeInfo.SwitchTopBottomChannel,app.Mainapp.Data.Info.ProbeInfo.SwitchLeftRightChannel,app.Mainapp.Data.Info.ProbeInfo.ECoGArray);
-                        if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
+                        if strcmp(app.Mainapp.PlotAppearance.SpectrumWindow.PlotType,'Band Power over Depth')
                             [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'All',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.PreservePlotChannelLocations);
                         else
                             [app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,~] = Continous_Power_Spectrum_Over_Depth(app.Mainapp.Data,app.Mainapp.ContStaticSpectrumWindow.DataSourceDropDown.Value,app.Mainapp.PowerSpecResults,app.Mainapp.ContStaticSpectrumWindow.BandPower,app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,app.Mainapp.ContStaticSpectrumWindow.UIAxes,app.Mainapp.ContStaticSpectrumWindow.UIAxes_2,app.Mainapp.ContStaticSpectrumWindow.TextArea,'Just Frequency Bands',app.Mainapp.ContStaticSpectrumWindow.TwoORThreeD,app.Mainapp.CurrentPlotData,app.Mainapp.ActiveChannel,app.Mainapp.PlotAppearance,app.Mainapp.PreservePlotChannelLocations);
                         end
-                        if strcmp(app.Mainapp.ContStaticSpectrumWindow.AnalysisDropDown.Value,'Band Power over Depth')
+                        if strcmp(app.Mainapp.PlotAppearance.SpectrumWindow.PlotType,'Band Power Across Grid')
+                            Freqs = str2double(strsplit(app.Mainapp.ContStaticSpectrumWindow.FrequencyRangeHzEditField.Value,','));
+                            [~,FreqsIndicie(1)] = min(abs(app.Mainapp.ContStaticSpectrumWindow.BandPower.F - Freqs(1)));
+                            [~,FreqsIndicie(2)] = min(abs(app.Mainapp.ContStaticSpectrumWindow.BandPower.F - Freqs(2)));
+            
+                            ConSpectrum = app.Mainapp.ContStaticSpectrumWindow.BandPower.allPowerEst(:,FreqsIndicie(1):FreqsIndicie(2));
+                
+                            [Channelrange] = Organize_Convert_ActiveChannel_to_DataChannel(app.Mainapp.Data.Info.ProbeInfo.ActiveChannel,app.Mainapp.ActiveChannel,'MainPlot');
+                            ConSpectrum = ConSpectrum(Channelrange,:);
+                            
+                            Ylims = [min(ConSpectrum,[],'all') max(ConSpectrum,[],'all')];
+            
+                            % EventRelatedData is channel by time
+                            Module_Main_Window_Plot_Grid_Trace_View(app.Mainapp.ContStaticSpectrumWindow,app.Mainapp.Data,ConSpectrum,app.Mainapp.ContStaticSpectrumWindow.BandPower.F(FreqsIndicie(1):FreqsIndicie(2))',0,app.Mainapp.PlotAppearance,app.Mainapp.ActiveChannel,app.Mainapp.PreservePlotChannelLocations,[],app.Mainapp.PlotAppearance.SpectrumWindow.GridPlotType,0,Ylims);
+  
+                        end
+
+                        if strcmp(app.Mainapp.PlotAppearance.SpectrumWindow.PlotType,'Band Power over Depth')
                             cb = colorbar(app.Mainapp.ContStaticSpectrumWindow.UIAxes);
                             cb.Color = 'k';              % Sets tick mark and label color to black
                             cb.Label.String = "Power [dB]";

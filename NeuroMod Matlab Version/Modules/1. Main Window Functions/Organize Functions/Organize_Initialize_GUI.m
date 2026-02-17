@@ -271,6 +271,22 @@ elseif strcmp(Type,"Loading")
 
     channelnr = size(app.Data.Raw,1);
     
+    %% check if probe has less than 3 rows but grid active somewhere to plot
+    % reset it to no grid plot!
+    if str2double(app.Data.Info.ProbeInfo.NrRows)<=2
+        if contains(app.PlotAppearance.MainWindow.Data.Plottype,"Grid")
+            warning("Autoset plot type in main window from grid to individual lines.")
+            app.PlotAppearance.MainWindow.Data.Plottype = "Individual Lines";
+        end
+        if contains(app.PlotAppearance.SpectrumWindow.PlotType,"Grid")
+            warning("Autoset plot type static spectrum window from grid to band power individual channel.")
+            app.PlotAppearance.SpectrumWindow.PlotType = "Band Power Individual Channel ";
+        end
+        if contains(app.PlotAppearance.ERPWindow.PlotType,"Grid")
+            warning("Autoset plot type static spectrum window from grid to individual lines.")
+            app.PlotAppearance.ERPWindow.PlotType = "IndividualLines ";
+        end
+    end
 
     % Pick Colormap based on what the user selected (default = parula)
     app.tempcolorMapset = eval(strcat(app.tempcolorMap,"(channelnr)")); 
@@ -503,7 +519,25 @@ elseif strcmp(Type,"VariableDefinition")
 
     app.Grid_Traces_View_Panel.Visible                = "off";
     app.Grid_Traces_View_Panel.Enable                 = "off";
-    
+
+    %% check if probe has less than 3 rows but grid active somewhere to plot
+    % reset it to no grid plot!
+
+    if str2double(app.Data.Info.ProbeInfo.NrRows)<=2
+        if contains(app.PlotAppearance.MainWindow.Data.Plottype,"Grid")
+            warning("Autoset plot type in main window from grid to individual lines.")
+            app.PlotAppearance.MainWindow.Data.Plottype = "Individual Lines";
+        end
+        if contains(app.PlotAppearance.SpectrumWindow.PlotType,"Grid")
+            warning("Autoset plot type static spectrum window from grid to band power individual channel.")
+            app.PlotAppearance.SpectrumWindow.PlotType = "Band Power Individual Channel ";
+        end
+        if contains(app.PlotAppearance.ERPWindow.PlotType,"Grid")
+            warning("Autoset plot type static spectrum window from grid to individual lines.")
+            app.PlotAppearance.ERPWindow.PlotType = "IndividualLines ";
+        end
+    end
+
     app.ChannelAxes = [];
     app.ChannelGrid = [];
 

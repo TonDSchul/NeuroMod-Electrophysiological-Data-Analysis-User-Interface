@@ -18,7 +18,7 @@ TimeToPlot = Data.Info.EventRelatedTime;
 
 [CoherenceC,~,Freqs,coi] = wcoherence(EventRelatedData1, EventRelatedData2, SampleRate,...
     'VoicesPerOctave', TF.FreqRange(2),'FrequencyLimits', [TF.FreqRange(1) TF.FreqRange(3)],...
-    'NumScales',TF.NumScales);
+    'NumScales',TF.NumScales, 'PhaseDisplayThreshold',PlotAppearance.TFWindow.PhaseDisplayThreshold);
 
 cla(Figure)
 % Actual Plot
@@ -26,7 +26,7 @@ figTemp = figure('Visible','off');  % invisible figure
 
 wcoherence(EventRelatedData1, EventRelatedData2, SampleRate,...
     'VoicesPerOctave', TF.FreqRange(2),'FrequencyLimits', [TF.FreqRange(1) TF.FreqRange(3)],...
-    'NumScales',TF.NumScales);
+    'NumScales',TF.NumScales, 'PhaseDisplayThreshold',PlotAppearance.TFWindow.PhaseDisplayThreshold);
 
 axTemp = gca;  % get axes from temporary figure
 
@@ -70,7 +70,7 @@ if strcmp(TwoORThreeD,"ThreeD")
     end
 
 else
-    if abs(Data.Info.EventRelatedTime(1)) + Data.Info.EventRelatedTime(end)>1
+    if abs(Data.Info.EventRelatedTime(1)) + Data.Info.EventRelatedTime(end)>=1
         Evtime = abs(Data.Info.EventRelatedTime(1)); % s
     else
         Evtime = abs(Data.Info.EventRelatedTime(1))*1000; % ms
@@ -104,7 +104,7 @@ Figure.Box ="off";
 if TF.ChannelTriggerToCompareType(1)==1
     title(Figure,strcat("Time Varying Coherence for Channel ",num2str(TF.SingleChannelSelected)," Between Trials ",num2str(TF.ChannelTriggerToCompare(1))," and ",num2str(TF.ChannelTriggerToCompare(2))));
 else
-    title(Figure,strcat("Time Varying Coherence for Trials ",num2str(TF.EventNrRange)," Between Channel ",num2str(TF.ChannelTriggerToCompare(1))," and ",num2str(TF.ChannelTriggerToCompare(2))));
+    title(Figure,strcat("Time Varying Coherence for Trials ",num2str(TF.EventNrRange(1))," and ",num2str(TF.EventNrRange(end))," Between Channel ",num2str(TF.ChannelTriggerToCompare(1))," and ",num2str(TF.ChannelTriggerToCompare(2))));
 end
 
 xlabel(Figure,PlotAppearance.TFWindow.XLabel), ylabel(Figure,strcat(PlotAppearance.TFWindow.YLabel,' (log scale)'))
