@@ -1,11 +1,6 @@
 function app = Module_MainWindow_Initialize_Grid_Trace_Panel(app,Mainapp,Window)
 
 PreserveChannelSpacing = Mainapp.PreservePlotChannelLocations;
-if strcmp(Mainapp.Data.Info.RecordingType,"SpikeGLX NP") || Mainapp.Data.Info.ProbeInfo.OffSetRows
-    if PreserveChannelSpacing == 1
-        PreserveChannelSpacing = 0;
-    end
-end
 
 [AllChannel,~,~] = Module_MainWindow_ActiveChannel_ChannerlNumber_Grid_Traces(Mainapp.Data.Info,[],"NumChan",Mainapp.Data.Info.ProbeInfo.ActiveChannel,PreserveChannelSpacing);
 

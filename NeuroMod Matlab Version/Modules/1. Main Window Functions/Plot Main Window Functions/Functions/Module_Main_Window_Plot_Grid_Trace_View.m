@@ -1,4 +1,4 @@
-function [YlimMaxVlaues,CurrentPlotData]= Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,BaselineNorm,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP,MainPlot,YlimMaxVlaues,CurrentPlotData)
+function [YlimMaxVlaues,CurrentPlotData] = Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,BaselineNorm,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP,MainPlot,YlimMaxVlaues,CurrentPlotData)
 
 %% Setup
 OriginalActiveChannel = ActiveDataChannel;
@@ -89,7 +89,7 @@ if str2double(Data.Info.ProbeInfo.NrRows)==1
             end
         end
     end
-elseif str2double(Data.Info.ProbeInfo.NrRows)==2
+elseif str2double(Data.Info.ProbeInfo.NrRows)==2 && str2double(Data.Info.ProbeInfo.OffSetRows) == 0
     if PreservePlotChannelLocations
         AllActive = Data.Info.ProbeInfo.ActiveChannel - (Data.Info.ProbeInfo.ActiveChannel(1)-1);
         TempChannel = OriginalActiveChannel-(Data.Info.ProbeInfo.ActiveChannel(1)-1);
@@ -111,11 +111,15 @@ elseif str2double(Data.Info.ProbeInfo.NrRows)==2
     end
 end
 
-if str2double(Data.Info.ProbeInfo.NrRows)==2 
+if str2double(Data.Info.ProbeInfo.NrRows)==2 %&& str2double(Data.Info.ProbeInfo.OffSetRows) == 0
     if PreservePlotChannelLocations
         MatrixIndexedActiveDataChannel = 1:length(unique(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel(1):Data.Info.ProbeInfo.ActiveChannel(end))));
     else
-        MatrixIndexedActiveDataChannel = 1:length(unique(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel)));
+        if str2double(Data.Info.ProbeInfo.OffSetRows) == 0
+            MatrixIndexedActiveDataChannel = 1:length(unique(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel)));
+        else
+            MatrixIndexedActiveDataChannel = 1:round(length(unique(Data.Info.ProbeInfo.ycoords(Data.Info.ProbeInfo.ActiveChannel)))/2);
+        end
     end
 end
 

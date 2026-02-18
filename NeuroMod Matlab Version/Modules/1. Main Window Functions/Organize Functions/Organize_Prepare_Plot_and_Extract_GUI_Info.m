@@ -28,11 +28,11 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 %________________________________________________________________________________________
 
 PreserveChannelSpacing = app.PreservePlotChannelLocations;
-if strcmp(app.Data.Info.RecordingType,"SpikeGLX NP") || app.Data.Info.ProbeInfo.OffSetRows
-    if PreserveChannelSpacing == 1
-        PreserveChannelSpacing = 0;
-    end
-end
+% if strcmp(app.Data.Info.RecordingType,"SpikeGLX NP") || app.Data.Info.ProbeInfo.OffSetRows
+%     if PreserveChannelSpacing == 1
+%         PreserveChannelSpacing = 0;
+%     end
+% end
 
 % If events addon selected in main window (events added to plot) select
 % which input event channel to show
