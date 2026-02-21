@@ -1,12 +1,21 @@
 function [Spike_GridDataT1,Spike_GridDataT2] = Module_MainWindow_Detect_and_Add_Spikes(GridData,Info)
 
+%________________________________________________________________________________________
+
+%% NOT USED ANYMORE
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 % griddata: probecolumns x proberows cell array, each cell containing a
 % signal in the main window time range
 
 Spike_GridDataT1 = zeros(size(GridData));
 Spike_GridDataT2 = zeros(size(GridData));
 
-% 1. High Threshold --> all 0 except of biiiig spikes
+% 1. High Threshold --> all 0 except of big spikes
 LaufVariable = 1;
 LaufVariableChannel = 1;
 for ncolumns = 1:size(GridData,1)

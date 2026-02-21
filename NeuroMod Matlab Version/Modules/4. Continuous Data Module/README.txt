@@ -3,7 +3,7 @@ NeuroMod Toolbox; Continous Data Module README
 Author: Tony de Schultz
 ______________________________________________
 
-This module is concerned with preprocessing data, showing continuous spike analysis, analysing the static spectrum of continuous data and show continuous unit analysis. When preprocessing is finished, it adds the field 'Preprocessed' to the dataset. 
+This module is concerned with preprocessing data, showing continuous spike analysis, analyzing the static spectrum of continuous data and show continuous unit analysis. When preprocessing is finished, it adds the field 'Preprocessed' to the dataset. 
 When the Preprocessed field is already part of the dataset, it gets overwritten by the new pipeline. 
 
 All Preprocessing steps involving filtering (high pass, low pass, band stop, narrowband and median filtering) are handled by fieldtrip, see: https://github.com/fieldtrip/fieldtrip.
@@ -16,11 +16,11 @@ Used functions from fieldtrip are:
 4. ft_preproc_bandstopfilter
 5. ft_preproc_medianfilter
 
-Artefact Subspace Reconstruction is handled usign the Clean_rawdata EEGLAB plug-in from GitHub:
+Artefact Subspace Reconstruction is handled using the Clean_rawdata EEGLAB plug-in from GitHub:
 https://github.com/sccn/clean_rawdata
 
 A compatibility function called Utility_Translate_Into_EEGLAB_struc.m is used to translate GUI data to be readable by the respective functions used from the eeglab toolbox
-This functions calles the clean_artifacts.m function from the EEGLAB plug-in
+This functions calls the clean_artifacts.m function from the EEGLAB plug-in
 
 For the static power spectrum analysis and a few functionalities of the continuous spike analysis window, the spike repository from the Cortex Lab on Github at https://github.com/cortex-lab/spikes was used. 
 % Functions are saved in: GUIPath/Modules/Toolboxes/Modified/Modified_Spike_Repository
@@ -62,7 +62,7 @@ Workflow for preprocessing data:
 
 1.  Preprocess_Module_Construct_Pipeline -- add pipeline components like filters including their settings. can be filled with multiple prepro steps
 2.  Preprocess_Module_Delete_Old_Settings -- deletes info about previous prepro steps if they were applied. (in Data.Info)
-3.  Preprocess_Module_Set_Filter_Parameter -- sets all prepro paramemter based on user input to be readable for the Preprocess_Module_Apply_Pipeline function
+3.  Preprocess_Module_Set_Filter_Parameter -- sets all prepro parameter based on user input to be readable for the Preprocess_Module_Apply_Pipeline function
 4.  Preprocess_Module_Apply_Pipeline -- applies prepro steps specified in Preprocess_Module_Construct_Pipeline with the according parameters
 
 Optionally (for GUI):
@@ -78,6 +78,7 @@ Workflow for analysing and plotting static spectrum:
 1. Analyse_Main_Window_Static_Power_Spectrum -- computes spectrum with pwelch either over a single channel or over the mean of all channel.
 1. Continous_Power_Spectrum_Over_Depth -- computes spectrum over depth (from the spike repository of the Cortex Lab Github page)
 
+Since some static spectrum and spike analysis options depend in the probe view active channel selection, the analysis and plotting functions are also found in the probe view window functions.
 
 *****************
 

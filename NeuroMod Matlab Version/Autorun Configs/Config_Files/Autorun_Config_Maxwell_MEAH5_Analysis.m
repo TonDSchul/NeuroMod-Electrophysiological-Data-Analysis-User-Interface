@@ -86,17 +86,18 @@ end
 AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
 AutorunConfig.ExtractRawRecording.LibraryToUse = "SpikeInterface Python Library"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library" OR "SpikeInterface Python Library"
 
-%%%%%%%%%%%%% Not relevant
+%% ----------------- Not relevant -----------------
 AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen = 1; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0. specify whteher python console opening to show progress of NEO data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.NEOJustLoadRecording = 0; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0, whether to load the files NEO saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
-AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Either "NEO Format to .mat Conversion" OR "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Custom files (.dat,.mat)"; % Either "NEO Format to .mat Conversion" OR "Custom files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; % Either "Auto Detected Recording System" to let NEO automatically detect the format. OR "NEO + Recordingsystemname" like "NEO Neuralynx" or "NEO Plexon" or "NEO New Open Ephys Format" OR "NEO Legacy Open Ephys Format"
-%%%%%%%%%%%%% Not relevant
+%---------------------------------------------------
 
-AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Custom files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Custom files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen = 1; % Only when "SpikeInterface Python Library"; Either 1 or 0. specify whteher python console opening to show progress of SpikeInterface data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording = 0; % Only when "SpikeInterface Python Library"; Either 1 or 0, whether to load the files SpikeInterface saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
 AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat = "SpikeInterface MEA Maxwell"; % Only when "SpikeInterface Python Library"; Only "SpikeInterface MEA Maxwell" available, loading .h5 files saved by Maxwell MaxOne 
+AutorunConfig.ExtractRawRecording.CorrectDCOffset_MEA = 1; % double! 1 or 0 whether to correct DC offset in spikeinterface after loading using center() substracting the mean over time per channel
 AutorunConfig.ExtractRawRecording.SaveProbe = 0; % Whether to save the probe design in a file to manually load into Kilosort or Spikeinterface
 AutorunConfig.ExtractRawRecording.SaveProbe_Format = ".mat"; % Which format the probe design is saved in, Options: ".mat" OR ".prb"
 
@@ -264,11 +265,11 @@ AutorunConfig.PreproEventDataModule.TrialsToReject = '1:48'; % Matlab expression
 AutorunConfig.PreproEventDataModule.ChannelInterpolation = false;
 AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expression as charwith two channel i.e. '1:10' for channel 1 to 10 or 1,1 for just channel 1
 
-%% 4.4 Analyse event related signal   
+%% 4.4 Analyse event related signal
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
-AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Trigger Channel 1'; % event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Trigger Channel 1'; %event channel name for the event channel ERP should be computed for. NOT the same as AutorunConfig.ExtractEventDataModule.ChannelOfInterest! (the exact number is determined by your data, so double check in the GUI!)
 AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or matlab expressions as a char, like '1:10' or '[1,5,7,9]'
 AutorunConfig.AnalyseEventDataModule.BaselineNormalize = 0; % either 0 to not baseline normalize or 1 to do so.
 AutorunConfig.AnalyseEventDataModule.BaselineWindow = '-0.2,0'; % start and stop time in seconds to use as baseline window. char, like '-0.2,0' to use 200ms pretrigger period as baseline

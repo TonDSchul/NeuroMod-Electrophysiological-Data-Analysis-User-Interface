@@ -1,5 +1,19 @@
 function Module_MainWindow_Show_Spike_Selector_Waveforms(app,PlotType)
 
+%________________________________________________________________________________________
+
+%% Function to plot waveform of sleected channel/cluster and spike nr in spike selector window
+
+
+% Inputs: 
+% 1. app: spike selector window object
+% 2. PlotType: not used yet
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 SelectedSpike = str2double(app.SpikeNrEditField.Value);
 
 if ~strcmp(app.Mainapp.Data.Info.SpikeType,"Internal") && ~strcmp(app.Mainapp.Data.Info.SpikeType,"Non")

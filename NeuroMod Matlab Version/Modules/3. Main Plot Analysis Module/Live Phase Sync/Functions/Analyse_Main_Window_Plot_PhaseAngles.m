@@ -49,6 +49,10 @@ function  [GlobalYlim,CurrentPlotData] = Analyse_Main_Window_Plot_PhaseAngles(Da
 
 %________________________________________________________________________________________
 
+if isempty(PhasesUnwrapped)
+    msgbox("Too few samples to compute phase. Please increase the time analyzed!");
+    return;
+end
 %CurrentTime = CurrentTime(1):1/AdjustedDownsampleRate:CurrentTime(1)+((size(Phases,2)-1)/AdjustedDownsampleRate);
 
 %% -------- PLOT Phase Angle Time Series ---------------

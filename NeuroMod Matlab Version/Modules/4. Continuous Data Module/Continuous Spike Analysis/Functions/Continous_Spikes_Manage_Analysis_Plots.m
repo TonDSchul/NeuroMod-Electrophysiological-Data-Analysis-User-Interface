@@ -219,7 +219,12 @@ if strcmp(TypeofAnalysis,"Spike Amplitude Density Along Depth")
     
     recordingDur = Data.Time(end);
     
-    [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
+    if ~isscalar(SpikeAmps)
+        [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
+    else
+        msgbox("Only one spike found for currently selected parameter (cluster and channel). More than 1 spike necessary.")
+        return;
+    end
 
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "PDF", Figure,StopDepth,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
@@ -272,8 +277,14 @@ if strcmp(TypeofAnalysis,"Cumulative Spike Amplitude Density Along Depth")
     depthBins = StartDepth:(StopDepth-StartDepth)/150:StopDepth;
     ampBins = 0:max(SpikeAmps)/100:max(SpikeAmps);
     recordingDur = Data.Time(end);
-
-    [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
+    
+    if ~isscalar(SpikeAmps)
+        [pdfs, cdfs] = computeWFampsOverDepth(SpikeAmps, SpikePositions, ampBins, depthBins, recordingDur);
+    else
+        msgbox("Only one spike found for currently selected parameter (cluster and channel). More than 1 spike necessary.")
+        return;
+    end
+    
     plotWFampCDFs(pdfs, cdfs, ampBins, depthBins, "CDF", Figure,StopDepth,Data.Info.ChannelSpacing,"Kilosort",TwoORThreeD,ClusterToShow);
     
     Figure.FontSize = PlotAppearance.InternalEventSpikePlot.MainPlotFontSize;

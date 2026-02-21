@@ -104,4 +104,11 @@ if isempty(findobj(Figure, 'Type', 'legend'))
 end
 
 
+% add modified x axis lab el
+nTicks = 6;   % how many labels you want
+%TimeToPlot = TimeToPlot*1000;
+idx = round(linspace(1, numel(TimeToPlot), nTicks));
+
+%Figure.XTick = TimeToPlot(idx);
+Figure.XTickLabel = string(round(TimeToPlot(idx), 2));
 

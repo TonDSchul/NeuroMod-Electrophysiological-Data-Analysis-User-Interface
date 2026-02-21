@@ -1,5 +1,35 @@
 function Module_MainWindow_Plot_Internal_Spikes(Data,Info,Time,SpikePlot,SpikeDatatype,SpikePlotType,SpikeData,ActiveChannel,Channel_Selection,UIAxis,ChannelSpacing,PlotAppearance)
 
+%________________________________________________________________________________________
+
+%% Function to plot spike data coming from the internal thresholding in NeuroMod
+
+% gets called in 
+% Module_MainWindow_Plot_Data
+
+% Inputs: 
+% 1. Data: Channel x Time holding the raw/preprocessed data (single/double)
+% 2. Info: main data metadata structure from Data.Info
+% 3. Time: double vector with time stamps for each plotted data point in
+% main plot
+% 4. SpikePlot: string, "Spikes" when plotting spikes, some other string
+% like "non" when not
+% 5. SpikeDatatype: Either "Internal" when plotting internal spike data or
+% "Kilosort" when plotting spikes analysed with kilosort Or "SpikeInterface"
+% 6. SpikePlotType: string, either "Points" or "Waveforms" to specifiy how
+% spikes should be plotted when the user selected them 
+% 7. ActiveChannel: vector, active cahnnel selected (not matrix channel!)
+% 8. Channel_Selection: vector, matrix data channel to plot
+% 9. UIAxis: App UIAxes object designating the plot you want to plot in
+% 10. ChannelSpacing: as double in um from Data.Info
+% 11 PlotAppearance: structure holding indo about the appearance of plots
+% the user selected
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if strcmp(SpikePlot,"Spikes") && strcmp(SpikeDatatype,"Internal")
     if strcmp(SpikePlotType,"Points")
         if ~isempty(SpikeData.Indicie)

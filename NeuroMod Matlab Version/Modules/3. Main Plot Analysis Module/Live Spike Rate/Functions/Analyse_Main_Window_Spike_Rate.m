@@ -1,4 +1,4 @@
-function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,CurrentTimeStartIndicie,CurrentTimeEndIndicie,PreprocDataPlotCheckBox,LowPassSpikeRate,CutoffFreque,FilterOrder,CurrentPlotData,PlotAppearance,StartIndex,StopIndex)
+function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,BinRange,Figure,TimeRangetoPlot,LockYLim,Samplingrate,Channelselection,StartIndex,StopIndex,PreprocDataPlotCheckBox,LowPassSpikeRate,CutoffFreque,FilterOrder,CurrentPlotData,PlotAppearance,SpikeData,CoupleTimetoMainWindow)
 
 %________________________________________________________________________________________
 
@@ -48,42 +48,21 @@ function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,BinRange,Figure
 
 %________________________________________________________________________________________
 
-%% Pull Data from GUI
-% Extract Spikes within time window in main window plot
-% When kilosort: take kilosort spike times instead of spikes plotted in
-% main window (Kilosort spikes cant ne fully displayed in the main window overlaying the channel data since they are in between channels. For plotting they are just assigned to the nearest channel)
-
-if str2double(Data.Info.ProbeInfo.NrRows)>=2 && ~strcmp(Data.Info.SpikeType,"Internal")
-    SpikePositions = Data.Spikes.DataCorrectedSpikePositions(:,2); 
-else
-    SpikePositions = Data.Spikes.SpikePositions(:,2);
-end
-
-if PreprocDataPlotCheckBox == 1 && isfield(Data.Info,'DownsampleFactor')  
-    SpikeTimes = round(Data.Spikes.SpikeTimes./Data.Info.DownsampleFactor);
-else
-    SpikeTimes = Data.Spikes.SpikeTimes;
-end
-
-%% Determine Spikes in Window
-SpikesinWindow = SpikeTimes >=StartIndex & SpikeTimes <= StopIndex;
- 
-if sum(SpikesinWindow)>=1
-    SpikeTimes = SpikeTimes(SpikesinWindow==1);
-    SpikeTimes = SpikeTimes-double(StartIndex+1);
-    SpikePositions = SpikePositions(SpikesinWindow==1);
-else
-    SpikeTimes = [];
-end
 
 %% Only select Spikes in selected Channelrange
 
-[SpikeTimes,~,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("SpikeRate",Data.Info,SpikeTimes,SpikePositions,Data.Info.ChannelSpacing,Channelselection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
+[SpikeTimes,~,~] = Continous_Spikes_Delete_Spikes_Not_In_ChannelRange("MainWindow",Data.Info,SpikeData.Indicie,SpikeData.Position,Data.Info.ChannelSpacing,Channelselection,Data.Info.SpikeType,Data.Info.ProbeInfo.ActiveChannel);
 
 %% Caluclate Spike Rate in Hz over all Channel
 numbins = round(BinRange); 
 binsize = floor(numel(TimeRangetoPlot)/numbins); % in samples
 Timerangebin = binsize/Samplingrate;
+
+if isempty(SpikeTimes)
+    plot(Figure,0,0)
+    warning("Spike rate window: No spikes found in current window");
+    return;
+end
 
 [SpikesPerBin] = Spike_Module_Calculate_Spikes_Times_In_Bin(SpikeTimes,[],numbins,binsize,Samplingrate,"SpikeRateoverTime",[],[]);
 
@@ -115,10 +94,16 @@ if~isempty(hBar)
     SpikeYLim = ylim(Figure);
 end
 
+
 if isempty(hBar)
     bar(Figure,filteredSpikeRate,'FaceColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'EdgeColor', PlotAppearance.LiveSpikeRateWindow.BarColor, 'Tag', 'Barobject')  
     
-    title(Figure,strcat("Spike Rate of Main Window Time Range"));
+    if CoupleTimetoMainWindow
+        title(Figure,strcat("Spike Rate of Main Window Time Range"));
+    else
+        title(Figure,strcat("Spike Rate in Time Range: ",num2str(TimeRangetoPlot(1))," to ",num2str(TimeRangetoPlot(end)),"s"));
+    end
+
     xlabel(Figure,strcat(PlotAppearance.LiveSpikeRateWindow.XLabel,"; ",num2str(Timerangebin),'s per bin'))
     ylabel(Figure,PlotAppearance.LiveSpikeRateWindow.YLabel);
     Figure.FontSize = PlotAppearance.LiveSpikeRateWindow.FontSize;

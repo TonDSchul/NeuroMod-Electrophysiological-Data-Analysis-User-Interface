@@ -104,7 +104,7 @@ Figure.Box ="off";
 if TF.ChannelTriggerToCompareType(1)==1
     title(Figure,strcat("Time Varying Coherence for Channel ",num2str(TF.SingleChannelSelected)," Between Trials ",num2str(TF.ChannelTriggerToCompare(1))," and ",num2str(TF.ChannelTriggerToCompare(2))));
 else
-    title(Figure,strcat("Time Varying Coherence for Trials ",num2str(TF.EventNrRange(1))," and ",num2str(TF.EventNrRange(end))," Between Channel ",num2str(TF.ChannelTriggerToCompare(1))," and ",num2str(TF.ChannelTriggerToCompare(2))));
+    title(Figure,strcat("Time Varying Coherence for Trials ",num2str(TF.EventNrRange(1))," to ",num2str(TF.EventNrRange(end))," Between Channel ",num2str(TF.ChannelTriggerToCompare(1))," and ",num2str(TF.ChannelTriggerToCompare(2))));
 end
 
 xlabel(Figure,PlotAppearance.TFWindow.XLabel), ylabel(Figure,strcat(PlotAppearance.TFWindow.YLabel,' (log scale)'))

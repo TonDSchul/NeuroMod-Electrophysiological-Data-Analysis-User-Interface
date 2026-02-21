@@ -32,7 +32,8 @@ function [AutorunConfig] = Autorun_Config_INTAN_DAT_Analysis(DisplayOrder)
 % 'Create_Spike_Sorting'       
 % 'Load_from_SpikeSorting'     
 % 'Save_for_SpikeSorting'      
-% 'Open_in_Phy'                
+% 'Open_in_Phy' 
+
 %______________________
 %--- General ---
 %______________________
@@ -82,20 +83,23 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 1.1 Extract Data from Raw Recordings
 %______________________________________________________________________________________________________
-AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a costum one
+AutorunConfig.ExtractRawRecording.CostumChannelOrder = true; % false if you dont want to change channelorder with a custom one
 AutorunConfig.ExtractRawRecording.LibraryToUse = "NeuroMod Matlab"; % Either "NeuroMod Matlab" OR "NeuralEnsemble NEO Python Library" OR "SpikeInterface Python Library"
 
+%% ----------------- Not relevant -----------------
 AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen = 1; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0. specify whteher python console opening to show progress of NEO data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.NEOJustLoadRecording = 0; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0, whether to load the files NEO saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
-AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Only when "NeuralEnsemble NEO Python Library"; Either "NEO Format to .mat Conversion" OR "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Custom files (.dat,.mat)"; % Only when "NeuralEnsemble NEO Python Library"; Either "NEO Format to .mat Conversion" OR "Custom files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.NEOFormat = "Auto Detected Recording System"; % Only when "NeuralEnsemble NEO Python Library"; Either "Auto Detected Recording System" to let NEO automatically detect the format. OR "NEO + Recordingsystemname" like "NEO Neuralynx" or "NEO Plexon" or "NEO New Open Ephys Format" OR "NEO Legacy Open Ephys Format"
 
-AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Custom files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Custom files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen = 1; % Only when "SpikeInterface Python Library"; Either 1 or 0. specify whteher python console opening to show progress of SpikeInterface data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording = 0; % Only when "SpikeInterface Python Library"; Either 1 or 0, whether to load the files SpikeInterface saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
 AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat = "SpikeInterface MEA Maxwell"; % Only when "SpikeInterface Python Library"; Only "SpikeInterface MEA Maxwell" available, loading .h5 files saved by Maxwell MaxOne 
+AutorunConfig.ExtractRawRecording.CorrectDCOffset_MEA = 1; % double! 1 or 0 whether to correct DC offset in spikeinterface after loading using center() substracting the mean over time per channel
 AutorunConfig.ExtractRawRecording.SaveProbe = 0; % Whether to save the probe design in a file to manually load into Kilosort or Spikeinterface
 AutorunConfig.ExtractRawRecording.SaveProbe_Format = ".mat"; % Which format the probe design is saved in, Options: ".mat" OR ".prb"
+%---------------------------------------------------
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "Intan"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "Intan .dat"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; 
@@ -189,7 +193,7 @@ AutorunConfig.StaticPowerSpectrum.DataType = "Mean over all Channel"; % Data ove
 AutorunConfig.StaticPowerSpectrum.DataSource = "Raw Data"; % "Raw Data" or "Preprocessed Data"
 AutorunConfig.StaticPowerSpectrum.FrequencyRange = '0,500'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
 AutorunConfig.StaticPowerSpectrum.Channel = '1'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
-AutorunConfig.StaticPowerSpectrum.UseCostumeWindowSize = 0; % 1 or 0 whether to use costume windowsize for pwelch 
+AutorunConfig.StaticPowerSpectrum.UseCostumeWindowSize = 0; % 1 or 0 whether to use custome windowsize for pwelch 
 AutorunConfig.StaticPowerSpectrum.WindowSize = '20000'; % Only if UseCostumeWindowSize == 1; Window size for pwelch
 
 %% 3.3 Analyse Spike Data
@@ -241,7 +245,7 @@ AutorunConfig.ExtractEventRelatedDataModule.TimeAfterEvent = '0.6'; %Time in sec
 AutorunConfig.ExtractEventRelatedDataModule.CombineEventChannel = []; % which event channel should be combined? Has to be part of AutorunConfig.ExtractEventDataModule.EventChannelSelection, Format: char, comma separated numbers or empty for no combination
 AutorunConfig.ExtractEventRelatedDataModule.NewEventChannelName = 'Combined Event Channel 1'; % char, name of the newly created/combined event channel. So far in Autorun it is only possible to combine to a single event channel, not multiple ones so enter only one channel name. In the GUI you can combine to multiple event channel.
 
-AutorunConfig.ExtractEventRelatedDataModule.LoadCosutmeTriggerIdentity = '0'; % char, 1 or 0 whether to to load costume trigger identity. If set to 1, widnow will open to ask you for the location of the file containing costume identites.
+AutorunConfig.ExtractEventRelatedDataModule.LoadCosutmeTriggerIdentity = '0'; % char, 1 or 0 whether to to load custome trigger identity. If set to 1, widnow will open to ask you for the location of the file containing costume identites.
 
 %% 4.2 Import Event Trigger
 %______________________________________________________________________________________________________
@@ -271,7 +275,7 @@ AutorunConfig.AnalyseEventDataModule.BaselineWindow = '-0.2,0'; % start and stop
 % ERP Settings
 AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
 AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '1'; % Which channel to analyze on top of the ERP analysis plot?
-AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'Grid Lines'; % Either 'ImageSC' OR 'Lines' OR 'Grid Lines' OR 'Grid Color' to set plot type
+AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' OR 'Grid Lines' OR 'Grid Color' to set plot type
 % CSD Settings
 AutorunConfig.AnalyseEventDataModule.CSDHammWindow = '5'; % How much is CSD data smoothed in time and space domain? Format: Char
 AutorunConfig.AnalyseEventDataModule.tempcolorMap = "parula"; 

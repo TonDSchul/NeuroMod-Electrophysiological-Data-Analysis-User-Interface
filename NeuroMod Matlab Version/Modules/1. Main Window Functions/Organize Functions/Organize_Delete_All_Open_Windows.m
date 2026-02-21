@@ -51,7 +51,7 @@ end
 %% Live main window plots
 try
     if ~isempty(app.PSTHApp)
-        delete(app.PSTHApp.SpikeRateWindowUIFigure);
+        delete(app.PSTHApp);
         app.PSTHApp = [];
     end
 catch
@@ -60,7 +60,7 @@ end
 
 try
     if ~isempty(app.CSDApp)
-        delete(app.CSDApp.CSDWindowUIFigure);
+        delete(app.CSDApp);
         app.CSDApp = [];
     end
 catch

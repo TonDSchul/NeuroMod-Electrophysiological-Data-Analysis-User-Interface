@@ -4,9 +4,10 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,KeepEvents,KeepSpikes,Re
 
 %% Function to reset the data and/or time plot of the main window 
 
-% This function gets called whenever data is extracted/chnaged that might be shown
+% This function gets called whenever data is extracted/changed that might be shown
 % in the main window like events and spikes and preprocessing as well as
-% when new data is loaded or the user selects the reset plots button
+% when new data is loaded or the user selects the reset plots button. It
+% ensures proper colormap, variable reset and callback initiation
 
 % Input:
 % 1. app: app object of the extract data window to access the
@@ -34,6 +35,7 @@ function Organize_Reset_Main_Plot(app,DeleteChannelData,KeepEvents,KeepSpikes,Re
 app.MovieFramesPerSecond = 40;
 app.CurrentTimePoints = PlotTime;
 
+app.PlotThreshGrids = [];
 app.PreviousThreshGrids = [];
 app.YlimMaxVlaues = [];
 app.ClimMaxValues = [];
@@ -47,12 +49,12 @@ if DeleteChannelData
 
     % Check if the Y-axis is reversed
     if strcmp(app.UIAxes.YDir, 'reverse')
-        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
         else
             app.UIAxes.YDir = 'normal';
         end
     else
-        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc")
+        if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
             app.UIAxes.YDir = 'reverse';
         end
     end
@@ -105,3 +107,17 @@ app.UIAxes_2.FontSize = app.PlotAppearance.MainWindow.Data.TimeFontSize;
 app.UIAxes.Title.Color = [0 0 0];   % red
 app.UIAxes.XLabel.Color = [0 0 0];   % x-label color
 app.UIAxes.XColor       = [0 0 0];   % x-tick label + axis line color
+
+%% color bar and extra stuff
+if strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Imagesc") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
+    
+    if ~strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"Mesh")
+        view(app.UIAxes, 2)
+    else
+        view(app.UIAxes, 45, 45)
+    end
+    % Colorbar
+    cb = colorbar(app.UIAxes, 'Location', 'westoutside');
+    cb.Label.String = 'Signal [mV]';
+    cb.Color = 'k';
+end

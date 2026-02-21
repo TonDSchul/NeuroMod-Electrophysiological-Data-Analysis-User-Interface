@@ -25,7 +25,7 @@ function [amplifier_data,board_adc_data,frequency_parameters,board_dig_in_data,b
 
 %% This function was modified to fit the prupose of this GUI
 % This includes calling the function without extracting data, just
-% extracting basic infos like nr of channel, modfied and costum output arguments,
+% extracting basic infos like nr of channel, modfied and custom output arguments,
 % conversion of data to single and diplay of progress in a textarea of a
 % GUI window as well as a waitbar showing the progress in percent
 

@@ -87,10 +87,14 @@ colormap(Figure, flip(colors));
 % Set color axis to amplitude range
 
 if ~strcmp(Sorter,'External Kilosort GUI')
-    tempspikeAmps = -spikeAmps;
-    caxis(Figure,[min(tempspikeAmps) max(tempspikeAmps)]);
+    if length(spikeAmps)>1
+        tempspikeAmps = -spikeAmps;
+        clim(Figure,[min(tempspikeAmps) max(tempspikeAmps)]);
+    end
 else
-    caxis(Figure,[min(spikeAmps) max(spikeAmps)]);
+    if length(spikeAmps)>1
+        clim(Figure,[min(spikeAmps) max(spikeAmps)]);
+    end
 end
 
 % Create colorbar linked to your axes

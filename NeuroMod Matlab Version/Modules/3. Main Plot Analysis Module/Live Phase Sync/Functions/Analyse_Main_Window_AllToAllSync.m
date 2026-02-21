@@ -76,7 +76,7 @@ else
     set(SynchMat_handle,'CData', squeeze(synchmat(1,:,:)), 'Tag', 'SynchMat'); % Replace image data
 end
 
-%% costume y labels
+%% custom y labels
 
 Figure3.YTick = 1:length(SelectedChannel);
 Figure3.YTickLabel = string(SelectedChannel);

@@ -68,19 +68,19 @@ fI2V = SGLX_readMeta.Int2Volts(HeaderInfo);
 
 if streamIndex== 1 %LFP
     try
-        for kk = 1:size(Data,1)
-            Data(kk,:) = single(Data(kk,:) * fI2V / LFgain(chans(kk))) ./ 1000;
+        for kk = 1:length(LFgain)
+            Data(kk,:) = single(Data(kk,:) * fI2V / LFgain(chans(kk))) *1000; % V in mV
         end
     catch
-        Data = single(Data * fI2V / LFgain(1)) ./ 1000;
+        Data = single(Data * fI2V / LFgain(1)) *1000; % V in mV
     end
 else
     try
-        for kk = 1:size(Data,1)
-            Data(kk,:) = single(Data(kk,:) * fI2V / APgain(chans(kk))) ./ 1000;
+        for kk = 1:length(APgain)
+            Data(kk,:) = single(Data(kk,:) * fI2V / APgain(chans(kk))) *1000; % V in mV
         end
     catch
-        Data = single(Data * fI2V / APgain(1)) ./ 1000;
+        Data = single(Data * fI2V / APgain(1)) *1000; % V in mV
     end
 end
 

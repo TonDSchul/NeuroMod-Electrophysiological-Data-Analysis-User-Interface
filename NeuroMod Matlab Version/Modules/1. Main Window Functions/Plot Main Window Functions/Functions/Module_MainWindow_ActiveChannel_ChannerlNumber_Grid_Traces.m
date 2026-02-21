@@ -1,5 +1,33 @@
 function [NumChannel,ActiveDataChannel,SpikeData] = Module_MainWindow_ActiveChannel_ChannerlNumber_Grid_Traces(Info,SpikeData,WhatToDo,ActiveDataChannel,PreserveChannelLocations)
 
+%________________________________________________________________________________________
+
+%% Helper function to initiate the grid view grid array by determining the amount of channel columns depending on whether channel distanes are preserved
+% called whenever the output arguments are needed to create/maintaine the grid array
+% Also used to change spike positions that where determined to be within
+% range to fit the grid layout
+
+% Inputs: 
+% 1. Info: main data structure meta data (Data.Info)
+% SpikeData: structure with SpikeData.Indicies and SpikeData.SpikePositions
+% WhatToDo: char, whether to just get number of channel and active channel
+% ("NumChan" and "All") or just spike data ("Spikes" and "All")
+% ActiveDataChannel: vector with currently activated active channel, is app.ActiveChannel
+% PreserveChannelLocations: double, 1 or 0 whether to preserve the true distance
+% between probe channels
+
+% Output:
+% 1. NumChannel: double, number of probe columns
+% 2. ActiveDataChannel: vector with activ data channel to visualize,
+% manipulated to fit selected plotting options
+% 3. SpikeData: original struc as input, with modified SpikePositions
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 NumChannel = [];
 OrigActive = ActiveDataChannel;
 

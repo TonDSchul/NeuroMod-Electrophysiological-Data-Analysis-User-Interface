@@ -48,7 +48,7 @@ if isfile(EventDataLocation)
     end
 
     CostumeEventFilePresent = 1;
-    disp("Loaded event data from costum Neo exported .mat format.")
+    disp("Loaded event data from custom Neo exported .mat format.")
 end
 
 if CostumeEventFilePresent == 0 && isfile(MatlabNeoConversionLocation)

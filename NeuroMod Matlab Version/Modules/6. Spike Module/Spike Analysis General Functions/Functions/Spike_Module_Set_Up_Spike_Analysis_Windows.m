@@ -102,14 +102,14 @@ if strcmp(EventWindow,"Non")
 else
     %% Manage TextField
     if strcmp(app.Mainapp.Data.Info.SpikeType,"Kilosort") || strcmp(app.Mainapp.Data.Info.SpikeType,"SpikeInterface")
-        texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
+        texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.EventRelatedSpikes.SpikeTimes)));...
         strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.EventRelatedSpikes.SpikeCluster))))];
     else
         if strcmp(app.Mainapp.Data.Info.Sorter,'WaveClus')
-            texttoshow = [strcat("Number of Spikes: ",num2str(length(SpikeTimes)));...
+            texttoshow = [strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.EventRelatedSpikes.SpikeTimes)));...
             strcat("Number of Cluster: ",num2str(length(unique(app.Mainapp.Data.EventRelatedSpikes.SpikeCluster))))];
         else
-            texttoshow = strcat("Number of Spikes: ",num2str(length(SpikeTimes)));
+            texttoshow = strcat("Number of Spikes: ",num2str(length(app.Mainapp.Data.EventRelatedSpikes.SpikeTimes)));
         end
     end
 end

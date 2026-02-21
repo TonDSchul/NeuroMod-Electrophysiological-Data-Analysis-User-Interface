@@ -52,6 +52,11 @@ ChannelToPlot = str2double(ChannelToPlot);
 
 SpectroData = DataToShow(ChannelToPlot,:);
 
+wspec = wspec(:)';
+if length(wspec)>size(SpectroData,2)
+    msgbox("Live spectrogram window length too big for currently plotted time range. Please increase time analyzed.")
+    return;
+end
 %% Spec and conversion
 [Magni,TFFreqs,TFTime] = spectrogram(SpectroData, wspec, Noverlap, Freqs, SampleRate);   % compute magnitude in Hz
 SPower = abs(Magni).^2;
@@ -60,8 +65,8 @@ SdB = 10*log10(SPower + eps); % in db
 TimeToPlot = linspace(Time(1), Time(end), length(TFTime));
 
 if length(TFTime)<=1
-    msgbox("Window length too big for amount of time analysed!")
-    warning("Window length too big. ")
+    msgbox("Live spectrogram window length too big for amount of time analysed!")
+    warning("Live spectrogram window length too big. ")
     return;
 end
 

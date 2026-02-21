@@ -1,5 +1,18 @@
 function Organize_Check_Path_Variables(executablefolder)
 
+%________________________________________________________________________________________
+%% Function to check all paths to python.exe environments and the CED64 Spike2 tools
+% python.exes for environments with: SpikeInterface, NEO, Phy
+
+% Input Arguments:
+% 1. executablefolder: char, folder NeuroMod is executed from to load
+% variables and check if paths exist
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% ------------------------ Check Variable path of current NeuroMod instance ------------------------ 
 FolderToSearchIn = strcat(executablefolder,"/Modules/MISC/Variables (do not edit)");
 if ~isfolder(FolderToSearchIn)

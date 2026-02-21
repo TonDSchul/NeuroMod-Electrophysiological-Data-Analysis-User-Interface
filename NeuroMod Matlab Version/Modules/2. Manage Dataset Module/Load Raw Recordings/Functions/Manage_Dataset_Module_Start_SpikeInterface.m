@@ -1,4 +1,4 @@
-function  [Success] = Manage_Dataset_Module_Start_SpikeInterface(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToLoad,ChannelToLoad)
+function  [Success] = Manage_Dataset_Module_Start_SpikeInterface(SelectedPath,executableFolder,JustLoadDatFile,KeepPythonOpen,RecordingSystemSelection,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToLoad,ChannelToLoad,CorrectDCOffset)
 
 %________________________________________________________________________________________
 
@@ -69,6 +69,7 @@ SIparams.SaveProbeInfo = SaveProbeInfo;
 SIparams.SaveProbeInfoFormat = SaveProbeInfoFormat;
 SIparams.TimeToLoad = TimeToLoad;
 SIparams.ChannelToLoad = ChannelToLoad;
+SIparams.CorrectDCOffset = CorrectDCOffset;
 
 %% Save
 PathTosaveTempParams = fullfile(SelectedPath,'SIParams.json');

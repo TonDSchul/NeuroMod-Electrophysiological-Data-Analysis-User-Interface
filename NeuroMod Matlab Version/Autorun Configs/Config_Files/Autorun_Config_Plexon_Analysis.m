@@ -86,15 +86,18 @@ AutorunConfig.ExtractRawRecording.LibraryToUse = "NeuralEnsemble NEO Python Libr
 
 AutorunConfig.ExtractRawRecording.NEOLeaveConsolOpen = 1; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0. specify whteher python console opening to show progress of NEO data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.NEOJustLoadRecording = 0; % Only when "NeuralEnsemble NEO Python Library"; Either 1 or 0, whether to load the files NEO saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
-AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Either "NEO Format to .mat Conversion" OR "Costum files (.dat,.mat)"
+AutorunConfig.ExtractRawRecording.FormatToSaveAndReadIntoMatlab = "Custom files (.dat,.mat)"; % Either "NEO Format to .mat Conversion" OR "Custom files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.NEOFormat = "NEO Plexon"; % Either "Auto Detected Recording System" to let NEO automatically detect the format. OR "NEO + Recordingsystemname" like "NEO Neuralynx" or "NEO Plexon" or "NEO New Open Ephys Format" OR "NEO Legacy Open Ephys Format"
 
-AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Costum files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Costum files (.dat,.mat)"
+%% ----------------- Not relevant -----------------
+AutorunConfig.ExtractRawRecording.SpikeInterfaceFormatToSaveAndReadIntoMatlab = "Custom files (.dat,.mat)"; % Only when "SpikeInterface Python Library"; "Custom files (.dat,.mat)"
 AutorunConfig.ExtractRawRecording.SpikeInterfaceLeaveConsolOpen = 1; % Only when "SpikeInterface Python Library"; Either 1 or 0. specify whteher python console opening to show progress of SpikeInterface data extracton should stay open with you having to press enter after it completed
 AutorunConfig.ExtractRawRecording.SpikeInterfaceJustLoadRecording = 0; % Only when "SpikeInterface Python Library"; Either 1 or 0, whether to load the files SpikeInterface saved to load into Matlab in a previous data extraction of that recording -- does not open python, all matlab intern
+AutorunConfig.ExtractRawRecording.CorrectDCOffset_MEA = 1; % double! 1 or 0 whether to correct DC offset in spikeinterface after loading using center() substracting the mean over time per channel
 AutorunConfig.ExtractRawRecording.SpiekInterfaceFormat = "SpikeInterface MEA Maxwell"; % Only when "SpikeInterface Python Library"; Only "SpikeInterface MEA Maxwell" available, loading .h5 files saved by Maxwell MaxOne 
 AutorunConfig.ExtractRawRecording.SaveProbe = 0; % Whether to save the probe design in a file to manually load into Kilosort or Spikeinterface
 AutorunConfig.ExtractRawRecording.SaveProbe_Format = ".mat"; % Which format the probe design is saved in, Options: ".mat" OR ".prb"
+%---------------------------------------------------
 
 AutorunConfig.ExtractRawRecording.RecordingsSystem = "NEO Plexon"; % Recoring system with which recording was made. 
 AutorunConfig.ExtractRawRecording.FileType = "NEO"; % "Intan .dat" OR "Intan .rhd" when RecordingsSystem = "Intan"; 
@@ -262,32 +265,35 @@ AutorunConfig.PreproEventDataModule.ChannelToInterpolate = '1:5'; % Matlab expre
 %______________________________________________________________________________________________________
 AutorunConfig.AnalyseEventDataModule.EventRelatedDataType = 'Raw Event Related Data'; % 'Raw Event Related Data' OR 'Preprocessed Event Related Data' as char. Only use "Preprocessed" if you preprocessed event related data before!
 AutorunConfig.AnalyseEventDataModule.DataSourceToExtractFrom = 'Raw Data'; % Either 'Raw Data' or 'Preprocessed Data' to indicate whether ERP is extracted from raw or prepro dataset
-AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Event Ch 2'; % format: 'Event Ch 36' (the exact number is determined by your data, so double check in the GUI!)
-AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or enter a char with comma separated values like '1,2,4,6,87,100'
-AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' to set plot type
-
+AutorunConfig.AnalyseEventDataModule.EventChannelSelection = 'Event Ch 2'; % 'Event Ch 1' , 'Event Ch 2' and so on are standard! (although the exact number is determined by your data, so double check in the GUI!)
+AutorunConfig.AnalyseEventDataModule.TriggerToAnalyze = 'All'; % Either 'All' to analyze for all event trigger or matlab expressions as a char, like '1:10' or '[1,5,7,9]'
 AutorunConfig.AnalyseEventDataModule.BaselineNormalize = 0; % either 0 to not baseline normalize or 1 to do so.
 AutorunConfig.AnalyseEventDataModule.BaselineWindow = '-0.2,0'; % start and stop time in seconds to use as baseline window. char, like '-0.2,0' to use 200ms pretrigger period as baseline
 
 % ERP Settings
-AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '800'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
-AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '1'; % How much is CSD data smoothed in time and space domain? Format: Char
-AutorunConfig.AnalyseEventDataModule.ERPPlotType = "IndividualLines"; % how to visualize results. "IndividualLines" for the classic channel wise data plot only one supported so far
-
+AutorunConfig.AnalyseEventDataModule.DistanceBetweenChannelPlots = '0.1'; % When multiple ERP are plotted, this is the scaling factor responsible for plotting th channel data apart from each other
+AutorunConfig.AnalyseEventDataModule.SingleERPChannel = '1'; % Which channel to analyze on top of the ERP analysis plot?
+AutorunConfig.AnalyseEventDataModule.ERPPlotType = 'ImageSC'; % Either 'ImageSC' OR 'Lines' OR 'Grid Lines' OR 'Grid Color' to set plot type
 % CSD Settings
 AutorunConfig.AnalyseEventDataModule.CSDHammWindow = '5'; % How much is CSD data smoothed in time and space domain? Format: Char
 AutorunConfig.AnalyseEventDataModule.tempcolorMap = "parula"; 
 % Event Static Spectrum Settings
 AutorunConfig.AnalyseEventDataModule.SpectrumPlotType = ["Band Power Individual Channel","Band Power over Depth"]; % string, either "Band Power Individual Channel" and/or "Band Power over Depth"
-AutorunConfig.AnalyseEventDataModule.SpectrumDataType = "Mean over all Channel"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
+AutorunConfig.AnalyseEventDataModule.SpectrumDataType = "Channel Individually"; % Data over which band power analysis over individual channel is calculated. Input as string, Options: "Channel Individually" OR "Mean over all Channel". This is not reuired when no 
 AutorunConfig.AnalyseEventDataModule.SpectrumFrequencyRange = '0,500'; % Frequency Range shown in Power Spectrum analysis. This only affects the plot and has no influence on the analysis. Input as char
 AutorunConfig.AnalyseEventDataModule.SpectrumChannel = '1'; % Channel for which power spectrum should be calculated (char). If DataType is specified as "Mean over all Channel", this input has no effect
 % Time Freqency Power Settings
-AutorunConfig.AnalyseEventDataModule.TFFrequencyRange = '2,120,120'; % Frequency range being displayed, input as char in the format: Lowest Frequency, Highest Frequency, Steps
-AutorunConfig.AnalyseEventDataModule.TFChannelSelection = '10'; % char, channel to show the Time freuency power plot for
-AutorunConfig.AnalyseEventDataModule.TFCycleWidth = '5,9'; % Cycle width as char in format : Lowest Width, Highest Width
-AutorunConfig.AnalyseEventDataModule.TFPlotType = ["TF","ITPC"]; % 'Time Frequency' OR 'Intertrial Phase Clustering'; If just one: format is char!
-AutorunConfig.AnalyseEventDataModule.TFPlotAddons = ["Total","PhaseLocked","NonPhaseLocked"]; % 'Phase independent' OR 'Phase locked' OR 'Non-phase locked'; If just one: format is char!
+%% NOTE: FOR WAVELET COHERENCE, Frequency range only allowed with up to 32 steps. Not more!
+AutorunConfig.AnalyseEventDataModule.TFFrequencyRange = '1,32,32'; % Frequency range being displayed, input as char in the format: Lowest Frequency, Steps, Highest Frequency. The more steps the more resolution in frequency domain. For wavelet coherence it cant be bigger than 32 (equal to VoicesPerOctave parameter)!
+AutorunConfig.AnalyseEventDataModule.TFChannelSelection = '1'; % char, channel to show the Time freuency power plot for
+AutorunConfig.AnalyseEventDataModule.WindowSize = '100'; % char, Window size in samples for TF analysis. Has to be smaller than all samples in analysed data
+AutorunConfig.AnalyseEventDataModule.CoherenceSmoothing = '9';% char, determines smoothing of wavelet coherence plot. Equal to NR of scales parameter
+
+AutorunConfig.AnalyseEventDataModule.CoherenceAnalysis = "Channel To Compare"; % char, either "Channel To Compare" or "Trigger To Compare"
+AutorunConfig.AnalyseEventDataModule.ChannelTriggerToCompare = "1,2"; % string with comma separated trials or channel to compare depending on what is selcted above
+
+AutorunConfig.AnalyseEventDataModule.TFPlotType = ["Single Channel ERP Spectogram","Time Varying Wavelet Coherence"]; % char or string array for multiple; 'Classic TF' OR 'Wavelet Coherence'; 
+
 %% 4.5 Analyse event related spikes
 %______________________________________________________________________________________________________
 % Standard Settings

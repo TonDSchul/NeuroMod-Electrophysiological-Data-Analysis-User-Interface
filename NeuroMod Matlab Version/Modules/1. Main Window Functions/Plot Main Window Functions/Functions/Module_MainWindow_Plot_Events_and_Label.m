@@ -1,5 +1,38 @@
 function Module_MainWindow_Plot_Events_and_Label(Info,Data,Time,EventIndicies,UIAxis,EventPlot,EventIndexNr,Eventline_handles,YMinLimitsMultipeERP,YMaxLimitsMultipeERP,Channel_Selection,PlotAppearance)
 
+%________________________________________________________________________________________
+
+%% Function to plot event lines and event trigger numbers in main window
+
+% gets called in 
+% Module_MainWindow_Plot_Data
+
+% Inputs: 
+% 1. Info: main data metadata structure from Data.Info
+% 2. Data: channel by time matrix with plotted data
+% 3. Time: double vector with time stamps for each plotted data point in
+% main plot
+% 4. EventIndicies: double vector with sample indicies events are happening
+% 5. UIAxis: plot axes to plot in (app.UIAxes)
+% 6. EventPlot: char, from main window properties, whether to lot events or
+% not 
+% 7. EventIndexNr: index of event channel selected for plot
+% 8. Eventline_handles: handles of already plotted event lines
+% 9. YMinLimitsMultipeERP: min value of data plotted to set ylims
+% of vertical line
+% 10. YMaxLimitsMultipeERP: max value of data plotted to set ylims
+% of vertical line
+% 11. Channel_Selection: vector with data amtrix indicies that are selected to
+% be plotted by user
+% 12. PlotAppearance: structure holding indo about the appearance of plots
+% the user selected
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 %% Events: Check if Events should be plotted.
 if strcmp(EventPlot,"Events") && sum(EventIndicies) > 0
 

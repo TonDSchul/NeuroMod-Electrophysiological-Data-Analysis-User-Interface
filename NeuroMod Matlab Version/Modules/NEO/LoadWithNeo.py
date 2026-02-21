@@ -143,10 +143,10 @@ def main(FolderName,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSa
     #  -----------------------------------------------------------------------
     
     # -----------------------------------------------------------------------
-    ''' Save Save Event, Meta Data and Channel Data in costume format'''
+    ''' Save Save Event, Meta Data and Channel Data in custome format'''
     # -----------------------------------------------------------------------
 
-    if JustExtractingEvents == 0 and FormatToSaveForMatlab == "Costum files (.dat,.mat)":
+    if JustExtractingEvents == 0 and FormatToSaveForMatlab == "Custom files (.dat,.mat)":
         
         # -----------------------------------------------------------------------
         ''' Save Event Data If present'''

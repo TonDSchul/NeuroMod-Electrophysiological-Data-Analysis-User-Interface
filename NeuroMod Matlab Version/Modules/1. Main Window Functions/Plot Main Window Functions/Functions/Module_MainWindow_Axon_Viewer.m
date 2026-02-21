@@ -1,5 +1,31 @@
 function [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(Data,PreviousThreshGrids,Info,PlotMode,PlotAppearance,PlotThreshGrids,SpikeDataCell)
 
+%________________________________________________________________________________________
+
+%% Function that takes grid activity and performs thresholded nad neighbourhood analysis fo show spike psropagation in main window
+
+% Inputs: 
+% 1. Data: main window data structure
+% PreviousThreshGrids: struc with field T1, holding the activity
+% matrix of previous frames plotted (oroginal data structure!)
+% frames for neighbourhood analysis
+% 2. Info: main data metadata structure from Data.Info
+% 3. PlotMode: char, whether to plot lines or color
+% 4. PlotAppearance: struc holding all plotappearances for all windows to set
+% plot properties like linewidths
+% 5. PlotThreshGrids: activity matrix plotted for current frame
+% 6. SpikeDataCell: Cell array with spike data for each channel to show as red
+% point
+
+% Output: 
+%1. PreviousThreshGrids: see above
+%2. PlotThreshGrids: See above
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 % PreviousThreshGrids.T1 = cell array, each cell a grid at the previously
 % ploted time point
 % last cell is uncurated currently shown raw grid!

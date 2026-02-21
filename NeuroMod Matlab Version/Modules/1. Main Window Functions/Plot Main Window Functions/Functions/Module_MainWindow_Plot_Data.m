@@ -447,10 +447,13 @@ if strcmp(Type,"Movie")
                         pause(PlotAppearance.MainWindow.Data.AdditionalPlotDelay)
                     end
                 else % No time interpolation
+                    [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,DataT1,Time,ActiveChannel,1,SpikeData,'JustSpikes');
+                    
                     if strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
-                        [~,SpikeDataCell,~] = Module_MainWindow_Convert_DataMatrix_Into_3DGrid(Info,DataT1,Time,ActiveChannel,1,SpikeData,'JustSpikes');
                         [PreviousThreshGrids,PlotThreshGrids] = Module_MainWindow_Axon_Viewer(DataT1,PreviousThreshGrids,Info,Type,PlotAppearance,PlotThreshGrids,SpikeDataCell);
                         Data = PlotThreshGrids;
+                    else
+                        Data = DataT1;
                     end
 
                     ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles,SpikeDataCell);

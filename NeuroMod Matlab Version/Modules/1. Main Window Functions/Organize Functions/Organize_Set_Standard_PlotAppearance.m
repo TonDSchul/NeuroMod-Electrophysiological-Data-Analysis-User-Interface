@@ -5,7 +5,10 @@ function [PlotAppearance] = Organize_Set_Standard_PlotAppearance(Type,PlotAppear
 %% Function to set the standrad appearance settings of each plot.  
 % This function hard codes standard plot appearances. It is called when no
 % .m file is saved in GUI_Path/Modules/MISC/Variables (do not edit!) to
-% create a new Template_PlotAppearance.m file
+% create a new PlotAppearance.m file. This file is overwritten when the
+% user saves a new custom plot appearance and loaded when NeuroMod is
+% started again. If new components are added, the PlotAppearance.m file in
+% Modules/Misc/Variables has to be deleted!
 
 % Inputs
 % 1. Type: string, Specifies what settings to reset to standard. "All" to

@@ -2,7 +2,7 @@ function [Data] =  Manage_Dataset_Module_Apply_ChannelOrder (Data,ChannelOrder)
 
 %________________________________________________________________________________________
 
-%% This function applies a costum channel order to the raw data after extracting
+%% This function applies a custom channel order to the raw data after extracting
 
 % This gets called in the Extract_Data_Window app window or Autorun template function after data
 % extraction finished
@@ -38,21 +38,11 @@ if ~isempty(ChannelOrder) && length(ChannelOrder) == length(Data.Info.ProbeInfo.
 
     %% Create Channel Order
     %If the user selcted a costum channel order
-    if Data.Info.ProbeInfo.SwitchTopBottomChannel == 1
-        Data.Raw = Data.Raw(ChannelOrder, :); % reorder 
-        % InversedChannelOrder = zeros(size(ChannelOrder))+length(ChannelOrder);
-        % InversedChannelOrder = (InversedChannelOrder - ChannelOrder)+1;
-        % %% Reorder data according to loaded Channelorder
-        % 
-        % Data.Raw = Data.Raw(InversedChannelOrder, :); % reorder 
-    else
-        % Reorder data according to loaded Channelorder
-        Data.Raw = Data.Raw(ChannelOrder, :); % reorder 
-    end
+    Data.Raw = Data.Raw(ChannelOrder, :);
 
     Data.Info.Channelorder = ChannelOrder;
     
-    disp("Costum Channel Order loaded.")
+    disp("Custom Channel Order loaded.")
 
     clear('tempMatrix');
     
@@ -63,6 +53,6 @@ else
     % If no channelorder selected, it is 1 to channel size
     % by default
     Data.Info.Channelorder = 1:1:size(Data.Raw,1);
-    stringtoshow = "Channelorder could not be loaded or has more/less elements than data has channel. Data was loaded without costum channelorder.";
+    stringtoshow = "Channelorder could not be loaded or has more/less elements than data has channel. Data was loaded without custom channelorder.";
     msgbox(stringtoshow);
 end

@@ -28,11 +28,6 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 %________________________________________________________________________________________
 
 PreserveChannelSpacing = app.PreservePlotChannelLocations;
-% if strcmp(app.Data.Info.RecordingType,"SpikeGLX NP") || app.Data.Info.ProbeInfo.OffSetRows
-%     if PreserveChannelSpacing == 1
-%         PreserveChannelSpacing = 0;
-%     end
-% end
 
 % If events addon selected in main window (events added to plot) select
 % which input event channel to show
@@ -90,7 +85,7 @@ end
 if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')  
     TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
     StartIndex = app.CurrentTimePoints;
-    StopIndex = StartIndex+round(TimeDuration*app.Data.Info.DownsampledSampleRate);
+    StopIndex = StartIndex+ceil(TimeDuration*app.Data.Info.DownsampledSampleRate);
     if StopIndex > size(app.Data.Preprocessed,2)
         StopIndex = size(app.Data.Preprocessed,2);
     end
@@ -107,7 +102,7 @@ else % If not downsampled
     end
 end
 % ensure proper length according to time range
-StopIndex = StopIndex - 1;
+%StopIndex = StopIndex - 1;
 
 %% Extract Channel Number and set colormap
 if strcmp(app.ChannelChange,"EditField") && ~isempty(app.ProbeViewWindowHandle)
@@ -369,30 +364,14 @@ if isprop(app.PSTHApp,'Existflag')
         end
 
         if app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value == 1
-            if strcmp(app.DropDown.Value,"Preprocessed Data") && isfield(app.Data.Info,'DownsampledSampleRate')
-                TimeinSecs = app.Data.TimeDownsampled(app.CurrentTimePoints);
-                % Calculate the absolute differences
-                differences = abs(app.Data.Time - TimeinSecs);
-
-                % Find the index of the minimum difference
-                [~, TempCurrentTimePoints] = min(differences);
-
-                TimeDuration = str2double(app.TimeRangeViewBox.Value(1:end-1));
-                TempStartIndex = TempCurrentTimePoints;
-                TempStopIndex = TempStartIndex+ceil(TimeDuration*app.Data.Info.NativeSamplingRate);
-                if TempStopIndex > size(app.Data.Raw,2)
-                    TempStopIndex = size(app.Data.Raw,2);
-                end
-            else
-                TempStartIndex = StartIndex;
-                TempStopIndex = StopIndex;
-            end
-            % TempStartIndex = StartIndex;
-            % TempStopIndex = StopIndex;
+            TempStartIndex = StartIndex;
+            TempStopIndex = StopIndex;
             [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,TempStartIndex,TempStopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
-            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,TempStartIndex,TempStopIndex,0,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,TempStartIndex,TempStopIndex);
+            
+            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,TempStartIndex,TempStopIndex,0,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,SpikeData,app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
         else
             TimeWindow = str2double(strsplit(app.PSTHApp.TimeWindowfromtoinsEditField.Value,','));
+            
             if strcmp(app.DropDown.Value,'Preprocessed Data') && isfield(app.Data.Info,'DownsampleFactor')
                 [~,TempStartIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(1)));
                 [~,TempStopIndex] = min(abs(app.Data.TimeDownsampled - TimeWindow(2)));
@@ -404,12 +383,40 @@ if isprop(app.PSTHApp,'Existflag')
                 [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,TempStartIndex,TempStopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
             end
 
+            % spikedata from above does not work when outside current main
+            % window --> compute agaion
+            SpikeData.Indicie = [];
+            if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Preprocessed Data')
+                TempDownsamplespikes = round(app.Data.Spikes.SpikeTimes ./ app.Data.Info.DownsampleFactor);
+                SpikeDataIndex = TempDownsamplespikes >= TempStartIndex & TempDownsamplespikes <= TempStopIndex;
+                SpikeData.Indicie = TempDownsamplespikes(SpikeDataIndex) - TempStartIndex; % Spike Times are indicies of whole datastream. To get indicie within shown time window substract start time
+            else
+                SpikeDataIndex = app.Data.Spikes.SpikeTimes >= TempStartIndex & app.Data.Spikes.SpikeTimes <= TempStopIndex;
+                SpikeData.Indicie = app.Data.Spikes.SpikeTimes(SpikeDataIndex) - TempStartIndex; % Spike Times are indicies of whole datastream. To get indicie within shown time window substract start time
+            end
+        
+            SpikeData.Indicie(SpikeData.Indicie==0) = 1;
+            SpikeData.ChannelPosition = app.Data.Spikes.ChannelPosition;
+        
+            %% If doesnt start with 0 um rescale so that its correctly shown in main window plot
+            if strcmp(app.Data.Info.SpikeType,"Kilosort") || strcmp(app.Data.Info.SpikeType,"SpikeInterface")
+        
+                UinquePos = unique(app.Data.Spikes.ChannelPosition(:,1));
+            
+                if numel(UinquePos)>=2 ||  strcmp(app.PlotAppearance.MainWindow.Data.Plottype,"DataLinesGrid")
+                    SpikeData.Position = app.Data.Spikes.SpikeChannel(SpikeDataIndex); 
+                else
+                    SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2);
+                end
+            else
+               SpikeData.Position = app.Data.Spikes.SpikePositions(SpikeDataIndex,2); 
+            end
 
             % TimeWindow = str2double(strsplit(app.PSTHApp.TimeWindowfromtoinsEditField.Value,','));
             % [~,TempStartIndex] = min(abs(app.Data.Time - TimeWindow(1)));
             % [~,TempStopIndex] = min(abs(app.Data.Time - TimeWindow(2)));
             % [~,~,~,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.DropDown.Value,TempStartIndex,TempStopIndex,"SpikeRate",app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
-            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,StartIndex,StopIndex,PreprocessedPlot,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,TempStartIndex,TempStopIndex);
+            [app.CurrentPlotData] = Analyse_Main_Window_Spike_Rate(app.Data,app.PSTHApp.Slider.Value,app.PSTHApp.UIAxes,TempTime,app.PSTHApp.LockYLimCheckBox.Value,TempSamplefrequency,app.Channelrange,TempStartIndex,TempStopIndex,PreprocessedPlot,DownsampleSPikeRate,CutoffFreque,FilterOrder,app.CurrentPlotData,app.PlotAppearance,SpikeData,app.PSTHApp.CoupleTimetoMainWindowCheckBox.Value);
         end  
     end
 end

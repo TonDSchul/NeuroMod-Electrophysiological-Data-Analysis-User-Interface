@@ -39,7 +39,7 @@ if strcmp(ClusterSelection,"All") || strcmp(ClusterSelection,"Non")
     WaveformsInCluster = Waveforms;
 else
     SpikesInCluster = SpikeCluster == PlotInfo.Units;
-    if sum(SpikesInCluster)>1
+    if sum(SpikesInCluster)>=1
         WaveformsInCluster = Waveforms(SpikesInCluster==1,:);
     else
         msgbox("No Spikes for current Parameter found!")

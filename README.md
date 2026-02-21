@@ -248,6 +248,12 @@ Check out **TDTMatlabSDK**:
 
 https://github.com/tdtneuro/TDTMatlabSDK
 
+Data extraction from raw Spike GLX files is handled using the SpikeGLX_Datafile_Tools GitHub repository.
+
+Check out **SpikeGLX_Datafile_Tools**: 
+
+https://github.com/jenniferColonell/SpikeGLX_Datafile_Tools
+
 Lastly, some functions from the cortex-lab Github page were used ('Spikes' repository) for spike analysis and LFP Band power analysis. Almost all functions used are modified to make to fit the purpose of this GUI.
 
 Check out the **Spikes repository from the Cortex-Lab**: 

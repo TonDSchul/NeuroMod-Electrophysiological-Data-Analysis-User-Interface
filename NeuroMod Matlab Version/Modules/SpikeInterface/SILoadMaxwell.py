@@ -15,6 +15,7 @@ from pathlib import Path
 import json
 import h5py
 
+import spikeinterface.preprocessing as spre
 from spikeinterface.extractors import read_maxwell
 
 def create_save_folder(selected_folder):
@@ -169,7 +170,7 @@ def Save_Probe_Info(recording,SaveFolder,SaveFormat,channel_ids,channel_ids_extr
         savemat(SaveFolder, mat_dict)
         print("Succesfully saved probe information in " + str(SaveFolder))
 
-def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToExtract,SIParamsfile):
+def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveForMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToExtract,SIParamsfile,CorrectDCOffset_MEA):
     import spikeinterface as si
     print("Currently installed SI version:")
     print(si.__version__)
@@ -252,6 +253,9 @@ def main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSav
     print("Number of channels:", recording.get_num_channels())
     print("Duration (s):", recording.get_total_duration())
     
+    if CorrectDCOffset_MEA:
+        print("Correcting DC Offset")
+        recording = spre.center(recording, mode="mean")
     # -----------------------------------------------------------------------
     ''' Extraction parameter '''
     # -----------------------------------------------------------------------
@@ -348,6 +352,7 @@ if __name__ == "__main__":
     SaveProbeInfoFormat = SIparams['SaveProbeInfoFormat']
     TimeToExtract = SIparams['TimeToLoad']
     ChannelToextract = SIparams['ChannelToLoad']
+    CorrectDCOffset_MEA = int(SIparams['CorrectDCOffset'])
     
     if KeepConsoleOpen == 1:
         try:
@@ -357,7 +362,7 @@ if __name__ == "__main__":
                 print("Re-launching as admin!")
                 pyuac.runAsAdmin()
             else:                   
-                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract,SIParamsfile)  
+                main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract,SIParamsfile,CorrectDCOffset_MEA)  
     
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -384,11 +389,12 @@ if __name__ == "__main__":
         SaveProbeInfoFormat = SIparams['SaveProbeInfoFormat']
         TimeToExtract = SIparams['TimeToLoad']
         ChannelToextract = SIparams['ChannelToLoad']
+        CorrectDCOffset_MEA = int(SIparams['CorrectDCOffset'])
         
         if not pyuac.isUserAdmin():
             print("Re-launching as admin!")
             pyuac.runAsAdmin()
         else:                   
-            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract,SIParamsfile)  
+            main(file_path,JustLoad,RecordingSystemSelection,KeepConsoleOpen,FormatToSaveandReadintoMatlab,SaveProbeInfo,SaveProbeInfoFormat,TimeToExtract,ChannelToextract,SIParamsfile,CorrectDCOffset_MEA)  
         
 

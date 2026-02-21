@@ -71,11 +71,17 @@ function [TempData,ChannelSelectionforPlottingEditField,EventRangeEditField,Spik
 
 TempData = [];
 
+
 %% Prepare Plots
 if strcmp(AnalysisTypeDropDown,"Spike Triggered LFP")
     [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,1,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel,PreservePlotChannelLocations);
 else
     [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEvents,~,ChannelSelectionforPlottingEditField,EventRangeEditField,SpikeRateNumBinsEditField] = Event_Spikes_Prepare_Plots(Data,EventRangeEditField,ChannelSelectionforPlottingEditField,BaselineWindowStartStopinsEditField,SpikeRateNumBinsEditField,Data.Info.SpikeType,0,TimeWindowSpiketriggredLFPEditField,SpikeBinSettings,ActiveChannel,PreservePlotChannelLocations);
+end
+
+if isempty(SpikeTimes)
+    msgbox("No spikes found with selected parameter and channel!");
+    return;
 end
 
 % Check for errros

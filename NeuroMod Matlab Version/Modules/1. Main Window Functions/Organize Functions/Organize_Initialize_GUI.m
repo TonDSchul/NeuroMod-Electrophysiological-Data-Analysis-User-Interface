@@ -537,6 +537,13 @@ elseif strcmp(Type,"VariableDefinition")
             app.PlotAppearance.ERPWindow.PlotType = "IndividualLines ";
         end
     end
+    % button to show main plot in figure
+    if contains(app.PlotAppearance.MainWindow.Data.Plottype,"Grid")
+        app.Button_5.Visible = "off";
+    else
+        app.Button_5.Visible = "on";
+        app.Button_5.Enable = "on";
+    end
 
     app.ChannelAxes = [];
     app.ChannelGrid = [];

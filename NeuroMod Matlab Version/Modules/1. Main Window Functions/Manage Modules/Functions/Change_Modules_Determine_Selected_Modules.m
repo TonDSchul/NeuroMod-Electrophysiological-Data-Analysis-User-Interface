@@ -37,10 +37,10 @@ if ChangeApp
             for i = 1:4
                 ModuleOrder(i) = i;
             end
-            disp("No costum module order found. Loading standard modules.")
+            disp("No custom module order found. Loading standard modules.")
             save(FileToSearchFor,'ModuleOrder')
         else
-            disp("Loading costum module order.")
+            disp("Loading custom module order.")
             load(FileToSearchFor,'ModuleOrder')
         end
     else

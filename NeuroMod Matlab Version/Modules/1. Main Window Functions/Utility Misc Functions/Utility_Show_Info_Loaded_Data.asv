@@ -121,16 +121,11 @@ for i = 1:numel(fields)
         if ~isempty(fieldValue)
             if isnumeric(fieldValue)
                 if strcmp(fieldName,'Channelorder')
-                    if length(fieldValue)>=32
-                        fieldValue = strjoin(string(fieldValue(1:32)),',');
-                    else
-                        fieldValue = strjoin(string(fieldValue),',');
-                    end
-                    fieldValue = strcat(fieldValue,', ...');
-                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, fieldValue);
-                else
-                    infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
+                    fieldValue = strjoin(string(fieldValue(1:20)),',');
+                    e
                 end
+
+                infoString = sprintf('%s%s: %s\n', infoString, fieldName, num2str(fieldValue));
             end
         end
     end

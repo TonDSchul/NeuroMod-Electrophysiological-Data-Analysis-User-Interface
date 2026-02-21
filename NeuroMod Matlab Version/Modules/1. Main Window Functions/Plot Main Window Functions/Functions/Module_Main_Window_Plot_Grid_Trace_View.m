@@ -1,4 +1,51 @@
-function [YlimMaxVlaues,CurrentPlotData] = Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,BaselineNorm,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,EventERP,MainPlot,YlimMaxVlaues,CurrentPlotData)
+function [YlimMaxVlaues,CurrentPlotData] = Module_Main_Window_Plot_Grid_Trace_View(app,Data,PlotData,Time,BaselineNorm,PlotAppearance,ActiveDataChannel,PreservePlotChannelLocations,SpikeData,Window,MainPlot,YlimMaxVlaues,CurrentPlotData)
+
+%________________________________________________________________________________________
+
+%% Function to plot grid trace view in main window, static spectrum and ERP windows
+% This function is called inside of
+% Organize_Prepare_Plot_and_Extract_GUI_Info when plotting in the main
+% window. Otherwise it is called in the respective app window
+
+% This plots within a plot grid created within an app.Panel object. As many
+% plo axes as probe columns are created. For each column the signal of all
+% rows is concatonated and demarkated by plotting black vertical lines. This
+% saves significant amount of time compared to one plot axes for each
+% channel
+
+% Inputs: 
+% 1. app: app object of the window to plot in. Takes app.ChannelAxes as
+% cell array with each cell being one plot axes
+% 2. Data: main window data structure
+% PlotData: cell array with dimension of probe design, holdign signal for
+% each channel in spatially preserverd channel order. Comes from
+% Module_MainWindow_Convert_DataMatrix_Into_Grid.
+% 3. Time: vector with time in seconds of signal plotted in each grid
+% 4. BaselineNorm: double 1 or 0 whether to baseline normalize
+% 5. PlotAppearance: struc holding all plotappearances for all windows to set
+% plot properties like linewidths
+% 6. ActiveDataChannel: vector of active channels. Default active channel
+% numbers, not data matrix channel!
+% 7. PreservePlotChannelLocations: double, 1 or 0 whether to preserve the true distance
+% between probe channels
+% 8. SpikeData: ell array with dimension of probe design, holding spikes for
+% each channel in spatially preserverd channel order.
+% 9. Window: char, determines from which window this function is called (and whether data lines or color plot), see
+% below for options
+% 10. MainPlot: 1 or 0 whether it is plotted in the main window
+% 11. YlimMaxVlaues: Min and max y values of ALL data points being plotted to
+% set global ylim
+% 12. CurrentPlotData: struc holding all analysis results that can be exported
+
+% Output:
+% YlimMaxVlaues: Min and max y values of ALL data points being plotted to
+% set global ylim.
+% CurrentPlotData: struc holding all analysis results that can be exported
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
 
 %% Setup
 OriginalActiveChannel = ActiveDataChannel;
@@ -17,12 +64,6 @@ ChannelBeforeActive = 0;
 [MatrixIndexedActiveDataChannel, ~] = deal( ceil(ActiveDataChannel/size(PlotData,2)), mod(ActiveDataChannel-1,size(PlotData,2))+1 );
 MatrixIndexedActiveDataChannel = unique(MatrixIndexedActiveDataChannel);
 
-% if str2double(Data.Info.ProbeInfo.NrRows)==2
-%     Laufvariable = OriginalActiveChannel(1);
-% else
-%     Laufvariable = 1;
-% end
-
 Laufvariable = 1;
 
 LineWidthDataPlot = [];
@@ -31,7 +72,7 @@ EventLineWidth = [];
 LineDataColor = [];
 EventDataColor = [];
 
-if ~contains(EventERP,"Spectrum")
+if ~contains(Window,"Spectrum")
     CurrentPlotData.ERPGridYData = [];
     CurrentPlotData.ERPGridCData = [];
     CurrentPlotData.ERPGridXData = [];
@@ -48,21 +89,21 @@ else
 end
 
 % ERP
-if strcmp(EventERP,"EventWindowpcolor") || strcmp(EventERP,"EventWindowLines") 
+if strcmp(Window,"EventWindowpcolor") || strcmp(Window,"EventWindowLines") 
     LineWidthDataPlot = PlotAppearance.ERPWindow.Grid.GridDataLineWidth;
     EventLineWidth = PlotAppearance.ERPWindow.Grid.GridEventLineWidth;
     
     LineDataColor = PlotAppearance.ERPWindow.Grid.GridDataColor;
     EventDataColor = PlotAppearance.ERPWindow.Grid.GridEventColor;
 % Event Sepctrum
-elseif strcmp(EventERP,"EventWindowColorSpectrum") || strcmp(EventERP,"EventWindowLinesSpectrum") 
+elseif strcmp(Window,"EventWindowColorSpectrum") || strcmp(Window,"EventWindowLinesSpectrum") 
     LineWidthDataPlot = PlotAppearance.SpectrumWindow.Data.GridTraceDataWidth;
     LineDataColor = PlotAppearance.SpectrumWindow.Data.GridTraceDataColor;
 
     EventDataColor = PlotAppearance.SpectrumWindow.Data.GridTraceEventColor;
     EventLineWidth = PlotAppearance.SpectrumWindow.Data.GridTraceEventWidth;
 %MainPlot
-elseif strcmp(EventERP,"MainPlot")
+elseif strcmp(Window,"MainPlot")
     LineWidthDataPlot = PlotAppearance.MainWindow.Data.LineWidth.GridTraceData;
     EventLineWidth = PlotAppearance.MainWindow.Data.LineWidth.GridTraceEvents;
     
@@ -123,6 +164,11 @@ if str2double(Data.Info.ProbeInfo.NrRows)==2 %&& str2double(Data.Info.ProbeInfo.
     end
 end
 
+%%%%%
+if str2double(Data.Info.ProbeInfo.NrRows)>2
+    AllIndieciesInMatrix = reshape(1:(length(unique(Data.Info.ProbeInfo.ycoords))*length(unique(Data.Info.ProbeInfo.xcoords))), length(unique(Data.Info.ProbeInfo.xcoords)), length(unique(Data.Info.ProbeInfo.ycoords)))'; 
+end
+%%%%%
 for NActive = 1:length(MatrixIndexedActiveDataChannel)
 
     % Create one axes for this channel
@@ -154,7 +200,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
         EventHandles = findobj(ax, 'Type', 'line', 'Tag', 'Events');
     end
 
-    if ~strcmp(EventERP,"EventWindowpcolor") && ~strcmp(EventERP,"EventWindowColorSpectrum")
+    if ~strcmp(Window,"EventWindowpcolor") && ~strcmp(Window,"EventWindowColorSpectrum")
         delete(ImageSCHandles)
     end
     
@@ -175,13 +221,14 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     end
     
     SpikesForCurrentSubPlot = [];
+
     for nRows = 1:AllRows
         if str2double(Data.Info.ProbeInfo.NrRows)==1
             TestVariable = MatrixIndexedActiveDataChannel(NActive);
         elseif str2double(Data.Info.ProbeInfo.NrRows)==2
             TestVariable = Laufvariable;
         else
-            TestVariable = Laufvariable;
+            TestVariable = AllIndieciesInMatrix(nChannel,Laufvariable);
         end
         if sum(TestVariable == ActiveDataChannel)>0
             % Channel Data
@@ -208,6 +255,11 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
         StartChunk = StopChunk + 1;
         StopChunk = StopChunk + length(Time);
     end
+    %%%%%
+    if str2double(Data.Info.ProbeInfo.NrRows)>2
+        Laufvariable = 1;
+    end
+    %%%%%%%
 
     %% plotting part
     % Create subplot
@@ -218,7 +270,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     if isempty(TraceHandles)
         firsttimeindicator = 1;
         if sum(isnan(DataForCurrentSubPlot))<length(DataForCurrentSubPlot)
-            if strcmp(EventERP,"EventWindowpcolor") || strcmp(EventERP,"EventWindowColorSpectrum")
+            if strcmp(Window,"EventWindowpcolor") || strcmp(Window,"EventWindowColorSpectrum")
                 v2d = DataForCurrentSubPlot(:)';   
                 v2d = [v2d; v2d];                 
                 
@@ -233,7 +285,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
         end
     else
         if sum(isnan(DataForCurrentSubPlot))<length(DataForCurrentSubPlot)
-            if strcmp(EventERP,"EventWindowpcolor") || strcmp(EventERP,"EventWindowColorSpectrum")
+            if strcmp(Window,"EventWindowpcolor") || strcmp(Window,"EventWindowColorSpectrum")
                 v2d = DataForCurrentSubPlot(:)';   
                 v2d = [v2d; v2d];                  
                 
@@ -281,7 +333,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
             app.Slider.Value = 0.000001;
         end
 
-        if ~strcmp(EventERP,"EventWindowpcolor") && ~strcmp(EventERP,"EventWindowColorSpectrum") && ~strcmp(EventERP,"MainPlot")
+        if ~strcmp(Window,"EventWindowpcolor") && ~strcmp(Window,"EventWindowColorSpectrum") && ~strcmp(Window,"MainPlot")
             if BaselineNorm == 1
                 ylim(ax,[-app.Slider.Value, app.Slider.Value]);
             else
@@ -289,7 +341,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
                     ylim(ax,[min(DataForCurrentSubPlot)-app.Slider.Value, max(DataForCurrentSubPlot)+app.Slider.Value]);
                 end
             end
-        elseif strcmp(EventERP,"MainPlot")
+        elseif strcmp(Window,"MainPlot")
             ylim(ax,[YlimMaxVlaues(1)-app.Slider.Value, YlimMaxVlaues(2)+app.Slider.Value]);
         else
             if BaselineNorm == 1
@@ -300,7 +352,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
         end
         
     else
-        if ~strcmp(EventERP,"EventWindowpcolor") && ~strcmp(EventERP,"EventWindowColorSpectrum")
+        if ~strcmp(Window,"EventWindowpcolor") && ~strcmp(Window,"EventWindowColorSpectrum")
             ylim(ax,YlimMaxVlaues);
         else
             clim(ax,YlimMaxVlaues);
@@ -313,29 +365,23 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     Plotobject = [];
     if isempty(BorderHandles)
         for j = 1:NumberRowDataChannel
-            if contains(EventERP,"Spectrum")
-                idx = length(Time)*j-1;
-                if j == 1
-                    idx = idx+1;
-                end
+            if contains(Window,"Spectrum")
+                idx = length(Time)*j;
             else
                 idx = length(Time)*j;
             end
             line(ax,[idx, idx], ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border')
         end
     else
-        if isempty(EventERP)
-            EventERP = "";
+        if isempty(Window)
+            Window = "";
         end
-        if MainPlot || contains(EventERP,"Event")
+        if MainPlot || contains(Window,"Event")
             if UpdateLinesAndText
                 for j = 1:NumberRowDataChannel
 
-                    if contains(EventERP,"Spectrum")
-                        idx = length(Time)*j-1;
-                        if j == 1
-                            idx = idx+1;
-                        end
+                    if contains(Window,"Spectrum")
+                        idx = length(Time)*j;
                     else
                         idx = length(Time)*j;
                     end
@@ -346,7 +392,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
                         set(BorderHandles(j), 'YData', ax.YLim, 'LineWidth', 1.2, 'Color', 'k', 'Tag', 'Border');
                     end
 
-                    if strcmp(EventERP,"EventWindowpcolor") || strcmp(EventERP,"EventWindowColorSpectrum")
+                    if strcmp(Window,"EventWindowpcolor") || strcmp(Window,"EventWindowColorSpectrum")
                         if ~isempty(BorderHandles) && length(BorderHandles)<=NumberRowDataChannel
                             % uistack(BorderHandles(j), 'top')
                         end
@@ -378,8 +424,8 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     % vertical position: middle of the axis
     yText = mean(ax.YLim, 'omitnan');
     
-    if ~strcmp(EventERP,"EventWindowpcolor") && ~strcmp(EventERP,"EventWindowColorSpectrum")
-        if ~strcmp(EventERP,"EventWindowLinesSpectrum") 
+    if ~strcmp(Window,"EventWindowpcolor") && ~strcmp(Window,"EventWindowColorSpectrum")
+        if ~strcmp(Window,"EventWindowLinesSpectrum") 
             text(ax, 1, yText, ...
                 strcat("Signal from ",num2str(ax.YLim(1))," to ",num2str(ax.YLim(2))," mV"), ...             
                 'HorizontalAlignment','right', ...
@@ -411,7 +457,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     end
     
     %% If event realted ERP: Plot event trigger time
-    if strcmp(EventERP,"EventWindowAll") || strcmp(EventERP,"EventWindowLines") || strcmp(EventERP,"EventWindowpcolor") 
+    if strcmp(Window,"EventWindowAll") || strcmp(Window,"EventWindowLines") || strcmp(Window,"EventWindowpcolor") 
         %if firsttimeindicator || isempty(EventHandles)
             NumSamplesEventTimeBefore = find(Data.Info.EventRelatedTime==0)-1;
             %% Vertical lines for events
@@ -432,7 +478,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
     end
     
     % Save data for export
-    if ~contains(EventERP,"Spectrum") && contains(EventERP,"Event")
+    if ~contains(Window,"Spectrum") && contains(Window,"Event")
         CurrentPlotData.ERPGridCData = [];
         if isempty(CurrentPlotData.ERPGridYData)
             CurrentPlotData.ERPGridYData(1,1:length(DataForCurrentSubPlot)) = DataForCurrentSubPlot;
@@ -443,7 +489,7 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
         if NActive==1
             CurrentPlotData.ERPGridXTicks = ax.XTickLabel;
         end
-    elseif contains(EventERP,"Spectrum") && contains(EventERP,"Event")
+    elseif contains(Window,"Spectrum") && contains(Window,"Event")
         CurrentPlotData.SpectrumGridCData = [];
         if isempty(CurrentPlotData.SpectrumGridYData)
             CurrentPlotData.SpectrumGridYData(1,1:length(DataForCurrentSubPlot)) = DataForCurrentSubPlot;
@@ -458,11 +504,11 @@ for NActive = 1:length(MatrixIndexedActiveDataChannel)
 
 end
 
-if ~contains(EventERP,"Spectrum") && contains(EventERP,"Event")
+if ~contains(Window,"Spectrum") && contains(Window,"Event")
     % Save data for export
     CurrentPlotData.ERPGridXData = Data.Info.EventRelatedTime;
     CurrentPlotData.ERPGridType = strcat("ERP Grid Trace View");
-elseif contains(EventERP,"Spectrum") && contains(EventERP,"Event")
+elseif contains(Window,"Spectrum") && contains(Window,"Event")
     % Save data for export
     CurrentPlotData.SpectrumGridXData = Time;
     CurrentPlotData.SpectrumGridType = strcat("Static Event Spectrum Grid Trace View");

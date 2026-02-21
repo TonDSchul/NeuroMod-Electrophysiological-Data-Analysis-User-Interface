@@ -109,7 +109,7 @@ if strcmp(FunctionOrder,'Extract_Events')
     if str2double(AutorunConfig.ExtractEventRelatedDataModule.LoadCosutmeTriggerIdentity) == 1
         Proceed = 1;
         if length(InputChannelSelection)>1
-            warning("When wanting to load costume trigger identites, only a single event input channel is allowed! Skipping.")
+            warning("When wanting to load custom trigger identites, only a single event input channel is allowed! Skipping.")
             Proceed = 0;
         end
         
@@ -132,7 +132,7 @@ if strcmp(FunctionOrder,'Extract_Events')
                 CostumeTriggerIdentityData = CostumeTriggerIdentityWindow.EventInfo;
                 delete(CostumeTriggerIdentityWindow)
             else
-                disp("Load Costume Trigger Identity Window closed.")
+                disp("Load Custom Trigger Identity Window closed.")
                 CostumeChannelIdentityInfo = [];
             end
             
@@ -204,7 +204,7 @@ if strcmp(FunctionOrder,'Extract_Events')
                     disp(convertStringsToChars(strcat("Channel ",CostumeChannelIdentityInfo.UniqueIdentities(i)," contains ",num2str(sum(CostumeChannelIdentityInfo.AllIdentities==CostumeChannelIdentityInfo.UniqueIdentities(i)))," trigger.")));
                 end
             else
-                disp('No costume trigger identity could be applied!');
+                disp('No custom trigger identity could be applied!');
             end
 
         end

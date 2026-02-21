@@ -16,8 +16,13 @@ function [Filterorder] = Utility_Determine_FIR_FilterOrder(app,LowFrequency)
 
 %________________________________________________________________________________________
 
-if strcmp(app.Mainapp.DropDown.Value,'Preprocessed Data') && isfield(app.Mainapp.Data.Info,'DownsampleFactor')  
-    TimeDuration = str2double(app.Mainapp.TimeRangeViewBox.Value(1:end-1));
+if contains(app.DataTypeDropDown.Value,'Preprocessed Data') && isfield(app.Mainapp.Data.Info,'DownsampleFactor')  
+    if app.CoupleTimetoMainWindowCheckBox.Value == 1
+        TimeDuration = str2double(app.Mainapp.TimeRangeViewBox.Value(1:end-1));
+    else
+        times = str2double(strsplit(app.TimeWindowfromtoinsEditField.Value,','));
+        TimeDuration = times(2)-times(1);
+    end
     StartIndex = app.Mainapp.CurrentTimePoints;
     StopIndex = StartIndex+round(TimeDuration*app.Mainapp.Data.Info.DownsampledSampleRate);
     if StopIndex > size(app.Mainapp.Data.Preprocessed,2)
@@ -25,8 +30,13 @@ if strcmp(app.Mainapp.DropDown.Value,'Preprocessed Data') && isfield(app.Mainapp
     end
     SampleRate = app.Mainapp.Data.Info.DownsampledSampleRate;
 else % If not downsampled
-    if strcmp(app.Mainapp.DropDown.Value,'Raw Data') || strcmp(app.Mainapp.DropDown.Value,'Preprocessed Data')
-        TimeDuration = str2double(app.Mainapp.TimeRangeViewBox.Value(1:end-1));
+    if contains(app.DataTypeDropDown.Value,'Raw Data') || strcmp(app.DataTypeDropDown.Value,'Preprocessed Data')
+        if app.CoupleTimetoMainWindowCheckBox.Value == 1
+            TimeDuration = str2double(app.Mainapp.TimeRangeViewBox.Value(1:end-1));
+        else
+            times = str2double(strsplit(app.TimeWindowfromtoinsEditField.Value,','));
+            TimeDuration = times(2)-times(1);
+        end
         StartIndex = app.Mainapp.CurrentTimePoints;
         StopIndex = StartIndex+ceil(TimeDuration*app.Mainapp.Data.Info.NativeSamplingRate);
         if StopIndex > size(app.Mainapp.Data.Raw,2)
@@ -34,6 +44,7 @@ else % If not downsampled
         end
         SampleRate = app.Mainapp.Data.Info.NativeSamplingRate;
     else
+        Filterorder = "200";
         return;
     end
 end

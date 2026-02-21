@@ -1,5 +1,31 @@
 function ClimMaxValues = Module_MainWindow_Plot_Imagesc_Surf_Mesh(Data,Info,Time,Depth,ActiveChannel,UIAxis,ClimMaxValues,PlotAppearance,ImageScChannel_handles,SpikeDataCell)
 
+%________________________________________________________________________________________
+
+%% Function to plot data in main window as surf, mesh or imagsc
+
+% gets called in 
+% Module_MainWindow_Plot_Data
+
+% Inputs: 
+% 1. Data: channel by time matrix with data to plot
+% 2. Info: main data metadata structure from Data.Info
+% 4. Time: double vector with time stamps for each plotted data point in
+% main plot
+% 5. Depth: double vector depths for each channel plotted in imagsc plot
+% 6. ActiveChannel: data matrix channel indicies plotted
+% 6. UIAxis: plot axes to plot in (app.UIAxes)
+% 7. ClimMaxValues: 1 x 2 double vector with global clims plotted so far
+% 8. PlotAppearance: structure holding indo about the appearance of plots
+% the user selected
+% 9. ImageScChannel_handles: handle to imagsc plot
+% 10: SpikeDataCell: cell array with spike indicies for each channel (empty cell for no spikes in that channel)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"Mesh") || strcmp(PlotAppearance.MainWindow.Data.Plottype,"AxonViewer")
     %Create Mask for inactive channel to not shown interpolated data for
     %     %them
@@ -154,12 +180,12 @@ if strcmp(PlotAppearance.MainWindow.Data.Plottype,"Surf") || strcmp(PlotAppearan
             end
             view(UIAxis, 45, 45)
         end
-        if CurrentClim(1) ~= CurrentClim(2)
+        if CurrentClim(1) ~= CurrentClim(2) && sum(isnan(CurrentClim))==0
             clim(UIAxis,CurrentClim);
         end
     else
         CurrentClim = [min(Data,[],'all') max(Data,[],'all')];
-        if CurrentClim(1) ~= CurrentClim(2)
+        if CurrentClim(1) ~= CurrentClim(2) && sum(isnan(CurrentClim))==0
             clim(UIAxis,CurrentClim);
         end
     end

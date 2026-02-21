@@ -18,7 +18,7 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 % 2. RecordingType: char, data format selected when extracting data with
 % neo
 % 3. FormatToSaveNEOIn: char, gives info how NEO saved data and how to load
-% it, either "Costum files (.dat,.mat)" OR "NEO Format to .mat Conversion"
+% it, either "Custom files (.dat,.mat)" OR "NEO Format to .mat Conversion"
 % 4. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
 % 
 
@@ -125,7 +125,7 @@ if SuccesfulLastLogger == 0
 end
 
 %% ------------------------------ Load Metadata ------------------------------
-if strcmp(FormatToSaveNEOIn,"Costum files (.dat,.mat)")
+if strcmp(FormatToSaveNEOIn,"Custom files (.dat,.mat)")
     try
         load(MetadataLocation)
     catch

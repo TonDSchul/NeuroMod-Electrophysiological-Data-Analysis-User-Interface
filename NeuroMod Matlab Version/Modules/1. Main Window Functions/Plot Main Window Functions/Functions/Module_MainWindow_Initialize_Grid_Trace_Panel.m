@@ -1,5 +1,31 @@
 function app = Module_MainWindow_Initialize_Grid_Trace_Panel(app,Mainapp,Window)
 
+%________________________________________________________________________________________
+
+%% Function to initialze the grid of axes to plot data in grid view
+% required is a app.Panel object to initiate all axes. One axes is
+% initiated for each probe column. this acts like a subplot arrangement
+% without using subplot (not usable in apps)
+
+% each axes or probe column plots data forall rows concatonated together
+% and separated by black vertical lines being plotted in the same axes.
+% This boosts performance compared to an axes for each channel individually
+
+% this function gets called for the main window data plot, ERP plot and
+% spectrm plot. Thats ehy the second input ar is Mainapp, bc app can be one
+% of the above
+
+% Inputs: 
+% 1. app: object to app window with app.Grid_Traces_View_Panel objectto
+% intiate axes in
+% 2. Mainapp: object to main window
+% 3. Window: char, from which window this is called
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 PreserveChannelSpacing = Mainapp.PreservePlotChannelLocations;
 
 [AllChannel,~,~] = Module_MainWindow_ActiveChannel_ChannerlNumber_Grid_Traces(Mainapp.Data.Info,[],"NumChan",Mainapp.Data.Info.ProbeInfo.ActiveChannel,PreserveChannelSpacing);
