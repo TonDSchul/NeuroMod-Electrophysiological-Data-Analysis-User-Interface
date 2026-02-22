@@ -1,4 +1,4 @@
-function Execute_Autorun_Save_Figure(Figure, ImageFormat, deletefigure, SaveName, LoadDataPath, Plottype, OENodePath, PlotAddons, RecordingsSystem, LoadedData, PlotName)
+function Execute_Autorun_Save_Figure(Figure,ImageFormat,deletefigure,SaveName,LoadDataPath,Plottype,OENodePath,PlotAddons,RecordingsSystem,LoadedData,PlotName)
 
 %________________________________________________________________________________________
 %% This is the main function to save figures when plotted during an autorun

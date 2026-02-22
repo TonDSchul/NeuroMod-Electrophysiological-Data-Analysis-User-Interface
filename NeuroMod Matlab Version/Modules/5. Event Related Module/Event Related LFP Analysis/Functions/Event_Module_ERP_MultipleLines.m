@@ -1,5 +1,36 @@
 function CurrentPlotData = Event_Module_ERP_MultipleLines(Data,EventRelatedData,PlotLineSpacing,EventTime,BaselineNormalize,NormalizationWindow,Figure2,Type,DataChannelSelected,rgbcolormap,PlotAppearance,CurrentPlotData)
 
+%________________________________________________________________________________________
+%% Function to plot individual trigger lines and mean (ERP) in ERP analysis window
+
+% Inputs: 
+% 1. Data: data strcuture of main window, to simplfy inputs later on?!
+% 2. EventRelatedData: nchannel x nevents x ntimepoints single matrix
+% containing event related data
+% 3. PlotLineSpacing: factor as double that determines the spacing between
+% plotted erp lines of different channel
+% 4. EventTime: double time vector of events with one time in seconds for
+% each time point of the EventRelatedData variable (with negativ pre event time)
+% 5. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 6. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
+% 7.Figure2: axis handle to figure on bottom of ERP window
+% 8. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
+% erp plots of one channel over all events OR 'MultipleERPOnly' for just
+% erp plot of each channel OR 'All' for both plots
+% 9. DataChannelSelected: 1 x 2 double with channelrange to be plotted;
+% [1,10] means channel 1 to 10 
+% 10. rgbcolormap: nplots x 3 double matrix with rgb values for each line
+% plotted (only for plotting multiple channel erp's with consistent colors)
+% 11. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
+% 12. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 %% Plot ERP for all Channel
 adjustedcolormap = rgbcolormap(DataChannelSelected,:);
 

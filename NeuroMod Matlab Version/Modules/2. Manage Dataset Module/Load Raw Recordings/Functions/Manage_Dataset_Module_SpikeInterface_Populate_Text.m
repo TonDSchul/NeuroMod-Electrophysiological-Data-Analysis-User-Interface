@@ -17,11 +17,12 @@ function [ProbeInfoText,RecordingSystemDropDownItems,FileTypeDropDownItems,strin
 % 1. ProbeInfoText: Text to show in the window text area
 % RecordingSystemDropDownItems: cell array each containing a char with the
 % options for the user for the auotdetected recording system dropdown
-% FileTypeDropDownItems: cell array each containing a char with the
+% 2. FileTypeDropDownItems: cell array each containing a char with the
 % options for the user for the file format dropdown menu
-% stringArray: n x 1 string array holding the folder contents (files)
-% SelectedFolder: char, folder to recording selected
-% Formatsfound: string array with all formats found (from this selection: .ncs, .nlx, .nex)
+% 3. stringArray: n x 1 string array holding the folder contents (files)
+% 4. SelectedFolder: char, folder to recording selected
+% 5. RecordingType: char, data format selected when extracting data with
+% neo
 
 %% Note: searches for Meta_Data.json, probe.json and the channel data bin file
 

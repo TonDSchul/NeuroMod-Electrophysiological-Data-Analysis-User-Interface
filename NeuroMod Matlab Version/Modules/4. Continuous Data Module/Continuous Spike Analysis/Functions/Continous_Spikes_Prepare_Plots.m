@@ -38,6 +38,9 @@ function [SpikeTimes,SpikePositions,SpikeAmps,CluterPositions,Waveforms,ChannelP
 % 12: Waveforms: nspikes x ntimewaveforms matrix with waveforms for each
 % spikes (spikes in Data.Spikes.Waveforms)
 % 13. ActiveChannel: double vector, currently user defined active channel from probe view window
+% 14. Analysis: NOT USED
+% 15.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double in seconds and within the

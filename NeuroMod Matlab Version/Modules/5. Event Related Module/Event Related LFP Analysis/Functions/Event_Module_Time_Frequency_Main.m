@@ -8,32 +8,22 @@ function [climsTF,CurrentPlotData] = Event_Module_Time_Frequency_Main(Data,DataT
 % the plotting function
 
 % Inputs: 
-% 1. EventRelatedData: nchannel x nevents n ntimepoints single matrix with
-% event related data.
-% 2. Figure: Axes handle to figure to plot in
-% 3. SampleRate: SampleRate as double in Hz
-% 4. DataChannelSelected: 1 x 2 double vector with channels to take, i.e.
-% [1,10] for channel 1 to 10, comes from
+% 1. Data: main window data structure
+% 2. DataType: type of data event related data was extracted from, either "Raw Data" OR "Preprocessed Data" 
+% 3. EventDataType: type of event related data, either "Raw Event Related
+% Data" OR "Preprocessed Event Related Data"
+% 4. Figure: Axes handle to figure to plot in
+% 5. TF: structure with parameter for TF calculations, comes from
 % 'Event_Module_Organize_TF_Window_Inputs' function
-% 4. EventNrRange: 1 x 2 double vector with events to take, i.e.
-% [1,10] for events 1 to 10, comes from
-% 'Event_Module_Organize_TF_Window_Inputs' function
-% 5. TimearoundEvent: 1 x 2 double vector time in seconds before event and after event, i.e.
-% [0.2,0.5] for a time range of -0.2 to 0.5 NOTE: first element has to be
-% positive, although its a negativ time.
-% 6. TF: structure with parameter for TF calculations, comes from
-% 'Event_Module_Organize_TF_Window_Inputs' function
-% 7. Type: determines signal components for TF analysis: "Total" OR "NonPhaseLocked" OR
-% "PhaseLocked"; NonPhaseLocked = Signal - ERP; Phaselocked = ERP; Total =
-% both components
-% 8. Plottype: "TF" OR "ITPC" to plot either Time frequency power or inter
-% trial phase clustering.
-% 9. WaveletType: determines type of TF analyisis, either "Moorlet
-% Wavelets" OR "Filter Hilbert"; NOTE: TODO: "Filter Hilbert" does not work yet 
-% 10. CurrentPlotData: structure in which analysis results are saved in
+% 6. Window: char, window size for spectrogram (in samples)
+% 7. TwoORThreeD: char, "TwoD" or "ThreeD" depending on what the user
+% selected
+% 8. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
-% 11. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
-% 12. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% 9. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
+% 10. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 11. NormalizationWindow: comma separated char, from to like '-0.2,0' in
 % seconds
 
 % Outputs:

@@ -31,7 +31,8 @@ function [PlotInfo,SpikeTimes,SpikePositions,SpikeAmplitude,SpikeCluster,SpikeEv
 % 9. SpikeBinSettings: structure, save numbins in time and depth domain for spike
 % rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
 % standard. 
-% 20.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% 10. ActiveChannel: double vector with currently active channel
+% 11.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
 % original spacing between active channel (in case of inactiove islands between active channel)
 
 %Outputs:

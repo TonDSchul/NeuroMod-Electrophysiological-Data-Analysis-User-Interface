@@ -13,13 +13,3 @@ Figure.YTickLabel = arrayfun(@(y) sprintf('%.2f', y), Yticks, 'UniformOutput', f
 Figure.Layer = 'top';
 hold(Figure, 'on');   % turn hold on
 
-% HelperHandle = findobj(Figure, 'Tag', 'HelperLine');
-% if length(HelperHandle)>1
-%     delete(HelperHandle(2:end));
-% end
-% 
-% if isempty(HelperHandle)
-%     plot(Figure,t,log2(coi),"k--",'LineWidth',2,'Tag','HelperLine');
-% else
-%     set(HelperHandle(1),'XData',t,'YData',log2(coi),'LineWidth',2,'Tag','HelperLine')
-% end

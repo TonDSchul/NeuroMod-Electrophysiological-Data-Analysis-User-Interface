@@ -22,6 +22,10 @@ File: Event_Spikes_Extract_Event_Related_Spikes.m
 % is plotted. This means, that spike samples are not "normalized" to event
 % time range. This enables to extract spike data from raw/preprocessed data. 0
 % Otherwise
+% 4. EventDataType: char, either 'Raw Event Related Data' or 'Preprocessed
+% Event Related Data'. 
+% 5.EventChannelName: char, name of the event channel to extract event
+% related spikes for
 
 % Output
 % 1. Data: main window data structure with added field Data.EventRelatedSpikes
@@ -47,6 +51,7 @@ File: Event_Spikes_Plot_Heatmap_Spike_Rate.m
 % for event spike analysis (Internal and Kilosort)
 
 % Input:
+% 1. Data: Main window data structure with all relevant data components
 % 1. SpikeTimes: nspikes x 1 double in seconds. Spike time before event is
 % negativ
 % 2. SpikePositions: nspikes x 1 double with spike positions (in um) - for
@@ -73,6 +78,8 @@ File: Event_Spikes_Plot_Heatmap_Spike_Rate.m
 % 18. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 19. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 20. PlotAppearance: struc with all plot appearance parameter for plot
+% like linewidths and colors
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -120,6 +127,10 @@ File: Event_Spikes_Plot_Spike_Rate.m
 % channel 1 to 10
 % 16. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 17: PlotAppearance: struc with all plot appearance parameter for plot
+% like linewidths and colors
+% 18.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -166,6 +177,9 @@ File: Event_Spikes_Prepare_Plots.m
 % 9. SpikeBinSettings: structure, save numbins in time and depth domain for spike
 % rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
 % standard. 
+% 10. ActiveChannel: double vector with currently active channel
+% 11.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 %Outputs:
 
@@ -196,59 +210,22 @@ File: Event_Spikes_Prepare_Plots.m
 
  ###################################################### 
 
-File: Events_Internal_Spikes_Manage_Analysis_Plots.m
+File: Event_Spikes_Resize_Figures.m
 %________________________________________________________________________________________
-%% Function to organize and select analysis and plot functions for event internal spikes based on user input
-% This function uses a functions from the spike repository from Cortex lab on Github: https://github.com/cortex-lab/spikes
-% Function used: computeWFampsOverDepth
-%                plotWFampCDFs
-%                spikeTrigLFP
-
-% This function is executed every time some event internal spikes analysis has to be done and plotted
+%% Function to set position and aspect ration of figures in event spike analysis window so that spike rates are alligned with the main plot in the middle
 
 % Inputs:
-% 1. Data: main window data structure with time vector (Data.Time) and Info
-% field
-% 2. EventRangeEditField: user input for events to show, char 'from, to',
-% i.e. '1,10' for events 1 to 10;
-% 3. Figure: figure object handle to main plot in the middle of the window
-% 4. AnalysisTypeDropDown: string, specifies which analysis was selected by user,
-% Options: 'SpikeRateBinSizeChange' OR "Spike Map" OR Channel Waveforms OR
-% "Average Waveforms Across Channel" OR "Cumulative Spike Amplitude Density
-% Along Depth" OR "Spike Amplitude Density Along Depth" OR "Spike Triggered LFP"
-% 5. SpikeRateNumBinsEditField: user input for number of bins of spike rate plots, char,
-% i.e. '100' for 100 bins
-% 6. TextArea: internal event spike app window textarea to show number of
-% spikes and cluster
-% 7. rgbMatrix: nwavefors x 3 matrix, with RGB values for each waveform/template to
-% be plotted to ensure consistency of colors
-% 8. ChannelSelectionforPlottingEditField: user input for cahnnel to show, char 'from, to',
-% i.e. '1,10' for channel 1 to 10;
-% 9. BaselineWindowStartStopinsEditField: user input for time range of baseline window (for spike rate heatmap), char 'from, to',
-% i.e. '-0.2,0' for -200ms to 0ms timw window as baseline
-% 10. BaselineNormalizeCheckBox: check box whether baseline normalization should be applied. BaselineNormalizeCheckBox.Value is either
-% 1 if checked or 0 if not
-% 11. TimeWindowSpiketriggredLFPEditField:  user input for time range of baseline window (for spike rate heatmap), char 'from, to',
-% i.e. '-0.05,0.2' for -5ms to 200ms timw window as baseline
-% 12. Figure2: figure object handle to plot spike rate over time 
-% 13. Figure3: figure object handle to plot spike rate over time 
-% 14. TwoORThreeDchar: either "TwoD" or "ThreeD" for 2d or 3d plot
-% 15. numCluster: double, number of different units/cluster found in spike
-% sorting
-% 16. ClustertoShowDropDown: char, contains the unit selection the user
-% makes, Either "All" OR "Non" OR "1" or whatever over unit number
-% 17. CurrentPlotData: structure in which analysis results are saved in
-% case user wants to export them
+% 1. MainFigure : app.UIAxes object to the plot in the middle
+% 2. SpikeRateTimeFig: app.UIAxes object to the plot spike rate over time
+% (under main plot in the middle)
+% 3. SpikeRateChannelFig: app.UIAxes object to the plot spike rate over
+% channel (to the right of the main plot in the middle)
+% 4. AnalysisMethod: char, Analysis plot choosen in cont spike analysis window,
+% see below
+% 5. Cluster: NOT USED YET
 
-% Outputs:
-% 1. Data: main app data structure 
-% 2. ChannelSelectionforPlottingEditField: same as input to show auto
-% changes if they were made (i.e. more channel selected than available)
-% 3. EventRangeEditField: same as input to show auto
-% changes if they were made (i.e. more channel selected than available)
-% 4. SpikeRateNumBinsEditField: same as input to show auto
-% changes if they were made (i.e. more channel selected than available)
-% 5. CurrentPlotData: structure in which analysis results are saved in
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
@@ -304,6 +281,14 @@ File: Events_Spikes_Manage_Analysis_Plots.m
 % 18. SpikeBinSettings: structure, save numbins in time and depth domain for spike
 % rate heatmap plot -- see Spike_Module_Set_Up_Spike_Analysis_Windows.m for
 % standard. 
+% 19. EventDataType: char, either 'Raw Event Related Data' or 'Preprocessed
+% Event Related Data'. 
+% 20. EventChannelName: char, name of the event channel for which event
+% related spiokes are extracted
+% 21. Autorun: double, 1 or 0 whether fucntion is executed in autorun
+% functions
+% 22.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Outputs:
 % 1. Data: main app data structure 

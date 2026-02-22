@@ -28,9 +28,12 @@ function [numSquares,squareHeight,lowylimits,CorrrectedVerOffset,xdistances,AllY
 % Outputs:
 % 1. numSquares: double, number of channel squares plotted
 % squareHeight : double, height of channel squares plotted
-% lowylimits: double, height of channel squares plotted
-% CorrrectedVerOffset: Vertical Offset in plot between left and right
+% 2. lowylimits: double, height of channel squares plotted
+% 3. CorrrectedVerOffset: Vertical Offset in plot between left and right
 % channelrow for the actual plot
+% 4. xdistances: vector with distance between all x position rows are
+% plotted at
+% 5. AllYPositions: vector with y positions of all channels plotted
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

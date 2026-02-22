@@ -1,5 +1,21 @@
 function Utility_Set_YAxis_Depth_Labels(Data,Figure,executableFolder,CurrentActiveChannel,PreservePlotChannelLocations)
 
+%________________________________________________________________________________________
+%% Function to put custom depth labels on the y axis (see plots like cont. spike analysis spike map)
+
+% Input Arguments:
+% 1. Data: main window datastructure
+% 2. Figure: app.UIaxes object to change y labels for
+% 3. executableFolder: char, folder NeuroMod was started in
+% 4. CurrentActiveChannel: vector, sam ass app.ActiveChannel
+% 5. PreservePlotChannelLocations: double 1 or 0 whether to preserve
+% channel spacings
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Create Probe Layout with ALL Channel, also those that got deleted. This gives true probe positions
 DeletedChannel = 0;
 if isfield(Data.Info,'ChannelDeletion')

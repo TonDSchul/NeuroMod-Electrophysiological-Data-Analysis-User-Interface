@@ -210,6 +210,8 @@ File: Preprocessing_Events_Plot_and_Apply_Trial_Rejection.m
 % 10. Threshold: double, threshold to automatically detect trials to delete
 % 11. EventChannelname: char, name of event channel for which trials are
 % rejected
+% 12. ThresholdSign: 1x2 double vector. 1x1 is whether positive sign (1 for
+% yes, 0 no), 1x2 is whether negative sign (1 for yes, 0 no)
 
 % Outputs: 
 % 1. EventRelatedData: nchannel x ntrials x ntime single matrix with modified event

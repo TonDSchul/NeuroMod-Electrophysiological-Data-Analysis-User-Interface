@@ -23,6 +23,7 @@ function [Data,InputChannelData] = Extract_Events_Module_Extract_Event_Indicies_
 % 5. InputChannelData: 1 x ntime data for each event channel of the specified InputChannelType
 % 6. EventInfoType: char, Either 'Event Onset' or 'Event Offset' to
 % determine whether rising or falling edge should be detected
+
 % Outputs:
 % 1. Data: Data structure with added field:
 % Data.Events{1:neventchannelfound} containing a 1 x nevents vector with

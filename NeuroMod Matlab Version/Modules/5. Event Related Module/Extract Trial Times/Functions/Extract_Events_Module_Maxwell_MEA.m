@@ -1,5 +1,28 @@
 function [Events,EventChannelNames,Error] = Extract_Events_Module_Maxwell_MEA(Data,FullPath,EventType,EventInputChannel,TriggerType)
 
+%________________________________________________________________________________________
+
+%% Function to extract Maxwell MEA .h5 event data stored in bits or eventdata
+
+% Input:
+% 1. Data: Main window data strucure with all relevant dataset compontntes
+% 2. FullPath: char to maxwell recording folder
+% 3. EventType: char, "Bits Group" or "Event Group" from which part of the
+% recording object events are extracted
+% 4. EventInputChannel: double vector with channel indicies to extract
+% 5. TriggerType: char, either "Trigger Onset" or "Trigger Offset"
+
+% Output
+% 1.Events: cell array with each cell being a 1 x nevents vector with
+% samples
+% 2. EventChannelNames: cell array with char for each event channel holding its name 
+% 3. Error: double 1 or 0 whether error occured
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 Error = 0;
 Events = [];
 EventChannelNames = [];

@@ -1,5 +1,25 @@
 function Continous_Spikes_Resize_Figures(MainFigure,SpikeRateTimeFig,SpikeRateChannelFig,AnalysisMethod,Cluster)
 
+%________________________________________________________________________________________
+%% Function to set position and aspect ration of figures in cont. spike analysis window so that spike rates are alligned with the main plot in the middle
+
+% Inputs:
+% 1. MainFigure : app.UIAxes object to the plot in the middle
+% 2. SpikeRateTimeFig: app.UIAxes object to the plot spike rate over time
+% (under main plot in the middle)
+% 3. SpikeRateChannelFig: app.UIAxes object to the plot spike rate over
+% channel (to the right of the main plot in the middle)
+% 4. AnalysisMethod: char, Analysis plot choosen in cont spike analysis window,
+% see below
+% 5. Cluster: NOT USED YET
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 if strcmp(AnalysisMethod,"Spike Map") || strcmp(AnalysisMethod,"SpikeRateBinSizeChange")
     MainFigure.Position = [320,122,1017,715]; % x y width height

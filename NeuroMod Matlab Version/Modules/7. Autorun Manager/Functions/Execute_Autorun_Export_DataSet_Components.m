@@ -1,5 +1,22 @@
 function Execute_Autorun_Export_DataSet_Components(AutorunConfig,DatasetComponent,Data,executableFolder)
 
+%________________________________________________________________________________________
+
+%% Function that calls Utility_Export_Dataset_Components to export a dataset component
+% in autourun it can be that a component is added that does not exist yet,
+% so it has to check and enable to continue without errors
+
+% Inputs: 
+% 1. AutorunConfig: struc with all autorun parameter
+% 2. DatasetComponent: char, component to export (field name in Data struc)
+% 3. Data: main window data structure
+% 4. executableFolder: char, folder NeuroMod was started in
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 for i = 1:length(DatasetComponent)
     if strcmp(DatasetComponent(i),"Raw")
         if ~strcmp(AutorunConfig.Export.DatasetFormat,'.mat')

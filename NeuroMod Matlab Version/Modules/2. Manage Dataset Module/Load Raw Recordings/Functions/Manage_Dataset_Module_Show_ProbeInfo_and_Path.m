@@ -20,6 +20,8 @@ function [Load_Data_Window_Info,ProbeInfoText,FolderContentsText] = Manage_Datas
 % 7. ExtractWithNeo: char, either 'NeuroMod Matlab' OR 'NeuralEnsemble NEO Python Library'
 % 8. RecordingType: char, data format selected when extracting data with
 % neo
+% 9. JustChangeLibrary: 1 or 0 whether the user just changed the library to
+% extract data with, not the recording type by selecting a new folder
 
 % Output: 
 % 1. Load_Data_Window_Info: same as input struvture

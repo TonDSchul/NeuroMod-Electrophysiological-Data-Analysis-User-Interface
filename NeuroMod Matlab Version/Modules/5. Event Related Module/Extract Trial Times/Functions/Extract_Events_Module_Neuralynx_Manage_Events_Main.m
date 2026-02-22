@@ -1,5 +1,24 @@
 function [Events,EventChannelNames] = Extract_Events_Module_Neuralynx_Manage_Events_Main(event,Data,InputChannelSelection)
 
+%________________________________________________________________________________________
+
+%% Function to extract event information from EventInfo structure and save in main window Data structure
+
+% Input:
+% 1. event: struc with event informations, fields: event.sample and
+% event.value (state)
+% 2. Data: Main window data strucure with all relevant dataset compontntes
+% 3. InputChannelSelection: vector with event channel numbers to extract
+
+% Output
+% 1.Events: cell array with each cell being a 1 x nevents vector with
+% samples
+% 2. EventChannelNames: cell array with char for each event channel holding its name 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
 EventChannelNames = {};
 Events = {};
 

@@ -43,11 +43,6 @@ File: Analyse_Main_Window_Spike_Rate.m
 % Inputs:
 % 1: Data: structure with field Data.Spikes for spike data and Data.Info
 % for preprocessing infos
-% 2. CurrentTimePoints: first sample indicie of data plotted in main window
-% data plot as double 
-% 3. TimeRangeViewBox: char; field in the top right of the main window that shows
-% the duration of the data plotted to extract duration of the recording,
-% i.e. '1.532s' -- dont forget the s at the end!!
 % 4. BinRange: Number of bins as char, i.e. '100'
 % 5. Figure: axes object of figure to plot in
 % 6. TimeRangetoPlot: Time vector as double with one time point for each
@@ -71,6 +66,10 @@ File: Analyse_Main_Window_Spike_Rate.m
 % case user wants to export them
 % 17. PlotAppearance: structure holding information about plot appearances
 % the user can select
+% 18. SpikeData: struc with field: Indicies with spike times in current
+% window and SpikePositions with depth channel information
+% 19. CoupleTimetoMainWindow: 1 or 0 whether time to analyse is coupled to
+% the main window
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in

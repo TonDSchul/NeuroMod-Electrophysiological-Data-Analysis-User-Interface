@@ -51,11 +51,12 @@ File: Continous_Spikes_Delete_Spikes_Not_In_ChannelRange.m
 % Continous_Spikes_Prepare_Plots function
 
 % Inputs:
+% 1. Info: NeuroMod info structure (Data.Info)
 % 1. SpikeTimes: nspikes x 1 double in seconds
 % 2. SpikePositions: nspikes x 1 double with position of spike in um (for internal spikes: nchannel * ChannelSpacing)
 % 3: ChannelSpacing: as double in um (from Data.Info.ChannelSpacing)
-% 4: Channel_Selection: 1 x 2 double with channelselction of user, i.e.
-% [1,10] for channel 1 to 10
+% 4: Channel_Selection: double vector with channelselction of user, i.e.
+% [1,2,3,4,5] for channel 1 to 5
 % 5: SpikeType: type of spike data as char, either 'Internal' OR 'Kilosort'
 % 6. ALLActiveChannel: double vector, all activ channel defined when
 % extracting the dataset
@@ -121,6 +122,11 @@ File: Continous_Spikes_Manage_Analysis_Plots.m
 % case user wants to export them
 % 18. PlotAppearance: structure holding plot style information like color
 % and linewidth
+% 19. Autorun: double 1 or 0 whether funtion is executed in autorun 
+% 20 ActiveChannel: vector with all channel being active in the probe view
+% window
+% 21.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:
 % 1. Data: main window data structure with time vector (Data.Time) and Info
@@ -160,6 +166,8 @@ File: Continous_Spikes_Plot_Average_Waveforms.m
 % 9. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 10. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 11.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -229,6 +237,8 @@ File: Continous_Spikes_Plot_Spike_Rate.m
 % case user wants to export them
 % 15. PlotAppearance: structure holding plot style information like color
 % and linewidth
+% 16.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in
@@ -346,6 +356,9 @@ File: Continous_Spikes_Prepare_Plots.m
 % 12: Waveforms: nspikes x ntimewaveforms matrix with waveforms for each
 % spikes (spikes in Data.Spikes.Waveforms)
 % 13. ActiveChannel: double vector, currently user defined active channel from probe view window
+% 14. Analysis: NOT USED
+% 15.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 %Outputs:
 % 1. SpikeTimes: nspikes x 1 double in seconds and within the
@@ -380,6 +393,33 @@ File: Continous_Spikes_Prepare_Plots.m
 % this has to be capture in the channel for each waveform too. Unchanged,
 % channel info comes from Data.Spikes.SpikePositions. Not necessary yet but
 % usefull to have ready.
+% 13.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Continous_Spikes_Resize_Figures.m
+%________________________________________________________________________________________
+%% Function to set position and aspect ration of figures in cont. spike analysis window so that spike rates are alligned with the main plot in the middle
+
+% Inputs:
+% 1. MainFigure : app.UIAxes object to the plot in the middle
+% 2. SpikeRateTimeFig: app.UIAxes object to the plot spike rate over time
+% (under main plot in the middle)
+% 3. SpikeRateChannelFig: app.UIAxes object to the plot spike rate over
+% channel (to the right of the main plot in the middle)
+% 4. AnalysisMethod: char, Analysis plot choosen in cont spike analysis window,
+% see below
+% 5. Cluster: NOT USED YET
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

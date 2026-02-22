@@ -1,5 +1,22 @@
 function Data = Spike_Module_Apply_SpikeInterface_Quality_Metrics(Data,QualityMetrics)
 
+%________________________________________________________________________________________
+
+%% Function to clean loaded spike sorting results from SpikeInterface using quality metrics and user input about thresholds
+
+% Input:
+% 1. Data: main window data structure
+% 2. QualityMetrics: struc with one field per metric saving the user
+% inputted threshold
+
+% Output: 
+% 1. Data: main window data structure with cleaned Data.Spikes
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if isfield(QualityMetrics,'SNR')
     if ~isfield(Data.Spikes,'ClusterSNR')
         warning("Cluster SNR quality metric 'cluster_snr.tsv' was not found in sorting results! Step skipped.")

@@ -8,6 +8,8 @@ function  [Success] = Spike_Module_Start_Phy(Data,executableFolder,resultsFolder
 % 1. Data: main window data structure with all relevant data components
 % 2. executableFolder: char, path in which NeuroMod was opened, from main
 % window
+% 3. resultsFolder: char with path to the sorting results to cd into and
+% start phy
 
 % Output: 
 % 1. Success: double, 1 or 0 whether script succesfully finished

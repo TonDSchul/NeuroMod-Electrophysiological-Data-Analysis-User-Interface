@@ -66,7 +66,7 @@ File: Intan_RHD2000_Data_Extraction.m
 
 %% This function was modified to fit the prupose of this GUI
 % This includes calling the function without extracting data, just
-% extracting basic infos like nr of channel, modfied and costum output arguments,
+% extracting basic infos like nr of channel, modfied and custom output arguments,
 % conversion of data to single and diplay of progress in a textarea of a
 % GUI window as well as a waitbar showing the progress in percent
 
@@ -100,6 +100,88 @@ File: LoadIntanRHDFiles.m
 
  ###################################################### 
 
+File: Manage_Dataset_Check_NEO_NP1_Recording.m
+%________________________________________________________________________________________
+
+%% Function to detect lfp and ap signal of Neuropixel recordings and asks the user which one to extract
+% info if it is NP recording is searched for in sync_messages.txt in the
+% Open Ephys recording folder
+
+% Input:
+% 1. Data: main window data structure
+% 2. RecordingPath: Path to the recording selected at data extraction
+
+% Output: IsNP1 =double, 1 or 0 whether NP1 recording (in other words
+% sync_messages.txt) was found inf passed recording path
+% DataPartToextract: double, 1 or 0 whether the user selected to extract LFP
+%or AP data. 1=LFP, 2 = AP
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Check_Spike2CED64_Path.m
+%________________________________________________________________________________________
+
+%% Function to check whether the path to the Spike2 Matlab SON interface is present
+
+% when wanting to extract spike 2 data, this library is necessary. We need
+% to know the path this was installed in. When wanting to extract Spike2
+% data the first time in NeuroMod, the user is asked for that path and it
+% is saved in a variable in GUI_Path/Modules/MISC/Variables/CEDS64Path.mat.
+% After this, this variable is searched for and the path in it is check (whether it exists)
+
+% Input:
+% 1. executablefolder:folder in which current NeuroMod instance was started
+% from
+% 2. FolderWithPathVariable: Path to variable GUI_Path/Modules/MISC/Variables/CEDS64Path.mat.
+
+% Output: 
+% 1. selectedFolder: char, folder with the Spike2 Matlab SON interface if
+% user had to select it (in other words when it wasnt present already)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Check_Time_Channel_Fields.m
+%________________________________________________________________________________________
+
+%% Function to check the input edit fields of the extract raw recordings window that set the time to extract and channel to extract
+
+% when wanting to extract spike 2 data, this library is necessary. We need
+% to know the path this was installed in. When wanting to extract Spike2
+% data the first time in NeuroMod, the user is asked for that path and it
+% is saved in a variable in GUI_Path/Modules/MISC/Variables/CEDS64Path.mat.
+% After this, this variable is searched for and the path in it is check (whether it exists)
+
+% Input:
+% 1. TimeToExtractField: char, user input for time to extract
+% 2. ChannelToExtractField: char, user input for channel to extract
+% 3. event: holds event info from manipulating the edit field (from
+% Matlab). Used is: events.PreviousValue which holds the edit field char
+% before it was manipulated
+
+% Output: 
+% 1. TimeToExtractField: char, corrected user input for time to extract
+% 2. ChannelToExtractField: char, corrected user input for channel to extract
+ 
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Manage_Dataset_Extract_Intan_Data.m
 %________________________________________________________________________________________
 
@@ -114,6 +196,8 @@ File: Manage_Dataset_Extract_Intan_Data.m
 % 2. SelectedFolder: path as char to folder containing the recording
 % 3. TextArea: Textare from app window to display progress -- not used here
 % but can be useful in future
+% 4. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    TimeAndChannelToExtract.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
 
 % Output: 
 % 1. Data: nchannel x ntimespoints single matrix with extracted raw data
@@ -159,6 +243,8 @@ File: Manage_Dataset_Extract_Open_Ephys_Data.m
 % Node 113"] --> nRecordNodes = 3
 % If user selects Record Node 105 as the node to analyze in the extract raw
 % data app window, SelectedRecordNode = 2
+% 4. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    TimeAndChannelToExtract.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
 
 % Output: 
 % 1. TempData: nchannel x ntimespoints single matrix with extracted raw data
@@ -173,10 +259,164 @@ File: Manage_Dataset_Extract_Open_Ephys_Data.m
 
  ###################################################### 
 
+File: Manage_Dataset_Extract_SpikeGLX.m
+%________________________________________________________________________________________
+
+%% This is the main function handling extracting data recorded with SpikeGLX
+% function uses the SpikeGLX_Datafile_Tools githib repo from https://github.com/jenniferColonell/SpikeGLX_Datafile_Tools
+% to get the raw data traces as well as bit to mV conversion factors
+
+% This gets called in the
+% 'Manage_Dataset_Module_Extract_Raw_Recording_Main' function
+
+% Input:
+% 1. SelectedFolder: path as char to folder containing the recording
+% 2. SelectedTimeandChannel: structure with fields: SelectedTimeandChannel.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    SelectedTimeandChannel.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
+
+
+% Output: 
+% 1. Data: nchannel x ntimespoints single matrix with extracted raw data
+% 2. HeaderInfo: structure containing header infos of recording. This get TempData.Info later
+% 3. SampleRate: Sample Rate as double in Hz
+% 4. RecordingType: char designating recording system used
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Load_NEO_Conda_Python_exe.m
+%________________________________________________________________________________________
+%% Function to check whether python.exe is present and promt to select a folder containing it if not
+
+%% Creates a variable in GUI_Path/Modules/MISC/Variables (do not edit) that saves the path to the python exe if it was succesfully selected
+
+% Inputs:
+% 1. executablefolder: char, GUI path
+
+% Outputs
+% 1. Python_Conda_Environment_Path: char, path to the selected python conda
+% exe
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Load_NEO_RawData_Save_Files.m
+%________________________________________________________________________________________
+
+%% function load the files that are saved automatically when extracting a recording with NEO
+
+% This gets called after the python scriupt extracting the recording
+% finished. In this script, a .dat file is saved with all channel data, a
+% .mat file with metadata and a .txt file with logger information about the
+% extraction process
+% The python script auto creates a folder in the same directory as the
+% recording folder is in called "RecordingFolder Neo SaveFile" where
+% RecordingFolder is the name of the recording folder
+
+% Input:
+% 1. NeoSaveFolder: char, recording location selected by the user when
+% extracting data
+% 2. RecordingType: char, data format selected when extracting data with
+% neo
+% 3. FormatToSaveNEOIn: char, gives info how NEO saved data and how to load
+% it, either "Custom files (.dat,.mat)" OR "NEO Format to .mat Conversion"
+% 4. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+% 
+
+% Output: 
+% 1. Data: nchannel x ntimespoints single matrix with extracted raw data
+% 2. SampleRate: Sample Rate as double in Hz
+% 3. HeaderInfo: structure containing header infos of recording. This get Data.Info later
+% 4. RecordingType: string, either "IntanDat" OR "IntanRHD", capturing the
+% recording format
+% 5. Time: 1 x nsamples vector with time for each sample in seconds
+% 6. texttoshow: char, Logger.txt contents to show them in the window text
+% area as information
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Load_SpikeInterface_RawData_Save_Files.m
+%________________________________________________________________________________________
+
+%% function load the files that are saved automatically when extracting a recording with SpikeInterface
+
+% This gets called after the python scriupt extracting the recording
+% finished. In this script, a .dat file is saved with all channel data, a
+% .mat file with metadata and a .txt file with logger information about the
+% extraction process
+% The python script auto creates a folder in the same directory as the
+% recording folder is in called "RecordingFolder SpikeInterface SaveFile" where
+% RecordingFolder is the name of the recording folder
+
+% Input:
+% 1. SISaveFolder: char, recording location selected by the user when
+% extracting data
+% 2. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    TimeAndChannelToExtract.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
+
+% Output: 
+% 1. Data: nchannel x ntimespoints single matrix with extracted raw data
+% 2. SampleRate: Sample Rate as double in Hz
+% 3. HeaderInfo: structure containing header infos of recording. This get Data.Info later
+% 4. RecordingType: string, either "IntanDat" OR "IntanRHD", capturing the
+% recording format
+% 5. Time: 1 x nsamples vector with time for each sample in seconds
+% 6. texttoshow: char, Logger.txt contents to show them in the window text
+% area as information
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_MEA_Grid_Locations.m
+%________________________________________________________________________________________
+
+%% function that creates a probe design for NeuroMod based on the Maxwell MEA channel coordinates from SpikeINterface
+% Also figures out the active channel! Since some random channel inbetween
+% can be inactive, which are not indicated
+
+% Input:
+% 1. Data.Info: structure with recording metadata (app.Data.Data.Info)
+% 2. MEACoords: nchannel x 2 matric with x and y coordinates of each
+% channel, comes from spikeinterface
+% 3. HeaderInfo: metadata extracted from the raw recording before its
+% 'curated' and becomes app.Data.Data.Info
+
+% Output: 
+% 1. Data.Info: structure with recording metadata (app.Data.Data.Info)
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Manage_Dataset_Module_Apply_ChannelOrder.m
 %________________________________________________________________________________________
 
-%% This function applies a costum channel order to the raw data after extracting
+%% This function applies a custom channel order to the raw data after extracting
 
 % This gets called in the Extract_Data_Window app window or Autorun template function after data
 % extraction finished
@@ -201,7 +441,7 @@ File: Manage_Dataset_Module_Apply_ChannelOrder.m
 File: Manage_Dataset_Module_Apply_DataFlip.m
 %________________________________________________________________________________________
 
-%% This function just flips the dataset
+%% This function just flips the channel by time data matrix
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -236,6 +476,10 @@ File: Manage_Dataset_Module_CheckFolderContents.m
 % 1. ChannelOrder: To display channelorder in the textarea of the Extract_Data_Window app window
 % 2. PathToOpen: char, path to auto-open when windows file explorer is used
 % to get folder selection from user
+% 3. JustCheck: double 1 or 0, if 1 no folder selection, just check a
+% folder!
+% 4. SelectedFolder: char, folder to check for data format when JustCheck
+% is 1
 
 % Output: 
 % 1. Formatsfound: string array saving the format from AllFormats variable
@@ -285,9 +529,13 @@ File: Manage_Dataset_Module_Extract_Raw_Recording_Main.m
 % 5. executablefolder: path as char to the folder the GUI is saved at (automatically saved by main window on startup of the GUI)
 % 6. AdditionalAmpFactor: double, additional amplification raw data is
 % multiplied by
-% 7. NrChannel: char, from probe layout window, just for spike2
-% 8. NrRows: char, from probe layout window, number of rows with data
-% channel , just for spike2
+% 7. ActiveChannel: double array with all active channel the user defined
+% for the probe desing
+% 8. ChannelOrder: double array with the channel order the user specified.
+% Just to check whether number of elemtents are the same and give a error
+% message before data is extracted
+% 9. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%      
 
 % Output: 
 % 1. Data: nchannel x ntimepoints matrix as single 
@@ -301,6 +549,62 @@ File: Manage_Dataset_Module_Extract_Raw_Recording_Main.m
 % extraction is succesfull. 
 % 5. Time: 1 x timepoints double vector with a time in seconds for each data
 % sample
+                                              
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Module_NEO_Populate_Text.m
+%________________________________________________________________________________________
+
+%% This function shows infoes about NEO library recording extraction in the text are of the load raw recording window
+
+% Input:
+% 1. ProbeInfo: struture holding probe info (if present) to add to text
+% area content
+% 2. PathToOpen: path to automatically open the file selection explorer in 
+% 3. JustCheck: don let user seelct a folder, just check contents of
+% already selected folder
+% 4. SelectedFolder: char, path to an already selected recording fodler 
+% 5. RecordingType: char, from Data.Info (not used anymore but will maybe get important)
+
+% Output: 
+% 1. ProbeInfoText: Text to show in the window text area
+% RecordingSystemDropDownItems: cell array each containing a char with the
+% options for the user for the auotdetected recording system dropdown
+% 2. FileTypeDropDownItems: cell array each containing a char with the
+% options for the user for the file format dropdown menu
+% 3. stringArray: n x 1 string array holding the folder contents (files)
+% 4. SelectedFolder: char, folder to recording selected
+% 5. RecordingType: char with the type of recording extracted, NOT USED
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Module_Save_Probe_For_GUI.m
+%________________________________________________________________________________________
+
+%% This function saves user defined probe info so that it can be easily loaded into NeuroMod again
+
+% Input:
+% 1. PathToSave: char, path to save probeinfo in. If not a folder, ask user
+% 2. app: Create Probe Window app object
+
+% Output: 
+% 1. Savefilepath: char, path data was eventually saved in
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -325,11 +629,131 @@ File: Manage_Dataset_Module_Show_ProbeInfo_and_Path.m
 % the user changed
 % 4: PathToOpen: char, path to auto-open when windows file explorer is used
 % to get folder selection from user
+% 5. JustCheck: double, 1 or 0; 1 to just check a folder and not ask to
+% seelct a new one
+% 6. FolderToCheck: char, path to the folder to check if JustCheck is 1
+% 7. ExtractWithNeo: char, either 'NeuroMod Matlab' OR 'NeuralEnsemble NEO Python Library'
+% 8. RecordingType: char, data format selected when extracting data with
+% neo
+% 9. JustChangeLibrary: 1 or 0 whether the user just changed the library to
+% extract data with, not the recording type by selecting a new folder
 
 % Output: 
 % 1. Load_Data_Window_Info: same as input struvture
-% 2. ProbeInfoText: Text to sho in window
+% 2. ProbeInfoText: Text to show in window
 % 3. FolderContentsText: Folder contents found
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Module_SpikeInterface_Populate_Text.m
+%________________________________________________________________________________________
+
+%% This function shows infos about SpikeInterface library recording extraction in the text are of the load raw recording window
+
+% Input:
+% 1. ProbeInfo: struture holding probe info (if present) to add to text
+% area content
+% 2. PathToOpen: path to automatically open the file selection explorer in 
+% 3. JustCheck: don let user seelct a folder, just check contents of
+% already selected folder
+% 4. SelectedFolder: char, path to an already selected recording fodler 
+% 5. RecordingType: char, from Data.Info (not used anymore but will maybe get important)
+
+% Output: 
+% 1. ProbeInfoText: Text to show in the window text area
+% RecordingSystemDropDownItems: cell array each containing a char with the
+% options for the user for the auotdetected recording system dropdown
+% 2. FileTypeDropDownItems: cell array each containing a char with the
+% options for the user for the file format dropdown menu
+% 3. stringArray: n x 1 string array holding the folder contents (files)
+% 4. SelectedFolder: char, folder to recording selected
+% 5. RecordingType: char, data format selected when extracting data with
+% neo
+
+%% Note: searches for Meta_Data.json, probe.json and the channel data bin file
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Module_Start_Neo.m
+%________________________________________________________________________________________
+
+%% This function starts the python script LoadWithNeo.py to extract a recording with Neuralensemble NEO
+
+% Input:
+% 1. SelectedPath: char, path to the recording folder selected
+% 2. executableFolder: char, from main window app, folder gui file is executed
+% from
+% 3. JustLoadDatFile: double/logical 1 or 0 whether to just load data
+% without the need to start NEO
+% 4. KeepPythonOpen: logical/double 1 or 0 whether to keep the python
+% console open after script finished until user pressed enter
+% 5. RecordingSystemSelection: char, recording type from
+% Data.Info.RecordingSystem
+% 6. FormatToSaveandReadintoMatlab: char from the extract raw recording
+% window which format to use (see python script which ones)
+% 7. IsNP1: double 1 or 0 whether open ephys recording is a NP 1.0 recording
+% 8. DataPartToextract: double, if IsNP1 == 1, user selected whether to
+% extract LFP or AP data: 1 = LFO data, 2 = AP Data
+% 9. TimeToLoad: char, comma separated numbers for specific time like '0,10' or '0,Inf' for whole time range, user input from the GUI
+% 10. ChannelToLoad: matlab expressions as char, user input from the GUI
+
+% note: when extracting events, add the char EventAnalysis is added to the
+% end of the char FormatToSaveandReadintoMatlab to show the NEO script to
+% just extract events
+
+% Output: 
+% 1. Success: double, 1 or 0 whether script succesfully finished
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Manage_Dataset_Module_Start_SpikeInterface.m
+%________________________________________________________________________________________
+
+%% This function starts the python script SILoadMaxwell.py to extract a Maxwell biosystems MEA .h5 recording with SpikeInterface
+
+% Input:
+% 1. SelectedPath: char, path to the recording folder selected
+% 2. executableFolder: char, from main window app, folder gui file is executed
+% from
+% 3. JustLoadDatFile: double/logical 1 or 0 whether to just load data
+% without the need to start NEO
+% 4. KeepPythonOpen: logical/double 1 or 0 whether to keep the python
+% console open after script finished until user pressed enter
+% 5. RecordingSystemSelection: char, recording type from
+% Data.Info.RecordingSystem
+% 6. FormatToSaveandReadintoMatlab: char from the extract raw recording
+% window which format to use (see python script which ones)
+% 7. SaveProbeInfo: 1 or 0 whether to save probe Info
+% 8. SaveProbeInfoFormat: char, format to save in, '.mat' OR '.prb'
+% 9. TimeToLoad: char, comma separated numbers for specific time like '0,10' or '0,Inf' for whole time range, user input from the GUI
+% 10. ChannelToLoad: matlab expressions as char, user input from the GUI
+% 11. CorrectDCOffset: double 1 or 0 whether to correct for DC offset in
+% spikeinterface with the center() function
+
+% note: when extracting events, add the char EventAnalysis is added to the
+% end of the char FormatToSaveandReadintoMatlab to show the NEO script to
+% just extract events
+
+% Output: 
+% 1. Success: double, 1 or 0 whether script succesfully finished
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -362,6 +786,7 @@ File: Manage_Dataset_Save_ProbeInfo_Kilosort.m
 % horizontal offset between channel rows.
 % 10. SaveProbe: double, 1 or 0 to specify whether map should be saved or
 % not
+% 11. SaveFormat: char, fromat to save probe in, either ".mat" or ".prb"
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

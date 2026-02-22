@@ -2,6 +2,18 @@ This folder contains the following functions with respective Header:
 
  ###################################################### 
 
+File: DataPlotonScrollZoom.m
+%________________________________________________________________________________________
+
+%% Function to enabled zooming on the app.UIAxes object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: LineClicked.m
 %________________________________________________________________________________________
 %% Function to Handle Case that user clicks at a plotted line in the main window data plot to display channel name
@@ -58,9 +70,10 @@ File: Menu_Extract_Data_Callback.m
 % Load_Data_Window_Info variable which holds the loaded channel order and
 % channelspacing 
 % 2. fileNames: string, name of the menu point the user clicked on (with a -mat at the end, equals savefilename)
-% 3. DefaultFolder: char, default folder saving costume probe information:
+% 3. DefaultFolder: char, default folder saving custom probe information:
 % GUI_Path/Channel Maps/Saved Probe Information
-
+% 4. Window: char, "Extract Data" OR "ProbeLayout" depending in from which
+% window this function is executed
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -82,6 +95,8 @@ File: Menu_Extract_Data_Load_Manually_Callback.m
 % 1. app: app object of the extract data window to access the
 % Load_Data_Window_Info variable which holds the loaded channel order and
 % channelspacing 
+% 2. Window: char, "Extract Data" OR "ProbeLayout" depending in from which
+% window this function is executed
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -147,6 +162,8 @@ File: Utility_Change_Light_Dark_Mode.m
 
 % Input Arguments:
 % 1. app: main window app object
+% 2. Window: char, window from which this function is called from and for
+% which colors are modified
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -264,33 +281,6 @@ File: Utility_Determine_FIR_FilterOrder.m
 
  ###################################################### 
 
-File: Utility_Export_Dataset_Components.m
-%________________________________________________________________________________________
-%% Function to export some dataset components as txt,csv or .mat
-% This function gets called in the Export Dataset Components Window when
-% the user clicks the "Export" button
-
-% NOTE: At standard the folder to save dataset components in is:
-% Data_to_GUI\Analysis_Results
-
-% NOTE: To export Raw and Preprocessed data, use the save dataset function.
-% This saves the raw and/or preprocessed data as a .dat file which is faster and easier on memory.
-% Also prevents .txt or csv files from not being readable due to to much data.
-
-% Input Arguments:
-% 1. Data: main window structure holding dataset components (i.e. Data.Events, Data.Spikes ...)
-% 2. Component: Selected dataset component as string, i.e. "Events" or "Spikes"
-% 3. Format: Format to save data in, as string, ".mat" OR ".txt" OR ".csv"
-% 4. executableFolder_ Path to GUI currently executed as char (created on startup of Main Window)
-
-% Author: Tony de Schultz
-% Department systemsphysiology of learning, LIN Magdeburg.
-
-%________________________________________________________________________________________
-
-
- ###################################################### 
-
 File: Utility_Extract_Contents_of_Folder.m
 %________________________________________________________________________________________
 %% Function to extract all contents of a selcted folder and output them in a string array for easy use
@@ -300,28 +290,6 @@ File: Utility_Extract_Contents_of_Folder.m
 
 % Input Arguments:
 % 1. Path: Path to the folder as char
-
-% Output Arguments:
-% 1. stringArray: Contens of folder in a n x 1 string array with n being
-% the number of contents
-
-% Author: Tony de Schultz
-% Department systemsphysiology of learning, LIN Magdeburg.
-
-%________________________________________________________________________________________
-
-
- ###################################################### 
-
-File: Utility_Extract_Function_Headers_to_txt.m
-%________________________________________________________________________________________
-%% Function to search for all function headers in all .m files of a folder and save in a txt. file
-% This function can be used to automatically create a README file in each
-% folder containing the function headers of each function
-
-% Input Arguments:
-% 1. folderPath: Path to the folder holding .m files as char
-% 2. outputFileName: Name of the .txt file to save the header infos in (including the .txt file ending)
 
 % Output Arguments:
 % 1. stringArray: Contens of folder in a n x 1 string array with n being
@@ -347,61 +315,24 @@ File: Utility_Find_Strings_in_GUI_Files.m
 
  ###################################################### 
 
-File: Utility_Get_Plot_Data.m
-%________________________________________________________________________________________
-%% Function to export plotted/analysed data from each window with the menu option to do so
-% This function gets called in all analysis windows with the option to
-% export the analysed data when the user wants to export
-
-% PlottedData is a structure holding all analysis results. It is filled in
-% the functions computing the plotted data directly and is shared across
-% all windows (Main window property). 
-
-% NOTE: Spike Analysis, Main Window Analysis and LFP Analysis all create new fieldnames and are
-% therefore saved seperately. This means that for example data from the continous spike
-% analysis is overwritten when event related spike analysis is computed.
-
-% Input Arguments:
-% 1. PlottedData: structure holding data that was plotted. Spike Analysis,
-% Main Window Analysis and LFP Analysis all create new fieldnames and are
-% therefore saved seperately.
-% 2. Data: Data structure from main window
-% 3. Format: Format to save data in, as string, ".mat" OR ".txt" OR ".csv"
-% 4. executableFolder_ Path to GUI currently executed as char (created on startup of Main Window)
-% 5. TimeRangeLiveWindows: double, Time duration in seconds of analysis window
-% 6. StartTime: double, Start time of window analysis (for main window plots its the satrt of the main data plot in the main window, otherwise 0 or negative for event related stuff)
-% 7: AnalysisType: string specifying the name of the analysis. This has to
-% obey some rules! For Unit analysis, it has to cointain the string "Unit".
-% For Spike analyis it has to contain "Spike" or "Spikes"
-% For Time Frequency power it has to contain the string "Phase"
-% For CSD and ERP anylsis it has to contain the string "Current" or
-% "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
-% Utility_Save_Data_as_MAT functions
-
-% Output Arguments:
-% 1. PlottedData: structure holding data that was plotted in case something
-% about it was changed
-
-% Author: Tony de Schultz
-% Department systemsphysiology of learning, LIN Magdeburg.
-
-%________________________________________________________________________________________
-
-
- ###################################################### 
-
 File: Utility_Initialize_Clicks_Plots.m
 %________________________________________________________________________________________
-%% Function to initilaze click functionality of plots
-% This function gets called whenever something new is plotted in the main
+%% Function to initialize click functionality of plots
+% This function gets called when something new is plotted in the main
 % window to initiate the UIAxesButtonDown callcbacks that capture the x and
-% y corrdinate of a point being clicked.
+% y corrdinate of a point being clicked. But only sets click callback if
+% reason of plot is not jsut to update the time. Istn necessary then and
+% reduces overhead
 
 % UIAxesButtonDown and LineClicked = main window data plot (buttondown when clicking on empty space of plot, lineclicked when clicking on a data line)
 % UIAxes_2ButtonDown and LineClickedTime = maine window time plot (buttondown when clicking on empty space of plot, lineclicked when clicking on a data line)
 
 % Input Arguments:
 % 1. app: main window app object
+% 2. OldDataPlotName: string with why plot was updated. If
+% "MainWindowTimeManipulation" OR
+% "MainWindowTimeManipulationMovie" dont update click callback since its
+% not necessary then
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -411,26 +342,13 @@ File: Utility_Initialize_Clicks_Plots.m
 
  ###################################################### 
 
-File: Utility_Save_Data_as_MAT.m
+File: Utility_Main_plot_Arrow_Key_Press.m
 %________________________________________________________________________________________
-%% Function to export plotted/analysed data as .mat files
-% This function gets called in the Utility_Get_Plot_Data function
+%% Function to handle callback when user uses arrow key to jump in time
 
 % Input Arguments:
-% 1. Fullsavefile: char, Pcomplete path to the .mat file to save data in (including the .mat file ending)
-% 2. PlottedData: structure holding data that was plotted. Spike Analysis,
-% Main Window Analysis and LFP Analysis all create new fieldnames and are
-% therefore saved seperately.
-% 3: Analysis: string specifying the name of the analysis. This has to
-% obey some rules! For Unit analysis, it has to cointain the string "Unit".
-% For Spike analyis it has to contain "Spike" or "Spikes"
-% For Time Frequency power it has to contain the string "Phase"
-% For CSD and ERP anylsis it has to contain the string "Current" or
-% "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
-% Utility_Save_Data_as_MAT functions
-
-% Output Arguments: 
-% 1. Error: 1 if an error occured, 0 if not. gets checked in Utility_Get_Plot_Data function
+% 1. app: main window app object
+% 2. event: event object created at callback
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -440,26 +358,14 @@ File: Utility_Save_Data_as_MAT.m
 
  ###################################################### 
 
-File: Utility_Save_Data_as_TXT_CSV.m
+File: Utility_Open_UIAxes_as_Figure.m
 %________________________________________________________________________________________
-%% Function to export plotted/analysed data as .csv or .txt files
-% This function gets called in the Utility_Get_Plot_Data function
+%% Function to open a app.UIAxes plot in an extrac figure outside the GUI
 
 % Input Arguments:
-% 1. Fullsavefile: char, Pcomplete path to the .mat file to save data in (including the .mat file ending)
-% 2. PlottedData: structure holding data that was plotted. Spike Analysis,
-% Main Window Analysis and LFP Analysis all create new fieldnames and are
-% therefore saved seperately.
-% 3: Analysis: string specifying the name of the analysis. This has to
-% obey some rules! For Unit analysis, it has to cointain the string "Unit".
-% For Spike analyis it has to contain "Spike" or "Spikes"
-% For Time Frequency power it has to contain the string "Phase"
-% For CSD and ERP anylsis it has to contain the string "Current" or
-% "Potential" and so on. See Utility_Save_Data_as_TXT_CSV and
-% Utility_Save_Data_as_MAT functions
-
-% Output Arguments: 
-% 1. Error: 1 if an error occured, 0 if not. gets checked in Utility_Get_Plot_Data function
+% 1. Data: main window datastructure
+% 2. Figure_ app.UIaxes object to show in the figure
+% 3. Window: char, window from which plot is exported
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -474,12 +380,12 @@ File: Utility_Save_Load_Delete_Plot_Appearance.m
 
 %% Function to Manage saving, loading and deleting then plot appearance variable
 % This function is called in any window the user can modify the plot
-% appearance and saves the costum appearance or deletes previosuly saved
-% costum appearances. It is also called in the Organize_Initialize_GUI.m
-% function on startup of the GUI to load the costum/standard appearance (depending on whether user saved costum)
+% appearance and saves the custom appearance or deletes previosuly saved
+% custom appearances. It is also called in the Organize_Initialize_GUI.m
+% function on startup of the GUI to load the custom/standard appearance (depending on whether user saved custom)
 
 % Appearances saved in GUI_Path/Modules/MISC/Variables (do not edit!)
-% PlotAppearance.m holds the costum appearance saved by the user
+% PlotAppearance.m holds the custom appearance saved by the user
 % Template_PlotAppearance.m holds the standard settings.
 % If non was found (also no template), new template is created by calling
 % Organize_Set_Standard_PlotAppearance. which hard codes all standrad
@@ -492,6 +398,30 @@ File: Utility_Save_Load_Delete_Plot_Appearance.m
 
 % Output:
 % app object with initialized values
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Save_Spike_Data.m
+%________________________________________________________________________________________
+%% NOT USED RIGHT NOW
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_SetAppFontSize.m
+%________________________________________________________________________________________
+%% NOT USED CURRENTLY
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -514,6 +444,26 @@ File: Utility_Set_ToolTips.m
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Set_YAxis_Depth_Labels.m
+%________________________________________________________________________________________
+%% Function to put custom depth labels on the y axis (see plots like cont. spike analysis spike map)
+
+% Input Arguments:
+% 1. Data: main window datastructure
+% 2. Figure: app.UIaxes object to change y labels for
+% 3. executableFolder: char, folder NeuroMod was started in
+% 4. CurrentActiveChannel: vector, sam ass app.ActiveChannel
+% 5. PreservePlotChannelLocations: double 1 or 0 whether to preserve
+% channel spacings
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
 %________________________________________________________________________________________
 
 
@@ -615,6 +565,23 @@ File: Utility_Translate_Into_EEGLAB_struc.m
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Utility_Trial_Rejection_ButtonDownFunction.m
+%________________________________________________________________________________________
+%% Function to handle callback in trial rejection window when user clicks a plot to show the trial/trigger number
+
+% Input Arguments:
+% 1. app: trial rejection app object
+% 2. src: Not used
+% 3. event: Not used
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
 %________________________________________________________________________________________
 
 

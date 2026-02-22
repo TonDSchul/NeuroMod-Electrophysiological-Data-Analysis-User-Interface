@@ -54,6 +54,40 @@ File: Event_Analyse_Static_Power_Spectrum.m
 % 11. DataToExtractFrom: char, either 'Raw Data' or 'Preprocessed Data' to
 % designate from which dataset component event related data was extracted
 % from
+% 12. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 13. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
+
+% Outputs:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Event_Module_Baseline_Normalize.m
+%________________________________________________________________________________________
+
+%% Function to baseline normalize event related data
+% takes channel by trials by time matrix with event related data before the
+% actual analysis
+
+% Inputs:
+% 1. Data: Data structure with raw data and preprocessed data (if applicable); Raw and Preprocessed Data =
+% nchannel x time points single matrix with data
+% 2: DataToNormalize: channel x trials x time matrix with event related
+% data to baseline normalize
+% 3. TimeWindow: char with comma separated time range, baseline is calculated
+% for i.e. (-0.2,0)
+% 4. EventTimeWindow: all time points of event related potential in seconds (app.Data.Info.EventRelatedTime)
+% 5. AnalysisType: char, type of event related analysis baseline is normalized
+% for, either "ERP" OR "StaticSpec"
+
 % Outputs:
 % 1. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them. See below to see which fields and data
@@ -100,9 +134,9 @@ File: Event_Module_Check_Event_Preprocessing.m
 
 % Inputs: 
 % 1. Data: main window data object
-% 3. EventChannelSelection: char, name of the event channel for which trigger are
+% 2. EventChannelSelection: char, name of the event channel for which trigger are
 % checked
-% 4. CurrentValue: Currently selected value (either 'Raw Event Related Data' OR 'Preprocessed Event Related Data')
+% 3. CurrentValue: Currently selected value (either 'Raw Event Related Data' OR 'Preprocessed Event Related Data')
 % --> this is so selection of prepro data can be preserved when selecting
 % another event channel
 
@@ -160,7 +194,11 @@ File: Event_Module_Compute_and_Plot_ERP_CSD.m
 % every trial and ERP overlayed
 % 17. EventNr: double, nr of trigger shown. So that in imagsc plot y axis labels
 % can be spaced farther if there are many trigger
-
+% 18.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
+% 19. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 20. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. CSDClim
@@ -169,6 +207,72 @@ File: Event_Module_Compute_and_Plot_ERP_CSD.m
 % 4. Eventplot: Handle to plotted event line of plots
 % 5. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Event_Module_ERP_IndividualLines.m
+%________________________________________________________________________________________
+%% Function to plot individual trigger lines and mean (ERP) in ERP analysis window
+
+% Inputs: 
+% 1. Data: data strcuture of main window, to simplfy inputs later on?!
+% 2. EventRelatedData: nchannel x nevents x ntimepoints single matrix
+% containing event related data
+% 3.EventNr: double, nr of trigger shown. So that in imagsc plot y axis labels
+% can be spaced farther if there are many trigger
+% 4. EventTime: double time vector of events with one time in seconds for
+% each time point of the EventRelatedData variable (with negativ pre event time)
+% 5.Figure: axis handle to figure you want to plot in -- CSD plot or ERP
+% all trials plot with mean as black line
+% 6. DataType: char, either 'Raw Event Related Data' or 'Preprocessed Event Related Data'
+% 7. ERPChannel: char, Channel for ERP Plot on top
+% 8. SingleChannelPlotType: ERP plot type of single channel plot on top.
+% if 0: all trials in grey lines, mean in black line. 0: imagesc plot with
+% every trial and ERP overlayed
+% 9. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
+% 10. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Event_Module_ERP_MultipleLines.m
+%________________________________________________________________________________________
+%% Function to plot individual trigger lines and mean (ERP) in ERP analysis window
+
+% Inputs: 
+% 1. Data: data strcuture of main window, to simplfy inputs later on?!
+% 2. EventRelatedData: nchannel x nevents x ntimepoints single matrix
+% containing event related data
+% 3. PlotLineSpacing: factor as double that determines the spacing between
+% plotted erp lines of different channel
+% 4. EventTime: double time vector of events with one time in seconds for
+% each time point of the EventRelatedData variable (with negativ pre event time)
+% 5. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 6. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
+% 7.Figure2: axis handle to figure on bottom of ERP window
+% 8. Type: Detmerines what is plotted, Options: 'SingleERPOnly' for just
+% erp plots of one channel over all events OR 'MultipleERPOnly' for just
+% erp plot of each channel OR 'All' for both plots
+% 9. DataChannelSelected: 1 x 2 double with channelrange to be plotted;
+% [1,10] means channel 1 to 10 
+% 10. rgbcolormap: nplots x 3 double matrix with rgb values for each line
+% plotted (only for plotting multiple channel erp's with consistent colors)
+% 11. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
+% 12. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -187,44 +291,27 @@ File: Event_Module_Organize_TF_Window_Inputs.m
 % Inputs: 
 % 1.Data: structure with GUI data - not needed here but always useful for
 % modifications
-% 2. Type: string, determines type of time frequency calculation; options: "Moorlet
-% Wavelets" for complex moorlet wavelet convolution with varying cycle
-% width OR "Filter Hilbert" For filter hilbert transform. NOTE: TODO: "Filter
-% Hilbert" does not fully work yet!
-%3. ChannelSelectionDropDown: char with channel to plot from TF window;
+% 2. ChannelSelectionDropDown: char with channel to plot from TF window;
 %i.e. '1,10' for channel 1 to 10. -- if multiple channel, power is
 %calculated over the mean of all channel
-% 4. EventNumberSelectionEditField: char with selection which events should
+% 3. AnalysisType:
+% 4. ActiveChannel
+% 3. EventNumberSelectionEditField: char with selection which events should
 % be part of the calculations, i.e. '1,10' for events 1 to 10. This affects
 % the ERP and therefore the phase locked and non phase locked components
 % when plotted.
-% 5. FrequencyRangeminmaxstepsEditField: char with frequency range for
-% which TF is calculated in Hz, i.e. '1,120,100' for 1Hz to 100Hz in 120 steps
-% 6. CycleWidthfromto23EditField: char with cycle width for complex moorlet
-% wavelet. i.e. '4,9' This addressed the time/frequency tradeoff. The higher the
-% frequency, the higher the temporal resolution of the TF analysis. Range determines
-% difference in temporal resolution between high and low frequencies, low
-% numbers means low temporal resolution, high numbers high temporal
-% resolution.
-% 7. FilterWidthHzminmaxstepsEditField: char with frequency Range for hilbert filter
-% transform narrowband filter. Since this TF analysis is not working yet, this has
-% no influence yet., i.e. '10,20'
-% 8. FactorFilterOrderChangesforeachFrequEditField: char with filter order
-% for hilbert filter transform narrowband filter; i.e. '3';
+% FrequencyRangeminmaxstepsEditField: char, comma separated numbers with
+% min,steps,max frequency in Hz
+% CycleWidthfromto23EditField: NOT Used anymore
+% TriggerToCompare: char, comma separated numbers with trials to compare in
+% wavelet coherence analysis like [1,2]
+% ChannelToCompare: char, comma separated numbers with channel to compare in
+% wavelet coherence analysis like [1,2]
+% NumScales: number of scales for wavelet coherence (same as VoicesPerOctave parameter)
 
 % Outputs:
-% 1. DataChannelRange: Nr of Channel as double
-% 2. DataChannelSelected: 1 x 2 vector of selected channel, from to, i.i
-% [1,10] for channel 1 to 10 
-% 3. EventNrRange: Channel Range as double vector from event 1 to
-% last event
-% 4. CSD: structure holding parameters for CSD. Of course it is set to
-% empty bc here ionly TF is computed. 
-% 5. TF: structure holding parameters for TF analysis. With fields:
-%TF.Range_cycles: 1x2 double [from,to]
-%TF.FreqRange: 1x3 double [from,steps,to]
-%TF.FilterRange: 1x2 double [from,to]
-%TF.FilterOrder 1x1 double
+% 1. TF: struc with all parameters neccessary for plotting event related
+% time frequency analysis, see below for fields
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -235,7 +322,7 @@ File: Event_Module_Organize_TF_Window_Inputs.m
 
 File: Event_Module_PhaseSync_Main.m
 %________________________________________________________________________________________
-%% Function to check whether event related data was preprocessed to fill selection dropdown menu
+%% Function to manage phase analysis of event related data
 
 % executed when the user changes the for example the event channel
 % selection for which Event related data is anylszed. This is bc
@@ -280,7 +367,9 @@ File: Event_Module_PhaseSync_Main.m
 % wither 'Raw Data' or 'Preprocessed Data'
 % 23. LowPassSettings: struc with fields: LowPassSettings.Cutoff, LowPassSettings.FilterOrder
 % 24. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
-% 25. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
+% 25. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 26. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. texttoshow: text to show filter infoes in of filter steps that where
@@ -290,6 +379,49 @@ File: Event_Module_PhaseSync_Main.m
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Event_Module_Spectrogram2.m
+%________________________________________________________________________________________
+%% Function to create a spectrogram (for live analysis) with the corresponding matlab function for the main window data (or custom time points if decoupled from main window)
+
+
+% Input Arguments:
+% 1. Data: mian window data structure
+% 2. DataToShow: char, either "Raw Data" or "Preprocessed Data" depending
+% on what to show the analysis for
+% 3. EventsToShow: double vector with event indicies i9n currently selected
+% time window
+% 4. ChannelToPlot: char, number of channel to analyze
+% 5. Window: char, number of samples in each spectogram window
+% 6. TF.FreqRange: char, comma separated numbers with start and stop
+% frequency to show
+% 7. LockCLim: 1 or 0 double, whether to lock the clim to the min or max
+% value recording since analysis was started
+% 8. DataType: char, type of data shown in the title
+% 9. CurrentClim: double vector with highest and lowest c values recorded so far (for lock clim) 
+% 10. Figure: app.UIAxes object of live window
+% 11. SampleRate: double, sample rate of currently analysed data
+% 12. PlotAppearance: struc with all appearances of plot components
+% 13. Time: double vector with all time points in s that where analyzed
+% 14. CurrentEventChannel: Currently selected event channel in main window
+% that for which trigger times are shown in this window too
+% 15. PlotEvent: 1 or 0 whether the user selected to plot events in the
+% main window
+% 16. CurrentPlotData: struc with plotted data being saved for later export
+% 17. TwoORThreeD: char, "TwoD" or "ThreeD" depending on what the user
+% selected
+
+% Output:
+% 1. CurrentClim: double vector with highest and lowest c values recorded so far (for lock clim) 
+% 2. CurrentPlotData: struc with plotted data being saved for later export
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
 %________________________________________________________________________________________
 
 
@@ -346,30 +478,23 @@ File: Event_Module_Time_Frequency_Main.m
 % the plotting function
 
 % Inputs: 
-% 1. EventRelatedData: nchannel x nevents n ntimepoints single matrix with
-% event related data.
-% 2. Figure: Axes handle to figure to plot in
-% 3. SampleRate: SampleRate as double in Hz
-% 4. DataChannelSelected: 1 x 2 double vector with channels to take, i.e.
-% [1,10] for channel 1 to 10, comes from
+% 1. Data: main window data structure
+% 2. DataType: type of data event related data was extracted from, either "Raw Data" OR "Preprocessed Data" 
+% 3. EventDataType: type of event related data, either "Raw Event Related
+% Data" OR "Preprocessed Event Related Data"
+% 4. Figure: Axes handle to figure to plot in
+% 5. TF: structure with parameter for TF calculations, comes from
 % 'Event_Module_Organize_TF_Window_Inputs' function
-% 4. EventNrRange: 1 x 2 double vector with events to take, i.e.
-% [1,10] for events 1 to 10, comes from
-% 'Event_Module_Organize_TF_Window_Inputs' function
-% 5. TimearoundEvent: 1 x 2 double vector time in seconds before event and after event, i.e.
-% [0.2,0.5] for a time range of -0.2 to 0.5 NOTE: first element has to be
-% positive, although its a negativ time.
-% 6. TF: structure with parameter for TF calculations, comes from
-% 'Event_Module_Organize_TF_Window_Inputs' function
-% 7. Type: determines signal components for TF analysis: "Total" OR "NonPhaseLocked" OR
-% "PhaseLocked"; NonPhaseLocked = Signal - ERP; Phaselocked = ERP; Total =
-% both components
-% 8. Plottype: "TF" OR "ITPC" to plot either Time frequency power or inter
-% trial phase clustering.
-% 9. WaveletType: determines type of TF analyisis, either "Moorlet
-% Wavelets" OR "Filter Hilbert"; NOTE: TODO: "Filter Hilbert" does not work yet 
-% 10. CurrentPlotData: structure in which analysis results are saved in
+% 6. Window: char, window size for spectrogram (in samples)
+% 7. TwoORThreeD: char, "TwoD" or "ThreeD" depending on what the user
+% selected
+% 8. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 9. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
+% 10. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 11. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. climsTF: clim of current plot, saved by TF window to be able to auto
@@ -490,6 +615,50 @@ File: Event_Module_Time_Frequency_Wavelet_ITPC_Cycles.m
 
  ###################################################### 
 
+File: Event_Module_Wavelet_Coherence.m
+%________________________________________________________________________________________
+%% Function to conduct wavelet coherence analysis (either between channel or trials)
+
+% Inputs: 
+% 1. Data: main window data structure
+% 2. EventRelatedData1: nchannel x nevents x ntimepoints single matrix
+% containing event related data for either the first trigger or channel
+% selected for coherene
+% 3. EventRelatedData2: nchannel x nevents x ntimepoints single matrix
+% containing event related data for either the second trigger or channel
+% selected for coherene
+% 4. Window: char, window size in samples, not used
+% 5. BaselineNormalize: not used
+% 6. BaselineWindow: not used
+% 7. TF: structure with parameter for TF calculations, comes from
+% 'Event_Module_Organize_TF_Window_Inputs' function
+% 8. CurrentClim: clim of current plot, saved by TF window to be able to auto
+% clim without calculating again
+% 9. Figure: Axes handle to figure to plot in
+% 10. SampleRate: double
+% 11. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
+% 12. Time: Time vector in seconds of event related data
+% 13. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+% 14. TwoORThreeD: char, "TwoD" or "ThreeD" depending on what the user
+% selected
+
+
+% Output:
+% 1. CurrentClim: clim of current plot, saved by TF window to be able to auto
+% clim without calculating again
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Event_Power_Spectrum_Over_Depth.m
 %________________________________________________________________________________________
 
@@ -530,6 +699,11 @@ File: Event_Power_Spectrum_Over_Depth.m
 % for events 1 to 10 
 % 13. EventDataToExtractFrom: char, name of the event channel, event related
 % data is extracted (to set time which depends on downsampling, which depends on whether the user selected raw or preprocessed data)
+% 14.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
+% 15. BaselineNormalize: logical, 1 or 0 whehter to normlaitze
+% 16. NormalizationWindow: comma separated char, from to like '-0.2,0' in
+% seconds
 
 % Outputs:
 % 1. PowerSpecResults: always empty here

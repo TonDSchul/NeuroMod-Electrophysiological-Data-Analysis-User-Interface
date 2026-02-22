@@ -38,6 +38,10 @@ function [CurrentPlotData] = Analyse_Main_Window_Spike_Rate(Data,BinRange,Figure
 % case user wants to export them
 % 17. PlotAppearance: structure holding information about plot appearances
 % the user can select
+% 18. SpikeData: struc with field: Indicies with spike times in current
+% window and SpikePositions with depth channel information
+% 19. CoupleTimetoMainWindow: 1 or 0 whether time to analyse is coupled to
+% the main window
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in

@@ -47,6 +47,8 @@ File: Analyse_Main_Window_CSD.m
 % 16. PlotEvent: char from Main window, 'Events' to show that events are plotted and potentially part of the current data window being analysed 
 % 17. DataType: char, either 'Preprocessed Data' or 'Raw Data' to analyse
 % for the raw or preprocessed GUI dataset
+% 18. CurrentActiveChannel: vector with double of currently active channel
+% (app.ActiveChannel)
 
 % Output:
 % 1. currentClim: global clim - either unchanged from previous csd plot if

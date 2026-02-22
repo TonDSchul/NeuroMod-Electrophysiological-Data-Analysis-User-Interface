@@ -1,5 +1,26 @@
 function [Data,texttoshow] = Extract_Events_Module_Correct_For_TimeToExtract(Data,TimeAndChannelToExtract)
 
+%________________________________________________________________________________________
+
+%% Function that takes event indices (time stamps in respect to whole recording) and changes them to fit into the time range the user choose to extract
+% substracts number of samples recording extraction was started at, deletes
+% samples <= 0 and > num_samples
+
+% Input:
+% 1. Data: Main window data strucure with all relevant dataset compontntes
+% TimeAndChannelToExtract: struc with fields:  TimeToExtract (comma
+% separated like 0,Inf) 
+
+% Output
+% 1. Data: Main window data strucure with changed Data.Events and
+% Data.Info fields
+% 2. texttoshow: string, info text about was was deleted
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if contains(TimeAndChannelToExtract.TimeToExtract,',')
     if ~contains(TimeAndChannelToExtract.TimeToExtract,'Inf')
         Timetoextract = str2double(strsplit(TimeAndChannelToExtract.TimeToExtract,','));

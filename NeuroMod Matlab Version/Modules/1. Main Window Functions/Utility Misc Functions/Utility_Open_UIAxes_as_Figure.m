@@ -1,5 +1,19 @@
 function Utility_Open_UIAxes_as_Figure(Data,Figure,Window)
 
+%________________________________________________________________________________________
+%% Function to open a app.UIAxes plot in an extrac figure outside the GUI
+
+% Input Arguments:
+% 1. Data: main window datastructure
+% 2. Figure_ app.UIaxes object to show in the figure
+% 3. Window: char, window from which plot is exported
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
 CopyColorBar = 0;
 CopyLegend = 0;
 CopySecondAxis = 0;

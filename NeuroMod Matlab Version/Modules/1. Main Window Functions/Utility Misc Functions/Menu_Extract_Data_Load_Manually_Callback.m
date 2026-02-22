@@ -11,6 +11,8 @@ function Menu_Extract_Data_Load_Manually_Callback (app, Window)
 % 1. app: app object of the extract data window to access the
 % Load_Data_Window_Info variable which holds the loaded channel order and
 % channelspacing 
+% 2. Window: char, "Extract Data" OR "ProbeLayout" depending in from which
+% window this function is executed
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

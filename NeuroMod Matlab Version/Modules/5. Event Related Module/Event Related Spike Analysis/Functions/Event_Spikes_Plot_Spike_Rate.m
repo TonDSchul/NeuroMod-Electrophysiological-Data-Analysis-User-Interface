@@ -33,7 +33,9 @@ function CurrentPlotData = Event_Spikes_Plot_Spike_Rate(Data,Time,Type,rgb_matri
 % channel 1 to 10
 % 16. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
-% 17.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% 17: PlotAppearance: struc with all plot appearance parameter for plot
+% like linewidths and colors
+% 18.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
 % original spacing between active channel (in case of inactiove islands between active channel)
 
 % Output:

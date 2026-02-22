@@ -1,5 +1,26 @@
 function Data = Spike_Module_Get_Spike_Channel(Data)
 
+%________________________________________________________________________________________
+%% Function to determine the data channel within the channel x times matrix each spike position in um corresponds to 
+% One of two ways to determine spike positions for use with the actual data
+% matrix and plotting spikedepth in the main window / analysis windows
+% For each spike x and y position it is checked to which channel
+% coordinates this is closest to. This becomes the data channel for that
+% spike. Are more detailed representation of raw sorter output
+
+% other method: max template channel, see Spike_Module_Get_Spike_Channel_Max_Template
+
+% Input Arguments:
+% 1. Data: Main window data struc
+
+% Output Arguments:
+% 1. Data: Main window data struc with modified Data.Spikes.SpikeChannel 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Get Channel number corresponding to depth in um
 if str2double(Data.Info.ProbeInfo.NrRows) == 1
 

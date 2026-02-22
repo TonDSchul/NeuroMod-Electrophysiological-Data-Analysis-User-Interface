@@ -37,7 +37,7 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
 
   - [How to Install Phy to Open via NeuroMod](#how-to-install-phy-to-open-via-neuromod)
 
-  - [How to load Biosystems MEA .h5 files](#how-to-load-biosystems-mea-.h5-files)	
+  - [How to load Maxwell Biosystems MaxOne MEA h5 files](#how-to-load-maxwell-biosystems-maxone-mea-h5-files)	
 
   - [About Performance](#about-performance)
 
@@ -304,7 +304,9 @@ pip install spikeinterface_gui
 Selecting a valid python.exe file will save it's location in a .mat file in 'NeuroMod_Path/Modules/MISC/Variables (do not edit)/Python_Conda_Path.mat'. Each time you start NeuroMod, it searches for this file and checks whether the path saved within is valid. So if you move NeuroMod to a different PC with a different path to the python.exe, this file is deleted. However, if you should accidently give a path to the wrong python.exe, either delete this variable manually, or use the menu bar on top of the NeurMod main window. Select 'Extras', 'Delete Saved Paths' and click 'Python Path to Spikeinterface Environment' to delete it. When you want to conduct spike sorting afterwards, you are asked again for a new location of the python.exe.
 The same holds true for the path to the Spike2 CEDS64ML folder when you want to load Spike2 recordings and to the pthon.exe for using the NeuralEnsemble NEO library.
 
-To load sorting results from SpikeInterface spike sorting INTO NeuroMod that you create with your own code or the respective package GUI's OUTSIDE of NeuroMod, you need to save the results as .npy files for example with the export_to_phy function (like the native Kilosort output) and you additionally need to save a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Here is an example code how to get this information in SpikeInterface: 
+To load sorting results from SpikeInterface spike sorting INTO NeuroMod that you created with your own code or the respective package GUI's OUTSIDE of NeuroMod (like the Kilosort GUI), you need to save the results as .npy files for example with the export_to_phy function (like the native Kilosort output) and you additionally need to save a SpikePositions.mat file saving the spike locations from the SpikeInterface analyzer object of your sorting. Additionally, you need to save a max_template_channel_index.npy file with the maximum template channel for each cluster. Here is an example code how to get this information in SpikeInterface: 
+
+SpikePositions.mat:
 
 ```python
 compute_dict = {
@@ -318,6 +320,17 @@ SpikePositions = ext_SpikeLocations.get_data()
 savemat('YourFolder', mdic)
 export_to_phy(sorting_analyzer=Analyzer, output_folder=PathForPhy, copy_binary=False)
 ```
+
+```python
+templates = Analyzer.get_extension("templates").get_data()
+PeakToPeak = templates.ptp(axis=1)              
+max_chan_idx = np.argmax(PeakToPeak, axis=1)   
+np.save(PathForPhy, max_chan_idx)
+
+```
+
+Note: PathForPhy is the sorter output folder containing all .npy sorter results.
+
 
 > ### **How to Install NeuralEnsemble NEO to extend supported file formats in NeuroMod**
 >
@@ -354,7 +367,7 @@ After successful installation you can now view and curate spike sorting results 
 
 **Information:** You can load spike sorting results from Mountainsort 5 and Spyking Circus 2 with the SpikeInterface GUI too. However, this is done in the 'Spike Detection and Sorting' window by changing the spike sorting parameter. Activate the checkboxes to open the SpikeInterface GUI and optionally to load spike sorting results to not have to wait for the spike sorting itself to finish again.
 
-> ### **How to load Biosystems MEA .h5 files**
+> ### **How to load Maxwell Biosystems MaxOne MEA h5 files**
 >
 In order to be able to extract MEA .h5 data files in any library you have to 'install' a .dll file provided by Maxwell biosystems by adding it to the environmental variables in windows. Follow the instructions provided here: https://share.mxwbio.com/d/5b5017febe354c8e942a/files/?p=%2FMxW%20-%20Installing%20the%20Decompression%20Library%20to%20load%20MaxLab%20Live%20Recordings.pdf
 

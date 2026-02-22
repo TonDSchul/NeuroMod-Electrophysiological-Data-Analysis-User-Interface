@@ -1,5 +1,21 @@
 function [Data] = Preprocess_Get_Statistics_for_Spikes(Data)
 
+%________________________________________________________________________________________
+
+%% Function to get global std over all channel after high pass filtering for axon viewer threshold
+
+% Input:
+% 1. Data: Data structure containing raw and potentially preprocessed data as a Channel x Time matrix
+% and Info structure with already applied preprocessing steps and other infos
+
+% Output: 
+% 1. Data with Data.Info.HighPassStatistics being added
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if isfield(Data.Info,'HighPassStatistics')
     fieldsToDelete = {'HighPassStatistics'};
     % Delete fields

@@ -2,7 +2,7 @@
 mainFolder = 'F:\LIN\PhD\Proj. Ephys GUI\NeuroMod Matlab Version';
 
 % Search string
-searchString = 'costume';
+searchString = 'Manage_Dataset_SaveData_Reset_Slashes';
 
 % Get all .m and .mlapp files recursively
 fileList_m     = dir(fullfile(mainFolder, '**', '*.m'));

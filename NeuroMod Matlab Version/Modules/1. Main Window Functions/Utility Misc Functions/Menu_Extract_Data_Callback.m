@@ -14,7 +14,8 @@ function Menu_Extract_Data_Callback (app, fileNames, DefaultFolder, Window)
 % 2. fileNames: string, name of the menu point the user clicked on (with a -mat at the end, equals savefilename)
 % 3. DefaultFolder: char, default folder saving custom probe information:
 % GUI_Path/Channel Maps/Saved Probe Information
-
+% 4. Window: char, "Extract Data" OR "ProbeLayout" depending in from which
+% window this function is executed
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

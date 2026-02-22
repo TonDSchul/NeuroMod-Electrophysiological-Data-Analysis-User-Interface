@@ -28,6 +28,8 @@ function [Data,Header,SampleRate] = Manage_Dataset_Extract_Open_Ephys_Data(DATA_
 % Node 113"] --> nRecordNodes = 3
 % If user selects Record Node 105 as the node to analyze in the extract raw
 % data app window, SelectedRecordNode = 2
+% 4. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    TimeAndChannelToExtract.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
 
 % Output: 
 % 1. TempData: nchannel x ntimespoints single matrix with extracted raw data

@@ -19,6 +19,9 @@ File: Analyse_Main_Plot_Get_PlotIndiciesandData.m
 % data snippet ends -----> only used if first 'if statement block' below
 % is not triggered. It checks if data is downsampled in different
 % situations and makes adjsutments accordingly
+% 5. Window: char, main window analysis window for which function is called
+% 6. CoupleToMainWindow: logical 1 or 0 whether time in the live analysis
+% plot is coupled to the main window plot
 
 % Output:
 % 1. StartIndex: double, Determined data index (from Data.Raw or Data.Preprocessed) at which the
@@ -43,6 +46,10 @@ File: Analyse_Main_Window_AllToAllSync.m
 %________________________________________________________________________________________
 
 %% Function to compute All to All channel phase synchronization 
+
+% The first part of this function is based on the "Complete neural
+% signal processing and analysis: Zero to hero" workshop by Michael Cohen
+% on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
 
 % Inputs:
 % 1. Figure3: handle to figure object of phase sync figure to plot in
@@ -70,6 +77,10 @@ File: Analyse_Main_Window_Hilbert_Echt_Wavelet.m
 %________________________________________________________________________________________
 
 %% Function to compute phase angle time series and amplitude envelope for a signal using different methods 
+
+% The wavelet convolution method is based on the "Complete neural
+% signal processing and analysis: Zero to hero" workshop by Michael Cohen
+% on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
 
 % Inputs:
 % 1. Data: nchannel x ntime matrix with the signal
@@ -176,6 +187,10 @@ File: Analyse_Main_Window_Phase_Angle_Differences_Polar.m
 %________________________________________________________________________________________
 
 %% Function to plot phase angle differences between two channel in a polar unit circle plot
+
+% This function is based on the "Complete neural
+% signal processing and analysis: Zero to hero" workshop by Michael Cohen
+% on udemy: https://www.udemy.com/course/solved-challenges-ants/?couponCode=LETSLEARNNOWPP
 
 % Inputs:
 % 1. Channel1Data: 1 x n vector with data of channel 1 in currentlyx viewed

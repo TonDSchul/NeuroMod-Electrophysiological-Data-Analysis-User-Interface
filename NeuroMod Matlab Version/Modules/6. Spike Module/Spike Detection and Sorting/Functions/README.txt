@@ -51,7 +51,7 @@ File: Spike_Module_ConverStrucToTextArea.m
 
 % Inputs:
 % 1. Struc: spike sorting settings structure
-% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpykingCircus 2"
+% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpyKING CIRCUS 2"
 % OR "Kilosort 4"
 
 % Outputs
@@ -73,13 +73,31 @@ File: Spike_Module_ConvertTextToParameterStruc.m
 
 % Inputs:
 % 1. Text: text containing all spike sorting parameter settings 
-% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpykingCircus 2"
+% 2. Sorter: string, selected sorter, "Mountainsort 5" OR "SpyKING CIRCUS 2"
 % OR "Kilosort 4"
-% 3. SC2Parameter: only when sorter = "SpykingCircus 2"; standard spike sorting settings structure --> only values
+% 3. SC2Parameter: only when sorter = "SpyKING CIRCUS 2"; standard spike sorting settings structure --> only values
 % that changed are interchanged!
 
 % Outputs
 % 1. NewParameterStrcuture: spike sorting parameter structure
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Detect_Bursts.m
+%________________________________________________________________________________________
+%% NOT IMPLEMENTED YET
+%% cleans quotes from values
+
+% Inputs:
+% 1. inputStruct: spike sorting parameter structure
+
+% Outputs
+% 1. updatedStruct: spike sorting parameter structure
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -173,7 +191,7 @@ File: Spike_Module_Load_Sorting_Results_After_Sorting.m
 % Inputs:
 % 1 app: Spike Detection and Sorting window app object
 % 2. Sorter: string, name of the sorter for which results should be loaded,
-% either "Mountainsort 5" OR "SpykingCircus 2" or "Kilosort 4" OR "WaveClus 3"
+% either "Mountainsort 5" OR "SpyKING CIRCUS 2" or "Kilosort 4" OR "WaveClus 3"
 % 3. Path: string , Recording path with SpikeInterface or Kilosort folders
 
 % Author: Tony de Schultz
@@ -190,7 +208,7 @@ File: Spike_Module_ShowSpikeSortingSettings.m
 
 % Inputs:
 % 1. Sorter: string, name of the sorter to output settings for, either
-% "Mountainsort 5" OR "SpykingCircus 2" OR "Kilosort 4"
+% "Mountainsort 5" OR "SpyKING CIRCUS 2" OR "Kilosort 4"
 % 2. ParameterStructure: stucture holding sufields for different sorters
 % 3. ParameterPresent: string, only "ParameterNOTPresent" when parameter
 % were not set yet and should be created. Some other string to only convert
@@ -199,6 +217,29 @@ File: Spike_Module_ShowSpikeSortingSettings.m
 % Outputs
 % 1. ParameterStructure: Current structure holding spikesorting parameter
 % 2. Text: char, holding all structure data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Sorting_Parameter_To_JSON.m
+%________________________________________________________________________________________
+%% Function to save spike sorting parameter in a json file to load into the sorting script
+% This is just holding parameter for the spike sorter, not the script
+% itself
+% gets actually saved in Spike_Module_Start_SpikeInterface_Sorting
+
+% Inputs:
+% 1. Sorter: char, sorter to use
+% 2. ParameterStructure: struc with all user defined or standard sorter
+% settings
+% 3. file_path: char, path to save sorting parameter in (Rec_Path/SpikeInterface/ OR Rec_Path/Kilosort/)
+
+% Outputs
+% 1. SortingParameters: parameter as json code object
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -216,7 +257,8 @@ File: Spike_Module_Spike_Detection.m
 % 1. Data: Data structure containing high pass filtered preprocessed data as a Channel x Time matrix in Data.Preprocessed field.
 % High pass filter required!
 % 2. Detectionmethod: Thresholding Method. Options: "Quiroga Method" OR "Threshold: Mean - Std" OR "Threshold: Median - Std"; 
-% 3. Type: Method to compute mean and std with. Options: "All Channel" OR "Individual Ch."
+% 3. Type: Method to compute mean and std with. Options: "All Channel
+% Average" OR "Individual Ch." OR "All Channel Max Values"
 % 4. STDThreshold: Number of std's signal has to deviate from mean to count
 % as spike. Standard: 4; Can vary depending on type selected
 % 5. Filter: true or false, specify whether vertical artefacts should be
@@ -241,6 +283,34 @@ File: Spike_Module_Spike_Detection.m
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Start_SpikeInterface_Sorting.m
+%________________________________________________________________________________________
+%% Function to start spike sorting with SpikeInterface
+% This starts the SpikeInterface_Sorting.py script and saves parameter for
+% the script (not the sprting parameter) as a json file (including probe design to create probe in SpikeInterface)
+
+% Inputs:
+% 1. Data: main window data structure
+% 2. SpikeInterfaceParameter: struc with user defined parameter for the
+% script coming from the GUI
+% 3. executableFolder: char, folder NeuroMod was executed from
+% 4. SpikeSortinBinPath: char, path to the bin file passed to the python
+% script to load into the sorter
+% 5. SelectedSorter: char, sorter selected
+% 6. ManualSelection: double, 0 or 1 whether user selected a bin file
+% manually. This slighty changes the path
+% 7. ParameterStructure: jsoncode object crated in
+% Spike_Module_Sorting_Parameter_To_JSON containing all spike sorting
+% parameter for the selected sorter (not script parameter!)
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________
 
 

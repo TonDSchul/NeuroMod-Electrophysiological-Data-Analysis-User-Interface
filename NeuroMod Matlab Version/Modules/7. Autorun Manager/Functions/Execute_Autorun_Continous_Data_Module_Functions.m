@@ -14,6 +14,8 @@ function [Data,CurrentPlotData] = Execute_Autorun_Continous_Data_Module_Function
 % 3. Data: main data structure 
 % 4. DataPath: char, Path to currently analyzed folder
 % 5. LoadedData: 1 if data was loaded, 0 if data was extracted
+% 6. CurrentPlotData: struc holding analysis results to export
+% 7. executableFolder: char, from which NeuroMod was started
 
 % Outputs:
 % 1. Data: main data structure 

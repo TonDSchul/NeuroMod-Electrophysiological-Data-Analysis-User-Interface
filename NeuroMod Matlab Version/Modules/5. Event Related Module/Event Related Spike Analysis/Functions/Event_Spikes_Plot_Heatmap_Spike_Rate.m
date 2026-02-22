@@ -38,6 +38,8 @@ function CurrentPlotData = Event_Spikes_Plot_Heatmap_Spike_Rate(Data,SpikeTimes,
 % 18. TwoORThreeD: char, either "TwoD" or "ThreeD" for 2d or 3d plot
 % 19. CurrentPlotData: structure in which analysis results are saved in
 % case user wants to export them
+% 20. PlotAppearance: struc with all plot appearance parameter for plot
+% like linewidths and colors
 
 % Output:
 % 1. CurrentPlotData: structure in which analysis results are saved in

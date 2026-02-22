@@ -20,6 +20,7 @@ function [AutorunConfig,NumIterations,LoadedData] = Execute_Autorun_Window_Check
 % 3. LoadedData: true if data is loaded, false if not (not loaded here!)
 % 4. PathToOpen: char, path that is opened in windows file explorer to
 % select a path
+
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________

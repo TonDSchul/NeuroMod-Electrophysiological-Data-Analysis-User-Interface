@@ -1,5 +1,14 @@
 function Spike_Module_Open_SpikeInterfaceGUI(Data,executableFolder,Sorter)
 
+%________________________________________________________________________________________
+
+%% Not used anymore, was experimental, maybe updated and implemented
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 % needs same environmental pythonexe than spikeinterface
 [pythonPath] = Spike_Module_Check_Load_Conda_Python_exe(executableFolder);
 

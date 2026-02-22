@@ -9,9 +9,9 @@ function [EventDataTypeField,Value]= Event_Module_Check_Event_Preprocessing(Data
 
 % Inputs: 
 % 1. Data: main window data object
-% 3. EventChannelSelection: char, name of the event channel for which trigger are
+% 2. EventChannelSelection: char, name of the event channel for which trigger are
 % checked
-% 4. CurrentValue: Currently selected value (either 'Raw Event Related Data' OR 'Preprocessed Event Related Data')
+% 3. CurrentValue: Currently selected value (either 'Raw Event Related Data' OR 'Preprocessed Event Related Data')
 % --> this is so selection of prepro data can be preserved when selecting
 % another event channel
 

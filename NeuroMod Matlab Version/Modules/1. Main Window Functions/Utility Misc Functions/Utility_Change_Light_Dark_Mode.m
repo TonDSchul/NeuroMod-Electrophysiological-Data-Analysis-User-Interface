@@ -13,6 +13,8 @@ function app = Utility_Change_Light_Dark_Mode(app,Window)
 
 % Input Arguments:
 % 1. app: main window app object
+% 2. Window: char, window from which this function is called from and for
+% which colors are modified
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

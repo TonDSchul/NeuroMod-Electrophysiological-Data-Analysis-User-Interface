@@ -1,5 +1,29 @@
 function Spike_Module_Start_SpikeInterface_Sorting(Data,SpikeInterfaceParameter,executableFolder,SpikeSortinBinPath,SelectedSorter,ManualSelection,ParameterStructure)
 
+%________________________________________________________________________________________
+%% Function to start spike sorting with SpikeInterface
+% This starts the SpikeInterface_Sorting.py script and saves parameter for
+% the script (not the sprting parameter) as a json file (including probe design to create probe in SpikeInterface)
+
+% Inputs:
+% 1. Data: main window data structure
+% 2. SpikeInterfaceParameter: struc with user defined parameter for the
+% script coming from the GUI
+% 3. executableFolder: char, folder NeuroMod was executed from
+% 4. SpikeSortinBinPath: char, path to the bin file passed to the python
+% script to load into the sorter
+% 5. SelectedSorter: char, sorter selected
+% 6. ManualSelection: double, 0 or 1 whether user selected a bin file
+% manually. This slighty changes the path
+% 7. ParameterStructure: jsoncode object crated in
+% Spike_Module_Sorting_Parameter_To_JSON containing all spike sorting
+% parameter for the selected sorter (not script parameter!)
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 [pythonPath] = Spike_Module_Check_Load_Conda_Python_exe(executableFolder);
 SpikeInterfaceScriptPath = strcat(executableFolder,'\Modules\SpikeInterface\SpikeInterface_Sorting.py');
 
@@ -58,8 +82,6 @@ if xCoords(end)==','
     xCoords(end) = [];
 end
 % end
-
-SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(SelectedSorter,ParameterStructure,file_path);
 
 %% Save Parameter for sorting script to load
 GUIparams = struct();

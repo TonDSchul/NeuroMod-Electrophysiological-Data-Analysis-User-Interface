@@ -1,10 +1,17 @@
 function Utility_Trial_Rejection_ButtonDownFunction(app,src,event)
 
-% Theory: find the line nearest to the one the user clicked on in UIAxes_2.
-% Get X and Y Data of that line. Compare with cdata of UIAxes and get the
-% row indice of matching data. The yaxis label of UIAxes at that index is
-% the trrial number --> ensures that it works even when trials where
-% already deleted
+%________________________________________________________________________________________
+%% Function to handle callback in trial rejection window when user clicks a plot to show the trial/trigger number
+
+% Input Arguments:
+% 1. app: trial rejection app object
+% 2. src: Not used
+% 3. event: Not used
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
 
 %Get click location
 cp = app.UIAxes_2.CurrentPoint;
@@ -54,7 +61,7 @@ if ~isempty(closestLine)
         
         label = app.AllYLabels{idxMatch};
         %label = app.UIAxes.YTickLabel{idxMatch};
-        msg = sprintf('Trial: %s', label);
+        msg = sprintf('Trigger Nr: %s', label);
         
         %plot text
         text(app.UIAxes_2, xClick, yClick, msg, ...

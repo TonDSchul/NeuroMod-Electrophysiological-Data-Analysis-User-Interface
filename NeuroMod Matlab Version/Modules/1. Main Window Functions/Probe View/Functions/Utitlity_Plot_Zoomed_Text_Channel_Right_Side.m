@@ -25,8 +25,9 @@ function Utitlity_Plot_Zoomed_Text_Channel_Right_Side(Figure,ChannelText,NrChann
 % row) --> affects right row only. Positive and negative possible
 % 14. ChannelSpacing: double, from Data.Info structure in um
 % 15. SwitchTopBottom: 1 or 0 if upper and lower channel names are switched
-% 16: OffSetRows: 1 or 0 whether every seconf row is shifted to the right
-% -- only necessary here of more than 2 channel rows (treated as array)
+% 16. SquareXPos: vector with all x position of all rows plotted (start and end of each row)
+% 17. SquareYPos: vector with all x position of all columns plotted (start and end of each column)
+% 18. OffSetRows: 1 or 0 whether every second column is offset to the right
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -1,30 +1,31 @@
-function [faceColor,EdgeColor]= ProbeView_ZoomedChannel_Color_Selection(LoopIteration,FirstZoomChannel,ChannelRows,OffSetRows,ReversedActiveChannelLeft,AllActiveChannel,ChannelRight,ChannelLeft,nrows,NrChannel,CurrentChannel,ActiveChannel)
+function [faceColor,EdgeColor] = ProbeView_ZoomedChannel_Color_Selection(LoopIteration,FirstZoomChannel,ChannelRows,OffSetRows,ReversedActiveChannelLeft,AllActiveChannel,ChannelRight,ChannelLeft,nrows,NrChannel,CurrentChannel,ActiveChannel)
 
 %________________________________________________________________________________________
-%% Function to determine the color of a channel in the probe view window when it is clicked at
-%% -- for zoomed channel selction on the right of the probe view window
+%% Function to set color of squares in probe view window depending on whether they are active channel and whether they are currently active
 
-% This function is executed every time the probe view window is newly
-% opened/plotted. Only executed, if y limits change
+% Called in Utitlity_Plot_Zoomed_Channel_Right_Side - only if nr rows
+% smaller than 3, since no zoomed selection is plotted otherwise
 
 % Inputs: 
-% 1. ChannelClicked: double, channel the user clicked at in the probe view
-% window (empty when non was clicked)
-% 2. FirstZoomChannel: First channel of the zoomed selection in the right
-% (from the bottom)
-% 3. ChannelRows: double, specifies whether probe has one or two rows
-% 4. OffSetRows: double, 1 or 0, specifies, whether every second channel row is shifted to the right 
-% 5. NrChannel: doubl, number of channel from Data.Info
-% 6. AllChannelLeft: vector, with all channel indicies on the left row
-% 7. AllChannelRight: vector, with all channel indicies on the right row (if present)
-% 8. ChannelRight,ChannelLeft,nrows,NrChannel,CurrentChannel,ActiveChannel
-
+% 1. LoopIteration: double, number of sqaure currently looped through 
+% 2. FirstZoomChannel: double, first channel number currently viewed in zoomed in
+% channel selection (note: 'real' channel = channel nr - FirstZoomChannel since its flipped after plotting)
+% 3. ChannelRows: Nr of channel rows
+% 4. OffSetRows: double. nr of rows in probe design
+% 5. ReversedActiveChannelLeft: vector with channel number on the left
+% side(first row) when channel numbers reversed
+% 6. AllActiveChannel: vector with all active channel (not matrix channel)
+% 7. ChannelRight: vector 1:NrColumns for right channel row
+% 8. ChannelLeft: vector 1:NrColumns for left channel row
+% 9. nrows: current row iteration in Utitlity_Plot_Zoomed_Channel_Right_Side
+% 10. NrChannel: double, number of all channel (active and inactive)
+% 11. CurrentChannel: double, no influence currently, always 0
+% 12. ActiveChannel: double vector, currently active channel
 
 % Outputs:
-% 1. Waveforms: nchannel x nwaveforms x ntime matrix saving each extract
-% waveform
-% 2. BiggestSpikeIndicies: 1 x nrspikes (length of SpikeTimes). 1 if spike waveform was extracted, 0 if spike waveform was NOT
-% extracted
+% 1. faceColor: 1x3 RGB value with face color of currently plotted square
+% (yellow if currently active, white or black if not)
+% 2. EdgeColor: 1x3 RGB value with edge olor of currently plotted square (red if active channel)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

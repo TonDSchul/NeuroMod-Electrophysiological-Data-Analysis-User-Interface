@@ -1,5 +1,29 @@
 function Execute_Autorun_Export_Data(AutorunConfig,CurrentAnalysisWindow,Data,executableFolder,CurrentAnalysis,CurrentPlotData,ExportedAlready)
 
+%________________________________________________________________________________________
+
+%% Function that calls Utility_Get_Plot_Data to export analysis results
+% this is usually done within the respective gui callbacks when clicking
+% different menus. This has to be simulated here. So same function then in GUI is
+% called, just with different input arg names depending on what menu the
+% user would have selected if done in the GUI
+
+% Inputs: 
+% 1. AutorunConfig: struc with all autorun parameter
+% 2. CurrentAnalysisWindow: char, window for current analysis
+% 3. Data: main window data structure
+% 4. executableFolder: char, folder NeuroMod was started in
+% 5. CurrentAnalysis: analysis method for window
+% 6. CurrentPlotData: struc with analysis results for export
+% 7. ExportedAlready: double 1 or 0, if analysis is done multiple times in
+% a loop with settings not accounted for in exporting. Results are then only
+% exported ones, not multiple times
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Check if data available
 if isempty(CurrentPlotData)
     warning("No analysis data found to export! Please check the order of modules in your config file!")

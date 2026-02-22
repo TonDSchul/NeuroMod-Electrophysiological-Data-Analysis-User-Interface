@@ -1,12 +1,39 @@
 function [CurrentClim,CurrentPlotData] = Event_Module_Wavelet_Coherence(Data,EventRelatedData1,EventRelatedData2,Window,BaselineNormalize,BaselineWindow,TF,CurrentClim,Figure,SampleRate,PlotAppearance,Time,CurrentPlotData,TwoORThreeD)
 
 %________________________________________________________________________________________
-%% Function to conducr wavelet coherence analysis
+%% Function to conduct wavelet coherence analysis (either between channel or trials)
 
-% Input Arguments:
+% Inputs: 
+% 1. Data: main window data structure
+% 2. EventRelatedData1: nchannel x nevents x ntimepoints single matrix
+% containing event related data for either the first trigger or channel
+% selected for coherene
+% 3. EventRelatedData2: nchannel x nevents x ntimepoints single matrix
+% containing event related data for either the second trigger or channel
+% selected for coherene
+% 4. Window: char, window size in samples, not used
+% 5. BaselineNormalize: not used
+% 6. BaselineWindow: not used
+% 7. TF: structure with parameter for TF calculations, comes from
+% 'Event_Module_Organize_TF_Window_Inputs' function
+% 8. CurrentClim: clim of current plot, saved by TF window to be able to auto
+% clim without calculating again
+% 9. Figure: Axes handle to figure to plot in
+% 10. SampleRate: double
+% 11. PlotAppearance: structure holding info about plot appearances the user
+% might have modified.
+% 12. Time: Time vector in seconds of event related data
+% 13. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them
+% 14. TwoORThreeD: char, "TwoD" or "ThreeD" depending on what the user
+% selected
 
 
 % Output:
+% 1. CurrentClim: clim of current plot, saved by TF window to be able to auto
+% clim without calculating again
+% 2. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -1,5 +1,26 @@
 function Event_Spikes_Resize_Figures(MainFigure,SpikeRateTimeFig,SpikeRateChannelFig,AnalysisMethod,Cluster)
 
+%________________________________________________________________________________________
+%% Function to set position and aspect ration of figures in event spike analysis window so that spike rates are alligned with the main plot in the middle
+
+% Inputs:
+% 1. MainFigure : app.UIAxes object to the plot in the middle
+% 2. SpikeRateTimeFig: app.UIAxes object to the plot spike rate over time
+% (under main plot in the middle)
+% 3. SpikeRateChannelFig: app.UIAxes object to the plot spike rate over
+% channel (to the right of the main plot in the middle)
+% 4. AnalysisMethod: char, Analysis plot choosen in cont spike analysis window,
+% see below
+% 5. Cluster: NOT USED YET
+
+% Output:
+% 1. CurrentPlotData: structure in which analysis results are saved in
+% case user wants to export them. See below to see which fields and data
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if ~strcmp(AnalysisMethod,"Spike Tirggered Average")
     MainFigure.Position = [347,115,1043,729]; % x y width height
     MainFigure.PlotBoxAspectRatio = [1,0.539678284182306,0.539678284182306];

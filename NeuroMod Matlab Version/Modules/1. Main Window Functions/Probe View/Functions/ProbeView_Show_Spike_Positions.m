@@ -1,5 +1,29 @@
 function ProbeView_Show_Spike_Positions(Data,ProbeViewProperties,Figure,WhatToShow)
 
+%________________________________________________________________________________________
+%% Function show spikes in the probe view window
+% When spiek sorting data available: plot median x and y position of all
+% spikes within a cluster, for each cluster
+% when data was just thresholed: shows a circle over a channel if spikes
+% found in that channel. 
+% Circle size can be spike number or spike amplitude
+
+% Inputs: 
+% 1. Data: main window data structure
+% 2. ProbeViewProperties: struc with fields:
+% ProbeViewProperties.YlimsPlottedChannel and
+% ProbeViewProperties.xlimsPlottedChannel. Those contains min and max
+% values of plotted channel to fit spike positions in (x positions not to scale! Thats why spike positions have to be scaled)
+% 3. Figure: app.UIAxes object to plot in
+% 4. WhatToShow: char, either "NumSpikes" or "SpikeAmps" depending on how
+% to scale size of circles
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
 SpikeHandles = findobj(Figure, 'Tag', 'SpikePositions');
 if ~isempty(SpikeHandles)
     delete(SpikeHandles);

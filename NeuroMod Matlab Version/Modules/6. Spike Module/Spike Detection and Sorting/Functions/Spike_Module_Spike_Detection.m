@@ -1,4 +1,4 @@
-function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,STDThreshold,DepthFilter,Tolerance, ArtefactDepth, TimeOffSetFilter, TimeOffset, executableFolder)
+function [Data,ToKeep] = Spike_Module_Spike_Detection(Data,Detectionmethod,Type,STDThreshold,DepthFilter,Tolerance,ArtefactDepth,TimeOffSetFilter,TimeOffset,executableFolder)
 %________________________________________________________________________________________
 
 %% Function to extract Data.Spikes from preprocessed (high pass filtered) data using thresholding

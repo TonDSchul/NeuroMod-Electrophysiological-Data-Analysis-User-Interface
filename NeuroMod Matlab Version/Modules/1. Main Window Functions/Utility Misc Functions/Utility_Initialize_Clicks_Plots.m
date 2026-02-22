@@ -1,15 +1,22 @@
 function Utility_Initialize_Clicks_Plots(app,OldDataPlotName)
+
 %________________________________________________________________________________________
-%% Function to initilaze click functionality of plots
-% This function gets called whenever something new is plotted in the main
+%% Function to initialize click functionality of plots
+% This function gets called when something new is plotted in the main
 % window to initiate the UIAxesButtonDown callcbacks that capture the x and
-% y corrdinate of a point being clicked.
+% y corrdinate of a point being clicked. But only sets click callback if
+% reason of plot is not jsut to update the time. Istn necessary then and
+% reduces overhead
 
 % UIAxesButtonDown and LineClicked = main window data plot (buttondown when clicking on empty space of plot, lineclicked when clicking on a data line)
 % UIAxes_2ButtonDown and LineClickedTime = maine window time plot (buttondown when clicking on empty space of plot, lineclicked when clicking on a data line)
 
 % Input Arguments:
 % 1. app: main window app object
+% 2. OldDataPlotName: string with why plot was updated. If
+% "MainWindowTimeManipulation" OR
+% "MainWindowTimeManipulationMovie" dont update click callback since its
+% not necessary then
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

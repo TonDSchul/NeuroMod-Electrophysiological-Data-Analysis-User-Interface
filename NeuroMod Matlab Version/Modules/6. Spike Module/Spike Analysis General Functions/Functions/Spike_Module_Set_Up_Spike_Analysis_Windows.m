@@ -12,7 +12,7 @@ function [app] = Spike_Module_Set_Up_Spike_Analysis_Windows(app,WindowType,Event
 % respective app window of the analysis the user selects
 % 2. WindowType: not used yet. Can pass exact type of window openend if
 % necessary
-% EventWindow: Either "EventWindow" when this function is called on startup
+% 3. EventWindow: Either "EventWindow" when this function is called on startup
 % of a event spike analysis window. "Non" otherwise
 
 % Outputs

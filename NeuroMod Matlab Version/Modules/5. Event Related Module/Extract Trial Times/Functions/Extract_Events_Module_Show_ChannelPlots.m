@@ -24,6 +24,9 @@ function Extract_Events_Module_Show_ChannelPlots(Data,Channel,Folder,app,RHDAllC
 % event
 % 5. Type: Determines if this function is executed on Show_Event_Channel_Window startup. If yes, additional infos are loaded. 
 % If no, This has to be some other string to only extract necessary information
+% 6. DownsampleRate: string with downsamplerate specified by the user
+% 7. executablefolder: char, folder NeuroMod was started in
+% 8. StateOption: char, for trigger onset/offset, see below for options
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

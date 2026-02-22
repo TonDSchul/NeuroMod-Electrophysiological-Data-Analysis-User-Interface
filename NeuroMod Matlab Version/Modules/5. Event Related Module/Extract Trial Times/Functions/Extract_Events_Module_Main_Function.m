@@ -39,9 +39,16 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag,Eve
 % 12. startTimestamp: Only for open ephys!! start time of recording in
 % seconds to substract from event times which are present in respect to
 % aquisition start, not recording start
-% 13. Eventstodelete: Indices of Data.Events that had to be deleted (i.e. due to all triggers being outside of time or smt like this)
-% 14. TimeAroundEvent: double, 1x2 vecor with time before and after trigger
+% 13. TimeAroundEvent: double, 1x2 vecor with time before and after trigger
 % (both positive)
+% 15. AdditionalEventInfo: struc with fields: InputChannelNumber with event
+% channels numbers the user specified and field states: 1 or 0 which
+% trigger state is extracted 
+% 15. EventsToCombine: struc with fields: CombinedChannel: vector with event channel numbers specified by the user
+% to combine
+%                                     CombinedIdentity: original identies
+%                                     since user can edit event nrs to
+%                                     extract
 
 % Outputs:
 % 1. Data: Data structure with added field:
@@ -60,6 +67,9 @@ function [Data,EventChannelDropDown,RHDAllChannelData,ExtractedRHDEventsFlag,Eve
 % when the event extraction window opens. Since this takes long, it is only
 % done ones and then saved. To signal that it was already analyzed, this
 % variables is set to 1. Otherwise 0 as double.
+% 5. Eventstodelete: double vector with all event indicies that where deteleted (if so). After event extraction, event data is 'cleaned'
+% meaning all trigger violating time limits/ custom time extractions 
+% 6. texttoshow: string holding info about what was extracted and done (like deleted trigger due to time violations)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

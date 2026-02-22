@@ -1,5 +1,25 @@
 function [event,Texttoshow] = Extract_Events_Module_Load_Neuralynx_Events(Data,NeuralynxRecordingPath)
 
+%________________________________________________________________________________________
+%% Function load and plot event data in the show event data window (opened in the extract events window)
+
+% This function gets called by Extract_Events_Module_Show_ChannelPlots.m
+% and gets event data from that function to plot it
+
+% Inputs: 
+% 1. Data: main window data structure
+% 2. NeuralynxRecordingPath: char, path to neuralynx recording folder (saved when recording is extracted)
+
+% Outputs:
+% 1.event: struc with event information (event samples, idendities etc)
+% shown in extract event times window
+% 2. Texttoshow: string with some information if events found and if in
+% proper time range
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 Texttoshow = [];
 % check if .nce files found in recording folder
 FilesIndex = {};

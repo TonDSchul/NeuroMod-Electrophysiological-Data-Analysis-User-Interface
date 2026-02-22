@@ -1,5 +1,28 @@
 function [NeoEventStartTimeStamp,EventInfo,EventDataLocation,texttoshow] = Extract_Events_Module_NEO_Determine_Available_EventChannel(Data,Path)
 
+%________________________________________________________________________________________
+
+%% Function to determined event channel extracted with NEO when amplifier data was extracted
+
+% Input:
+% 1. Data: Main window data strucure with all relevant dataset compontntes
+% 2. Path: char to recording parent folder holding the folder, event and
+% amplifier channel was saved to by the NEO script
+
+% Output
+% 1. NeoEventStartTimeStamp: double, time stamp (samples) event acquistion
+% was started (substracted from event times)
+% 2. EventInfo: struc with all infos to found events
+% 3. EventDataLocation: char, file name of .mat file holding event data
+% saved by the NEO script
+% 4. texttoshow: string, information whether files where found and
+% events could be loaded
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 % Search standard folder with results
 texttoshow = [];
 EventInfo = [];

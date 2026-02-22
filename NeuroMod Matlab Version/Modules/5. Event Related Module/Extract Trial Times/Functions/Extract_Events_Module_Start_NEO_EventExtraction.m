@@ -1,4 +1,17 @@
-function Extract_Events_Molue_Start_NEO_EventExtraction(Data,executablefolder,SelectedPath,NEOParameter)
+function Extract_Events_Module_Start_NEO_EventExtraction(Data,executablefolder,SelectedPath,NEOParameter)
+
+%________________________________________________________________________________________
+%% Function to start neo for event extraction when a folder was selected manually by the user
+
+% Inputs: 
+% 1. Data: main window data structure
+% 2. executablefolder: char, folder NeuroMod was started from
+% 3. SelectedPath: char, path to event files selected by user
+% 4. NEOParameter: struc with some information for NEO
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
 
 [NEOPython_Conda_Environment_Path] = Manage_Dataset_Load_NEO_Conda_Python_exe(executablefolder);
 

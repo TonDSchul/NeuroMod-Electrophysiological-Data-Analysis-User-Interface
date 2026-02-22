@@ -16,7 +16,6 @@ function [Data,SelectedFolder] = Execute_Autorun_Set_Up_Folder(AutorunConfig,Dat
 % specified in the config file selected
 % 3. Data: main data structure 
 % 4. nRecordings: double, max number of folder iterated through
-% 5. LoadedData: true if data is loaded, false if not (not loaded here!)
 
 %Outputs:
 % 1. Data: main data structure

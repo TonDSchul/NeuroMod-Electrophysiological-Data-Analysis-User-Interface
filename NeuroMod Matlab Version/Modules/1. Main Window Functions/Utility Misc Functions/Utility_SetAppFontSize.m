@@ -1,3 +1,11 @@
+%________________________________________________________________________________________
+%% NOT USED CURRENTLY
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 function Utility_SetAppFontSize(app, newSize)
     comps = app.NeuromodToolboxMainWindowUIFigure.Children;     % get all components
     updateFont(comps, newSize);

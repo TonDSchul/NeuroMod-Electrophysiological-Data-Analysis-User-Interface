@@ -1,5 +1,12 @@
 function Utility_Save_Spike_Data(Analysis,Fullsavefile,PlottedData)
 
+%________________________________________________________________________________________
+%% NOT USED RIGHT NOW
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
 
 %% Write XData
 writecell({" "},Fullsavefile, 'WriteMode', 'append');

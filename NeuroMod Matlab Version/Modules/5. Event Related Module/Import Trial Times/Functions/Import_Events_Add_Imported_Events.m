@@ -3,6 +3,18 @@ function [Data,EventChannelDropDown] = Import_Events_Add_Imported_Events(Data,Ev
 %________________________________________________________________________________________
 %% Function to add imported events to the main window data structure
 
+% Inputs:
+% 1. Data: main window data structure
+% 2. EventInfo: struc holding event info laoded from selected file with
+% fields TempEvents as cell array with time stamps for each event channel
+% pretty much the finsihed Data.Events already, just has to be 'cleaned' by checking time violations etc.
+
+% Outputs:
+% 1. Data: main window data structure with Data.Events and corresponding
+% Data.Info fields
+% 2. EventChannelDropDown: cell array with each cell containing a char with
+% an event channel name
+
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
 %________________________________________________________________________________________

@@ -58,7 +58,7 @@ File: Execute_Autorun_Config_Template.m
 % current channel position, empty if not selected
 % 6. NumIterations: double, max nr of recordings that are analysed. If multiple recordings are analyzed, this function
 % loops over them. If just one loaded this is set to 1 
-% 7. LoadedData: 1 if data was loaded, 0 if data was extracted
+% 7. LoadedData: NOT USED ANYMORE AS INPUT BUT IS SET BELOW
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -82,6 +82,8 @@ File: Execute_Autorun_Continous_Data_Module_Functions.m
 % 3. Data: main data structure 
 % 4. DataPath: char, Path to currently analyzed folder
 % 5. LoadedData: 1 if data was loaded, 0 if data was extracted
+% 6. CurrentPlotData: struc holding analysis results to export
+% 7. executableFolder: char, from which NeuroMod was started
 
 % Outputs:
 % 1. Data: main data structure 
@@ -118,6 +120,55 @@ File: Execute_Autorun_Convert_ConfigChannel_to_ActiveChannel.m
 
  ###################################################### 
 
+File: Execute_Autorun_Export_Data.m
+%________________________________________________________________________________________
+
+%% Function that calls Utility_Get_Plot_Data to export analysis results
+% this is usually done within the respective gui callbacks when clicking
+% different menus. This has to be simulated here. So same function then in GUI is
+% called, just with different input arg names depending on what menu the
+% user would have selected if done in the GUI
+
+% Inputs: 
+% 1. AutorunConfig: struc with all autorun parameter
+% 2. CurrentAnalysisWindow: char, window for current analysis
+% 3. Data: main window data structure
+% 4. executableFolder: char, folder NeuroMod was started in
+% 5. CurrentAnalysis: analysis method for window
+% 6. CurrentPlotData: struc with analysis results for export
+% 7. ExportedAlready: double 1 or 0, if analysis is done multiple times in
+% a loop with settings not accounted for in exporting. Results are then only
+% exported ones, not multiple times
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Execute_Autorun_Export_DataSet_Components.m
+%________________________________________________________________________________________
+
+%% Function that calls Utility_Export_Dataset_Components to export a dataset component
+% in autourun it can be that a component is added that does not exist yet,
+% so it has to check and enable to continue without errors
+
+% Inputs: 
+% 1. AutorunConfig: struc with all autorun parameter
+% 2. DatasetComponent: char, component to export (field name in Data struc)
+% 3. Data: main window data structure
+% 4. executableFolder: char, folder NeuroMod was started in
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Execute_Autorun_Extract_Events_Module_Functions.m
 %________________________________________________________________________________________
 %% This is the main function to execute event module autorun analysis 
@@ -133,12 +184,72 @@ File: Execute_Autorun_Extract_Events_Module_Functions.m
 % 3. Data: main data structure 
 % 4. DataPath: char, Path to currently analyzed folder
 % 5. LoadedData: 1 if data was loaded, 0 if data was extracted
+% 6. executableFolder: char, folder NeuroMod was started from
+% 7. CurrentPlotData: struc with analysis results to export
 
 % Outputs:
 % 1. Data: main data structure 
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Execute_Autorun_Initialize_Data.m
+%________________________________________________________________________________________
+
+%% Function equivalent to Organize_Initialize_GUI just for autorun mode
+% same as Organize_Initialize_GUI for input arg "Extracting"
+
+% Inputs: 
+% 1. AutorunConfig: struc with all autorun parameter
+% 2. TempData: channel by time matrix with amplifier data
+% 3. Time: vector with time stamps in seconds for each amplifier channel
+% sample
+% HeaderInfo: struc with all header infos extracted from recording
+% SampleRate: double, sample rate of recording
+% RecordingType: char, type of recording detected and loaded
+% SelectedFolder: char, path to the recording folder selected
+
+% Outputs:
+% 1. Data: struc with all relevant data components
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Execute_Autorun_Initialize_Grid_Trace_Panel.m
+%________________________________________________________________________________________
+
+%% Function to initialze the grid of axes to plot data in grid view in autorun mode!
+% creates the figure and channelaxes
+% initiates within a normal Matlab figure object.
+
+% each axes or probe column plots data for all rows concatonated together
+% and separated by black vertical lines being plotted in the same axes.
+% This boosts performance compared to an axes for each channel individually
+
+% Inputs: 
+% 1. Data: struc with all relevant data components
+% 2. Window: char, for which kind of analysis this function is called
+% 3. PreservePlotChannelLocations: 1 or 0 whether to preserve distances
+% between channel with inactive channel islands inbetween active ones
+% 4. PlotAppearance: struc with all user defined or standard plot
+% appearance settings
+
+% Outputs:
+% 1. ChannelAxes: cell array with each cell containing an axes generated (for each probe column)
+% 2. fig: figure object channel axes are created in 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
 %________________________________________________________________________________________
 
 
@@ -162,7 +273,9 @@ File: Execute_Autorun_Manage_Dataset_Module_Functions.m
 % integers, empty if non
 % 6. executableFolder: char, folder this instance of the Toolbox is saved in and
 % executed from 
-%7. AutorunConfig.selected_folder: char, Path to currently analyzed folder
+% 7. AutorunConfig.selected_folder: char, Path to currently analyzed folder
+% 8. TimeAndChannelToExtract: struc with to fields, one holding info about
+% channel to extract the other containing info about time to extract
 
 % Outputs:
 % 1. Data: main data structure 
@@ -216,6 +329,24 @@ File: Execute_Autorun_Save_Figure.m
 
  ###################################################### 
 
+File: Execute_Autorun_Set_Plot_Colors.m
+%________________________________________________________________________________________
+%% Function to set plot colors of Matlab figure objects for the autorun function
+% to account for background colors maybe changed by user and set
+% labels/ticks to properly show in Matlab dark mode
+
+% Inputs:
+% 1. Figure: figure object to modify
+% 2. AutorunConfig: struc with autorun settings
+
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Execute_Autorun_Set_Up_Figure.m
 %________________________________________________________________________________________
 %% This function costumizes a function based on the inputs
@@ -258,7 +389,6 @@ File: Execute_Autorun_Set_Up_Folder.m
 % specified in the config file selected
 % 3. Data: main data structure 
 % 4. nRecordings: double, max number of folder iterated through
-% 5. LoadedData: true if data is loaded, false if not (not loaded here!)
 
 %Outputs:
 % 1. Data: main data structure
@@ -315,6 +445,8 @@ File: Execute_Autorun_Window_Check_Selected_Folder_and_Channel_Order.m
 % 2. NumIterations: double, max number of folder and therefore iterations
 % found, when multiple folder are suppossed to be analyzed
 % 3. LoadedData: true if data is loaded, false if not (not loaded here!)
+% 4. PathToOpen: char, path that is opened in windows file explorer to
+% select a path
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

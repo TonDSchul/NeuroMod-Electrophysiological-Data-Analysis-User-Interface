@@ -22,6 +22,7 @@ function [xcoords,ycoords,chanMap] = Manage_Dataset_Save_ProbeInfo_Kilosort(Data
 % horizontal offset between channel rows.
 % 10. SaveProbe: double, 1 or 0 to specify whether map should be saved or
 % not
+% 11. SaveFormat: char, fromat to save probe in, either ".mat" or ".prb"
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

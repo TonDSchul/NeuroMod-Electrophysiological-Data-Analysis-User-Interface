@@ -18,7 +18,7 @@ function Execute_Autorun_Config_Template(AutorunConfig,FunctionOrder,executableF
 % current channel position, empty if not selected
 % 6. NumIterations: double, max nr of recordings that are analysed. If multiple recordings are analyzed, this function
 % loops over them. If just one loaded this is set to 1 
-% 7. LoadedData: 1 if data was loaded, 0 if data was extracted
+% 7. LoadedData: NOT USED ANYMORE AS INPUT BUT IS SET BELOW
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

@@ -1,5 +1,24 @@
 function SortingParameters = Spike_Module_Sorting_Parameter_To_JSON(Sorter,ParameterStructure,file_path)
 
+%________________________________________________________________________________________
+%% Function to save spike sorting parameter in a json file to load into the sorting script
+% This is just holding parameter for the spike sorter, not the script
+% itself
+% gets actually saved in Spike_Module_Start_SpikeInterface_Sorting
+
+% Inputs:
+% 1. Sorter: char, sorter to use
+% 2. ParameterStructure: struc with all user defined or standard sorter
+% settings
+% 3. file_path: char, path to save sorting parameter in (Rec_Path/SpikeInterface/ OR Rec_Path/Kilosort/)
+
+% Outputs
+% 1. SortingParameters: parameter as json code object
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
 if strcmp(Sorter,"Mountainsort 5")
     % Loop over all fields
     fields = fieldnames(ParameterStructure.MS5);

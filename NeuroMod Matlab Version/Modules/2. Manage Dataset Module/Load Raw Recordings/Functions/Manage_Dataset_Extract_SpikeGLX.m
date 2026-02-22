@@ -1,5 +1,31 @@
 function [Data,HeaderInfo,SampleRate,RecordingType] = Manage_Dataset_Extract_SpikeGLX(SelectedFolder,SelectedTimeandChannel)
 
+%________________________________________________________________________________________
+
+%% This is the main function handling extracting data recorded with SpikeGLX
+% function uses the SpikeGLX_Datafile_Tools githib repo from https://github.com/jenniferColonell/SpikeGLX_Datafile_Tools
+% to get the raw data traces as well as bit to mV conversion factors
+
+% This gets called in the
+% 'Manage_Dataset_Module_Extract_Raw_Recording_Main' function
+
+% Input:
+% 1. SelectedFolder: path as char to folder containing the recording
+% 2. SelectedTimeandChannel: structure with fields: SelectedTimeandChannel.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    SelectedTimeandChannel.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
+
+
+% Output: 
+% 1. Data: nchannel x ntimespoints single matrix with extracted raw data
+% 2. HeaderInfo: structure containing header infos of recording. This get TempData.Info later
+% 3. SampleRate: Sample Rate as double in Hz
+% 4. RecordingType: char designating recording system used
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 [stringArray] = Utility_Extract_Contents_of_Folder(SelectedFolder);
 
 APBinIndicies = [];

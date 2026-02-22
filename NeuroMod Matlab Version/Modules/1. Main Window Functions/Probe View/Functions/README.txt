@@ -78,32 +78,60 @@ File: ProbeView_ProbeScheme_Color_Selection_Inactivated.m
 
  ###################################################### 
 
-File: ProbeView_ZoomedChannel_Color_Selection.m
+File: ProbeView_Show_Spike_Positions.m
 %________________________________________________________________________________________
-%% Function to determine the color of a channel in the probe view window when it is clicked at
-%% -- for zoomed channel selction on the right of the probe view window
-
-% This function is executed every time the probe view window is newly
-% opened/plotted. Only executed, if y limits change
+%% Function show spikes in the probe view window
+% When spiek sorting data available: plot median x and y position of all
+% spikes within a cluster, for each cluster
+% when data was just thresholed: shows a circle over a channel if spikes
+% found in that channel. 
+% Circle size can be spike number or spike amplitude
 
 % Inputs: 
-% 1. ChannelClicked: double, channel the user clicked at in the probe view
-% window (empty when non was clicked)
-% 2. FirstZoomChannel: First channel of the zoomed selection in the right
-% (from the bottom)
-% 3. ChannelRows: double, specifies whether probe has one or two rows
-% 4. OffSetRows: double, 1 or 0, specifies, whether every second channel row is shifted to the right 
-% 5. NrChannel: doubl, number of channel from Data.Info
-% 6. AllChannelLeft: vector, with all channel indicies on the left row
-% 7. AllChannelRight: vector, with all channel indicies on the right row (if present)
-% 8. ChannelRight,ChannelLeft,nrows,NrChannel,CurrentChannel,ActiveChannel
+% 1. Data: main window data structure
+% 2. ProbeViewProperties: struc with fields:
+% ProbeViewProperties.YlimsPlottedChannel and
+% ProbeViewProperties.xlimsPlottedChannel. Those contains min and max
+% values of plotted channel to fit spike positions in (x positions not to scale! Thats why spike positions have to be scaled)
+% 3. Figure: app.UIAxes object to plot in
+% 4. WhatToShow: char, either "NumSpikes" or "SpikeAmps" depending on how
+% to scale size of circles
 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: ProbeView_ZoomedChannel_Color_Selection.m
+%________________________________________________________________________________________
+%% Function to set color of squares in probe view window depending on whether they are active channel and whether they are currently active
+
+% Called in Utitlity_Plot_Zoomed_Channel_Right_Side - only if nr rows
+% smaller than 3, since no zoomed selection is plotted otherwise
+
+% Inputs: 
+% 1. LoopIteration: double, number of sqaure currently looped through 
+% 2. FirstZoomChannel: double, first channel number currently viewed in zoomed in
+% channel selection (note: 'real' channel = channel nr - FirstZoomChannel since its flipped after plotting)
+% 3. ChannelRows: Nr of channel rows
+% 4. OffSetRows: double. nr of rows in probe design
+% 5. ReversedActiveChannelLeft: vector with channel number on the left
+% side(first row) when channel numbers reversed
+% 6. AllActiveChannel: vector with all active channel (not matrix channel)
+% 7. ChannelRight: vector 1:NrColumns for right channel row
+% 8. ChannelLeft: vector 1:NrColumns for left channel row
+% 9. nrows: current row iteration in Utitlity_Plot_Zoomed_Channel_Right_Side
+% 10. NrChannel: double, number of all channel (active and inactive)
+% 11. CurrentChannel: double, no influence currently, always 0
+% 12. ActiveChannel: double vector, currently active channel
 
 % Outputs:
-% 1. Waveforms: nchannel x nwaveforms x ntime matrix saving each extract
-% waveform
-% 2. BiggestSpikeIndicies: 1 x nrspikes (length of SpikeTimes). 1 if spike waveform was extracted, 0 if spike waveform was NOT
-% extracted
+% 1. faceColor: 1x3 RGB value with face color of currently plotted square
+% (yellow if currently active, white or black if not)
+% 2. EdgeColor: 1x3 RGB value with edge olor of currently plotted square (red if active channel)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -182,8 +210,8 @@ File: Utility_Plot_Interactive_Probe_View.m
 % 5. HorOffset: Horizontal offset in um between channel rows (0 if 1 channel row)
 % 6. VerOffset: Vertical offset in um between channel rows (0 if 1 channel
 % row) --> affects right row only. Positive and negative possible
-% 7. ChannelOrder: double, vector with channel order. 1:NrChannel when no
-% costume channel order from Data.Info structure
+% 7. SecondRowOffsetDistance: double, offset distance forevery second
+% channel
 % 8. ActiveChannel: double vector with all channel selected/activated by the
 % user in the probe view window
 % 9. FirstZoomChannel: First Channel shown in zoomed channel view on the
@@ -209,6 +237,7 @@ File: Utility_Plot_Interactive_Probe_View.m
 % top to bottom
 % 20. SwitchLeftRight logical 1 or 0 if channel names are switched between
 % left and right channel row
+% 21. ECogArray: logical 1 or 0 if probe is a ECoG array
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -249,6 +278,9 @@ File: Utility_Plot_Probe_Scheme.m
 % 16. RowClicked: 0 if clicked on a row on the left
 % 17. FirstZoomChannel: First Channel shown in zoomed channel view on the
 % right (lowest channel) - comes from ClickCallback functions
+% 18. ECogArray: logical 1 or 0 if probe is a ECoG array
+% 19. SecondRowOffsetDistance: double, offset distance forevery second
+% channel
 
 % Outputs:
 % 1. yPoint: y value of grey probe tip (warning: most likely negative!)
@@ -370,6 +402,7 @@ File: Utitlity_Plot_Brackets_Probe_View.m
 % or probe view window
 % 12. ChannelActivation: double, 1 or 0, if user activated/deactivated a
 % channel (comes from ClickCallbacks), but also 1 if initialy created!!
+% 13. ECogArray: logical 1 or 0 if probe is a ECoG array
 
 % Outputs:
 % 1. yLimitBracktes: double, vector with min and max value of the plotted
@@ -411,9 +444,12 @@ File: Utitlity_Plot_Zoomed_Channel_Right_Side.m
 % Outputs:
 % 1. numSquares: double, number of channel squares plotted
 % squareHeight : double, height of channel squares plotted
-% lowylimits: double, height of channel squares plotted
-% CorrrectedVerOffset: Vertical Offset in plot between left and right
+% 2. lowylimits: double, height of channel squares plotted
+% 3. CorrrectedVerOffset: Vertical Offset in plot between left and right
 % channelrow for the actual plot
+% 4. xdistances: vector with distance between all x position rows are
+% plotted at
+% 5. AllYPositions: vector with y positions of all channels plotted
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -448,6 +484,9 @@ File: Utitlity_Plot_Zoomed_Text_Channel_Right_Side.m
 % row) --> affects right row only. Positive and negative possible
 % 14. ChannelSpacing: double, from Data.Info structure in um
 % 15. SwitchTopBottom: 1 or 0 if upper and lower channel names are switched
+% 16. SquareXPos: vector with all x position of all rows plotted (start and end of each row)
+% 17. SquareYPos: vector with all x position of all columns plotted (start and end of each column)
+% 18. OffSetRows: 1 or 0 whether every second column is offset to the right
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.

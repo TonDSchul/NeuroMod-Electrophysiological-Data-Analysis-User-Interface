@@ -1,5 +1,17 @@
 function Utility_Main_plot_Arrow_Key_Press(app,event)
 
+%________________________________________________________________________________________
+%% Function to handle callback when user uses arrow key to jump in time
+
+% Input Arguments:
+% 1. app: main window app object
+% 2. event: event object created at callback
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 %% Jump In time
 switch event.Key
     case 'rightarrow' % Foward In TIME!

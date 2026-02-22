@@ -2,6 +2,27 @@ This folder contains the following functions with respective Header:
 
  ###################################################### 
 
+File: Spike_Module_Apply_SpikeInterface_Quality_Metrics.m
+%________________________________________________________________________________________
+
+%% Function to clean loaded spike sorting results from SpikeInterface using quality metrics and user input about thresholds
+
+% Input:
+% 1. Data: main window data structure
+% 2. QualityMetrics: struc with one field per metric saving the user
+% inputted threshold
+
+% Output: 
+% 1. Data: main window data structure with cleaned Data.Spikes
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Spike_Module_Convert_Indicies_to_Data_Channel.m
 %________________________________________________________________________________________
 
@@ -66,6 +87,95 @@ File: Spike_Module_Determine_Sorters_Available.m
 
  ###################################################### 
 
+File: Spike_Module_Get_Kilosort_Amplitude.m
+%________________________________________________________________________________________
+%% Function to get the amplitude of ech spike detected by kilosort at the spike channel and time point detected by the sorter
+% this is because kilosort works with ints that have to be converted back
+% to mV which is not given (only if saved data for kilosort with this gui)
+
+% Input Arguments:
+% 1. Data: Main window data struc
+
+% Output Arguments:
+% 1. Data: Main window data struc with modified Data.Spikes.SpikeAmps 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Get_Spike_Channel.m
+%________________________________________________________________________________________
+%% Function to determine the data channel within the channel x times matrix each spike position in um corresponds to 
+% One of two ways to determine spike positions for use with the actual data
+% matrix and plotting spikedepth in the main window / analysis windows
+% For each spike x and y position it is checked to which channel
+% coordinates this is closest to. This becomes the data channel for that
+% spike. Are more detailed representation of raw sorter output
+
+% other method: max template channel, see Spike_Module_Get_Spike_Channel_Max_Template
+
+% Input Arguments:
+% 1. Data: Main window data struc
+
+% Output Arguments:
+% 1. Data: Main window data struc with modified Data.Spikes.SpikeChannel 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Get_Spike_Channel_Max_Template.m
+%________________________________________________________________________________________
+%% Function to determine the data channel within the channel x times matrix each spike position in um corresponds to 
+% One of two ways to determine spike positions for use with the actual data
+% matrix and plotting spikedepth in the main window / analysis windows
+% For each spike in a cluster, the max template channel becomes the data
+% matrix channel for each spike
+
+% other method: channel coordinate closest to spike x and y position, see Spike_Module_Get_Spike_Channel
+
+% Input Arguments:
+% 1. Data: Main window data struc
+% 2. Sorter: char, sorter used, since Kilosort max templates are zero
+% indexed (not from spikeinterface since its manually created in the sorting script)
+
+% Output Arguments:
+% 1. Data: Main window data struc with modified Data.Spikes.SpikeChannel 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%______________________________________________________________________________________
+
+Clus = unique(Data.Spikes.SpikeCluster);
+
+Data.Spikes.SpikeChannel = zeros(size(Data.Spikes.SpikeTimes));
+
+for i = 1:length(Clus)
+    AllSpikesCluster = Data.Spikes.SpikeCluster == Clus(i);
+    
+    if ~isempty(AllSpikesCluster)
+        if strcmp(Sorter,"Kilosort")
+            Data.Spikes.SpikeChannel(AllSpikesCluster) = Data.Info.ProbeInfo.ActiveChannel(double(Data.Spikes.Cluster_Max_Template_Channel(i))); % noz zero indexed
+        else
+            Data.Spikes.SpikeChannel(AllSpikesCluster) = Data.Info.ProbeInfo.ActiveChannel(double(Data.Spikes.Cluster_Max_Template_Channel(i)) + 1); % zero indexed
+        end
+    else
+        warning(strcat("Clus ",num2str(NumClus(i))," contains no spikes."));
+    end
+end
+
+
+ ###################################################### 
+
 File: Spike_Module_Load_Kilosort_Data.m
 %________________________________________________________________________________________
 
@@ -92,10 +202,33 @@ File: Spike_Module_Load_Kilosort_Data.m
 % spikes from kilosort
 % 5. KSVersion: string, either "Kilosort 4 external GUI" or "Kilosort 3
 % external GUI" to set which version should be loaded
+% 6. DeleteMUA: logical one or zero whether to delete kept_spikes == 0
+% 7. SpikeChannelType: char, either 'Channel closest to X and Y of
+% respective spikes' OR 'Single channel for all spikes in one unit (max template channel)'
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
 % using app.Data.Spikes in GUI
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Load_Phy_Conda_Python_exe.m
+%________________________________________________________________________________________
+%% Function to check whether python.exe is present and prompt to select a folder containing it if not
+
+%% Creates a variable in GUI_Path/Modules/MISC/Variables (do not edit) that saves the path to the python exe if it was succesfully selected
+
+% Inputs:
+% 1. executablefolder: char, GUI path
+
+% Outputs
+% 1. Python_Conda_Environment_Path: char, path to the selected python conda
+% exe
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -119,6 +252,10 @@ File: Spike_Module_Load_SpikeInterface_Sorter.m
 % 2. SelectedFolder: char, folder location containing spike results
 % 4. CurrentSorter: char, name of the sorter to load, used for
 % Data.Info.Sorter, either 'Mountainsort5' or 'Spykingcircus2' or 'SpikeInterface Kilosort'
+% 5. SelectedCurationMethods: quality metrics and thresholds selected by
+% user
+% 6. SpikeChannelType: char, either 'Channel closest to X and Y of
+% respective spikes' OR 'Single channel for all spikes in one unit (max template channel)'
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -126,6 +263,42 @@ File: Spike_Module_Load_SpikeInterface_Sorter.m
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Open_SpikeInterfaceGUI.m
+%________________________________________________________________________________________
+
+%% Not used anymore, was experimental, maybe updated and implemented
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Spike_Module_Start_Phy.m
+%________________________________________________________________________________________
+
+%% This function starts the python script LoadWithNeo.py to extract a recording with Neuralensemble NEO
+
+% Input:
+% 1. Data: main window data structure with all relevant data components
+% 2. executableFolder: char, path in which NeuroMod was opened, from main
+% window
+% 3. resultsFolder: char with path to the sorting results to cd into and
+% start phy
+
+% Output: 
+% 1. Success: double, 1 or 0 whether script succesfully finished
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
 %________________________________________________________________________________________
 
 

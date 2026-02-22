@@ -15,6 +15,8 @@ function [Data,SampleRate,HeaderInfo,RecordingType,Time,texttoshow] = Manage_Dat
 % Input:
 % 1. SISaveFolder: char, recording location selected by the user when
 % extracting data
+% 2. TimeAndChannelToExtract: structure with fields: TimeAndChannelToExtract.TimeToExtract: string, time in seconds (from,to) as comma separated numbers like "0,100" or "0,Inf";
+%                                                    TimeAndChannelToExtract.ChannelToExtract = string, comma separated numbers like "1,2,3,4";
 
 % Output: 
 % 1. Data: nchannel x ntimespoints single matrix with extracted raw data

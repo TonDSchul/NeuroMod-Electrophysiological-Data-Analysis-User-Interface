@@ -88,6 +88,8 @@ File: Continous_Power_Spectrum_Over_Depth.m
 % view window
 % 13. PlotAppearance: structure holding current default of plot appearances
 % like linewidths
+% 14.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
+% original spacing between active channel (in case of inactiove islands between active channel)
 
 % Outputs:
 % 1. PowerSpecResults: results of current computation or previously executed

@@ -2,6 +2,23 @@ This folder contains the following functions with respective Header:
 
  ###################################################### 
 
+File: Organize_Check_Path_Variables.m
+%________________________________________________________________________________________
+%% Function to check all paths to python.exe environments and the CED64 Spike2 tools
+% python.exes for environments with: SpikeInterface, NEO, Phy
+
+% Input Arguments:
+% 1. executablefolder: char, folder NeuroMod is executed from to load
+% variables and check if paths exist
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Organize_Convert_ActiveChannel_to_DataChannel.m
 %________________________________________________________________________________________
 %% Function to convert active channel selection to a data channel.
@@ -62,6 +79,26 @@ File: Organize_Delete_Dataset_Components.m
 % 1. Data: main window data structure
 % 2. Error: 1 if no data would be left after deleting, 0 if otherwise; If 1,
 % deletion is not executed
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
+File: Organize_Export_Components_to_WorkSpace.m
+%________________________________________________________________________________________
+
+%% This function exports a component of the main window data structure to the matlab workspace
+
+% Input:
+% 1. Data: main window data structure
+% 2. Component: string specifying the name of the dataset component to
+% export; see below for options
+% 3. ExecutedInGUI: double, 1 or 0 whether it is executed in GUI (1) or not
+% (0)
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -223,9 +260,10 @@ File: Organize_Reset_Main_Plot.m
 
 %% Function to reset the data and/or time plot of the main window 
 
-% This function gets called whenever data is extracted/chnaged that might be shown
+% This function gets called whenever data is extracted/changed that might be shown
 % in the main window like events and spikes and preprocessing as well as
-% when new data is loaded or the user selects the reset plots button
+% when new data is loaded or the user selects the reset plots button. It
+% ensures proper colormap, variable reset and callback initiation
 
 % Input:
 % 1. app: app object of the extract data window to access the
@@ -311,7 +349,10 @@ File: Organize_Set_Standard_PlotAppearance.m
 %% Function to set the standrad appearance settings of each plot.  
 % This function hard codes standard plot appearances. It is called when no
 % .m file is saved in GUI_Path/Modules/MISC/Variables (do not edit!) to
-% create a new Template_PlotAppearance.m file
+% create a new PlotAppearance.m file. This file is overwritten when the
+% user saves a new custom plot appearance and loaded when NeuroMod is
+% started again. If new components are added, the PlotAppearance.m file in
+% Modules/Misc/Variables has to be deleted!
 
 % Inputs
 % 1. Type: string, Specifies what settings to reset to standard. "All" to

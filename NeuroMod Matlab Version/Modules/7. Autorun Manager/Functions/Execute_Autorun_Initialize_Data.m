@@ -1,5 +1,28 @@
 function Data = Execute_Autorun_Initialize_Data(AutorunConfig,TempData,Time,HeaderInfo,SampleRate,RecordingType,SelectedFolder)
 
+%________________________________________________________________________________________
+
+%% Function equivalent to Organize_Initialize_GUI just for autorun mode
+% same as Organize_Initialize_GUI for input arg "Extracting"
+
+% Inputs: 
+% 1. AutorunConfig: struc with all autorun parameter
+% 2. TempData: channel by time matrix with amplifier data
+% 3. Time: vector with time stamps in seconds for each amplifier channel
+% sample
+% HeaderInfo: struc with all header infos extracted from recording
+% SampleRate: double, sample rate of recording
+% RecordingType: char, type of recording detected and loaded
+% SelectedFolder: char, path to the recording folder selected
+
+% Outputs:
+% 1. Data: struc with all relevant data components
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
 if isempty(TempData)
     Data = [];
     return;

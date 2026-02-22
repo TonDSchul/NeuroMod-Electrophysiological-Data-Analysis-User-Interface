@@ -5,9 +5,9 @@ This folder contains the following functions with respective Header:
 File: Spike_Module_Save_for_Kilosort.m
 %________________________________________________________________________________________
 
-%% Function to save Raw Data in int format as a .dat file to load in Kilosort
+%% Function to save Raw Data in int format as a .dat file to load in Kilosort or in double format for spikeinterface!
 
-% standard folder to save in is 'Recording_Path/Kilosort
+% standard folder to save in is 'Recording_Path/Kilosort' or 'Recording_Path/SpikeInterface' 
 
 % Input:
 % 1. Data: Data structure of toolbox. Required fields:
