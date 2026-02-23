@@ -336,6 +336,8 @@ Note: PathForPhy is the sorter output folder containing all .npy sorter results.
 >
 To install the NEO python package, you have to follow the same steps as described in the first paragraph about the installation of SpikeInterface. So install the necessary programs, create a Anaconda environment and activate it. The type in the following command to install NEO:
 
+*Tested and designed with neo version 0.14.3*
+
 ```python
 pip install neo[nixio,tiffio]
 pip install pynwb
@@ -354,6 +356,8 @@ Selecting a valid python.exe file will save it's location in a .mat file in 'Neu
 Follow the instructions to install Phy from https://github.com/cortex-lab/phy by either using the commands they provide or by installing the environment.yml. Also see instructions for installing SpikeInterface and Neo. In either case you should only install it in an environment separate to the others, since it needs legacy versions of numpy and joblib.
 
 When you should get the error: 12:23:18.933 [E] __init__:62 An error has occurred (TypeError): Memory.__init__() got an unexpected keyword argument 'bytes_limit' OR TypeError: Memory.__init__() got an unexpected keyword argument 'bytes_limit' you have to enter this in your anaconda prompt after activating your Phy environment:
+
+*Tested and designed with Phy version 2.0b6*
 
 ```python
 pip install joblib==1.2.0 (works up to joblib==1.3.1 ?!) 
