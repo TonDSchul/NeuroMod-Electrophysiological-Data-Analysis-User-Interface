@@ -1,4 +1,4 @@
-function Event_Module_Time_Frequency_Plot_Hilbert_TF (Data,tf,frex,time,costumfrex,OneTrial,Figure,BaselineNormalize,TFType,Type,BaselineNormalize,NormalizationWindow)
+function Event_Module_Time_Frequency_Plot_Hilbert_TF (Data,tf,frex,time,costumfrex,OneTrial,Figure,BaselineNormalize,TFType,Type,BaselineNormalizeWindow,NormalizationWindow)
 %________________________________________________________________________________________
 %% Function to plot time Frequency power and intertrial phase using filter hilbert transformation
 

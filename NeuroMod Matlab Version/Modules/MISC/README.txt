@@ -8,8 +8,8 @@ The 'Variables (do not edit)' folder contains permanently saved files usually no
 Variables are:
 1. 'CEDS64Path.mat' file, holding the path to the MATLAB Son Library for analysis of Spike2 data. 
 This variable is autosaved and updated automatically if necessary.
-2. PlotAppearance: saves the costume plot appearances the user saved. Only if they where modified and saved as new default
-3. ModuleOrder: saves costume modules shown on startup of the main window the user selected and saves as new default. 
+2. PlotAppearance: saves the custom plot appearances the user saved. Only if they where modified and saved as new default
+3. ModuleOrder: saves custom modules shown on startup of the main window the user selected and saves as new default. 
 4. Python_Conda_Path.mat: saves the path to the python.exe for the conda environment SpikeInterface is installed in
 5. ShowToolTipsSetting.mat: saves whether tooltips should be shown for next startup
 6. SavedColorScheme.mat: saves the GUI colorscheme (light/dark;dark/light) that is loaded when the GUI is opened
@@ -33,8 +33,8 @@ Also, there are files in the 'Default Autorun Configs (do not edit!)' folder con
 7. Autorun_Config_TEMPLATE_TDT_Analysis
 8. Autorun_Config_TEMPLATE_Maxwell_MEAH5_Analysis
 
-The 'docs' folder contains example python script to load the formats NeuroMod offers to save into the python toolboxes NEO, pynwb and SpikeInterface
+Those are the standard/default config files you can replace the currently selected config file with in the autorun window.
 
-Those are the standard/default config files you can reset the currently selected config file to in the autorun window 
+The 'docs' folder contains example python scripts to load the formats NeuroMod offers to save into the python toolboxes NEO, pynwb and SpikeInterface
 
-The 'Images' folder contains the Logo and the pictures for the readme file while the 'LICENCES' folder contains  Licenses of all other toolboxes used.
+The 'Images' folder contains the logo and the pictures for the readme file while the 'LICENCES' folder contains licenses of all other toolboxes used.
