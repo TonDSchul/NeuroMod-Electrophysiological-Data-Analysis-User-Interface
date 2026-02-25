@@ -1,5 +1,0 @@
-Contribution Guidelines
-=======================
- 
-Coming soon!
-

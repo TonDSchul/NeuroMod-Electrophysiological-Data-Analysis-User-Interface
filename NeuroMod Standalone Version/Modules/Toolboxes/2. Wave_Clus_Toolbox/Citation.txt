@@ -1,1 +1,0 @@
-A novel and fully automatic spike sorting implementation with variable number of features. F. J. Chaure, H. G. Rey and R. Quian Quiroga. Journal of Neurophysiology; 2018. https://doi.org/10.1152/jn.00339.2018

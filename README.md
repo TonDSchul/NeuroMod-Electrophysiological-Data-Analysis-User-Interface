@@ -23,7 +23,9 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
   
   - [Converting Recording Data for Different Toolboxes](#converting-recording-data-for-different-toolboxes)
     
-- [How to install the GUI](#how-to-install-the-gui)
+- [How to install the NeuroMod Matlab Version](#how-to-install-the-neuromod-matlab-version)
+
+- [How to install the NeuroMod Standalone Version](#how-to-install-the-neuromod-standalone-version)
   
   - [Get Started With Example Data](#get-started-with-example-data)
   
@@ -93,27 +95,36 @@ Lastly, you can save data in a FieldTrip compatible .mat file that can be read i
 
 **NOTE:** This is different from using the SpikeInterface library within NeuroMod to sort spike data. This can be done without any additional code! The same holds true for extracting some of the recording formats supported by NEO into NeuroMod.
 
-All of these formats that can be save, can also be loaded back into MATLAB (given they were saved with NeuroMod or assume the same format and files saved by NeuroMod).
+All of these formats that can be save, can also be loaded back into NeuroMod (given they were saved with NeuroMod or assume the same format and files saved by NeuroMod).
 
-> ## **How to install the GUI** ##
+> ## **How to install the NeuroMod Matlab Version** ##
 
-- First, NeuroMod is available as a normal Matlab version with the native code and the GUI as a. mlapp file. If you already have a valid Matlab license and Matlab installed, you can download all files in the native folder structure, 'cd' into the directory within Matlab and launch the NeuroMod_Toolbox_GUI.mlapp file. Then you have several options to launch the GUI:
-  1. Double-click the 'NeuroMod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and the GUI.
+- First, NeuroMod is available as a normal Matlab version with the GUI as a. mlapp file. If you already have a valid Matlab license (2023a or newer) and Matlab installed, you can download the 'NeuroMod MATLAB Version' folder and save it in a directory with read/write access (in doubt just use the desktop). Extract the downloaded .zip file. Now you have access to all files including the NeuroMod_Toolbox_GUI.mlapp file, which starts NeuroMod.
+
+  1. Double-click the 'NeuroMod_Toolbox_GUI.mlapp' file, which will automatically open MATLAB and NeuroMod.
   2. Alternatively, use the MATLAB command window to navigate (cd) to the folder where you saved the files. Then, right-click the NeuroMod_Toolbox_GUI.mlapp file in the current folder window and select "Run."
-  3. Finally, you can also launch the GUI by typing the following command into the MATLAB command window after navigating (cd) to the folder containing the GUI:
+  3. Finally, you can also launch NeuroMod by typing the following command into the MATLAB command window after navigating (cd) to the folder containing the GUI:
 
 ```matlab
 Neuromod_Toolbox_GUI
 ```
-- If you don’t have a valid Matlab license, NeuroMod is also available as a standalone version. You just need to install a Matlab runtime version (at least 25.1) under: https://www.mathworks.com/products/compiler/mcr/index.html
-1. Download and install the Matlab runtime.
-2. Download the ‘NeuroMod Standalone Version‘ folder. 
-3. Now you can start NeuroMod via the NeuroMod.exe file in the folder ‘NeuroMod Standalone Version’ folder. 
 
-**NOTE:** If you want to use the standalone app, then only execute the NeuroMod.exe file from the ‘NeuroMod Standalone Version’ folder, since it is using the folder it is executed from to search for some resources within the ‘Modules’ folder. 
+> ## **How to install the NeuroMod Standalone Version** ##
+
+- If you don’t have a Matlab license for Matlab 2023a or newer, you have to use the standalone version of NeuroMod. It is functionally identical to the Matlab version. The only requirement is to have the Matlab Runtime version 2025b installed, which is for free and comes with NeuroMod.
+
+Follow these steps:
+
+1. Download the NeuroMod Standalone Version folder and extract the downloaded .zip file.
+2. In the extracted folder you will find a NeuroMod Installer.exe file. This is solely needed to install the MATLAB 2025b runtime version. Skip this step if you already installed it.
+3.	Download the NeuroMod MATLAB Version folder, save it in a directory with read/write access (in doubt just use the desktop) and extract the downloaded .zip file.
+3.	Copy all files and folder in the NeuroMod Matlab Version folder into the NeuroMod Standalone Version folder. Afterwards, you should have a NeuroMod.exe file and the NeuroMod_Toolbox_GUI.mlapp file in the same folder.
+4.	NeuroMod can now be started using the NeuroMod.exe. Create a shortcut for better access.
+
+Note: Installation and usage of Python tools like SpikeInterface or NEO is the same for the Matlab and standalone version of NeuroMod.
 
 **NOTE:** After downloading, make sure that the folders within the NeuroMod folder are all named like in the repository! Otherwise, you cannot use some features of NeuroMod including spike sorting and using NEO for data extraction. 
-- The GUI was created using Matlab version 2024b. In order for Matlab to be able to execute python code for the SpikeInterface spike sorting via this GUI, make sure your Matlab version is compatible with your python version!
+- The GUI was created using Matlab version 2025b. In order for Matlab to be able to execute python code for the SpikeInterface spike sorting via this GUI, make sure your Matlab version is compatible with your python version!
   
 > ### **Get Started With Example Data**
 
