@@ -72,7 +72,9 @@ Through the use of the NEO library, NeuroMod furthermore offers to extract Plexo
 Since a lot of recordings are trial based and rely on synchronized event/TTL data, not only continuous amplifier channel data, but also event data from all recording formats mentioned (e.g., TTL signals to the recording system) can be loaded and analyzed, enabling not only the pre-processing, analysis, and visualization of continuous data but also of event-related data.
 Available types of analysis include current source density analysis, static power spectrum analysis, time-frequency power analysis, phase synchronization and event-related potentials for low-frequency signal components as well as event related spike analysis.
 
-The supported recording systems can be used with a wide range of probes designs, influencing downstream data analysis. Therefore, a fully interactive probe design and probe view window enables to set arbitrary probe designs (of longitudinal single shank probes and multielectrode arrays) while always having an overview and full control over which channel are used for the analysis. Even Neuropixel probe designs with hundreds of recording channels almost freely distributed over the whole shank can be analyzed without loosing oversight and with a visual representation of brain areas distributed over the probe based on coordinates obtained from the Neuropixels Trajectory Explorer. Note: Multishank recordings (for example from NP 2.0 probes) can also be loaded, but are integrated into the same shank design, requiring to manually select the active analysis channel corresponding to a single shank.
+The supported recording systems can be used with a wide range of probes designs, influencing downstream data analysis. Therefore, a fully interactive probe design and probe view window enables to set arbitrary probe designs (of longitudinal single shank probes and multielectrode arrays) while always having an overview and full control over which channel are used for the analysis. Even Neuropixel probe designs with hundreds of recording channels almost freely distributed over the whole shank can be analyzed without loosing oversight and with a visual representation of brain areas distributed over the probe based on coordinates obtained from the Neuropixels Trajectory Explorer. 
+
+**NOTE:** Multishank recordings (for example from NP 2.0 probes) can also be loaded, but are integrated into the same shank design, requiring to manually select the active analysis channel corresponding to a single shank.
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/Example_Image_2.jpg" align="right" width="100%" />
 <p align="left"><em>Figure 2: Maxwell MaxOne .h5 recording with signals plotted over the grid array (channel demarcated by black lines) with spikes annotated as red dots.</em></p>
@@ -118,13 +120,13 @@ Neuromod_Toolbox_GUI
 
 Follow these steps:
 
-  i. Download only the 'NeuroMod Standalone Version.zip' file, extract it and save the folder in a directory with read/write access (in doubt use the desktop). NOTE: It cannot be extracted when the whole repository is downloaded as a .zip file, so you have to download it individually!
-  ii. In the extracted folder you will find a NeuroMod Installer.exe file. This is only needed to install the MATLAB 2025b runtime version. Double click and install in a folder of your choosing. Skip this step if you already installed it.
-  iii. Download the whole NeuroMod repository as a .zip file and extract it.
-  iiii. Copy all files and folder in the 'NeuroMod Matlab Version' folder into the 'NeuroMod Standalone Version' folder. Afterwards, you should have a NeuroMod.exe file and the NeuroMod_Toolbox_GUI.mlapp file in the same folder.
-  iiiii. NeuroMod can now be started using the NeuroMod.exe. Create a shortcut for better access.
+  1. Download only the 'NeuroMod Standalone Version.zip' file, extract it and save the folder in a directory with read/write access (in doubt use the desktop). **NOTE:** It cannot be extracted when the whole repository is downloaded as a .zip file, so you have to download it individually!
+  2. In the extracted folder you will find a NeuroMod Installer.exe file. This is only needed to install the MATLAB 2025b runtime version. Double click and install in a folder of your choosing. Skip this step if you already installed it.
+  3. Download the whole NeuroMod repository as a .zip file and extract it.
+  4. Copy all files and folder in the 'NeuroMod Matlab Version' folder into the 'NeuroMod Standalone Version' folder. Afterwards, you should have a NeuroMod.exe file and the NeuroMod_Toolbox_GUI.mlapp file in the same folder.
+  5. NeuroMod can now be started using the NeuroMod.exe. Create a shortcut for better access.
 
-Note: Installation and usage of Python tools like SpikeInterface or NEO is the same for the Matlab and standalone version of NeuroMod.
+**NOTE:** Installation and usage of Python tools like SpikeInterface or NEO is the same for the Matlab and standalone version of NeuroMod.
 
 **NOTE:** After downloading, make sure that the folders within the NeuroMod folder are all named like in the repository! Otherwise, you cannot use some features of NeuroMod including spike sorting and using NEO for data extraction. 
 - The GUI was created using Matlab version 2025b. In order for Matlab to be able to execute python code for the SpikeInterface spike sorting via this GUI, make sure your Matlab version is compatible with your python version!
@@ -135,7 +137,7 @@ Note: Installation and usage of Python tools like SpikeInterface or NEO is the s
 
 In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod%20Matlab%20Version/Modules/MISC/docs/NeuroMod_Toolbox_Manual.docx)
 
-Download and extract only the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording! Note: If you download the whole repository as a .zip file, you cannot extract the 'Example_Intan_Data.zip', so you have to download it individually.
+Download and extract only the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording! **NOTE:** If you download the whole repository as a .zip file, you cannot extract the 'Example_Intan_Data.zip', so you have to download it individually.
 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with NeuroMod. To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option in NeuroMod and click on the "RUN" button on the left side in the "Manage Dataset" module. Select a folder containing your recording (or the example recording folder containing the individual recording files) and specify your probe design. Some probe designs (also for the example dataset) are already available to load using the menu on top of the window (called Load Saved Probe Information). For the example dataset select the saved Probe_Info_64_ASSY_77_H3_acute_ChannelOrder.mat file. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is. 
 
@@ -313,7 +315,7 @@ pip install pypiwin32
 pip install spikeinterface_gui
 ```
 
-**Note:** When you get there error during the second or 5th command: Error executing cmd /u /c "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64 && set or something similar, you don't have the necessary C++ packages installed in Visual Studios. In doubt start the Visual Studios installer again, click to modify the installation and select everything that has to do with C++. In doubt manually download and install CMake from https://cmake.org/download/
+**NOTE:** When you get there error during the second or 5th command: Error executing cmd /u /c "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64 && set or something similar, you don't have the necessary C++ packages installed in Visual Studios. In doubt start the Visual Studios installer again, click to modify the installation and select everything that has to do with C++. In doubt manually download and install CMake from https://cmake.org/download/
 
 **IMPORTANT:** When you execute SpikeInterface for the first time within NeuroMod, it will ask you for the path of a python.exe in the anaconda environment you installed the SpikeInterface packages in. If you haven't created a custom environment and just copy-pasted the pip command into the command window, you installed them in the anaconda base environment usually found at 'C:\ProgramData\anaconda3\python.exe'. If you've installed everything in a custom environment, you have to find the folder of this environment containing all installed packages, which also contains the python.exe. In doubt activate the environment (see above) and type in 'echo %CONDA_PREFIX%' to see the path for the python.exe. Also check if this folder contains a python.exe file! If not, try recreating the environment with 'conda create --name NEO python=3.10' after deleting it! In order to see a command window during spike sorting showing you the progress, you have to right click the python.exe, click on the compatibility tab and enable to execute it as an administrator! Otherwise there is a chance the command window won't open, but sorting is conducted anyway! You just don't know when it finishes or see potential error messages/warnings.
 
@@ -345,7 +347,7 @@ np.save(PathForPhy, max_chan_idx)
 
 ```
 
-Note: PathForPhy is the sorter output folder containing all .npy sorter results.
+**NOTE:** PathForPhy is the sorter output folder containing all .npy sorter results.
 
 
 > ### **How to Install NeuralEnsemble NEO to extend supported file formats in NeuroMod**
