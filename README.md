@@ -115,13 +115,14 @@ Neuromod_Toolbox_GUI
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/How To Standalone.jpg" align="right" width="100%" />
 
+
 Follow these steps:
 
-  1. Download only the 'NeuroMod Standalone Version.zip' file, extract it and save the folder in a directory with read/write access (in doubt use the desktop). NOTE: It cannot be extracted when the whole repository is downloaded as a .zip file, so you have to download it individually!
-  2. In the extracted folder you will find a NeuroMod Installer.exe file. This is only needed to install the MATLAB 2025b runtime version. Double click and install in a folder of your choosing. Skip this step if you already installed it.
-  3. Download the whole NeuroMod repository as a .zip file and extract it.
-  4. Copy all files and folder in the 'NeuroMod Matlab Version' folder into the 'NeuroMod Standalone Version' folder. Afterwards, you should have a NeuroMod.exe file and the NeuroMod_Toolbox_GUI.mlapp file in the same folder.
-  5. NeuroMod can now be started using the NeuroMod.exe. Create a shortcut for better access.
+  i. Download only the 'NeuroMod Standalone Version.zip' file, extract it and save the folder in a directory with read/write access (in doubt use the desktop). NOTE: It cannot be extracted when the whole repository is downloaded as a .zip file, so you have to download it individually!
+  ii. In the extracted folder you will find a NeuroMod Installer.exe file. This is only needed to install the MATLAB 2025b runtime version. Double click and install in a folder of your choosing. Skip this step if you already installed it.
+  iii. Download the whole NeuroMod repository as a .zip file and extract it.
+  iiii. Copy all files and folder in the 'NeuroMod Matlab Version' folder into the 'NeuroMod Standalone Version' folder. Afterwards, you should have a NeuroMod.exe file and the NeuroMod_Toolbox_GUI.mlapp file in the same folder.
+  iiiii. NeuroMod can now be started using the NeuroMod.exe. Create a shortcut for better access.
 
 Note: Installation and usage of Python tools like SpikeInterface or NEO is the same for the Matlab and standalone version of NeuroMod.
 
@@ -134,7 +135,7 @@ Note: Installation and usage of Python tools like SpikeInterface or NEO is the s
 
 In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod%20Matlab%20Version/Modules/MISC/docs/NeuroMod_Toolbox_Manual.docx)
 
-Download and extract the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording!
+Download and extract only the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording! Note: If you download the whole repository as a .zip file, you cannot extract the 'Example_Intan_Data.zip', so you have to download it individually.
 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with NeuroMod. To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option in NeuroMod and click on the "RUN" button on the left side in the "Manage Dataset" module. Select a folder containing your recording (or the example recording folder containing the individual recording files) and specify your probe design. Some probe designs (also for the example dataset) are already available to load using the menu on top of the window (called Load Saved Probe Information). For the example dataset select the saved Probe_Info_64_ASSY_77_H3_acute_ChannelOrder.mat file. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is. 
 
