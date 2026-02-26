@@ -4,7 +4,9 @@
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
 
-** Warning: If you want to use NeuroMod with your MATLAB license and not the standalone version, it will only work with Matlab Versions 2023a or newer. **
+⚠️ **Warning:** NeuroMod was not yet published and peer reviewed, but a paper is in the works.
+
+⚠️ **Warning:** If you want to use NeuroMod with your MATLAB license and not the standalone version, it will only work with Matlab Versions 2023a or newer. **
 
 NeuroMod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank or array probe designs with arbitrary geometry. 
 It seamlessly integrates established toolboxes such as Kilosort, SpikeInterface, NEO, Open Ephys Tools and Fieldtrip for a wide range of LFP and spike analyses methods, supports various data formats in a code free user interface and bridged the gap between Matlab and Python packages.
@@ -137,11 +139,11 @@ Follow these steps:
 
 In doubt, have a look at the full documentation: [NeuroMod Toolbox Manual](NeuroMod%20Matlab%20Version/Modules/MISC/docs/NeuroMod_Toolbox_Manual.docx)
 
-Download and extract only the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording! **NOTE:** If you download the whole repository as a .zip file, you cannot extract the 'Example_Intan_Data.zip', so you have to download it individually.
+Download and extract only the 'Example_Intan_Data.zip' file to explore all functionalities NeuroMod offers with a 64 channel recording including spike sorting results ready to load in! **NOTE:** If you download the whole repository as a .zip file, you cannot extract the 'Example_Intan_Data.zip', so you have to download it individually.
 
 The first thing you always have to do is to either extract data from a recording or to load data you previously saved with NeuroMod. To extract data from any dataset in one of the supported data formats select the "Load Raw Recordings" option in NeuroMod and click on the "RUN" button on the left side in the "Manage Dataset" module. Select a folder containing your recording (or the example recording folder containing the individual recording files) and specify your probe design. Some probe designs (also for the example dataset) are already available to load using the menu on top of the window (called Load Saved Probe Information). For the example dataset select the saved Probe_Info_64_ASSY_77_H3_acute_ChannelOrder.mat file. In doubt, most windows give additional information in the text areas as well as tooltips. In most cases, if you click on something or do something that is not supported or does not work (i.e. click start without specifying a probe design or selecting a folder without a supported recording file), you will get a message what the issue is. 
 
-**NOTE:** Spike sorting results are not optimized and do not represent the best possible outcome with the respective sorter. 
+**NOTE:** Spike sorting results in the example dataset are not optimized (standard settings) and do not represent the best possible outcome with the respective sorter. 
 
 > ### **Overview of required Matlab toolboxes**
 
