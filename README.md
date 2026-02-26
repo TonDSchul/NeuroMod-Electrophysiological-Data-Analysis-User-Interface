@@ -4,8 +4,6 @@
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/MainWindowGIF.gif" width="700" height="360" />
 
-⚠️ **Warning:** NeuroMod was not yet published and peer reviewed, but a paper is in the works.
-
 ⚠️ **Warning:** If you want to use NeuroMod with your MATLAB license and not the standalone version, it will only work with Matlab Versions 2023a or newer. **
 
 NeuroMod is an interactive toolbox for analyzing and visualizing electrophysiological data from single shank or array probe designs with arbitrary geometry. 
