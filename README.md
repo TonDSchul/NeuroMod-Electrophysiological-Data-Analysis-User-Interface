@@ -113,13 +113,15 @@ Neuromod_Toolbox_GUI
 
 - If you don’t have a Matlab license for Matlab 2023a or newer, you have to use the standalone version of NeuroMod. It is functionally identical to the Matlab version. The only requirement is to have the Matlab Runtime version 2025b installed, which is for free and comes with NeuroMod.
 
+<img src="NeuroMod Matlab Version/Modules/MISC/Images/How To Standalone.jpg" align="right" width="100%" />
+
 Follow these steps:
 
-1. Download only the 'NeuroMod Standalone Version.zip' file, extract it and save the folder in a directory with read/write access (in doubt use the desktop). NOTE: It cannot be extracted when the whole repository is downloaded as a .zip file, so you have to download it individually!
-2. In the extracted folder you will find a NeuroMod Installer.exe file. This is only needed to install the MATLAB 2025b runtime version. Double click and install in a folder of your choosing. Skip this step if you already installed it.
-3.	Download the whole NeuroMod repository as a .zip file and extract it.
-4.	Copy all files and folder in the 'NeuroMod Matlab Version' folder into the 'NeuroMod Standalone Version' folder. Afterwards, you should have a NeuroMod.exe file and the NeuroMod_Toolbox_GUI.mlapp file in the same folder.
-5.	NeuroMod can now be started using the NeuroMod.exe. Create a shortcut for better access.
+  1. Download only the 'NeuroMod Standalone Version.zip' file, extract it and save the folder in a directory with read/write access (in doubt use the desktop). NOTE: It cannot be extracted when the whole repository is downloaded as a .zip file, so you have to download it individually!
+  2. In the extracted folder you will find a NeuroMod Installer.exe file. This is only needed to install the MATLAB 2025b runtime version. Double click and install in a folder of your choosing. Skip this step if you already installed it.
+  3. Download the whole NeuroMod repository as a .zip file and extract it.
+  4. Copy all files and folder in the 'NeuroMod Matlab Version' folder into the 'NeuroMod Standalone Version' folder. Afterwards, you should have a NeuroMod.exe file and the NeuroMod_Toolbox_GUI.mlapp file in the same folder.
+  5. NeuroMod can now be started using the NeuroMod.exe. Create a shortcut for better access.
 
 Note: Installation and usage of Python tools like SpikeInterface or NEO is the same for the Matlab and standalone version of NeuroMod.
 
