@@ -51,6 +51,8 @@ As a result, NeuroMod is not only ideal for teaching and evaluating recording qu
   
  - [Disclaimer, License and Contact](#disclaimer-license-and-contact)
 
+ - [Support NeuroMod](#support-neuroMod)
+
 > ## **Data Formats and Capabilities**
 
 <img src="NeuroMod Matlab Version/Modules/MISC/Images/Example_Image_1.jpg" align="right" width="100%" />
@@ -448,3 +450,6 @@ Live Window: Window that updates along with the main window data plot, showing a
 > ## **Disclaimer, License and Contact**
 This toolbox was created and is maintained by a single person as part of a PhD project and hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
 Feel free to contact me for tips and requests or pull a request/open an issue on Github.
+
+> ## **Support NeuroMod**
+If you want to show your appreciation for NeuroMod, consider becoming a Sponsor on GitHub or supporting me on Patreon in the 'Sponsor this project' section.
