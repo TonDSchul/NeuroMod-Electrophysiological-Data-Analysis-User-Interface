@@ -70,15 +70,13 @@ end
 %% SAVE AS MAT
 if strcmp(Format,".mat")
     dlgbox = msgbox(strcat("Data Component ",Component," is saved. Please wait until a message appears that saving was succesfull! This window closes automatically."));
-
+    
+    pause(1)
     Fullsavefile=convertStringsToChars(Fullsavefile);
     % Saved variable name is the name of the component selected
     DataToSave = Data.(Component);
-    eval(strcat(Component," = DataToSave;"))
-    %eval(strcat(Component, ' = DataToExport;'));
-    % save as .mat
-   
-    save(Fullsavefile,Component,'-v7.3');      
+  
+    save(Fullsavefile,'DataToSave','-v7.3');      
     
     delete(dlgbox);
 
@@ -89,5 +87,11 @@ if strcmp(Format,".mat")
     end
 end
 
+if strcmp(Format,".dat")
+    dlgbox = msgbox(strcat("Data Component ",Component," is saved. Please wait until a message appears that saving was succesfull! This window closes automatically."));
+    
+    pause(1)
 
+    Utility_Export_Dataset_Components_as_dat(Data,Component,Format,SaveFolder,Fullsavefile,ExecuteOutsideGUI)
+end
 

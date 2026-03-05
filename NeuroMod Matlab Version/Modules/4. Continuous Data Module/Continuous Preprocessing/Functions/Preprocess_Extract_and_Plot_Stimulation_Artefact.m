@@ -1,4 +1,4 @@
-function [ArtefactRelatedData,StimArtefactInfo] = Preprocess_Extract_and_Plot_Stimulation_Artefact(Data,ArtefactTimeEditField,TimeToPlot,EventChannelforStimulationDropDown, EventstoPlotDropDown, SpacingSlider, Figure, ActiveChannel)
+function [ArtefactRelatedData,StimArtefactInfo] = Preprocess_Extract_and_Plot_Stimulation_Artefact(Data,ArtefactTimeEditField,TimeToPlot,EventChannelforStimulationDropDown,EventstoPlotDropDown,SpacingSlider,Figure,ActiveChannel,PreserveChannelLocations)
 
 %________________________________________________________________________________________
 
@@ -20,6 +20,8 @@ function [ArtefactRelatedData,StimArtefactInfo] = Preprocess_Extract_and_Plot_St
 % 6. Figure: figure object handle to plot data (in seconds)
 % 7. ActiveChannel: double vector with all active channel in the probe view
 % window
+% 8. PreserveChannelLocations: double 1 or 0 whether to preserve original
+% channel locations with inactive channel islands inbetween active ones
 
 % Output: 
 % 1. ArtefactRelatedData: nchannel x ntime x nevents matrix containg the data that is plotted. 
@@ -178,6 +180,6 @@ end
 
 % Custom YLabels
 
-Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel)
+Utility_Set_YAxis_Depth_Labels(Data,Figure,[],ActiveChannel,PreserveChannelLocations)
 
 Figure.YTickLabel = flip(Figure.YTickLabel);
