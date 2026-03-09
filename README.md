@@ -452,4 +452,4 @@ This toolbox was created and is maintained by a single person as part of a PhD p
 Feel free to contact me for tips and requests or pull a request/open an issue on Github.
 
 > ## **Support NeuroMod**
-If you want to show your appreciation for NeuroMod, consider becoming a Sponsor on GitHub or supporting me on Patreon in the 'Sponsor this project' section.
+If you want to show your appreciation for NeuroMod, consider becoming a Sponsor on GitHub or supporting me on Patreon in the 'Sponsor this project' section that will be enabled as soon as NeuroMod is published and peer reviewed.
