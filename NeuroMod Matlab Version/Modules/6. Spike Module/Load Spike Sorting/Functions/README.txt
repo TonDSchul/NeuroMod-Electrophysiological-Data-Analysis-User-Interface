@@ -176,6 +176,28 @@ end
 
  ###################################################### 
 
+File: Spike_Module_LoadSpikesinTimeRange.m
+%________________________________________________________________________________________
+
+%% Function to only keep spike information of spikes withinn specified time range
+% called in function to load spikeinterface and kilosort sorting results :
+% Spike_Module_Load_Kilosort_Data and Spike_Module_Load_SpikeInterface_Sorter
+
+% Input:
+% 1. Data = structure containing all data. Data.Spikes is modified
+% 2. LoadSpikesinTimeRange: char, comma separated number with time range to
+% extract spikes from if sorting results are for concatonated recordings
+
+% Output:
+% 1. Data structure of toolbox with modified field: Data.Spikes, 
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Spike_Module_Load_Kilosort_Data.m
 %________________________________________________________________________________________
 
@@ -205,6 +227,8 @@ File: Spike_Module_Load_Kilosort_Data.m
 % 6. DeleteMUA: logical one or zero whether to delete kept_spikes == 0
 % 7. SpikeChannelType: char, either 'Channel closest to X and Y of
 % respective spikes' OR 'Single channel for all spikes in one unit (max template channel)'
+% 8. LoadSpikesinTimeRange: char, comma separated number with time range to
+% extract spikes from if sorting results are for concatonated recordings
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -256,6 +280,9 @@ File: Spike_Module_Load_SpikeInterface_Sorter.m
 % user
 % 6. SpikeChannelType: char, either 'Channel closest to X and Y of
 % respective spikes' OR 'Single channel for all spikes in one unit (max template channel)'
+% 7. LoadSpikesinTimeRange: char, comma separated number with time range to
+% extract spikes from if sorting results are for concatonated recordings
+
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called

@@ -303,6 +303,28 @@ File: Utility_Extract_Contents_of_Folder.m
 
  ###################################################### 
 
+File: Utility_Extract_Function_Headers_to_txt.m
+%________________________________________________________________________________________
+%% Function to search for all function headers in all .m files of a folder and save in a txt. file
+% This function can be used to automatically create a README file in each
+% folder containing the function headers of each function
+
+% Input Arguments:
+% 1. folderPath: Path to the folder holding .m files as char
+% 2. outputFileName: Name of the .txt file to save the header infos in (including the .txt file ending)
+
+% Output Arguments:
+% 1. stringArray: Contens of folder in a n x 1 string array with n being
+% the number of contents
+
+% Author: Tony de Schultz
+% Department systemsphysiology of learning, LIN Magdeburg.
+
+%________________________________________________________________________________________
+
+
+ ###################################################### 
+
 File: Utility_Find_Strings_in_GUI_Files.m
 %________________________________________________________________________________________
 %% Small utitlity function to find specific strings like input arguments in all .m files of a selected folder

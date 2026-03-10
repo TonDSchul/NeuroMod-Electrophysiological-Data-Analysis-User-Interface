@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,CurrentSorter,SelectedCurationMethods,SpikeChannelType)
+function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,SelectedFolder,CurrentSorter,SelectedCurationMethods,SpikeChannelType,LoadSpikesinTimeRange)
 
 %________________________________________________________________________________________
 
@@ -18,6 +18,9 @@ function [Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(Data,Select
 % user
 % 6. SpikeChannelType: char, either 'Channel closest to X and Y of
 % respective spikes' OR 'Single channel for all spikes in one unit (max template channel)'
+% 7. LoadSpikesinTimeRange: char, comma separated number with time range to
+% extract spikes from if sorting results are for concatonated recordings
+
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -398,5 +401,9 @@ for i = 1:length(Data.Spikes.SpikeChannel)
         Data.Spikes.SpikeChannel(i) = AllChannel(IndiceMember);
     end
 end
+
+% if multiple recordings concatoinated and user selected time range to load
+% spikes from 
+Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange);
 
 msgbox("SpikeInterface Sorting successfully loaded.");

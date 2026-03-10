@@ -612,7 +612,7 @@ if Activated
             app.LoadfromKilosortWindowWindow.SelectAmplitudeScalingManuallyButton.Tooltip = "Only for Kilosort: Manully select the amplitude scaling factor .mat file created when saving data for Kilosort.";
             
             app.LoadfromKilosortWindowWindow.SpikeChannelTypeDropDown.Tooltip = "Select how the data channel for each spike is determined. This influences waveform extraction and the ploted position in the main window plot. 'Channel closest to X and Y of respective spikes' means, that each spike channel is the channel closest to the physical position of the spike. 'Single channel for all spikes in one unit (max template channel)' means, that the channel of all spikes of a unit are set to the channel with the maximum template.";
-
+            app.LoadfromKilosortWindowWindow.OnlyLoadSpikesinTimeRangefromtoEmptyfornonEditField.Tooltip = "If multiple recordings are concatonated to a single recording and spike sorted, you can load the complete sorting results and determine the time range for which the spikes are kept (in respect to the concatonated recording) that belong to the currently loaded recording.";
             app.LoadfromKilosortWindowWindow.LoadButton.Tooltip = "Click to load sorting results with the parameters above.";
         end
     end

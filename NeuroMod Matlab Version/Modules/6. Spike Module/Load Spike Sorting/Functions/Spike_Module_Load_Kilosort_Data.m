@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor,KSVersion,DeleteMUA,SpikeChannelType)
+function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor,KSVersion,DeleteMUA,SpikeChannelType,LoadSpikesinTimeRange)
 
 %________________________________________________________________________________________
 
@@ -28,6 +28,8 @@ function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,Select
 % 6. DeleteMUA: logical one or zero whether to delete kept_spikes == 0
 % 7. SpikeChannelType: char, either 'Channel closest to X and Y of
 % respective spikes' OR 'Single channel for all spikes in one unit (max template channel)'
+% 8. LoadSpikesinTimeRange: char, comma separated number with time range to
+% extract spikes from if sorting results are for concatonated recordings
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -425,6 +427,10 @@ for i = 1:length(Data.Spikes.SpikeChannel)
         Data.Spikes.SpikeChannel(i) = AllChannel(IndiceMember);
     end
 end
+
+% if multiple recordings concatoinated and user selected time range to load
+% spikes from 
+Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange);
 
 if KSversion == 3
     msgbox("Kilosort 3 data successfully loaded.");

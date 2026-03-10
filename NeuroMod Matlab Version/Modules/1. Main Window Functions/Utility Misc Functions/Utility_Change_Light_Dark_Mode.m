@@ -1191,7 +1191,8 @@ if strcmp(Window,"Load_Sorting_Window")
 
     app.SpikeSorterDropDown.BackgroundColor = ComponentsInWindowColor;
     app.AmplitudeScalingFactorEditField.BackgroundColor = ComponentsInWindowColor;
-
+    app.OnlyLoadSpikesinTimeRangefromtoEmptyfornonEditField.BackgroundColor = ComponentsInWindowColor;
+    
     app.CurationSoftwaretoOpenDropDown.BackgroundColor = ComponentsInWindowColor;
 
 end
