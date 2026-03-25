@@ -124,7 +124,7 @@ if strcmp(FunctionOrder,'Preprocess_Continous_Data')
 
     [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
     
-    [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+    [Data] = Preprocess_Module_Apply_Pipeline(Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea,AutorunConfig.ParallelPool);
 
 end
 
@@ -361,7 +361,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
 
                                 if strcmp(SaveFilter,"No")
                                     [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-                                    [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
+                                    [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea,AutorunConfig.ParallelPool); 
                                     %% Now extract Waveforms
                                     % For Kilosort we dont have channel information to extract from raw or
                                     % preprocessed data --> Therefor we take channel closest to position
@@ -370,7 +370,7 @@ if strcmp(FunctionOrder,'Continous_Spike_Analysis')
                                     clear TempData;
                                 else
                                     [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-                                    [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea); 
+                                    [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea,AutorunConfig.ParallelPool); 
                                     %% Now extract Waveforms
                                     % For Kilosort we dont have channel information to extract from raw or
                                     % preprocessed data --> Therefor we take channel closest to position

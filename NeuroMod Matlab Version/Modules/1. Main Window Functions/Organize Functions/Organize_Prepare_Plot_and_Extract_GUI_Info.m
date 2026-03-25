@@ -98,6 +98,7 @@ else % If not downsampled
             StopIndex = size(app.Data.Raw,2);
         end
     else
+        app.MainWindowPlotData = [];
         return;
     end
 end
@@ -301,7 +302,7 @@ if MainPlot && JustLiveWindow == 0
         end
         
     end
-
+    
     %% Plot Time
    
     if PlotTime == 1    
@@ -649,4 +650,8 @@ if isprop(app.LiveSpectrogramApp,'ExistflagLiveSpectogram')
             clear TempDatatoPlot TempTime TempSamplefrequency
         end
     end
+end
+
+if ~isempty(PlotData)
+    app.MainWindowPlotData = PlotData;
 end

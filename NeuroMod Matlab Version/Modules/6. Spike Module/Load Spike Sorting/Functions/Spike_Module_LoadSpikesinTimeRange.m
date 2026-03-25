@@ -37,6 +37,8 @@ if ~isempty(DeleteIndicies)
     Data.Spikes.SpikeChannel(DeleteIndicies==1) = [];
     Data.Spikes.SpikeCluster(DeleteIndicies==1) = [];
     Data.Spikes.SpikeTemplates(DeleteIndicies==1) = [];
+    Data.Spikes.DataCorrectedSpikePositions(DeleteIndicies==1,:) = [];
+    Data.Spikes.Waveforms(DeleteIndicies==1,:) = [];
 end
 
 % notmalize time to 0

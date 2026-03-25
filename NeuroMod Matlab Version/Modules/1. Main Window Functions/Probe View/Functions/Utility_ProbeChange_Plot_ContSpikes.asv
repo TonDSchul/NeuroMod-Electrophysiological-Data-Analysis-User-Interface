@@ -76,7 +76,7 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
             
             if strcmp(SaveFilter,"No")
                 [TempData,PreproInfo,PlaceholderTextArea] = Preprocess_Module_Delete_Old_Settings(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,PreproInfo,PreprocessingSteps,ChannelDeletion,PlaceholderTextArea);
-                [TempData] = Preprocess_Module_Apply_Pipeline(TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,PlaceholderTextArea,app.Mainapp.ParallelPool);
+                [TempData] = Preprocess_Module_Apply_Pipeline(TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,PlaceholderTextArea);
                 
                 %% Now extract Waveforms
                 % For Kilosort we dont have channel information to extract from raw or
@@ -85,7 +85,7 @@ if ~isempty(app.Mainapp.ConKilosortSpikesWindow)
                 clear TempData;
             else
                 [app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,PreproInfo,PlaceholderTextArea] = Preprocess_Module_Delete_Old_Settings(app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,PreproInfo,PreprocessingSteps,ChannelDeletion,PlaceholderTextArea);
-                [app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data] = Preprocess_Module_Apply_Pipeline (app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,PlaceholderTextArea,app.Mainapp.ParallelPool);
+                [app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data] = Preprocess_Module_Apply_Pipeline (app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data,app.Mainapp.ConKilosortSpikesWindow.Mainapp.Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,PlaceholderTextArea);
         
                 %% Now extract Waveforms
                 % For Kilosort we dont have channel information to extract from raw or

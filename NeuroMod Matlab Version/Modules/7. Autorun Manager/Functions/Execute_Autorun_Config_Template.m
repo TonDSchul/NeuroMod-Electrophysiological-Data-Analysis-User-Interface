@@ -56,7 +56,7 @@ end
 
 TimeAndChannelToExtract.ChannelToExtract = AutorunConfig.ExtractRawRecording.ChannelToExtract;
 TimeAndChannelToExtract.TimeToExtract = AutorunConfig.ExtractRawRecording.TimeToExtract;
-                
+
 %______________________________________________________________________________________________________
 %% Loop over number of recordings and functions to be executed
 %______________________________________________________________________________________________________

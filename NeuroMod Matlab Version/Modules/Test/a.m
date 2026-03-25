@@ -2,7 +2,8 @@
 mainFolder = 'F:\LIN\PhD\Proj. Ephys GUI\NeuroMod Matlab Version';
 
 % Search string
-searchString = 'töt';
+%searchString = 'Preprocess_Module_Apply_Pipeline';
+searchString = 'Organize_Export_Components_to_WorkSpace';
 
 % Get all .m and .mlapp files recursively
 fileList_m     = dir(fullfile(mainFolder, '**', '*.m'));

@@ -1,4 +1,4 @@
-function Organize_Export_Components_to_WorkSpace(Data,Component,ExecutedInGUI)
+function Organize_Export_Components_to_WorkSpace(Data,Component,ExecutedInGUI,MainWindowPlotData)
 
 %________________________________________________________________________________________
 
@@ -10,6 +10,7 @@ function Organize_Export_Components_to_WorkSpace(Data,Component,ExecutedInGUI)
 % export; see below for options
 % 3. ExecutedInGUI: double, 1 or 0 whether it is executed in GUI (1) or not
 % (0)
+% 4. MainWindowPlotData: matrix currently plotted in main window
 
 % Author: Tony de Schultz
 % Department systemsphysiology of learning, LIN Magdeburg.
@@ -47,6 +48,9 @@ elseif strcmp(Component,"Time")
     exported = 1;
 elseif strcmp(Component,"TimeDownsampled")
     assignin('base','TimeDownsampled', Data.TimeDownsampled);
+    exported = 1;
+elseif strcmp(Component,"Main Window Plot Data")
+    assignin('base','MainWindowPlotData', MainWindowPlotData);
     exported = 1;
 end
 

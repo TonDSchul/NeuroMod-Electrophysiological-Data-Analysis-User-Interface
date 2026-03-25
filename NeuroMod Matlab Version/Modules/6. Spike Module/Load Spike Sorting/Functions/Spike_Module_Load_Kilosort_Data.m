@@ -1,4 +1,4 @@
-function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor,KSVersion,DeleteMUA,SpikeChannelType,LoadSpikesinTimeRange)
+function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,SelectedFolder,ScalingFactor,KSVersion,DeleteMUA,SpikeChannelType,LoadSpikesinTimeRange,ParallelPool)
 
 %________________________________________________________________________________________
 
@@ -30,6 +30,8 @@ function [Data,SaveFilter] = Spike_Module_Load_Kilosort_Data(Data,Autorun,Select
 % respective spikes' OR 'Single channel for all spikes in one unit (max template channel)'
 % 8. LoadSpikesinTimeRange: char, comma separated number with time range to
 % extract spikes from if sorting results are for concatonated recordings
+% 9: ParallelPool: handle to parallel preprocessing pool that either
+% exists (non-empty) or not (empty). If exists, parallel pool is used
 
 % Output:
 % 1. Data structure of toolbox with added field: Data.Spikes, called
@@ -166,10 +168,10 @@ if HigPassFiltered == 0
     
     if strcmp(SaveFilter,"No")
         [TempData,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-        [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+        [TempData] = Preprocess_Module_Apply_Pipeline (TempData,TempData.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea,ParallelPool);
     else
         [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
-        [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+        [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea,ParallelPool);
     end
 end
 

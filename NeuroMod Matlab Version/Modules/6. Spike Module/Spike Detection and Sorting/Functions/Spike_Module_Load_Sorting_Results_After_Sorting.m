@@ -61,9 +61,9 @@ if ~strcmp(Sorter,"WaveClus 3")
         KilosortScalingFactor = str2double(AmplitudeScalingFactorEditField);
     end
     
-    if strcmp(Sorter,"Mountainsort 5") || strcmp(Sorter,"SpyKING CIRCUS 2") || strcmp(Sorter,"Kilosort 4")
-        [app.Mainapp.Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(app.Mainapp.Data,Path,CurrentSorter);
-    end
+    % if strcmp(Sorter,"Mountainsort 5") || strcmp(Sorter,"SpyKING CIRCUS 2") || strcmp(Sorter,"Kilosort 4")
+    %     [app.Mainapp.Data,SaveFilter] = Spike_Module_Load_SpikeInterface_Sorter(app.Mainapp.Data,Path,CurrentSorter);
+    % end
     
     % if strcmp(Sorter,"Kilosort External")
     %     % Function to load all relevant npy and .mat files Kilosort outputs

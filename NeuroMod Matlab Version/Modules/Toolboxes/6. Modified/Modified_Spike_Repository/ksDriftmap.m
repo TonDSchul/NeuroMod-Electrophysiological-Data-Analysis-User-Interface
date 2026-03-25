@@ -1,6 +1,10 @@
 % Inputs/outputs: mostly self explanatory 
 % localizedSpikesOnly (false by default) - if true, only spikes with no discrepancy between depth and site are returned. 
 function [spikeTimes, spikeAmps, spikeDepths, spikeSites, BiggestAmplWaveform, tempScalingAmps] = ksDriftmap(ksDir, KSVersion, localizedSpikesOnly)
+spikeAmps = [];
+spikeSites = [];
+spikeAmps = [];
+BiggestAmplWaveform = [];
 
 if nargin < 3
   localizedSpikesOnly = false;
@@ -46,7 +50,7 @@ end
 spikeTemps = sp.spikeTemplates;
 
 temps = sp.temps;
-winv = sp.winv;
+%winv = sp.winv;
 tempScalingAmps = sp.tempScalingAmps;
 spikeTimes = sp.st;
 
@@ -73,25 +77,25 @@ end
 
 
 
-[spikeAmps, ~, templateYpos, tempAmps, tempsUnW, ~, BiggestAmplWaveform] = ...
-  templatePositionsAmplitudes(temps, winv, ycoords, spikeTemps, tempScalingAmps);
-
-%[~,max_site] = max(max(abs(temps),[],2),[],3); % the maximal site for each template
-% one could potentially use the unwhitened templates, but that shouldn't really change the results
-[~,max_site] = max(max(abs(tempsUnW),[],2),[],3); % the maximal site for each template
-spikeSites = max_site(spikeTemps+1);
-
-if isfield(sp, 'gain') && ~isempty(sp.gain) % could put this field in your params.py
-  % spikeAmps = spikeAmps*0.6/512/500*1e6; % convert to uV
-  spikeAmps = spikeAmps*sp.gain; % convert to uV
-end
-
-if localizedSpikesOnly  % above we already removed non-localized templates, but that on its own is insufficient
-  b = regress(spikeSites, spikeDepths); % for IMEC probe adding a constant term kills the regression making the regressors rank deficient
-  i = abs(spikeSites - b*spikeDepths) <= 5;
-  spikeTimes  = spikeTimes(i);
-  spikeAmps   = spikeAmps(i);
-  spikeDepths = spikeDepths(i);
-  spikeSites  = spikeSites(i);
-end
-spikeSites = uint16(spikeSites);
+% [spikeAmps, ~, templateYpos, tempAmps, tempsUnW, ~, BiggestAmplWaveform] = ...
+%   templatePositionsAmplitudes(temps, winv, ycoords, spikeTemps, tempScalingAmps);
+% 
+% %[~,max_site] = max(max(abs(temps),[],2),[],3); % the maximal site for each template
+% % one could potentially use the unwhitened templates, but that shouldn't really change the results
+% [~,max_site] = max(max(abs(tempsUnW),[],2),[],3); % the maximal site for each template
+% spikeSites = max_site(spikeTemps+1);
+% 
+% if isfield(sp, 'gain') && ~isempty(sp.gain) % could put this field in your params.py
+%   % spikeAmps = spikeAmps*0.6/512/500*1e6; % convert to uV
+%   spikeAmps = spikeAmps*sp.gain; % convert to uV
+% end
+% 
+% if localizedSpikesOnly  % above we already removed non-localized templates, but that on its own is insufficient
+%   b = regress(spikeSites, spikeDepths); % for IMEC probe adding a constant term kills the regression making the regressors rank deficient
+%   i = abs(spikeSites - b*spikeDepths) <= 5;
+%   spikeTimes  = spikeTimes(i);
+%   spikeAmps   = spikeAmps(i);
+%   spikeDepths = spikeDepths(i);
+%   spikeSites  = spikeSites(i);
+% end
+% spikeSites = uint16(spikeSites);

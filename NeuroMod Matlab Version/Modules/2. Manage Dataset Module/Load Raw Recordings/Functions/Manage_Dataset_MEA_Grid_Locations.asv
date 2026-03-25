@@ -40,17 +40,14 @@ end
 yDiffs(yDiffs==0) = [];                
 YDist = min(yDiffs);
 
+if UnequalPitch
+    Numchs = length(min(Data.Info.MEACoords(:,1)) : XDist : max(Data.Info.MEACoords(:,1)));
+end
+
 Data.Info.ChannelSpacing = YDist;
 
 Data.Info.ProbeInfo.NrChannel = num2str(numel(unique(y)));
 Data.Info.ProbeInfo.NrRows = num2str(numel(unique(x)));
-
-% if just a few channel have a different distance than others
-if UnequalPitch
-    Data.Info.ProbeInfo.NrChannel = num2str(length(min(Data.Info.MEACoords(:,2)) : YDist : max(Data.Info.MEACoords(:,2))));
-    Data.Info.ProbeInfo.NrRows = num2str(length(min(Data.Info.MEACoords(:,1)) : XDist : max(Data.Info.MEACoords(:,1))));
-end
-
 Data.Info.ProbeInfo.VertOffset = num2str(0);
 Data.Info.ProbeInfo.HorOffset = num2str(XDist);
 

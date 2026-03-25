@@ -1,4 +1,4 @@
-function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,ChannelSelection,appWindow,TextArea,TimeWindowSpiketriggredLFP,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations)
+function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Data,SpikeTimes,SpikePositions,Figure,ChannelSelection,appWindow,TextArea,TimeWindowSpiketriggredLFP,Plot,TwoORThreeD,ClustertoShow,CurrentPlotData,PlotAppearance,PreservePlotChannelLocations,ParallelPool)
 
 %________________________________________________________________________________________
 %% Function to prepare and execute spike triggered average analysis
@@ -26,6 +26,8 @@ function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Dat
 % case user wants to export them
 % 12.PreservePlotChannelLocations: double, 1 or 0 whether to preserve
 % original spacing between active channel (in case of inactiove islands between active channel)
+% 13: ParallelPool: handle to parallel preprocessing pool that either
+% exists (non-empty) or not (empty). If exists, parallel pool is used
 
 % Outputs
 % 1. Data: data structure from the main window holding spike data
@@ -42,6 +44,7 @@ function [Data,mnLFP,CurrentPlotData] = Spike_Module_Spike_Triggered_Average(Dat
 % - but still leave it to the user by just giving a warning and option to
 % low pass filter and downsample directly here
 
+ParallelPool = [];
 SaveFilter = "No";
 DatatoUse = 'Raw';
 Downsampled = 0;
@@ -109,7 +112,7 @@ if LowPass == 0 && Downsampled == 0
         
     [Data,PreproInfo,TextArea] = Preprocess_Module_Delete_Old_Settings(Data,PreproInfo,PreprocessingSteps,ChannelDeletion,TextArea);
     
-    [Data] = Preprocess_Module_Apply_Pipeline (Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea);
+    [Data] = Preprocess_Module_Apply_Pipeline(Data,Data.Info.NativeSamplingRate,PreprocessingSteps,0,PreproInfo,ChannelDeletion,TextArea,ParallelPool);
 
 end
 

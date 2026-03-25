@@ -47,6 +47,8 @@ AutorunConfig.FunctionOrder = ["Extract_Raw_Recording","Static_Power_Spectrum","
 % inbetween active channel or disable certain channel from for analysis (next variable)
 AutorunConfig.PreservePlotChannelLocations = 1;
 
+AutorunConfig.UseParallelPool = 1; % 1 or 0 whether to use parallel procssing where possible
+
 % Channel and Events to Analyze
 AutorunConfig.ChannelRange = []; % Empty for all channel, otherwise Matlab expression; Note: Not active Channel! Put in incdicie of active channel. If Probe starts with active channel 5,6,7 and you specify channel 1,2 here, it means channel 5,6 are selected.
 
@@ -394,6 +396,25 @@ AutorunConfig.LoadfromSpikeSorting.SelectedCurationMethods.MedianAmplitude = '>-
 % Wrap up by correcting dimensions to show in textarea of autorun window
 if strcmp(DisplayOrder,"Get Settings")
     AutorunConfig.FunctionOrder = AutorunConfig.FunctionOrder';
+
+    if AutorunConfig.UseParallelPool
+        %% initialte Parallel Poool
+        try
+            p = gcp('nocreate');
+            if isempty(p)
+                h=msgbox("Initiatintg parallel processing pool, which can take a while. Please wait until this message dissapears!");
+                pause(0.2)
+                p = parpool("Processes");
+                close(h);
+            end
+            AutorunConfig.ParallelPool = p;
+        catch ME
+            warning('Parallel pool could not be started: %s', ME.message);
+            AutorunConfig.ParallelPool = [];
+        end
+    else
+        AutorunConfig.ParallelPool = [];
+    end
 end
 
 %% Spike Sorter Settings

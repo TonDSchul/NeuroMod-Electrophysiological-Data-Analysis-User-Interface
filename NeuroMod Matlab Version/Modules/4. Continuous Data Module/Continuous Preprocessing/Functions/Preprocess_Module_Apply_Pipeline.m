@@ -1,4 +1,4 @@
-function [Data] = Preprocess_Module_Apply_Pipeline (Data,SampleRate,PreprocessingSteps,PlotExample,PreProInfo,ChannelDeletion,TextObject)
+function [Data] = Preprocess_Module_Apply_Pipeline (Data,SampleRate,PreprocessingSteps,PlotExample,PreProInfo,ChannelDeletion,TextObject,ParallelPool)
 %________________________________________________________________________________________
 
 %% Function to Preprocess Data 
@@ -32,6 +32,8 @@ function [Data] = Preprocess_Module_Apply_Pipeline (Data,SampleRate,Preprocessin
 % 7. TextObject: App object of text are in the preprocessing window to show
 % information about progress and settings. Can be defined as an empty
 % variable if run outside of GUI
+% 8: ParallelPool: handle to parallel preprocessing pool that either
+% exists (non-empty) or not (empty). If exists, parallel pool is used
 
 % Output: 
 % 1. Data with added field Data.Preprocessed containing the
@@ -111,47 +113,73 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
             % otherwise earlier preprocessing is overwritten
             if PPSteps == 1 % If first step in pipeline: apply to raw data
                 Data.Preprocessed = single(zeros(size(Data.Raw)));
-                cN = size(Data.Raw,1);
-                for channelnr = 1:size(Data.Raw,1)
-                    NonNan = ~isnan(Data.Raw(channelnr,:));
-                    msg = sprintf('Low Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
-                    waitbar(channelnr/cN, h, msg);
-
-                    [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_lowpassfilter(double(Data.Raw(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
-                end
-            else % If not first step in pipeline: apply to already preprocessed data
-                cN = size(Data.Preprocessed,1);
-                for channelnr = 1:size(Data.Preprocessed,1)
-                    NonNan = ~isnan(Data.Preprocessed(channelnr,:));
-                    msg = sprintf('Low Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
-                    waitbar(channelnr/cN, h, msg);
-   
-                    [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_lowpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
-                end
+                AlreadyPreprocessed = 0;
+            else
+                AlreadyPreprocessed = 1;
             end
             
+            if ~isempty(ParallelPool) % use parallel processing
+                [Data.Raw,Data.Preprocessed,h] = Preprocess_Module_Low_Pass_Parallel(Data.Raw,Data.Preprocessed,SampleRate,Cutoff,filterorder,type,dir,wintype,AlreadyPreprocessed,h);
+            else
+                if PPSteps == 1 % If first step in pipeline: apply to raw data
+                    Data.Preprocessed = single(zeros(size(Data.Raw)));
+                    cN = size(Data.Raw,1);
+                    for channelnr = 1:size(Data.Raw,1)
+                        NonNan = ~isnan(Data.Raw(channelnr,:));
+                        msg = sprintf('Low Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
+                        waitbar(channelnr/cN, h, msg);
+    
+                        [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_lowpassfilter(double(Data.Raw(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
+                    end
+                else % If not first step in pipeline: apply to already preprocessed data
+                    cN = size(Data.Preprocessed,1);
+                    for channelnr = 1:size(Data.Preprocessed,1)
+                        NonNan = ~isnan(Data.Preprocessed(channelnr,:));
+                        msg = sprintf('Low Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
+                        waitbar(channelnr/cN, h, msg);
+       
+                        [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_lowpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
+                    end
+                end
+            end
+
             close(h);
 
         elseif strcmp(PreprocessingSteps(PPSteps),"High-Pass")
+
             h = waitbar(0, 'Applying Filter...', 'Name','High-Pass Filtering...');
+    
             if PPSteps == 1 % If first step in pipeline: apply to raw data
                 Data.Preprocessed = single(zeros(size(Data.Raw)));
-                cN = size(Data.Raw,1);
-                for channelnr = 1:size(Data.Raw,1)
-                    NonNan = ~isnan(Data.Raw(channelnr,:));
-                    msg = sprintf('High Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
-                    waitbar(channelnr/cN, h, msg);
-
-                    [Data.Preprocessed(channelnr,NonNan), B,A] = ft_preproc_highpassfilter(double(Data.Raw(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
-                end
-            else % If not first step in pipeline: apply to already preprocessed data
-                cN = size(Data.Preprocessed,1);
-                for channelnr = 1:size(Data.Preprocessed,1)
-                    NonNan = ~isnan(Data.Preprocessed(channelnr,:));
-                    msg = sprintf('High Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
-                    waitbar(channelnr/cN, h, msg);
-
-                    [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_highpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
+                AlreadyPreprocessed = 0;
+            else
+                AlreadyPreprocessed = 1;
+            end
+            
+            if ~isempty(ParallelPool) % use parallel processing
+                [Data.Raw,Data.Preprocessed,h] = Preprocess_Module_High_Pass_Parallel(Data.Raw,Data.Preprocessed,SampleRate,Cutoff,filterorder,type,dir,wintype,AlreadyPreprocessed,h);
+            else% dont use parallel processing
+                if PPSteps == 1 % If first step in pipeline: apply to raw data
+                    cN = size(Data.Raw,1);
+                    %[Data.Raw,Data.Preprocessed] = Preprocess_Module_High_Pass_Parallel(Data.Raw,Data.Preprocessed,SampleRate,Cutoff,filterorder,type,dir,wintype);
+                    
+                    for channelnr = 1:size(Data.Raw,1)
+                        NonNan = ~isnan(Data.Raw(channelnr,:));
+                        msg = sprintf('High Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
+                        waitbar(channelnr/cN, h, msg);
+    
+                        [Data.Preprocessed(channelnr,NonNan), B,A] = ft_preproc_highpassfilter(double(Data.Raw(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
+                    end
+                    
+                else % If not first step in pipeline: apply to already preprocessed data
+                    cN = size(Data.Preprocessed,1);
+                    for channelnr = 1:size(Data.Preprocessed,1)
+                        NonNan = ~isnan(Data.Preprocessed(channelnr,:));
+                        msg = sprintf('High Pass Filtering... (%d%% done)', round(100*(channelnr/cN)));
+                        waitbar(channelnr/cN, h, msg);
+    
+                        [Data.Preprocessed(channelnr,NonNan), B, A] = ft_preproc_highpassfilter(double(Data.Preprocessed(channelnr,NonNan)), SampleRate, Cutoff, filterorder, type, dir, 'no', [],wintype, [], 'no', 'no');
+                    end
                 end
             end
             close(h);

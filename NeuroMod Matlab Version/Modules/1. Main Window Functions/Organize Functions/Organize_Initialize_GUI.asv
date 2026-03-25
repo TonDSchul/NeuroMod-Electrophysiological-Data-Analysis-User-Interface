@@ -55,7 +55,6 @@ if strcmp(Type,"Initial")
     app.ChannelSelection = [];
     app.DefaultTimeRangeDataPlot = [];
     app.TimeLimit = [];
-    app.MainWindowPlotData = [];
     app.CurrentTimePoints = [];
     app.CheckSuccesful_Extraction = [];
     app.CheckPlayMovie = [];
@@ -340,21 +339,6 @@ elseif strcmp(Type,"Extracting")
     app.UIAxes.Box = "off";
     
 elseif strcmp(Type,"VariableDefinition")
-
-    %% initialte Parallel Poool
-    try
-        p = gcp('nocreate');
-        if isempty(p)
-            h=msgbox("Initiatintg parallel processing pool, which can take a while. Please wait until this message dissapears!");
-            pause(0.2)
-            p = parpool("Processes");
-            close(h);
-        end
-        app.ParallelPool = p;
-    catch ME
-        warning('Parallel pool could not be started: %s', ME.message);
-        app.ParallelPool = [];
-    end
 
     Organize_Delete_All_Open_Windows(app,1);
 

@@ -79,7 +79,7 @@ coords = readNPY(fullfile(ksDir, 'channel_positions.npy'));
 ycoords = coords(:,2); xcoords = coords(:,1);
 temps = readNPY(fullfile(ksDir, 'templates.npy'));
 
-winv = readNPY(fullfile(ksDir, 'whitening_mat_inv.npy'));
+%winv = readNPY(fullfile(ksDir, 'whitening_mat_inv.npy'));
 
 spikeStruct.st = st;
 spikeStruct.spikeTemplates = spikeTemplates;
@@ -90,6 +90,6 @@ spikeStruct.cids = cids;
 spikeStruct.xcoords = xcoords;
 spikeStruct.ycoords = ycoords;
 spikeStruct.temps = temps;
-spikeStruct.winv = winv;
+%spikeStruct.winv = winv;
 spikeStruct.pcFeat = pcFeat;
 spikeStruct.pcFeatInd = pcFeatInd;
