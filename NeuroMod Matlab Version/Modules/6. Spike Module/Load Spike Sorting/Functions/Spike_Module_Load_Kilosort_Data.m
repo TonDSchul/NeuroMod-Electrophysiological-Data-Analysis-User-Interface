@@ -432,7 +432,7 @@ end
 
 % if multiple recordings concatoinated and user selected time range to load
 % spikes from 
-Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange);
+Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange,KSVersion);
 
 if KSversion == 3
     msgbox("Kilosort 3 data successfully loaded.");

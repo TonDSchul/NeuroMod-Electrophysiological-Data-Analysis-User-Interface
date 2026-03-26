@@ -5,7 +5,7 @@
 %   searchString = 'Utility_Plot_Interactive_Probe_View';
 %   results = search_mlapp_methods(mainFolder, searchString);
 
-%results = search_mlapp_methods("F:\LIN\PhD\Proj. Ephys GUI\NeuroMod Matlab Version", "Organize_Export_Components_to_WorkSpace")
+%results = search_mlapp_methods("F:\LIN\PhD\Proj. Ephys GUI\NeuroMod Matlab Version", "Analyse_Main_Window_Inst_Freq_Main")
 
 function results = search_mlapp_methods(mainFolder, searchString)
 if nargin < 1 || isempty(mainFolder), mainFolder = pwd; end

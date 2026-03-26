@@ -405,6 +405,6 @@ end
 
 % if multiple recordings concatoinated and user selected time range to load
 % spikes from 
-Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange);
+Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange,CurrentSorter);
 
 msgbox("SpikeInterface Sorting successfully loaded.");

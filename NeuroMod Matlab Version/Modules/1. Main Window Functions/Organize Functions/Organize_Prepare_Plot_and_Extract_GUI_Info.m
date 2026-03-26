@@ -28,7 +28,7 @@ function [app] = Organize_Prepare_Plot_and_Extract_GUI_Info(app,PlotTime,TimePlo
 %________________________________________________________________________________________
 
 PreserveChannelSpacing = app.PreservePlotChannelLocations;
-
+PlotData = [];
 % If events addon selected in main window (events added to plot) select
 % which input event channel to show
 % EventPlot = "no" when checkbox disabled, "Events" when checkbox activated
@@ -578,7 +578,7 @@ if isprop(app.LiveECHTWindow,'ExistflagECHT')
                     [~,~,TempDatatoPlot,TempTime,TempSamplefrequency] = Analyse_Main_Plot_Get_PlotIndiciesandData(app,app.LiveECHTWindow.DataTypeDropDown.Value,TempStartIndex,TempStopIndex,"PhaseSync",app.LiveECHTWindow.CoupleTimetoMainWindowCheckBox.Value);
                 end
             end
-            [app.LiveECHTWindow.GlobalYlim,texttoshow,app.CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(TempDatatoPlot,TempTime,TempSamplefrequency,app.LiveECHTWindow.PolarPlot,app.LiveECHTWindow.UIAxes_3,app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,app.Data,app.LiveECHTWindow.ChannelToCompare,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,app.ActiveChannel,app.LiveECHTWindow.DataTypeDropDown.Value,app.PlotAppearance,app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value,TempStartIndex,TempStopIndex,app.LiveECHTWindow.WhatToDo,app.LiveECHTWindow.Ccolormap,app.LiveECHTWindow.CalculationMethodDropDown.Value,app.LiveECHTWindow.ForceFilterOFFCheckBox.Value,app.LiveECHTWindow.ECHTFilterorderEditField.Value,app.CurrentPlotData,EventData,app.CurrentEventChannel,EventPlot,app.LiveECHTWindow.ShowAnayzedData,app.LiveECHTWindow.LowPassSettings,app.LiveECHTWindow.FilterType);      
+            [app.LiveECHTWindow.GlobalYlim,texttoshow,app.CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(TempDatatoPlot,TempTime,TempSamplefrequency,app.LiveECHTWindow.PolarPlot,app.LiveECHTWindow.UIAxes_3,app.LiveECHTWindow.UIAxes,app.LiveECHTWindow.UIAxes_2,app.Data,app.LiveECHTWindow.ChannelToCompare,app.LiveECHTWindow.NarrowbandCutoffLowerHigherEditField.Value,app.LiveECHTWindow.NarrowbandFilterorderEditField.Value,app.ActiveChannel,app.LiveECHTWindow.DataTypeDropDown.Value,app.PlotAppearance,app.LiveECHTWindow.GlobalYlim,app.LiveECHTWindow.LockYlimCheckBox.Value,TempStartIndex,TempStopIndex,app.LiveECHTWindow.WhatToDo,app.LiveECHTWindow.Ccolormap,app.LiveECHTWindow.CalculationMethodDropDown.Value,app.LiveECHTWindow.ForceFilterOFFCheckBox.Value,app.LiveECHTWindow.ECHTFilterorderEditField.Value,app.CurrentPlotData,EventData,app.CurrentEventChannel,EventPlot,app.LiveECHTWindow.ShowAnayzedData,app.LiveECHTWindow.LowPassSettings,app.LiveECHTWindow.FilterType,app.ParallelPool);      
             app.LiveECHTWindow.TextArea.Value = texttoshow;
     
             clear TempDatatoPlot TempTime TempSamplefrequency

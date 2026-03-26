@@ -1,4 +1,4 @@
-function Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange)
+function Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange,Sorter)
 
 %________________________________________________________________________________________
 
@@ -36,8 +36,12 @@ if ~isempty(DeleteIndicies)
     Data.Spikes.SpikeAmps(DeleteIndicies==1) = [];
     Data.Spikes.SpikeChannel(DeleteIndicies==1) = [];
     Data.Spikes.SpikeCluster(DeleteIndicies==1) = [];
-    Data.Spikes.SpikeTemplates(DeleteIndicies==1) = [];
-    Data.Spikes.DataCorrectedSpikePositions(DeleteIndicies==1,:) = [];
+    if contains(Sorter,'Kilosort')
+        Data.Spikes.SpikeTemplates(DeleteIndicies==1) = [];
+    end
+    if isfield(Data.Spikes,'DataCorrectedSpikePositions')
+        Data.Spikes.DataCorrectedSpikePositions(DeleteIndicies==1,:) = [];
+    end
     Data.Spikes.Waveforms(DeleteIndicies==1,:) = [];
 end
 

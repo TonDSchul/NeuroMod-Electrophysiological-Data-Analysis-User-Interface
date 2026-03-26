@@ -34,9 +34,21 @@ nchans = size(Hilbert_Phases,1);
 % initialize
 synchmat = zeros(2,nchans,nchans);
 
+% parfor chani = 1:nchans
+%     tmp_row = zeros(1, nchans); % local temporary storage
+% 
+%     tmpAi = Hilbert_Phases(chani,:);
+% 
+%     for chanj = 1:nchans
+%         tmpAj = Hilbert_Phases(chanj,:);
+%         tmp_row(chanj) = abs(mean(exp(1i*(tmpAi - tmpAj)), 2));
+%     end
+% 
+%     synchmat(1, chani, :) = tmp_row;
+% end
+
 for chani=1:nchans
     for chanj=1:nchans
-
         %%% Time window 1
         % extract angles
         tmpAi = Hilbert_Phases(chani,:);

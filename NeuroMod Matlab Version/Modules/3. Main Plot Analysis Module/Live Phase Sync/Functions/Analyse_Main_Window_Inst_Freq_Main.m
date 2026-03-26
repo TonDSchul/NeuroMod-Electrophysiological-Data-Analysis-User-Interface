@@ -1,4 +1,4 @@
-function [GlobalYlim,texttoshow,CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(DataToCompute,Time,Samplefrequency,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,GlobalYlim,LockYLIM,StartIndex,StopIndex,WhatToDo,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,EventData,SelectedEventIndice,EventPlot,ShowAnayzedData,LowPassSettings,FilterType)
+function [GlobalYlim,texttoshow,CurrentPlotData] = Analyse_Main_Window_Inst_Freq_Main(DataToCompute,Time,Samplefrequency,Figure1,Figure3,Figure4,Figure5,Data,ChannelToCompare,Cutoff,NarrowbandOrder,ActiveChannel,DataTypeDropDown,PlotAppearance,GlobalYlim,LockYLIM,StartIndex,StopIndex,WhatToDo,ColorMap,Method,ForceFilterOFF,ECHTFilterorder,CurrentPlotData,EventData,SelectedEventIndice,EventPlot,ShowAnayzedData,LowPassSettings,FilterType,ParallelPool)
 
 %________________________________________________________________________________________
 
@@ -57,6 +57,9 @@ function [GlobalYlim,texttoshow,CurrentPlotData] = Analyse_Main_Window_Inst_Freq
 % or show data phase angle analysis is based on (1)
 % 29. LowPassSettings: struc with fields: LowPassSettings.Cutoff, LowPassSettings.FilterOrder
 % 30. FilterType: Narrowband filter type used, either 'Butter' OR 'FIR'
+% 31: ParallelPool: handle to parallel preprocessing pool that either
+% exists (non-empty) or not (empty). If exists, parallel pool is used
+
 
 % Outputs:
 % 1. GlobalYlim: double vector, highest ylim plotted since window was
@@ -79,6 +82,7 @@ NarrowBandPresent = 0;
 Downsampleflag = 0;
 LowPassFlag = 0;
 
+ParallelPool = []; % disable, no performance benefit
 texttoshow = [];
 
 % Distinguish between downsampled data and normal data
@@ -122,10 +126,21 @@ FlagActualBandpass = 0;
 if ForceFilterOFF == 0
     if NarrowBandPresent == 0 
         if LowPassFlag == 0 && Downsampleflag == 0
-            % low pass
-            for nchannel = 1:size(DataToCompute,1)
-                [DataToCompute(nchannel,:), ~, ~] = ft_preproc_lowpassfilter(double(DataToCompute(nchannel,:)), Data.Info.NativeSamplingRate, LowPassSettings.Cutoff, LowPassSettings.FilterOrder, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+            % Use parallel proc
+            if ~isempty(ParallelPool)
+                % low pass
+                SR = Data.Info.NativeSamplingRate;
+                CutOff = LowPassSettings.Cutoff;
+                FO = LowPassSettings.FilterOrder;
+                parfor nchannel = 1:size(DataToCompute,1)
+                    [DataToCompute(nchannel,:), ~, ~] = ft_preproc_lowpassfilter(double(DataToCompute(nchannel,:)), SR, CutOff, FO, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+                end
+            else % Dont use parallel proc
+                for nchannel = 1:size(DataToCompute,1)
+                    [DataToCompute(nchannel,:), ~, ~] = ft_preproc_lowpassfilter(double(DataToCompute(nchannel,:)), Data.Info.NativeSamplingRate, LowPassSettings.Cutoff, LowPassSettings.FilterOrder, 'but', 'twopass', 'no', [],'hamming', [], 'no', 'no');
+                end
             end
+
             %downsample
             FsTarget = 1000;
             if Data.Info.NativeSamplingRate>FsTarget
@@ -188,8 +203,15 @@ if ForceFilterOFF == 0
             [b, a] = butter(filterorder, Cutoff / nyquist, 'bandpass');
 
             % apply the filter to the data
-            for nchannel = 1:size(DataToCompute,1)
-                DataToCompute(nchannel,:) = filtfilt(b,a,double(DataToCompute(nchannel,:))); 
+            % Use parallel proc
+            if ~isempty(ParallelPool)
+                parfor nchannel = 1:size(DataToCompute,1)
+                    DataToCompute(nchannel,:) = filtfilt(b,a,double(DataToCompute(nchannel,:))); 
+                end
+            else
+                for nchannel = 1:size(DataToCompute,1)
+                    DataToCompute(nchannel,:) = filtfilt(b,a,double(DataToCompute(nchannel,:))); 
+                end
             end
             
         elseif strcmp(FilterType,"FIR")
@@ -197,8 +219,14 @@ if ForceFilterOFF == 0
             filtkern = fir1(filterorder,Cutoff/nyquist, 'bandpass');
         
             % apply the filter to the data
-            for nchannel = 1:size(DataToCompute,1)
-                DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+            if ~isempty(ParallelPool)
+                parfor nchannel = 1:size(DataToCompute,1)
+                    DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+                end
+            else
+                for nchannel = 1:size(DataToCompute,1)
+                    DataToCompute(nchannel,:) = filtfilt(filtkern,1,double(DataToCompute(nchannel,:))); 
+                end
             end
         end
         FlagActualBandpass = 1;
