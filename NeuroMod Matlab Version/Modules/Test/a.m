@@ -3,7 +3,7 @@ mainFolder = 'F:\LIN\PhD\Proj. Ephys GUI\NeuroMod Matlab Version';
 
 % Search string
 %searchString = 'Preprocess_Module_Apply_Pipeline';
-searchString = 'Analyse_Main_Window_Inst_Freq_Main';
+searchString = 'channel rows';
 
 % Get all .m and .mlapp files recursively
 fileList_m     = dir(fullfile(mainFolder, '**', '*.m'));

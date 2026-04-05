@@ -32,8 +32,10 @@ function [csd,ds]=Analyse_Main_Window_Compute_CSD(dat,ds,hamwidth,Data,DataType)
 ds=ds/1000; % convert um to millimeter spacing of electrode contacts: Neuronexus: 50 um, Cambridge Neurotech H6B AND H7b 25um
 
 %% Referencing
-if isfield(Data.Info,'GrandAverage') && strcmp(DataType,'Preprocessed Data')
-else
+if ~isfield(Data.Info,'GrandAverage') && strcmp(DataType,'Preprocessed Data')
+    warning("For current source density it is recommended to perform Grand Average preprocessing in the 'Preprocessing' window before applying other preprocessing steps.")
+end
+if strcmp(DataType,'Raw Data')
     ref=mean(dat,2); %mean
     dat=dat-repmat(ref,1,size(dat,2)); %subtract grand average
 end
