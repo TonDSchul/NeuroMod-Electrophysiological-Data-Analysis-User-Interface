@@ -159,7 +159,7 @@ if Activated
     if strcmp(Window,"LiveCSD") || strcmp(Window,"All")
         if ~isempty(app.CSDApp) && isvalid(app.CSDApp)
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
-            app.CSDApp.HammWindowEditField.Tooltip = "Change hamm window size applied to data to smooth results (has to be odd!). Recommended to be smaller than 9.";
+            app.CSDApp.HammWindowEditField.Tooltip = "Change hamming window size applied to data to smooth results (has to be odd!). Recommended to be smaller than 9.";
             app.CSDApp.LockCLimCheckBox.Tooltip = "Enable to lock the ylimit to the biggest values found since opening this window. Useful when updating the main plot to keep track of amplitudes.";
             app.CSDApp.DataTypeDropDown.Tooltip = "Select whether CSD is calculate for raw or preprocessed dataset.";
 
@@ -323,7 +323,7 @@ if Activated
             app.EventLFPCSD.EventNumberSelectionEditField_3.Tooltip = "Select the baseline time window used to baseline normalize; Format: comma separated numbers like '-0.2,0'.";
             app.EventLFPCSD.EventNumberSelectionEditField_2.Tooltip = "Info field showing the total number of trigger for the currently selected trigger channel.";
             
-            app.EventLFPCSD.HammWindowEditField.Tooltip = "Specify hamm window 'smooting' the results. Has to be odd (recommended smaller than 9).";
+            app.EventLFPCSD.HammWindowEditField.Tooltip = "Specify hamming window size 'smooting' the results. Has to be odd (recommended smaller than 9).";
             app.EventLFPCSD.ClimminmaxEditField.Tooltip = "Specify the color plot limits. Format: [LowerLimit,UpperLimit]";
             app.EventLFPCSD.AutoClimButton.Tooltip = "Click the restore the default color plot limits.";
             
@@ -558,7 +558,7 @@ if Activated
         if ~isempty(app.LiveSpectrogramApp) && isvalid(app.LiveSpectrogramApp)
             
             app.LiveSpectrogramApp.ChannelToPlotDropDown.Tooltip = "Select the channel for which the spectrogram is calculated.";
-            app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Tooltip = "Set the frequency range to show in the analysis. Format: [Min Freq in Hz, Max Freq in Hz] like 1,500 for 1-500Hz.";
+            app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Tooltip = "Set the frequency range and steps in between to show in the analysis. Format: [Min Freq in Hz, Steps, Max Freq in Hz] like 1,250,500 for 1-500Hz in 250 steps (2Hz per step).";
             app.LiveSpectrogramApp.WindowsEditField.Tooltip = "Set the window length to divide the signal into segments. In samples, must be smaller than amount of data points in the current analysis time window.";
 
             app.LiveSpectrogramApp.DataTypeDropDown.Tooltip = "Select whether to calculate the spectrogram with the raw - or preprocessed data (if available) dataset within the analysis time window.";
@@ -566,7 +566,7 @@ if Activated
             app.LiveSpectrogramApp.TimeWindowfromtoinsEditField.Tooltip = "Enter the time range for analysis when the 'Couple Time to Main Window' checkbox is deactivated. Format: comma separated numbers like 0,10 for the first ten seconds of the recording.";
             app.LiveSpectrogramApp.CoupleTimetoMainWindowCheckBox.Tooltip = "Select whether time range for the analysis is coupled to the main window data plot or to the 'Time Range' edit field in this window.";
         
-            app.LiveSpectrogramApp.SmoothingEditField.Tooltip = "Determines smoothing of wavelet coherence plot. The higher, the more result is smoothed but the lower the low-frequency resolution. Min and max values possible depend (among others) on signal length of event related data. If you get an error, check the limit it displays!";
+            app.LiveSpectrogramApp.SmoothingEditField.Tooltip = "Determines smoothing of wavelet coherence plot. The higher, the more the result is smoothed but the lower the low-frequency resolution. Min and max values possible depend (among others) on signal length. If you get an error, check the limit it displays!";
             app.LiveSpectrogramApp.FrequencyRangeminmaxstepsEditField.Tooltip = "Enter two comma separated numbers specifying the channel you want to compute wavelet coherence for.";
             app.LiveSpectrogramApp.AnalysisTypeDropDown.Tooltip = "Select whether to conduct time frequency power analysis for a single channel or wavelet coherence between two channel seelcted in the 'Channel To Compare' field.";
             

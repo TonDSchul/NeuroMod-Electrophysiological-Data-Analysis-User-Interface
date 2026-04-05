@@ -105,10 +105,17 @@ end
 
 
 % add modified x axis lab el
-nTicks = 6;   % how many labels you want
-%TimeToPlot = TimeToPlot*1000;
+nTicks = 6;
+
 idx = round(linspace(1, numel(TimeToPlot), nTicks));
 
 %Figure.XTick = TimeToPlot(idx);
-Figure.XTickLabel = string(round(TimeToPlot(idx), 2));
+newlabels = string(TimeToPlot(idx));
+if newlabels(end) ~= num2str(TimeToPlot(end))
+    newlabels(end+1) = num2str(TimeToPlot(end));
+end
 
+Figure.XTick = linspace(Figure.XLim(1), Figure.XLim(2), numel(newlabels)); % evenly spaced positions
+
+%Figure.XTick = 1:numel(newlabels);
+Figure.XTickLabel = newlabels;
