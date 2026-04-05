@@ -345,7 +345,7 @@ elseif strcmp(Type,"VariableDefinition")
     try
         p = gcp('nocreate');
         if isempty(p)
-            h=msgbox("Initiatintg parallel processing pool, which can take a while. Please wait until this message dissapears!");
+            h=msgbox("Initialising parallel processing pool, which can take a while. Please wait until this message dissapears!");
             pause(0.2)
             p = parpool("Processes");
             close(h);

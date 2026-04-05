@@ -135,10 +135,15 @@ end
 %% Handle Spike Data
 % If spikes addon in main window plot selected: extract spikes that fall
 % into the time range to be plotted
+GetSpikeData = 0;
 
-if ~strcmp(Plotspikes,"Spikes") || ~isfield(app.Data,'Spikes')
+if strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes') || ~isempty(app.PSTHApp) && isfield(app.Data,'Spikes')
+    GetSpikeData = 1;
+end
+
+if GetSpikeData == 0
     SpikeData = [];
-elseif strcmp(Plotspikes,"Spikes") && isfield(app.Data,'Spikes')
+elseif GetSpikeData == 1
     SpikeData.Indicie = [];
     if isfield(app.Data.Info,'DownsampleFactor') && strcmp(app.DropDown.Value,'Preprocessed Data')
         TempDownsamplespikes = round(app.Data.Spikes.SpikeTimes ./ app.Data.Info.DownsampleFactor);
