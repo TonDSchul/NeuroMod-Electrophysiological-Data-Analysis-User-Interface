@@ -3,7 +3,7 @@ mainFolder = 'F:\LIN\PhD\Proj. Ephys GUI\NeuroMod Matlab Version';
 
 % Search string
 %searchString = 'Preprocess_Module_Apply_Pipeline';
-searchString = 'channel rows';
+searchString = 'Butterworth IR';
 
 % Get all .m and .mlapp files recursively
 fileList_m     = dir(fullfile(mainFolder, '**', '*.m'));

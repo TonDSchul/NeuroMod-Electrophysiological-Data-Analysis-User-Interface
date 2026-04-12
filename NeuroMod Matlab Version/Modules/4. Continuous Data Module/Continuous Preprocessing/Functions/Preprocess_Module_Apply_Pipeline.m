@@ -303,6 +303,8 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
 
         clear TempPreprocessed TempRaw NonNan
         close(h);
+
+    %%%%%% Not supported anymore
     elseif strcmp(PreprocessingSteps(PPSteps),"Resampling")
         h2 = waitbar(0, 'Resampling...', 'Name','Preprocessing...');
         %% Get Filter options
@@ -357,7 +359,8 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
 
         PreProInfo.DownsampledSampleRate = PreProInfo.ResamplingFrequency;
         PreProInfo.DownsampleFactor =  FsOriginal/FsTarget; 
-        
+    
+    %%%%%% Not supported anymore
     elseif strcmp(PreprocessingSteps(PPSteps),"Downsampling")
 
         h2 = waitbar(0, 'Downsampling...', 'Name','Preprocessing...');

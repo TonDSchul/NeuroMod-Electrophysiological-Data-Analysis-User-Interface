@@ -53,7 +53,6 @@ for chani=1:nchans
         % extract angles
         tmpAi = Hilbert_Phases(chani,:);
         tmpAj = Hilbert_Phases(chanj,:);
-        % synch on each trial
         % length of average vector of phase angle differences embedded in eulers formular
         synchmat(1,chani,chanj) = abs(mean(exp(1i*( tmpAi-tmpAj )),2));
     end
