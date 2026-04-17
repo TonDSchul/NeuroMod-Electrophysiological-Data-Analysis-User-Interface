@@ -47,7 +47,7 @@ if Activated
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
             app.ExtractDataWindow.RecordingSystemDropDown.Tooltip = "If folder with a supported format was selected and detected, this shows the detected format.";
             app.ExtractDataWindow.FileTypeDropDown.Tooltip = "Some formats can have multiple datasets (i.e. differrent recording nodes for OE recordings) that can be selected and extracted individually.";
-            app.ExtractDataWindow.AdditionalAmplificationFactorEditField.Tooltip = "If additional amplification after the headstage (not save in recording data) took place. Raw dataset gets multiplied by this factor.";
+            app.ExtractDataWindow.AdditionalAmplificationFactorEditField.Tooltip = "If additional amplification after the headstage (not save in recording data) took place. Raw dataset gets divided by this factor.";
             app.ExtractDataWindow.AddProbeInformationButton.Tooltip = "Click to specify probe information necessary to start data extraction. Alternatively load saved probe information using the menu above.";
             app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder containing ONE recording of the supported formats. If NeuroMod, NEO or SpikeInterface have problems detecting a specific recording format in the selected folder, consider deleting all files and folders within the recording folder that are not created by the recording software. To load and analyse multiple recordings one after another consider using the Autorun function of NeuroMod (see menu in main window). NOTE: For Open Ephys recordings, select the folder containing the recording node(s) folder(s).";
             app.ExtractDataWindow.ExtractDataButton.Tooltip = "Only if folder and probe information was specified.";
@@ -187,7 +187,7 @@ if Activated
                 app.PreproWindow.CutStartandEndofRecordingButton_2.Tooltip = "Press to open a window in which you can select time windows to delete. Selection can be added to the current pipeline. Deletion is applied to raw and preprocessed dataset. Some dataset components might have to be calculated again.";
                 app.PreproWindow.StimulationArtefactRejectionButton.Tooltip = "Press to open a window in which you can interpolate stimulation artefacts. This requires you to extract event data for the stimulation first. Then you can interpolate in a time window around triggers in those events.";
                 app.PreproWindow.ArtefactSubspaceReconstructionButton.Tooltip = "Press to open a window in which you can apply the subspace artefact rejection method implemented by the eeglab toolbox.";
-                app.PreproWindow.DeleteEventTriggerIndicesButton.Tooltip = "Press to open a window in which you can delete individual trigger indicies (or trials) from the dataset.";
+                app.PreproWindow.DeleteEventTriggerIndicesButton.Tooltip = "Press to open a window in which you can delete individual trigger indicies (or trials) from an event channel in the dataset. NOTE: This is not part of the preprocessing pipeline, meaning that trials are rejected immediatly when applying changes to the dataset in the trial rejection window!";
                 
                 app.PreproWindow.DeleteLastPipelineEntryButton.Tooltip = "Press to delete the last pipeline component you added from the current pipeline.";
                 
@@ -195,7 +195,25 @@ if Activated
             end
         end
     end
-    
+    %% ASR window
+    if strcmp(Window,"ASR") || strcmp(Window,"All")
+        if ~isempty(app.ASRWindow) && isvalid(app.ASRWindow)
+            if isprop(app.ASRWindow,'ASRWindowUIFigure')
+                app.ASRWindow.ChannelCriterion01EditField.Tooltip = "Minimum channel correlation. If a channel is correlated at less than this value to an estimate based on other channels, it is considered abnormal in the given time window. This method requires that channel locations are available and roughly correct; otherwise a fallback criterion will be used. (default: 0.85)";
+                app.ASRWindow.LineNoiseCriterioninStandardDevationsEditField.Tooltip = "If a channel has more line noise relative to its signal than this value, in standard deviations based on the total channel population, it is considered abnormal. (standard: 4)";
+                app.ASRWindow.HighPassTransitionBandLTHTEditField.Tooltip = "Transition band for the initial high-pass filter in Hz. This is formatted as [transition-start, transition-end]. Default: [0.25 0.75].";
+                app.ASRWindow.BurstCriterioninStandardDevationsRange520EditField.Tooltip = "Standard deviation cutoff for removal of bursts (via ASR). Data portions whose variance is larger than this threshold relative to the calibration data are considered missing data and will be removed. The most aggressive value that can be used without losing much EEG is 3. For new users it is recommended to at first visually inspect the difference between the original and cleaned data to get a sense of the removed content at various levels. An agressive value is 5  and a quite conservative value is 20. Default: 5 (from the GUI, default is 20).";
+                app.ASRWindow.WindowCriterionRange00503EditField.Tooltip = "Criterion for removing time windows that were not repaired completely. This may happen if the artifact in a window was composed of too many simultaneous uncorrelated sources (for example, extreme movements such as jumps). This is the maximum fraction of contaminated channels that are tolerated in the final output data for each considered window. Generally a lower value makes the criterion more aggressive. Default: 0.25. Reasonable range: 0.05 (very aggressive) to 0.3 (very lax).";
+                
+                app.ASRWindow.EnableCheckBox_3.Tooltip = "Enable or disable this method";
+                app.ASRWindow.EnableCheckBox_4.Tooltip = "Enable or disable this method";
+                app.ASRWindow.EnableCheckBox_2.Tooltip = "Enable or disable this method";
+                app.ASRWindow.EnableCheckBox.Tooltip = "Enable or disable this method";
+
+            end
+        end
+    end
+
     %% Stim artefact rejection
     if strcmp(Window,"StimArtefactRejection") || strcmp(Window,"All")
         if ~isempty(app.PreproArtefactRejection) && isvalid(app.PreproArtefactRejection)
@@ -356,10 +374,10 @@ if Activated
             %app.ExtractDataWindow.SelectDataFolderButton.Tooltip = "Click to select a folder. If data format was detected, it will be sh";
             app.EventLFPTF.DataToExtractFromDropDown.Tooltip = "Select if event related data is extracted from raw or preprocessed data.";
             app.EventLFPTF.EventTriggerChannel.Tooltip = "Select the event channel for which event related data is extracted.";
-            
+
             app.EventLFPTF.DataSourceDropDown.Tooltip = "Select whether time frequency power is calculate for raw or preprocessed event related data.";
             app.EventLFPTF.EventNumberSelectionEditField.Tooltip = "Specify trigger (trials) for which time frequency power is computed.";
-            app.EventLFPTF.FrequencyRangeminmaxstepsEditField.Tooltip = "Change frequency range and number of steps inbetween range limits for which time frequency power is computed. Format: [LowerLimit,Steps,UpperLimit]. NOTE: For Wavelet Coherence, Steps represent 'VoicesPerOctave' and determine the density of frequencies. There are min and max values possible to compute with, depending on duration and sampling frequency of event related data! If you get an error, check the limit it displays!";
+            app.EventLFPTF.FrequencyRangeminmaxstepsEditField.Tooltip = "Set the frequency range and steps in between to show in the analysis. Number of steps determines the number of frequency bins in between the lowest and highest frequency and is only taking effect for the SFFT spectrogram. NOTE: For Wavelet Coherence, Steps represent 'VoicesPerOctave' and determine the density of frequencies. There are min and max values possible to compute with, depending on duration and sampling frequency of event related data! If you get an error, check the limit it displays! Format: [Min Freq in Hz, Steps, Max Freq in Hz] like 1,250,500 for 1-500Hz in 250 steps (2Hz per step).";
             app.EventLFPTF.CycleWidthfromto23EditField.Tooltip = "Set the window length to divide the signal into segments. In samples, must be smaller than amount of data points in the current analysis time window.";
             app.EventLFPTF.ClimminmaxEditField.Tooltip = "Specify the color plot limits. Format: [LowerLimit,UpperLimit]";
             app.EventLFPTF.AutoClimButton.Tooltip = "Click the restore the default color plot limits.";
@@ -509,15 +527,15 @@ if Activated
             app.EventIndiceRejectionWindow.PlotThresholdCheckBox.Tooltip = "Activate plot the threshold in the lower plot.";
 
             app.EventIndiceRejectionWindow.ClimfromtoEditField.Tooltip = "Change the clims in the upper plot. Example: [-1,1]";
-            app.EventIndiceRejectionWindow.RejectTrialsfromtoEditField.Tooltip = "Specify all trials to be rejected for the currently selected channel. Example: [1,2,3,4] or 1:10; Note, that it is currently only possible to reject the specified trials from all channel at the same time!";
-            app.EventIndiceRejectionWindow.PlotTrialsfromtoEditField.Tooltip = "Specify which trials are plotted in the upper and lower plot. Example: [1,2,3,4] or 1:10";
-            app.EventIndiceRejectionWindow.ChannelofInterestDropDown.Tooltip = "Specify the channel for which to visualize and reject trials. This is only for plotting. Note, that it is currently only possible to reject the specified trials from all channel at the same time!";
+            app.EventIndiceRejectionWindow.RejectTrialsfromtoEditField.Tooltip = "Specify all trials to be rejected for the currently selected event channel. Example: [1,2,3,4] or 1:10; Note, that it is currently only possible to reject the specified trials from all probe channel at the same time!";
+            app.EventIndiceRejectionWindow.PlotTrialsfromtoEditField.Tooltip = "Specify which trials are plotted in the upper and lower plot. This has no influence on which trials are rejected, just for visuals. Example: [1,2,3,4] or 1:10";
+            app.EventIndiceRejectionWindow.ChannelofInterestDropDown.Tooltip = "Specify the probe channel for which to plot trial data. This is only for plotting. Note, that it is currently only possible to reject the specified trials from all probe channel at the same time!";
             
-            app.EventIndiceRejectionWindow.SaveasnewDatasetButton.Tooltip = "Click to add the currently selected trials to reject to the preprocessed event related dataset. Note, that it is currently only possible to reject the specified trials from all channel at the same time!";
+            app.EventIndiceRejectionWindow.SaveasnewDatasetButton.Tooltip = "Click to add the currently selected trials to reject to the preprocessed event related dataset. Note, that it is currently only possible to reject the specified trials from all recording channel at the same time!";
 
 
             app.EventIndiceRejectionWindow.EventChannelSelectionDropDown.Tooltip = "Specify the event channel to take trigger times from.";
-            app.EventIndiceRejectionWindow.DataToExtractFromDropDown.Tooltip = "Specify whether plotted data is extracted from the raw - or preprocessed dataset.";
+            app.EventIndiceRejectionWindow.DataToExtractFromDropDown.Tooltip = "Specify whether plotted data is extracted from the raw - or preprocessed dataset. This has no influence on the event related data since it is extracted on the fly every time its needed from either from the raw or preprocessed dataset.";
         end
     end
 
@@ -558,7 +576,7 @@ if Activated
         if ~isempty(app.LiveSpectrogramApp) && isvalid(app.LiveSpectrogramApp)
             
             app.LiveSpectrogramApp.ChannelToPlotDropDown.Tooltip = "Select the channel for which the spectrogram is calculated.";
-            app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Tooltip = "Set the frequency range and steps in between to show in the analysis. Format: [Min Freq in Hz, Steps, Max Freq in Hz] like 1,250,500 for 1-500Hz in 250 steps (2Hz per step).";
+            app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Tooltip = "Set the frequency range and steps in between to show in the analysis. Number of steps determines the number of frequency bins in between the lowest and highest frequency and is only taking effect for the SFFT spectrogram. NOTE: For Wavelet Coherence, Steps represent 'VoicesPerOctave' and determine the density of frequencies. There are min and max values possible to compute with, depending on duration and sampling frequency of event related data! If you get an error, check the limit it displays! Format: [Min Freq in Hz, Steps, Max Freq in Hz] like 1,250,500 for 1-500Hz in 250 steps (2Hz per step).";
             app.LiveSpectrogramApp.WindowsEditField.Tooltip = "Set the window length to divide the signal into segments. In samples, must be smaller than amount of data points in the current analysis time window.";
 
             app.LiveSpectrogramApp.DataTypeDropDown.Tooltip = "Select whether to calculate the spectrogram with the raw - or preprocessed data (if available) dataset within the analysis time window.";

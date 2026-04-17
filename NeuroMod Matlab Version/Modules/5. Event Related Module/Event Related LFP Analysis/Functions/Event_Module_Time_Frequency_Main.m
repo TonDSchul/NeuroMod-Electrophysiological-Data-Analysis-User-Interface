@@ -65,7 +65,7 @@ else
 end
 
 %% Get data
-if strcmp(TF.AnalysisType,'Single Channel ERP Spectogram')
+if strcmp(TF.AnalysisType,'Single Channel ERP SFFT Spectogram') || strcmp(TF.AnalysisType,'Single Channel ERP Moorlet Wavelet Spectogram')
     EventRelatedData = squeeze(EventRelatedData(TF.SingleChannelSelected,TF.EventNrRange,:));
     if isscalar(TF.EventNrRange)
         EventRelatedData = EventRelatedData';
@@ -74,8 +74,7 @@ if strcmp(TF.AnalysisType,'Single Channel ERP Spectogram')
     if size(EventRelatedData,1) > 1
         EventRelatedData = mean(EventRelatedData,1);
     end
-
-else
+elseif strcmp(TF.AnalysisType,'Time Varying Wavelet Coherence')
     if TF.ChannelTriggerToCompareType(1)==1 %1 = trigger
         % trigger 1
         EventRelatedData1 = squeeze(EventRelatedData(TF.SingleChannelSelected,TF.ChannelTriggerToCompare(1),:));
@@ -121,8 +120,10 @@ if strcmp(TF.AnalysisType,'Time Varying Wavelet Coherence')
 elseif strcmp(TF.AnalysisType,'Wavelet Coherence')
     [climsTF,CurrentPlotData] = Event_Module_Wavelet_Coherence(Data,EventRelatedData1,EventRelatedData2,Window,BaselineNormalize,NormalizationWindow,TF,[],Figure,SampleRate,PlotAppearance,Data.Info.EventRelatedTime,CurrentPlotData,TwoORThreeD);
 
-elseif strcmp(TF.AnalysisType,'Single Channel ERP Spectogram')
+elseif strcmp(TF.AnalysisType,'Single Channel ERP SFFT Spectogram')
     [climsTF,CurrentPlotData] = Event_Module_Spectrogram2(Data,EventRelatedData,Window,BaselineNormalize,NormalizationWindow,TF,[],Figure,SampleRate,PlotAppearance,Data.Info.EventRelatedTime,CurrentPlotData,TwoORThreeD);
+elseif strcmp(TF.AnalysisType,'Single Channel ERP Moorlet Wavelet Spectogram')
+    [climsTF,CurrentPlotData] = Event_Module_Spectrogram1(Data,EventRelatedData,Window,BaselineNormalize,NormalizationWindow,TF,[],Figure,SampleRate,PlotAppearance,Data.Info.EventRelatedTime,CurrentPlotData,TwoORThreeD,TF.NumScales);
 end
  
 % if ~strcmp(PlotAppearance.TFWindow.PlotType,"OverFrequencies")

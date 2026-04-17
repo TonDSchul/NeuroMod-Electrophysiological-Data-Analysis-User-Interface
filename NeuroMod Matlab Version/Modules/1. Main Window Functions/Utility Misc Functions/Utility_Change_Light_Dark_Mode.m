@@ -1865,6 +1865,7 @@ if strcmp(Window,'ASR_Window')
     app.ArtefactSubspaceReconstructionPanel.BackgroundColor   = WindowBackgroundColor;
     app.ArtefactSubspaceReconstructionPanel.ForegroundColor   = WindowBackgroundColor;
 
+    app.ChannelCriterion01EditField.BackgroundColor   = ComponentsInWindowColor;
     app.LineNoiseCriterioninStandardDevationsEditField.BackgroundColor   = ComponentsInWindowColor;
     app.HighPassTransitionBandLTHTEditField.BackgroundColor   = ComponentsInWindowColor;
     app.BurstCriterioninStandardDevationsRange520EditField.BackgroundColor   = ComponentsInWindowColor;

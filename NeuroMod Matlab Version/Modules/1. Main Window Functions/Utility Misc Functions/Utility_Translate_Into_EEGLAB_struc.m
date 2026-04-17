@@ -58,8 +58,21 @@ EEG.filepath = Data.Info.Data_Path;
 EEG.filename = Data.Info.Data_Path;
 
 msgbox("Starting Subspace reconstruction. Please see command window for more informaton.");
+pause(0.1)
+if PreProInfo.EnableChannelCrit == 0
+    PreProInfo.ASRChannelCriterion = 'off';
+end
+if PreProInfo.EnableLineNoiseCrit == 0
+    PreProInfo.ASRLineNoiseC = 'off';
+end
+if PreProInfo.EnableBurstCrit == 0
+    PreProInfo.ASRBurstC = 'off';
+end
+if PreProInfo.EnableWindowCrit == 0
+    PreProInfo.WindowC = 'off';
+end
 
-[cleanEEG,HP,BUR,removed_channels] = clean_artifacts(EEG,'LineNoiseCriterion',PreProInfo.ASRLineNoiseC,'BurstCriterion',PreProInfo.ASRBurstC,'WindowCriterion','off','Highpass',PreProInfo.ASRHPTransitions);
+[cleanEEG,HP,BUR,removed_channels] = clean_artifacts(EEG,'ChannelCriterion',PreProInfo.ASRChannelCriterion,'LineNoiseCriterion',PreProInfo.ASRLineNoiseC,'BurstCriterion',PreProInfo.ASRBurstC,'WindowCriterion',PreProInfo.WindowC,'Highpass',PreProInfo.ASRHPTransitions);
 
 %[cleanEEG,HP,BUR,removed_channels] = clean_artifacts(EEG);
 

@@ -301,6 +301,19 @@ elseif strcmp(Type,"Loading")
         app.UIAxes.YDir = 'normal';
     end
 
+    try
+        if ~isempty(app.PreproWindow)
+            try
+                delete(app.PreproWindow);
+            catch
+                
+            end
+            app.PreproWindow = [];
+        end
+    catch
+        app.PreproWindow = [];
+    end
+
 elseif strcmp(Type,"Extracting")
 
     %% Predefine checkboxes of what to plot
@@ -338,6 +351,19 @@ elseif strcmp(Type,"Extracting")
     app.EventTriggerNumberField.Value = "No event trigger found."; 
     
     app.UIAxes.Box = "off";
+
+    try
+        if ~isempty(app.PreproWindow)
+            try
+                delete(app.PreproWindow);
+            catch
+                
+            end
+            app.PreproWindow = [];
+        end
+    catch
+        app.PreproWindow = [];
+    end
     
 elseif strcmp(Type,"VariableDefinition")
 
@@ -540,15 +566,15 @@ elseif strcmp(Type,"VariableDefinition")
 
     if str2double(app.Data.Info.ProbeInfo.NrRows)<=2
         if contains(app.PlotAppearance.MainWindow.Data.Plottype,"Grid")
-            warning("Autoset plot type in main window from grid to individual lines.")
+            warning("Auto-changing plot type in main window from grid to individual lines.")
             app.PlotAppearance.MainWindow.Data.Plottype = "Individual Lines";
         end
         if contains(app.PlotAppearance.SpectrumWindow.PlotType,"Grid")
-            warning("Autoset plot type static spectrum window from grid to band power individual channel.")
+            warning("Auto-changing plot type static spectrum window from grid to band power individual channel.")
             app.PlotAppearance.SpectrumWindow.PlotType = "Band Power Individual Channel ";
         end
         if contains(app.PlotAppearance.ERPWindow.PlotType,"Grid")
-            warning("Autoset plot type static spectrum window from grid to individual lines.")
+            warning("Auto-changing plot type static spectrum window from grid to individual lines.")
             app.PlotAppearance.ERPWindow.PlotType = "IndividualLines ";
         end
     end

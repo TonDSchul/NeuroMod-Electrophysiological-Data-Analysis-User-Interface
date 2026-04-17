@@ -37,11 +37,6 @@ elseif strcmp(CutType,"CutEnd")
     CutTime = Data.Time(end)-CutTime;
 end
 
-%% Give Kilosort Warning 
-if strcmp(Data.Info.SpikeType,'Kilosort')
-    msgbox("Warning: Found kilosort data is deleted from dataset since time was cut. Please analyze cutted dataset again with kilosort and load the output again.");
-end
-
 %% This gets freshly extracted everytime its needed anyway, but for good measure its just always deleted 
 if isfield(Data,'EventRelatedSpikes')
     fieldsToDelete = {'EventRelatedSpikes'};
@@ -192,7 +187,7 @@ if isfield(Data,'Events')
 end 
 %% Cut Spikes
 if isfield(Data,'Spikes')
-    if strcmp(Data.Info.SpikeType,'Kilosort')
+    if ~strcmp(Data.Info.SpikeType,'Internal') 
         fieldsToDelete = {'Spikes'};
         % Delete fields
         Data = rmfield(Data, fieldsToDelete);
@@ -202,6 +197,13 @@ if isfield(Data,'Spikes')
             Data.Info = rmfield(Data.Info, fieldsToDelete);
         end
         Data.Info.SpikeType = "Non";
+
+        % if isfield(Data.Info,'HighPassStatistics')
+        %     fieldsToDelete = {'HighPassStatistics'};
+        %     % Delete fields
+        %     Data.Info = rmfield(Data.Info, fieldsToDelete);
+        % end
+
     else
         SpikeIndiciestoDelte = [];
         if strcmp(CutType,"CutStart")

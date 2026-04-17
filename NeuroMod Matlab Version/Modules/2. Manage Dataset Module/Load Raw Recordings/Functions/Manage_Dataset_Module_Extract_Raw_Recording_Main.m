@@ -726,6 +726,6 @@ Time = double(0:(1/SampleRate):(size(Data,2)-1)/SampleRate);
 
 % % Apply additional amplification
 if ~isempty(AdditionalAmpFactor)
-    disp("Additional Amplification was applied to data")
-    Data = Data.*str2double(AdditionalAmpFactor);
+    disp("Additional Amplification was applied to data.")
+    Data = Data./str2double(AdditionalAmpFactor);
 end

@@ -637,9 +637,11 @@ if isprop(app.LiveSpectrogramApp,'ExistflagLiveSpectogram')
                 end
             end
             
-            if strcmp(app.LiveSpectrogramApp.AnalysisTypeDropDown.Value,"Single Channel ERP Spectogram")
+            if strcmp(app.LiveSpectrogramApp.AnalysisTypeDropDown.Value,"Single Channel ERP Spectogram SFFT") 
                 [app.LiveSpectrogramApp.CurrentClim,app.CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram2(app.Data,TempDatatoPlot,EventData,app.LiveSpectrogramApp.ChannelToPlotDropDown.Value,app.LiveSpectrogramApp.WindowsEditField.Value,app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Value,app.LiveSpectrogramApp.LockCLimCheckBox.Value,app.LiveSpectrogramApp.DataTypeDropDown.Value,app.LiveSpectrogramApp.CurrentClim,app.LiveSpectrogramApp.UIAxes,TempSamplefrequency,app.PlotAppearance,TempTime,app.CurrentEventChannel,EventPlot,app.CurrentPlotData,app.LiveSpectrogramApp.TwoORThreeD);
-            else
+            elseif strcmp(app.LiveSpectrogramApp.AnalysisTypeDropDown.Value,"Single Channel ERP Spectogram Moorlet Wavelets")
+                [app.LiveSpectrogramApp.CurrentClim,app.CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram1(app.Data,TempDatatoPlot,EventData,app.LiveSpectrogramApp.ChannelToPlotDropDown.Value,app.LiveSpectrogramApp.WindowsEditField.Value,app.LiveSpectrogramApp.FrequencyRangeMinMaxEditField.Value,app.LiveSpectrogramApp.LockCLimCheckBox.Value,app.LiveSpectrogramApp.DataTypeDropDown.Value,app.LiveSpectrogramApp.CurrentClim,app.LiveSpectrogramApp.UIAxes,TempSamplefrequency,app.PlotAppearance,TempTime,app.CurrentEventChannel,EventPlot,app.CurrentPlotData,app.LiveSpectrogramApp.TwoORThreeD,app.LiveSpectrogramApp.SmoothingEditField.Value);
+            elseif strcmp(app.LiveSpectrogramApp.AnalysisTypeDropDown.Value,"Time Varying Wavelet Coherence")
                 TF.AnalysisType = app.LiveSpectrogramApp.AnalysisTypeDropDown.Value;
                 TF.ChannelTriggerToCompare = str2double(strsplit(app.LiveSpectrogramApp.FrequencyRangeminmaxstepsEditField.Value,','));
                 TF.NumScales = str2double(app.LiveSpectrogramApp.SmoothingEditField.Value);

@@ -1,7 +1,7 @@
-function [CurrentClim,CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram2(Data,DataToShow,EventsToShow,ChannelToPlot,Window,FrequencyRange,LockCLim,DataType,CurrentClim,Figure,SampleRate,PlotAppearance,Time,CurrentEventChannel,PlotEvent,CurrentPlotData,TwoORThreeD)
+function [CurrentClim,CurrentPlotData] = Analyse_Main_Window_Live_Spectrogram1(Data,DataToShow,EventsToShow,ChannelToPlot,Window,FrequencyRange,LockCLim,DataType,CurrentClim,Figure,SampleRate,PlotAppearance,Time,CurrentEventChannel,PlotEvent,CurrentPlotData,TwoORThreeD,Smoothing)
 
 %________________________________________________________________________________________
-%% Function to create a SFFT spectrogram (for live analysis) with the corresponding matlab function for the main window data (or custom time points if decoupled from main window)
+%% Function to create a moorlet wavelet spectrogram (for live analysis) with the corresponding matlab function for the main window data (or custom time points if decoupled from main window)
 
 
 % Input Arguments:
@@ -58,8 +58,9 @@ if length(wspec)>size(SpectroData,2)
     return;
 end
 %% Spec and conversion
-[Magni,TFFreqs,TFTime] = spectrogram(SpectroData, wspec, Noverlap, Freqs, SampleRate);   % compute magnitude in Hz
-SPower = abs(Magni).^2;
+[power, TFFreqs, TFTime] = cwt(SpectroData, SampleRate, 'amor', 'FrequencyLimits', [FrequencyRange(1) FrequencyRange(3)],'VoicesPerOctave', str2double(Smoothing)); % with armor its moorlet wavelets otherwise Morse 
+
+SPower = abs(power).^2;
 SdB = 10*log10(SPower + eps); % in db
 
 TimeToPlot = linspace(Time(1), Time(end), length(TFTime));
@@ -71,7 +72,6 @@ if length(TFTime)<=1
 end
 
 SpectroHandle = findobj(Figure, 'Tag', 'SpectroImsc');
-
 
 if strcmp(TwoORThreeD,"ThreeD")
 
