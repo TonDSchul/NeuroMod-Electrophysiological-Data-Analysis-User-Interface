@@ -437,7 +437,6 @@ Live Window: Window that updates along with the main window data plot, showing a
 
 <u>Event related</u>: Data of all trials. Event related analysis is therefore the same as trial analysis.
 
-
 > ## **Rules and Philosophy**
 > 
 - First off: this toolbox is not trying the reinvent the wheel. Rather it takes already established and proven analysis solutions like SpikeInterface, NEO and Kilosort and integrates them into a central hub aiming to bring LFP and spike analysis as well as signal quality measures together in a way, that everyone - including students and beginners can comfortably use it. 
@@ -446,10 +445,3 @@ Live Window: Window that updates along with the main window data plot, showing a
 - If the user tries to do an analysis without proper preprocessing or enters a wrong format into any field requiring user input, values are either autocorrected and/or the user gets a message why the operation is not possible. The aim is to give an explanation of what to do when an error occurs, not just what the error is.
 - In every window that loads or saves some kind of data, a standard folder will be auto-set for files with the proper format and additional information to show. I.e. when opening the 'Event Extraction' window, it will auto-search the recording path raw data was extracted from for files holding event data and in the case of some recording formats show trigger information like time stamps. The same holds true for saving and loading spike sorting data from any of the supported sorters. When saving your dataset for spike sorting in the folder suggested and sort it, NeuroMod will automatically recognize the spike sorting results for a one-click load in the 'Load Spike Sorting' window (it searches for the standard output file names of those sorters in the standard location they save results in). However, you can also always select a folder manually that will be searched through for results as well. To make your live easier, consider leaving the standard file names and locations created throughout your analysis. 
 - All functions are designed in a way that they can be used outside of the user interface with just a few support functions, including all visualizations. This enables the 'Autorun' functionality of the GUI, where you can apply all analysis and plots in a loop to several recordings.
-
-> ## **Disclaimer, License and Contact**
-This toolbox was created and is maintained by a single person as part of a PhD project and hobby. There is no guarantee for any of the analysis and results but dedication to fix bugs and evolve this.
-Feel free to contact me for tips and requests or pull a request/open an issue on Github.
-
-> ## **Support NeuroMod**
-If you want to show your appreciation for NeuroMod, consider becoming a Sponsor on GitHub or supporting me on Patreon in the 'Sponsor this project' section that will be enabled as soon as NeuroMod is published and peer reviewed.
