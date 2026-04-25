@@ -85,7 +85,7 @@ elseif strcmp(ModuleFunctionName,"Live Current Source Density")
     [~] = Utility_Set_ToolTips(app,app.ShowToolTipsSetting,"LiveCSD");
 
 
-elseif strcmp(ModuleFunctionName,"Live Instantaneous Frequency")
+elseif strcmp(ModuleFunctionName,"Live Instantaneous Phase")
     
     if isempty(app.ProbeViewWindowHandle) || ~isprop(app.ProbeViewWindowHandle,'ProbeViewUIFigure')
         app.ProbeViewWindowHandle = Probe_View_Window(app,'MainWindow');

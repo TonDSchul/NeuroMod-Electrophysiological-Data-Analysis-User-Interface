@@ -53,14 +53,14 @@ for n = 1:nClips
     end
     allPowerEst(n,:,:) = Pxx;
         
-    for f = 1:nF %% Always zero here, so its not computed. Its instead computed on the fly in plotLFPpower 
+    for f = 1:nF 
         
         inclF = F>freqBand{f}(1) & F<=freqBand{f}(2);
         allPowerEstByBand(n,:, f) = mean(Pxx(inclF,:));
         
     end
 
-    % Update the progress bar
+   % Update the progress bar
    fraction = n/nClips;
    msg = sprintf('Calculating Band Power over Depth... (%d%% done)', round(100*fraction));
    waitbar(fraction, h, msg);

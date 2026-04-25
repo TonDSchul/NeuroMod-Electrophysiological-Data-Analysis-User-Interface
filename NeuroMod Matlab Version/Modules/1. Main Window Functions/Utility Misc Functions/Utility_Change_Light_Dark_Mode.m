@@ -2169,3 +2169,12 @@ if strcmp(Window,"Automatic_Curation_Window")
     app.AmplitudeScalingFactorEditField_5.BackgroundColor   = ComponentsInWindowColor;
     app.AmplitudeScalingFactorEditField_6.BackgroundColor   = ComponentsInWindowColor;
 end
+
+if strcmp(Window,"ASR_Ask_Channeldeletion")    
+    % texts to black
+    set(findall(app.ASRChannelDeletionWindowUIFigure, '-property', 'FontColor'), 'FontColor', [0 0 0])
+    app.ASRChannelDeletionWindowUIFigure.Color  = WindowBackgroundColor;
+
+    app.TextArea.BackgroundColor   = ComponentsInWindowColor;
+
+end

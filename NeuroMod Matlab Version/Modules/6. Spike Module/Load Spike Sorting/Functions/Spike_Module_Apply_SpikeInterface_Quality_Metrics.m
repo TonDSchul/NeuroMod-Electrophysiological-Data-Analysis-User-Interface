@@ -65,6 +65,8 @@ if isfield(QualityMetrics,'SNR')
         warning("Quality metric SNR deleted all spikes. Set different threshold.")
         msgbox("Quality metric SNR deleted all spikes. Set different threshold.")
     end
+else
+    warning("Quality metric SNR could not be detected!")
 end
 if isfield(QualityMetrics,'ISIViolationRatio')
     if ~isfield(Data.Spikes,'ISIViolationRatio')
@@ -114,6 +116,8 @@ if isfield(QualityMetrics,'ISIViolationRatio')
         warning("Quality metric ISI Ratio violations deleted all spikes. Set different threshold.")
         msgbox("Quality metric ISI Ratio violations deleted all spikes. Set different threshold.")
     end
+else
+    warning("Quality metric SNR could not be detected!")
 end
 if isfield(QualityMetrics,'FiringRange')
     if ~isfield(Data.Spikes,'Cluster_Firing_Range')
@@ -163,6 +167,8 @@ if isfield(QualityMetrics,'FiringRange')
         warning("Quality metric Firing Range deleted all spikes. Set different threshold.")
         msgbox("Quality metric Firing Range deleted all spikes. Set different threshold.")
     end
+else
+    warning("Quality metric SNR could not be detected!")
 end
 if isfield(QualityMetrics,'NoiseRatio')
     if ~isfield(Data.Spikes,'Cluster_Noise_Ratio')
@@ -212,6 +218,8 @@ if isfield(QualityMetrics,'NoiseRatio')
         warning("Quality metric Noise Ratio deleted all spikes. Set different threshold.")
         msgbox("Quality metric Noise Ratio deleted all spikes. Set different threshold.")
     end
+else
+    warning("Quality metric SNR could not be detected!")
 end
 if isfield(QualityMetrics,'NoiseCutOff')
     if ~isfield(Data.Spikes,'Cluster_Noise_Cutoff')
@@ -261,6 +269,8 @@ if isfield(QualityMetrics,'NoiseCutOff')
         warning("Quality metric Noise Cutoff deleted all spikes. Set different threshold.")
         msgbox("Quality metric Noise Cutoff deleted all spikes. Set different threshold.")
     end
+else
+    warning("Quality metric SNR could not be detected!")
 end
 if isfield(QualityMetrics,'MedianAmplitude')
     if ~isfield(Data.Spikes,'Cluster_Amplitude_Median')
@@ -310,5 +320,7 @@ if isfield(QualityMetrics,'MedianAmplitude')
         warning("Quality metric Median Spike Amplitude deleted all spikes. Set different threshold.")
         msgbox("Quality metric Median Spike Amplitude deleted all spikes. Set different threshold.")
     end
+else
+    warning("Quality metric SNR could not be detected!")
 end
 

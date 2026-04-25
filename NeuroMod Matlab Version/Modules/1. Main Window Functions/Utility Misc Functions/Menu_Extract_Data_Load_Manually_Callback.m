@@ -19,10 +19,12 @@ function Menu_Extract_Data_Load_Manually_Callback (app, Window)
 
 %________________________________________________________________________________________
 
-if strcmp(app.RecordingSystemDropDown_2.Value,"SpikeInterface Python Library")
-    warning("Probe information is extracted with SpikeInterface and does not have to be specified!")
-    msgbox("Probe information is extracted with SpikeInterface and does not have to be specified!")
-    return;
+if ~strcmp(Window,'ProbeLayout')
+    if strcmp(app.RecordingSystemDropDown_2.Value,"SpikeInterface Python Library")
+        warning("Probe information is extracted with SpikeInterface and does not have to be specified!")
+        msgbox("Probe information is extracted with SpikeInterface and does not have to be specified!")
+        return;
+    end
 end
 
 [file, path] = uigetfile('*.mat', 'Select a .mat file');

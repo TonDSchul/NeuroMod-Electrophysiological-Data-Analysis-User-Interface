@@ -42,7 +42,7 @@ Module{1}.Items{1} = 'Live Spike Rate';
 Module{1}.Items{2} = 'Live Power Estimate';
 Module{1}.Items{3} = 'Live Current Source Density';
 Module{1}.Items{4} = 'Live Spectrogram';
-Module{1}.Items{5} = 'Live Instantaneous Frequency';
+Module{1}.Items{5} = 'Live Instantaneous Phase';
 
 %% Continous Data Module
 Module{2}.Title = 'Continuous Data Module';
@@ -50,6 +50,7 @@ Module{2}.Function = 'RUN_Continuous_Data_Module';
 Module{2}.Items{1} = 'Preprocessing';
 Module{2}.Items{2} = 'Static Spectrum Analysis';
 Module{2}.Items{3} = 'Spike Analysis';
+%Module{2}.Items{4} = 'Spike Field Coherence Analysis';
 Module{2}.Items{4} = 'Unit Analysis';
 %% Event Data Module
 Module{3}.Title = 'Event Related Data Module';

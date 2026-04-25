@@ -36,13 +36,13 @@ if ~isempty(DeleteIndicies)
     Data.Spikes.SpikeAmps(DeleteIndicies==1) = [];
     Data.Spikes.SpikeChannel(DeleteIndicies==1) = [];
     Data.Spikes.SpikeCluster(DeleteIndicies==1) = [];
-    if contains(Sorter,'Kilosort')
+    if contains(Sorter,'Kilosort') && ~contains(Sorter,'SpikeInterface')
         Data.Spikes.SpikeTemplates(DeleteIndicies==1) = [];
     end
     if isfield(Data.Spikes,'DataCorrectedSpikePositions')
         Data.Spikes.DataCorrectedSpikePositions(DeleteIndicies==1,:) = [];
     end
-    Data.Spikes.Waveforms(DeleteIndicies==1,:) = [];
+    %Data.Spikes.Waveforms(DeleteIndicies==1,:) = [];
 end
 
 % notmalize time to 0

@@ -61,6 +61,16 @@ elec.chanunit = repmat({'um'}, length(Data.Info.ProbeInfo.ActiveChannel), 1);   
 cfg_layout = [];
 cfg_layout.elec = elec;
 cfg_layout.showlabels = 'yes';
+if str2double(Data.Info.ProbeInfo.NrRows) == 1
+    cfg_layout.layout    = 'vertical';   % key line
+    cfg_layout.direction = 'TB';         % top-to-bottom (or 'BT')
+else
+    cfg_layout.layout  = 'ordered';
+    cfg_layout.rows    = str2double(Data.Info.ProbeInfo.NrChannel);   % number of sites along depth
+    cfg_layout.columns = str2double(Data.Info.ProbeInfo.NrRows);    % e.g. 2 or 4 for Neuropixels
+    cfg_layout.channel = elec.label;
+
+end
 
 layout = ft_prepare_layout(cfg_layout, eventdata);   % creates proper 2D layout for plotting
 

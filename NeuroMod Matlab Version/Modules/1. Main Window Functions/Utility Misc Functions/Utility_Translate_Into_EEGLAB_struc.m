@@ -1,4 +1,4 @@
-function [OutputSignal] =  Utility_Translate_Into_EEGLAB_struc(Signal,PPStep,Data,Downsampling,PreProInfo)
+function [Data] =  Utility_Translate_Into_EEGLAB_struc(Signal,PPStep,Data,Downsampling,PreProInfo)
 
 %________________________________________________________________________________________
 %% Function to convert GUI data structure in to strcuture readable by eeglab 
@@ -53,6 +53,8 @@ EEG.trials = 1;
 EEG.event = [];  % default state
 EEG.urevent = [];
 EEG.etc = [];
+
+%% Create probe layout for interpoaltion of bad channel 
 EEG.chanlocs = [];
 EEG.filepath = Data.Info.Data_Path;
 EEG.filename = Data.Info.Data_Path;
@@ -74,9 +76,49 @@ end
 
 [cleanEEG,HP,BUR,removed_channels] = clean_artifacts(EEG,'ChannelCriterion',PreProInfo.ASRChannelCriterion,'LineNoiseCriterion',PreProInfo.ASRLineNoiseC,'BurstCriterion',PreProInfo.ASRBurstC,'WindowCriterion',PreProInfo.WindowC,'Highpass',PreProInfo.ASRHPTransitions);
 
-%[cleanEEG,HP,BUR,removed_channels] = clean_artifacts(EEG);
+SaveResults = 1;
 
-OutputSignal = cleanEEG.data;
-msgbox(strcat("Finished! ",num2str(sum(removed_channels))," channel where removed!"));
+if sum(removed_channels)>0
+    ChannelIndicies = find(removed_channels==1);
+
+    % firtst ask if user want to deleted channel
+    AskForASRChannelDel = Ask_For_ASR_ChannelDeletion(ChannelIndicies);
+        
+    uiwait(AskForASRChannelDel.ASRChannelDeletionWindowUIFigure);
+    % Wait for the app to close
+    
+    DeleteChannel = 0;
+    if isvalid(AskForASRChannelDel)
+        if AskForASRChannelDel.DeleteChannel == 0
+            disp("No channel are deleted for ASR. Results are not saved.")
+            delete(AskForASRChannelDel);
+            return;
+        else
+            DeleteChannel = AskForASRChannelDel.DeleteChannel;
+            delete(AskForASRChannelDel);
+        end
+    else
+        SaveResults = 0;
+    end
+    
+    if DeleteChannel
+        h2 = waitbar(0, 'Deleting Channel...', 'Name','Preprocessing...');
+        msg = sprintf('Deleting Channel... (%d%% done)', round(100*(1/2)));
+        waitbar(1/2, h2, msg);
+        
+        [Data] = Preprocess_Module_ChannelDeletion(Data,ChannelIndicies);
+    
+        msg = sprintf('Deleting Channel... (%d%% done)', round(100*(1)));
+        waitbar(1, h2, msg);
+        close(h2);
+    else
+        SaveResults = 0;
+    end
+end
+
+if SaveResults
+    Data.Preprocessed = single(cleanEEG.data);
+    msgbox(strcat("Finished! ",num2str(sum(removed_channels))," channel where removed!"));
+end
 
 %vis_artifacts(cleanEEG,EEG);

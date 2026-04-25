@@ -255,15 +255,13 @@ Data.Spikes.ChannelPosition = zeros(length(xcoords),2);
 Data.Spikes.ChannelPosition(:,1) = xcoords';
 Data.Spikes.ChannelPosition(:,2) = ycoords';
 
-% if Data.Spikes.OrigChannelPosition(1,1) ~= 0 || Data.Spikes.OrigChannelPosition(1,2)~= 0
-%     Data.Spikes.SpikePositions(:,1) = Data.Spikes.SpikePositions(:,1) - double(min(Data.Spikes.OrigChannelPosition(:,1)));
-%     Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - double(min(Data.Spikes.OrigChannelPosition(:,2)));
-%     if sum(min(Data.Spikes.SpikePositions))~=0
-%         Mins = min(Data.Spikes.SpikePositions);
-%         Data.Spikes.SpikePositions(:,1) = Data.Spikes.SpikePositions(:,1) - Mins(1);
-%         Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - Mins(2);
-%     end
-% end
+%% adjust spike positions if they do not start at 0
+if min(Data.Spikes.OrigChannelPosition(:,1)) ~= 0
+    Data.Spikes.SpikePositions(:,1) = Data.Spikes.SpikePositions(:,1) - min(Data.Spikes.OrigChannelPosition(:,1));
+end
+if min(Data.Spikes.OrigChannelPosition(:,2)) ~= 0
+    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - min(Data.Spikes.OrigChannelPosition(:,2));
+end
 
 if length(Data.Spikes.ChannelMap)~=length(Data.Info.ProbeInfo.ActiveChannel)
     msgbox("Error: Loaded spike data contains more channel than current probe design does. This can be due to channel deletion conducted after sorting or loading the wrong sorting data.")
@@ -315,7 +313,6 @@ if KSversion == 3
     end
 end
 
-
 %% If no KilosortData found: Spike Field is emptyx but has to be deleted
 if isempty(Data.Spikes)
     [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
@@ -326,6 +323,10 @@ if isempty(Data.Spikes)
     Data.Info.SpikeType = 'Non';
     return;
 end
+
+% if multiple recordings concatoinated and user selected time range to load
+% spikes from 
+Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange,KSVersion);
 
 if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
     SpikeAboveTime = Data.Spikes.SpikeTimes>length(Data.Time);
@@ -429,10 +430,6 @@ for i = 1:length(Data.Spikes.SpikeChannel)
         Data.Spikes.SpikeChannel(i) = AllChannel(IndiceMember);
     end
 end
-
-% if multiple recordings concatoinated and user selected time range to load
-% spikes from 
-Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange,KSVersion);
 
 if KSversion == 3
     msgbox("Kilosort 3 data successfully loaded.");

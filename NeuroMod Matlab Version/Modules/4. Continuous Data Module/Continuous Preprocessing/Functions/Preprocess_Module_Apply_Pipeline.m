@@ -409,16 +409,16 @@ for PPSteps = 1:length(PreprocessingSteps) % Loop thorugh preprocessing steps
         waitbar(1/2, h2, msg);
 
         if PPSteps == 1 % If first step in pipeline: apply to raw data
-            [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Raw,PPSteps,Data,0,PreProInfo);
+            [Data] = Utility_Translate_Into_EEGLAB_struc(Data.Raw,PPSteps,Data,0,PreProInfo);
         else % recognize already applied downsampling
             if ~isempty(find(PreprocessingSteps == "Downsampling"))
                 if find(PreprocessingSteps == "Downsampling")<PPSteps
-                    [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,1,PreProInfo);
+                    [Data] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,1,PreProInfo);
                 else
-                    [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
+                    [Data] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
                 end
             else
-                [Data.Preprocessed] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
+                [Data] = Utility_Translate_Into_EEGLAB_struc(Data.Preprocessed,PPSteps,Data,0,PreProInfo);
             end
         end
 

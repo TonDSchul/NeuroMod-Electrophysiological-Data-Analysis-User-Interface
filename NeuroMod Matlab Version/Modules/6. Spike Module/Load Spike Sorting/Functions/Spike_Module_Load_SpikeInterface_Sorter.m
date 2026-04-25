@@ -277,6 +277,13 @@ else
     end
 end
 
+%% adjust spike positions if they do not start at 0
+if min(Data.Spikes.OrigChannelPosition(:,1)) ~= 0
+    Data.Spikes.SpikePositions(:,1) = Data.Spikes.SpikePositions(:,1) - min(Data.Spikes.OrigChannelPosition(:,1));
+end
+if min(Data.Spikes.OrigChannelPosition(:,2)) ~= 0
+    Data.Spikes.SpikePositions(:,2) = Data.Spikes.SpikePositions(:,2) - min(Data.Spikes.OrigChannelPosition(:,2));
+end
 %% If no sorting Data found: Spike Field is emptyx but has to be deleted
 if isempty(Data.Spikes)
     [Data,~] = Organize_Delete_Dataset_Components(Data,"Spikes");
@@ -323,6 +330,10 @@ end
 if size(Data.Spikes.SpikeChannel,1)<size(Data.Spikes.SpikeChannel,2)
     Data.Spikes.SpikeChannel = Data.Spikes.SpikeChannel';
 end
+
+% if multiple recordings concatoinated and user selected time range to load
+% spikes from 
+Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange,CurrentSorter);
 
 %% Remove spikes violating time limits or NaN entries
 if max(Data.Spikes.SpikeTimes,[],'all') > length(Data.Time)
@@ -403,8 +414,6 @@ for i = 1:length(Data.Spikes.SpikeChannel)
     end
 end
 
-% if multiple recordings concatoinated and user selected time range to load
-% spikes from 
-Data = Spike_Module_LoadSpikesinTimeRange(Data,LoadSpikesinTimeRange,CurrentSorter);
+
 
 msgbox("SpikeInterface Sorting successfully loaded.");

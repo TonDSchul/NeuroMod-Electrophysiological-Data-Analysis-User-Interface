@@ -95,5 +95,9 @@ elseif strcmp(ModuleFunctionName,"Unit Analysis")
             end
         end
     end
+
+elseif strcmp(ModuleFunctionName,"Spike Field Coherence Analysis")
+    
+    Cont_Spike_Field_Coherence_Window(app);
 end
 
