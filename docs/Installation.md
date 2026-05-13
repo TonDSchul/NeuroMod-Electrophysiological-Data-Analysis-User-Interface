@@ -1,0 +1,1 @@
+Thats how to isntall
